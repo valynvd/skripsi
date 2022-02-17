@@ -1,0 +1,16 @@
+django==3.2.7
+whitenoise # buat run static file di django 3
+django-ckeditor==6.2.0
+django-rest-passwordreset==1.2.0
+django-storages
+boto3==1.16.56
+django-cors-headers
+djangorestframework==3.13.1
+django-rest-swagger
+drf-yasg  #swagger buat django 3 +
+djoser==2.1.0
+psycopg2-binary
+Pillow==8.3.0
+django-import-export==2.0.2
+xlwt
+gunicorn
