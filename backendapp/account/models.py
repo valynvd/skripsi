@@ -4,7 +4,7 @@ from django.utils import timezone
 import uuid
 
 class CustomUserManager(BaseUserManager):
-    def _create_user(self, email, name, phone, role, is_staff, is_active, password,
+    def _create_user(self, email, fullname, phone, role, is_staff, is_active, password,
     **extra_fields):
 
         if not email:
@@ -12,7 +12,7 @@ class CustomUserManager(BaseUserManager):
 
         email = self.normalize_email(email)
         user = self.model(  email=email,
-                            name=name,
+                            fullname=fullname,
                             phone=phone,
                             role=role,
                             is_staff=is_staff,
@@ -23,11 +23,11 @@ class CustomUserManager(BaseUserManager):
 
         return user
 
-    def create_user(self,  email, name, phone, role,  is_staff, is_active,password=None, **extra_fields):
-        return self._create_user(email, name, phone, role, is_staff,True, password, **extra_fields)
+    def create_user(self,  email, fullname, phone, role,  is_staff, is_active,password=None, **extra_fields):
+        return self._create_user(email, fullname, phone, role, is_staff,True, password, **extra_fields)
 
-    def create_superuser(self, email, name, phone, role, is_staff, is_active,password=None, **extra_fields):
-        return self._create_user(email, name, phone, 'Admin',  True, True, password,  **extra_fields)
+    def create_superuser(self, email, fullname, phone, role, is_staff, is_active,password=None, **extra_fields):
+        return self._create_user(email, fullname, phone, 'Superadmin',  True, True, password,  **extra_fields)
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
@@ -48,7 +48,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['name', 'phone', 'role', 'is_active', 'is_staff', 'nip']
+    REQUIRED_FIELDS = ['fullname', 'phone', 'role', 'is_active', 'is_staff']
 
     objects = CustomUserManager()
 
