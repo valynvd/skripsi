@@ -61,4 +61,4 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         super().delete(*args, **kwargs)
 
     def __str__(self):
-        return '{} / {}'.format(self.email, self.name)
+        return '{} / {}'.format(self.email, self.fullname)
