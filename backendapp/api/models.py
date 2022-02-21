@@ -112,4 +112,4 @@ class EvaluasiPerkuliahan(models.Model):
 		super().delete(*args, **kwargs)
 
 	def __str__(self) -> str:
-		return '{}({})'.format(self.name, self.kode)
+		return '[{} {}]-{}-{}'.format(self.penugasan.tahun, self.penugasan.periode, self.penugasan.dosen_pengampu.name, self.penugasan.mata_kuliah.name)
