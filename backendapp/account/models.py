@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
-from django.utils import timezone 
+from django.utils import timezone
 import uuid
 
 class CustomUserManager(BaseUserManager):
@@ -41,6 +41,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     ROLES = (
         ('Superadmin', 'Superadmin'),
         ('Admin', 'Admin'),
+        ('Faculty Member', 'Faculty Member'),
         ('Student', 'Student'),
     )
     role = models.CharField(max_length=100, choices=ROLES, default='Student')
