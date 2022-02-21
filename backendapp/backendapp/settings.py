@@ -147,12 +147,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # # djongo store to AWS S3
 # To upload your media files to S3 set:
 AWS_DEFAULT_ACL =  'public-read'
-AWS_ACCESS_KEY_ID = 'AKIA2JWN6SU24H7KVX7H'
-AWS_SECRET_ACCESS_KEY = 'hk2nuuOfJRqBl1KxCsyU1xJLLci14uYm8DefMo6Y'
+AWS_ACCESS_KEY_ID = 'AKIAQVOHGEF2HBULXUVE'
+AWS_SECRET_ACCESS_KEY = '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'
 AWS_STORAGE_BUCKET_NAME = 'stem-management'
 AWS_S3_REGION_NAME = 'ap-southeast-1'
 AWS_S3_FILE_OVERWRITE = False
 AWS_DEFAULT_ACL = None
 AWS_S3_VERIFY = True
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage' 
-
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
