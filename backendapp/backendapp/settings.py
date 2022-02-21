@@ -48,6 +48,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    # django storage
+    'storages',
+
     # django app
     'api',
     'account',
@@ -146,8 +149,8 @@ MEDIA_ROOT = BASE_DIR, 'media/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # # djongo store to AWS S3
-# To upload your media files to S3 set:
-AWS_DEFAULT_ACL =  'public-read'
+# # To upload your media files to S3 set:
+# AWS_DEFAULT_ACL =  'public-read'
 AWS_ACCESS_KEY_ID = 'AKIA2JWN6SU24H7KVX7H'
 AWS_SECRET_ACCESS_KEY = 'hk2nuuOfJRqBl1KxCsyU1xJLLci14uYm8DefMo6Y'
 AWS_STORAGE_BUCKET_NAME = 'stem-management'
