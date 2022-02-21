@@ -11,7 +11,7 @@ class Kurikulum(models.Model):
 
 class MataKuliah(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)
-	name = models.CharField(max_length=30)
+	name = models.CharField(max_length=100)
 	kode = models.CharField(max_length=8)
 	sks_total = models.IntegerField(default=0)
 	sks_praktikum = models.IntegerField(default=0)
@@ -30,7 +30,7 @@ class MataKuliah(models.Model):
 
 class ProgramStudi(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)
-	name = models.CharField(max_length=30)
+	name = models.CharField(max_length=100)
 	kode = models.CharField(max_length=8)
 	def __str__(self) -> str:
 		return '{}({})'.format(self.name, self.kode)
