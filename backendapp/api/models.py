@@ -4,7 +4,7 @@ from account.models import CustomUser
 
 
 class Kurikulum(models.Model):
-    name = models.CharField(max_length=30)
+    name = models.CharField(max_length=100)
     created_at = models.DateTimeField(default=timezone.now)
     def __str__(self) -> str:
       return '{}'.format(self.name)
@@ -57,7 +57,7 @@ class Dosen(models.Model):
 
 class SuratPenugasan(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
-    judul = models.CharField(max_length=30)
+    judul = models.CharField(max_length=100)
     files = models.FileField(upload_to='suratpenugasan/', blank=True, null=True)
     def __str__(self) -> str:
       return '{}'.format(self.judul)
