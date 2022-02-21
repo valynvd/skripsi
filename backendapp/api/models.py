@@ -104,6 +104,7 @@ class EvaluasiPerkuliahan(models.Model):
 	rps = models.FileField(upload_to='evaluasi/rps/', blank=True, null=True)
 	evaluation_report = models.FileField(upload_to='evaluasi/survey/', blank=True, null=True)
 	rubrik = models.FileField(upload_to='evaluasi/rubrik/', blank=True, null=True)
+	notes  = models.TextField(blank=True, null=True)
 
 	def delete(self, *args, **kwargs):
 		self.rps.delete()
