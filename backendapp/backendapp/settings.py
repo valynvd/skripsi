@@ -48,11 +48,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    # django storage
+    'storages',
+
     # django app
     'api',
     'account',
 ]
 
+SITE_ID = 1
 AUTH_USER_MODEL = 'account.CustomUser'
 
 MIDDLEWARE = [
@@ -121,7 +125,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Jakarta'
 
 USE_I18N = True
 
