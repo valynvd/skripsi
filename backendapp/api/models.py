@@ -102,7 +102,7 @@ class EvaluasiPerkuliahan(models.Model):
 			on_delete=models.CASCADE,
 	)
 	rps = models.FileField(upload_to='evaluasi/rps/', blank=True, null=True)
-	nilai_survey_perkuliahan = models.FileField(upload_to='evaluasi/survey/', blank=True, null=True)
+	evaluation_report = models.FileField(upload_to='evaluasi/survey/', blank=True, null=True)
 	rubrik = models.FileField(upload_to='evaluasi/rubrik/', blank=True, null=True)
 
 	def delete(self, *args, **kwargs):
