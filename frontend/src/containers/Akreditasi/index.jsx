@@ -1,6 +1,6 @@
 import React from 'react';
 import { Col, Container, Row } from 'reactstrap';
-import ExampleCard from './components/ExampleCard';
+import MatrixPenilaian from './components/MatrixPenilaian';
 
 const Akreditasi = () => (
   <Container className="dashboard">
@@ -10,7 +10,7 @@ const Akreditasi = () => (
       </Col>
     </Row>
     <Row>
-      <ExampleCard />
+      <MatrixPenilaian />
     </Row>
   </Container>
 );

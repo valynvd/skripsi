@@ -9,6 +9,7 @@
     "eject": "react-scripts eject"
   },
   "dependencies": {
+    "axios": "^0.26.0",
     "bootstrap": "^4.5.3",
     "classnames": "^2.2.6",
     "mdi-react": "^7.4.0",
