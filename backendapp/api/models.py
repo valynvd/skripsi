@@ -22,7 +22,6 @@ class MataKuliah(models.Model):
 	name = models.CharField(max_length=100)
 	kode = models.CharField(max_length=8)
 	sks_total = models.IntegerField(default=0)
-	sks_realisasi = models.IntegerField(default=0)
 	sks_praktikum = models.IntegerField(default=0)
 	is_elective = models.BooleanField(default=False)
 	LIST_SEMESTER = (
@@ -80,6 +79,7 @@ class SuratPenugasan(models.Model):
 
 class PenugasanPengajaran(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)
+	sks_realisasi = models.IntegerField(default=0)
 	surat_penugasan = models.ForeignKey(
 			SuratPenugasan,
 			on_delete=models.CASCADE,
