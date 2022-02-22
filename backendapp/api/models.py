@@ -5,7 +5,8 @@ from account.models import CustomUser
 
 class Kurikulum(models.Model):
     name = models.CharField(max_length=100)
-    file_panduan_kurikulum = models.FileField(upload_to='suratpenugasan/', blank=True, null=True)
+    file_panduan_kurikulum = models.FileField(upload_to='kurikulum/', blank=True, null=True)
+    file_pendukung = models.FileField(upload_to='kurikulum_pendukung/', blank=True, null=True)
     created_at = models.DateTimeField(default=timezone.now)
     def __str__(self) -> str:
       return '{}'.format(self.name)
