@@ -19,8 +19,6 @@ from django.urls import path, include
 admin.site.site_header = 'SIMANTAB Prodi Software Engineering'
 
 urlpatterns = [
-    path('', admin.site.urls),
-
     #  # API
     path('api-stem/', include('api.urls')),
 
@@ -28,4 +26,5 @@ urlpatterns = [
     # auth token
     path('auth-stem/', include('djoser.urls')),
     path('auth-stem/', include('djoser.urls.authtoken')),
+    path('', admin.site.urls),
 ]
