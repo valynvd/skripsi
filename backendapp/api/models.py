@@ -119,9 +119,28 @@ class EvaluasiPerkuliahan(models.Model):
 
 	def delete(self, *args, **kwargs):
 		self.rps.delete()
-		self.nilai_survey_perkuliahan.delete()
+		self.evaluation_report.delete()
 		self.rubrik.delete()
 		super().delete(*args, **kwargs)
+
+	def __str__(self) -> str:
+		return '[{} {}]-{}-{}'.format(self.penugasan.tahun, self.penugasan.periode, self.penugasan.dosen_pengampu.name, self.penugasan.mata_kuliah.name)
+
+class PortofolioPerkuliahan(models.Model):
+	created_at = models.DateTimeField(default=timezone.now)
+	penugasan = models.ForeignKey(
+			PenugasanPengajaran,
+			on_delete=models.CASCADE,
+	)
+	outcomes_mata_kuliah  = models.TextField(blank=True, null=True)
+	metode_mata_kuliah  = models.TextField(blank=True, null=True)
+	sistem_penilaian  = models.TextField(blank=True, null=True)
+	statistik_kelas  = models.TextField(blank=True, null=True)
+	analisis_statistik_ketercapaian  = models.TextField(blank=True, null=True)
+	komentar_questioner  = models.TextField(blank=True, null=True)
+	refleksi_pelaksanaan  = models.TextField(blank=True, null=True)
+	rekomendasi_perbaikan_dosen  = models.TextField(blank=True, null=True)
+	rekomendasi_perbaikan_univ  = models.TextField(blank=True, null=True)
 
 	def __str__(self) -> str:
 		return '[{} {}]-{}-{}'.format(self.penugasan.tahun, self.penugasan.periode, self.penugasan.dosen_pengampu.name, self.penugasan.mata_kuliah.name)

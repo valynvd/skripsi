@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     # django app
     'api',
     'account',
+    'akreditasi',
 ]
 
 SITE_ID = 1
