@@ -19,7 +19,7 @@ from django.urls import path, include
 admin.site.site_header = 'SIMANTAB Prodi Software Engineering'
 
 urlpatterns = [
-    path('admin-stem', admin.site.urls),
+    path('', admin.site.urls),
 
     #  # API
     path('api-stem/', include('api.urls')),
