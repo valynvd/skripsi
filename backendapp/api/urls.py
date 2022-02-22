@@ -2,6 +2,7 @@ from django.urls import path, include
 from rest_framework import routers, urlpatterns
 from rest_framework.routers import DefaultRouter
 from . import views
+from akreditasi import views as views_akreditasi
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -27,6 +28,12 @@ router.register('suratpenugasan', views.SuratPenugasanViewSet)
 router.register('penugasanpengajaran', views.PenugasanPengajaranViewSet)
 router.register('evaluasiperkulian', views.EvaluasiPerkuliahanViewSet)
 router.register('portofolioperkuliahan', views.PortofolioPerkuliahanViewSet)
+#Akreditasi
+router.register('poinpenilaian', views_akreditasi.PoinPenilaianViewSet)
+router.register('filefolder1', views_akreditasi.FileFolder1ViewSet)
+router.register('filefolder2', views_akreditasi.FileFolder2ViewSet)
+router.register('filefolder3', views_akreditasi.FileFolder3ViewSet)
+router.register('filefolder4', views_akreditasi.FileFolder4ViewSet)
 
 urlpatterns = [
   path('', include(router.urls)),
