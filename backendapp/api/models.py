@@ -5,12 +5,19 @@ from account.models import CustomUser
 
 class Kurikulum(models.Model):
     name = models.CharField(max_length=100)
+    file_panduan_kurikulum = models.FileField(upload_to='suratpenugasan/', blank=True, null=True)
     created_at = models.DateTimeField(default=timezone.now)
     def __str__(self) -> str:
       return '{}'.format(self.name)
 
 class MataKuliah(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)
+	kurikulum = models.ForeignKey(
+			Kurikulum,
+			on_delete=models.CASCADE,
+			blank=True,
+			null=True,
+	)
 	name = models.CharField(max_length=100)
 	kode = models.CharField(max_length=8)
 	sks_total = models.IntegerField(default=0)
@@ -23,10 +30,12 @@ class MataKuliah(models.Model):
 			('4', '4'),
 			('5', '5'),
 			('6', '6'),
+            ('7', '7'),
+			('8', '8'),
 	)
 	semester = models.CharField(max_length=100, choices=LIST_SEMESTER, default='1')
 	def __str__(self) -> str:
-		return '({}) {}'.format(self.name, self.kode)
+		return '{} ({})'.format(self.name, self.kode)
 
 class ProgramStudi(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)
