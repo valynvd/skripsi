@@ -51,6 +51,18 @@ INSTALLED_APPS = [
     # django storage
     'storages',
 
+    # restfull API
+    'rest_framework',
+    'rest_framework.authtoken',
+    'rest_framework_swagger',
+    'drf_yasg',
+    'corsheaders',
+    'djoser',
+    'django_rest_passwordreset',
+
+    # package import export
+    'import_export',
+
     # django app
     'api',
     'account',
@@ -160,3 +172,13 @@ AWS_S3_FILE_OVERWRITE = False
 AWS_DEFAULT_ACL = None
 AWS_S3_VERIFY = True
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+REST_FRAMEWORK = {
+    'DATETIME_FORMAT': "%Y-%m-%d | %H:%M:%S", 
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}

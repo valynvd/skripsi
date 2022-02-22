@@ -14,10 +14,18 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
 admin.site.site_header = 'SIMANTAB Prodi Software Engineering'
 
 urlpatterns = [
-    path('', admin.site.urls),
+    path('admin-stem', admin.site.urls),
+
+    #  # API
+    path('api-stem/', include('api.urls')),
+
+    # auth djoser
+    # auth token
+    path('auth-stem/', include('djoser.urls')),
+    path('auth-stem/', include('djoser.urls.authtoken')),
 ]

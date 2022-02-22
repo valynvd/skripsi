@@ -1,3 +1,99 @@
 from django.shortcuts import render
+from rest_framework import viewsets
+from rest_framework import generics
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from account.models import CustomUser
+from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from . import models
+from . import serializers
+from collections import namedtuple
 
-# Create your views here.
+class KurikulumViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.KurikulumSerializers
+    queryset = models.Kurikulum.objects.all()
+
+    def get_permissions(self):
+        if self.action in ['list','retrieve']:
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+
+class MataKuliahViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.MataKuliahSerializers
+    queryset = models.MataKuliah.objects.all()
+
+    def get_permissions(self):
+        if self.action in ['list','retrieve']:
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+
+class ProgramStudiViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.ProgramStudiSerializers
+    queryset = models.ProgramStudi.objects.all()
+
+    def get_permissions(self):
+        if self.action in ['list','retrieve']:
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+
+class DosenViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.DosenSerializers
+    queryset = models.Dosen.objects.all()
+
+    def get_permissions(self):
+        if self.action in ['list','retrieve']:
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+
+class SuratPenugasanViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.SuratPenugasanSerializers
+    queryset = models.SuratPenugasan.objects.all()
+
+    def get_permissions(self):
+        if self.action in ['list','retrieve']:
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+
+class PenugasanPengajaranViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.PenugasanPengajaranSerializers
+    queryset = models.PenugasanPengajaran.objects.all()
+
+    def get_permissions(self):
+        if self.action in ['list','retrieve']:
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+
+class EvaluasiPerkuliahanViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.EvaluasiPerkuliahanSerializers
+    queryset = models.EvaluasiPerkuliahan.objects.all()
+
+    def get_permissions(self):
+        if self.action in ['list','retrieve']:
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+
+class PortofolioPerkuliahanViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.PortofolioPerkuliahanSerializers
+    queryset = models.PortofolioPerkuliahan.objects.all()
+
+    def get_permissions(self):
+        if self.action in ['list','retrieve']:
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
