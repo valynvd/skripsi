@@ -22,6 +22,7 @@ class MataKuliah(models.Model):
 	name = models.CharField(max_length=100)
 	kode = models.CharField(max_length=8)
 	sks_total = models.IntegerField(default=0)
+	sks_realisasi = models.IntegerField(default=0)
 	sks_praktikum = models.IntegerField(default=0)
 	is_elective = models.BooleanField(default=False)
 	LIST_SEMESTER = (
