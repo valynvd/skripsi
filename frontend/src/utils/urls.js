@@ -1,4 +1,4 @@
-export const BASE_URL = 'http://ec2-13-250-45-157.ap-southeast-1.compute.amazonaws.com/';
+export const BASE_URL = 'https://ec2-13-250-45-157.ap-southeast-1.compute.amazonaws.com/';
 export const API = `${BASE_URL}api-stem`;
 export const AUTH = `${BASE_URL}auth-stem`;
 // AUTH
