@@ -5,7 +5,6 @@ import { Button, Alert } from 'reactstrap';
 import EyeIcon from 'mdi-react/EyeIcon';
 import KeyVariantIcon from 'mdi-react/KeyVariantIcon';
 import AccountOutlineIcon from 'mdi-react/AccountOutlineIcon';
-import renderCheckBoxField from '../../../shared/components/form/CheckBox';
 import authApi from '../../../utils/auth';
 
 const LogInForm = () => {
@@ -79,15 +78,6 @@ const LogInForm = () => {
           </div>
           <div className="account__forgot-password">
             <a href="/">Forgot a password?</a>
-          </div>
-        </div>
-        <div className="form__form-group">
-          <div className="form__form-group-field">
-            <Field
-              name="remember_me"
-              component={renderCheckBoxField}
-              label="Remember me"
-            />
           </div>
         </div>
         <Button
