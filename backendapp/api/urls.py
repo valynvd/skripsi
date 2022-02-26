@@ -30,15 +30,12 @@ router.register('evaluasiperkulian', views.EvaluasiPerkuliahanViewSet)
 router.register('portofolioperkuliahan', views.PortofolioPerkuliahanViewSet)
 #Akreditasi
 router.register('poinpenilaian', views_akreditasi.PoinPenilaianViewSet)
-router.register('filefolder1', views_akreditasi.FileFolder1ViewSet)
-router.register('filefolder2', views_akreditasi.FileFolder2ViewSet)
-router.register('filefolder3', views_akreditasi.FileFolder3ViewSet)
-router.register('filefolder4', views_akreditasi.FileFolder4ViewSet)
+router.register('filefolder', views_akreditasi.FileFolderViewSet)
 
 urlpatterns = [
   path('', include(router.urls)),
   #Akreditasi custom request
-  path('folder1bymatrix/<matrix_id>', views_akreditasi.Folder1ByPoinPenilaian.as_view({'get': 'list'})),
+  path('folderbymatrix/<matrix_id>', views_akreditasi.FolderFileByPoinPenilaian.as_view({'get': 'list'})),
 
   #  documentation
   path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),

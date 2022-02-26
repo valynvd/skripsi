@@ -19,50 +19,17 @@ class PoinPenilaianViewSet(viewsets.ModelViewSet):
             self.permission_classes = [IsAuthenticated]
         return super(self.__class__, self).get_permissions()
 
-class Folder1ByPoinPenilaian(viewsets.ModelViewSet):
-    serializer_class = serializers.FileFolder1Serializers
-    queryset = models.FileFolder1.objects.all()
+class FolderFileByPoinPenilaian(viewsets.ModelViewSet):
+    serializer_class = serializers.FileFolderSerializers
+    queryset = models.FileFolder.objects.all()
 
     def get_queryset(self):
         matrix_id = self.kwargs['matrix_id']
-        return models.FileFolder1.objects.filter(parent__id = matrix_id).order_by('jenis','nama')
+        return models.FileFolder.objects.filter(matrix__id = matrix_id).order_by('jenis','nama')
 
-class FileFolder1ViewSet(viewsets.ModelViewSet):
-    serializer_class = serializers.FileFolder1Serializers
-    queryset = models.FileFolder1.objects.all()
-
-    def get_permissions(self):
-        if self.action in ['list','retrieve']:
-            self.permission_classes = [AllowAny]
-        else:
-            self.permission_classes = [IsAuthenticated]
-        return super(self.__class__, self).get_permissions()
-
-class FileFolder2ViewSet(viewsets.ModelViewSet):
-    serializer_class = serializers.FileFolder2Serializers
-    queryset = models.FileFolder2.objects.all()
-
-    def get_permissions(self):
-        if self.action in ['list','retrieve']:
-            self.permission_classes = [AllowAny]
-        else:
-            self.permission_classes = [IsAuthenticated]
-        return super(self.__class__, self).get_permissions()
-
-class FileFolder3ViewSet(viewsets.ModelViewSet):
-    serializer_class = serializers.FileFolder3Serializers
-    queryset = models.FileFolder3.objects.all()
-
-    def get_permissions(self):
-        if self.action in ['list','retrieve']:
-            self.permission_classes = [AllowAny]
-        else:
-            self.permission_classes = [IsAuthenticated]
-        return super(self.__class__, self).get_permissions()
-
-class FileFolder4ViewSet(viewsets.ModelViewSet):
-    serializer_class = serializers.FileFolder4Serializers
-    queryset = models.FileFolder4.objects.all()
+class FileFolderViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.FileFolderSerializers
+    queryset = models.FileFolder.objects.all()
 
     def get_permissions(self):
         if self.action in ['list','retrieve']:
