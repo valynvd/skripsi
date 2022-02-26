@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 import {
   Button,
@@ -8,22 +9,55 @@ import {
   InputGroup,
   Spinner,
 } from 'reactstrap';
-import { getToken } from '../../../utils/helpers';
+import Box from '@mui/material/Box';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Divider from '@mui/material/Divider';
+import FolderOpenIcon from '@mui/icons-material/FolderOpen';
+import dataApi from '../../../utils/dataApi';
 
 const MatrixPenilaian = () => {
   const [searchText, setSearchText] = useState('');
-  const [isFetching, setFetching] = useState(false);
+  const [matrixPenilaian, setMatrixPenilaian] = useState([]);
+  const [isFetching, setFetching] = useState(true);
 
-  useEffect(() => {
-    setFetching(true);
-    const token = getToken();
+  const getData = async () => {
+    try {
+      const resp = await dataApi.getMatrixPenilaian();
+      return resp;
+    } catch (error) {
+      return [];
+    }
+  };
+  useEffect(async () => {
+    const matrix = await getData();
     // eslint-disable-next-line no-console
-    console.log('token: ', token);
+    console.log(matrix);
+    setMatrixPenilaian(matrix.data);
+    setFetching(false);
   }, []);
 
   const onFetch = () => {
     setFetching(false);
   };
+
+  const folders = matrixPenilaian.map((val) => {
+    // eslint-disable-next-line no-console
+    console.log(val);
+    return (
+      <ListItem key={val.id} disablePadding>
+        <ListItemButton>
+          <ListItemIcon>
+            <FolderOpenIcon />
+          </ListItemIcon>
+          <ListItemText primary={`${val.kode} ${val.element}`} />
+        </ListItemButton>
+      </ListItem>
+    );
+  });
 
   return (
     <Col md={12}>
@@ -45,11 +79,18 @@ const MatrixPenilaian = () => {
                   setSearchText(e.target.value);
                 }}
               />
-              <Button className="mb-0 ml-3" onClick={onFetch}>Fetch Data</Button>
+              <Button className="mb-0 ml-3" onClick={onFetch}>Cari</Button>
             </InputGroup>
           </div>
           { isFetching && <Spinner className="table-fetch-spinner" /> }
-          <p>Your content here</p>
+          <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
+            <Divider />
+            <nav aria-label="main mailbox folders">
+              <List>
+                {folders}
+              </List>
+            </nav>
+          </Box>
         </CardBody>
       </Card>
     </Col>
