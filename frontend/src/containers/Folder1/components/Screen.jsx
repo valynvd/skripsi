@@ -20,7 +20,7 @@ import Divider from '@mui/material/Divider';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import dataApi from '../../../utils/dataApi';
 
-const MatrixPenilaian = () => {
+const Screen = () => {
   const [searchText, setSearchText] = useState('');
   const [matrixPenilaian, setMatrixPenilaian] = useState([]);
   const [isFetching, setFetching] = useState(true);
@@ -52,9 +52,7 @@ const MatrixPenilaian = () => {
     return (
       <ListItem key={val.id} disablePadding>
         <ListItemButton onClick={() => {
-          history.push(`/dashboard/folder1/${val.id}`, {
-            data: val,
-          });
+          history.push(`/dashboard/folder1/${val.id}`);
         }}
         >
           <ListItemIcon>
@@ -70,10 +68,6 @@ const MatrixPenilaian = () => {
     <Col md={12}>
       <Card>
         <CardBody>
-          <div className="card__title">
-            <h5 className="bold-text">Matrix Penilaian</h5>
-            <h5 className="subhead">Data berdasarkan lampiran 6a BAN PT</h5>
-          </div>
           <div className="mb-3">
             <InputGroup className="d-flex align-items-center">
               <Input
@@ -104,4 +98,4 @@ const MatrixPenilaian = () => {
   );
 };
 
-export default MatrixPenilaian;
+export default Screen;

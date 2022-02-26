@@ -27,7 +27,7 @@ const LogInForm = () => {
     try {
       const { data } = await authApi.postLogIn(dataLogin);
       // eslint-disable-next-line no-console
-      // console.log(data);
+      console.log(data);
       setStorageKey(AUTH, data);
       try {
         const resp = await authApi.getUserDetail();
