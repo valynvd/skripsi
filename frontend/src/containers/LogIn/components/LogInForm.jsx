@@ -6,7 +6,7 @@ import EyeIcon from 'mdi-react/EyeIcon';
 import KeyVariantIcon from 'mdi-react/KeyVariantIcon';
 import AccountOutlineIcon from 'mdi-react/AccountOutlineIcon';
 import authApi from '../../../utils/auth';
-import { AUTH } from '../../../utils/naming';
+import { AUTH, USER_DETAIL } from '../../../utils/naming';
 import { setStorageKey } from '../../../utils/helpers';
 
 const LogInForm = () => {
@@ -29,7 +29,16 @@ const LogInForm = () => {
       // eslint-disable-next-line no-console
       // console.log(data);
       setStorageKey(AUTH, data);
-      history.push('/dashboard');
+      try {
+        const resp = await authApi.getUserDetail();
+        // eslint-disable-next-line no-console
+        console.log(resp.data);
+        setStorageKey(USER_DETAIL, resp.data);
+        history.push('/dashboard');
+      } catch (err) {
+        setError(true);
+        setTimeout(() => setError(false), 3000);
+      }
     } catch (error) {
       setError(true);
       setTimeout(() => setError(false), 3000);

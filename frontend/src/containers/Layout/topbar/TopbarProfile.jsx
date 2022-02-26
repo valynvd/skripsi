@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import DownIcon from 'mdi-react/ChevronDownIcon';
 import { Collapse } from 'reactstrap';
 import TopbarMenuLink from './TopbarMenuLink';
-import { clearStorage } from '../../../utils/helpers';
+import { clearStorage, getStorageKey } from '../../../utils/helpers';
+import { USER_DETAIL } from '../../../utils/naming';
 
 const Ava = `${process.env.PUBLIC_URL}/img/ava.png`;
 
@@ -19,7 +20,9 @@ const TopbarProfile = () => {
     <div className="topbar__profile">
       <button type="button" className="topbar__avatar" onClick={setIsCollapsed}>
         <img className="topbar__avatar-img" src={Ava} alt="avatar" />
-        <p className="topbar__avatar-name">Roman Johanson</p>
+        <p className="topbar__avatar-name">{getStorageKey(USER_DETAIL).fullname
+          ? getStorageKey(USER_DETAIL).fullname : 'No Name'}
+        </p>
         <DownIcon className="topbar__icon" />
       </button>
       {isCollapsed && (

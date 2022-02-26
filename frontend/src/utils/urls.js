@@ -12,6 +12,7 @@ export const AUTH = `${BASE_URL}auth-stem`;
 // AUTH
 export const LOGIN = `${AUTH}/token/login/`;
 export const LOGOUT = `${AUTH}/token/logout/`;
+export const USERME = `${AUTH}/users/me/`;
 
 // PRODI
 export const KURIKULUM = `${API}/kurikulum/`;
