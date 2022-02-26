@@ -1,24 +1,29 @@
-export const getOidcStorageKey = () => {
-  const authSettings = JSON.parse(localStorage.getItem('authSettings'));
-  if (authSettings) {
-    return `oidc.user:${authSettings.auth_server}:${authSettings.client_id}`;
+import { AUTH } from './naming';
+
+export const setStorageKey = (key, val) => {
+  localStorage.setItem(key, JSON.stringify(val));
+  return null;
+};
+
+export const getStorageKey = (key) => {
+  const auth = JSON.parse(localStorage.getItem(key));
+  if (auth) {
+    return auth;
   }
   return null;
 };
 
-export const getOidcInfo = () => {
-  const key = getOidcStorageKey();
-  if (key) {
-    const oidc = JSON.parse(localStorage.getItem(key));
-    return oidc;
-  }
-  return null;
+export const clearStorage = () => {
+  localStorage.removeItem(AUTH);
 };
 
 export const getToken = () => {
-  const oidc = getOidcInfo();
+  const oidc = getStorageKey(AUTH);
+  // eslint-disable-next-line no-console
+  // console.log('token', oidc);
+  // const oidc = { auth_token: '12345' };
   if (oidc) {
-    return oidc.id_token;
+    return oidc.auth_token;
   }
   return null;
 };

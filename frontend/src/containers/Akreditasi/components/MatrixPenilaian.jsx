@@ -8,6 +8,7 @@ import {
   InputGroup,
   Spinner,
 } from 'reactstrap';
+import { getToken } from '../../../utils/helpers';
 
 const MatrixPenilaian = () => {
   const [searchText, setSearchText] = useState('');
@@ -15,6 +16,9 @@ const MatrixPenilaian = () => {
 
   useEffect(() => {
     setFetching(true);
+    const token = getToken();
+    // eslint-disable-next-line no-console
+    console.log('token: ', token);
   }, []);
 
   const onFetch = () => {

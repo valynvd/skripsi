@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import DownIcon from 'mdi-react/ChevronDownIcon';
 import { Collapse } from 'reactstrap';
 import TopbarMenuLink from './TopbarMenuLink';
+import { clearStorage } from '../../../utils/helpers';
 
 const Ava = `${process.env.PUBLIC_URL}/img/ava.png`;
 
@@ -11,6 +12,9 @@ const TopbarProfile = () => {
     setIsCollapsed(!isCollapsed);
   };
 
+  const logout = () => {
+    clearStorage();
+  };
   return (
     <div className="topbar__profile">
       <button type="button" className="topbar__avatar" onClick={setIsCollapsed}>
@@ -30,7 +34,7 @@ const TopbarProfile = () => {
         <div className="topbar__menu">
           <TopbarMenuLink title="My Account" icon="list" path="#" />
           <div className="topbar__menu-divider" />
-          <TopbarMenuLink title="Log Out" icon="exit" path="/" />
+          <TopbarMenuLink title="Log Out" icon="exit" path="/" onClick={logout} />
         </div>
       </Collapse>
     </div>

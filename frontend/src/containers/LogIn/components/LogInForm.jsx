@@ -6,6 +6,8 @@ import EyeIcon from 'mdi-react/EyeIcon';
 import KeyVariantIcon from 'mdi-react/KeyVariantIcon';
 import AccountOutlineIcon from 'mdi-react/AccountOutlineIcon';
 import authApi from '../../../utils/auth';
+import { AUTH } from '../../../utils/naming';
+import { setStorageKey } from '../../../utils/helpers';
 
 const LogInForm = () => {
   const [isPasswordShown, setIsPasswordShown] = useState(false);
@@ -25,7 +27,8 @@ const LogInForm = () => {
     try {
       const { data } = await authApi.postLogIn(dataLogin);
       // eslint-disable-next-line no-console
-      console.log(data);
+      // console.log(data);
+      setStorageKey(AUTH, data);
       history.push('/dashboard');
     } catch (error) {
       setError(true);
