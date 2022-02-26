@@ -2,9 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import TopbarSidebarButton from './TopbarSidebarButton';
+import ToggleTheme from '../customizer/ToggleTheme';
 import TopbarProfile from './TopbarProfile';
 
-const Topbar = ({ changeMobileSidebarVisibility, changeSidebarVisibility }) => (
+const Topbar = ({
+  changeMobileSidebarVisibility, changeSidebarVisibility,
+}) => (
   <div className="topbar">
     <div className="topbar__wrapper">
       <div className="topbar__left">
@@ -15,6 +18,9 @@ const Topbar = ({ changeMobileSidebarVisibility, changeSidebarVisibility }) => (
         <Link className="topbar__logo" to="/online_marketing_dashboard" />
       </div>
       <div className="topbar__right">
+        <div className="toggle-box">
+          <ToggleTheme />
+        </div>
         <TopbarProfile />
       </div>
     </div>

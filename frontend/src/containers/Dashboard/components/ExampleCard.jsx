@@ -8,7 +8,7 @@ const ExampleCard = () => (
         <div className="card__title">
           <h5 className="bold-text">Selamat Datang</h5>
         </div>
-        <p>diwebsite ini ...</p>
+        <p>diwebsite tata kelola dan akreditasi program studi</p>
       </CardBody>
     </Card>
   </Col>
