@@ -37,6 +37,8 @@ router.register('filefolder4', views_akreditasi.FileFolder4ViewSet)
 
 urlpatterns = [
   path('', include(router.urls)),
+  #Akreditasi custom request
+  path('folder1bymatrix/<matrix_id>', views_akreditasi.Folder1ByPoinPenilaian.as_view({'get': 'list'})),
 
   #  documentation
   path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),

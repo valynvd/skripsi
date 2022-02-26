@@ -19,6 +19,14 @@ class PoinPenilaianViewSet(viewsets.ModelViewSet):
             self.permission_classes = [IsAuthenticated]
         return super(self.__class__, self).get_permissions()
 
+class Folder1ByPoinPenilaian(viewsets.ModelViewSet):
+    serializer_class = serializers.FileFolder1Serializers
+    queryset = models.FileFolder1.objects.all()
+
+    def get_queryset(self):
+        matrix_id = self.kwargs['matrix_id']
+        return models.FileFolder1.objects.filter(parent__id = matrix_id).order_by('jenis','nama')
+
 class FileFolder1ViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.FileFolder1Serializers
     queryset = models.FileFolder1.objects.all()

@@ -4,8 +4,8 @@ from django.db import models
 class PoinPenilaian(models.Model):
     kode = models.CharField(max_length=100)
     element = models.CharField(max_length=100)
-    indikator = models.TextField()
-    skor_maksimal = models.TextField()
+    indikator = models.TextField(blank=True, null=True)
+    skor_maksimal = models.TextField(blank=True, null=True)
     def __str__(self) -> str:
         return '{}. {}'.format(self.kode, self.element)
 
