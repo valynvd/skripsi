@@ -29,7 +29,7 @@ const Screen = ({ params }) => {
 
   const getData = async () => {
     try {
-      const resp = await dataApi.getFolder1byMatrix(params.id);
+      const resp = await dataApi.getFolderbyMatrix(params.id);
       return resp;
     } catch (error) {
       return [];
@@ -53,7 +53,7 @@ const Screen = ({ params }) => {
     return (
       <ListItem key={val.id} disablePadding>
         <ListItemButton onClick={() => {
-          history.push(`/dashboard/folder1/${val.id}`);
+          history.push(`/dashboard/subfolder/${val.id}`);
         }}
         >
           <ListItemIcon>

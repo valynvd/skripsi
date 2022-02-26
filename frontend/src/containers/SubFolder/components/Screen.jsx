@@ -10,6 +10,7 @@ import {
   Spinner,
 } from 'reactstrap';
 import { useHistory } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -20,15 +21,17 @@ import Divider from '@mui/material/Divider';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import dataApi from '../../../utils/dataApi';
 
-const MatrixPenilaian = () => {
+const Screen = ({ params }) => {
   const [searchText, setSearchText] = useState('');
-  const [matrixPenilaian, setMatrixPenilaian] = useState([]);
+  const [folderFile, setfolderFile] = useState([]);
   const [isFetching, setFetching] = useState(true);
   const history = useHistory();
 
   const getData = async () => {
     try {
-      const resp = await dataApi.getMatrixPenilaian();
+      // eslint-disable-next-line no-console
+      console.log('params', params.id);
+      const resp = await dataApi.getFolderbyFolder(params.id);
       return resp;
     } catch (error) {
       return [];
@@ -36,38 +39,38 @@ const MatrixPenilaian = () => {
   };
   useEffect(async () => {
     const matrix = await getData();
-    setMatrixPenilaian(matrix.data);
+    // eslint-disable-next-line no-console
+    console.log('holaaa', matrix);
+    setfolderFile(matrix.data);
     setFetching(false);
-  }, []);
+  }, [params]);
 
   const onFetch = () => {
     setFetching(false);
   };
 
-  const folders = matrixPenilaian.map((val) => (
-    <ListItem key={val.id} disablePadding>
-      <ListItemButton onClick={() => {
-        history.push(`/dashboard/folder/${val.id}`, {
-          data: val,
-        });
-      }}
-      >
-        <ListItemIcon>
-          <FolderOpenIcon />
-        </ListItemIcon>
-        <ListItemText primary={`${val.kode} ${val.element}`} />
-      </ListItemButton>
-    </ListItem>
-  ));
+  const folders = folderFile.map((val) => {
+    // eslint-disable-next-line no-console
+    console.log(val);
+    return (
+      <ListItem key={val.id} disablePadding>
+        <ListItemButton onClick={() => {
+          history.push(`/dashboard/subfolder/${val.id}`);
+        }}
+        >
+          <ListItemIcon>
+            <FolderOpenIcon />
+          </ListItemIcon>
+          <ListItemText primary={`${val.nama}`} />
+        </ListItemButton>
+      </ListItem>
+    );
+  });
 
   return (
     <Col md={12}>
       <Card>
         <CardBody>
-          <div className="card__title">
-            <h5 className="bold-text">Matrix Penilaian</h5>
-            <h5 className="subhead">Data berdasarkan lampiran 6a BAN PT</h5>
-          </div>
           <div className="mb-3">
             <InputGroup className="d-flex align-items-center">
               <Input
@@ -98,4 +101,7 @@ const MatrixPenilaian = () => {
   );
 };
 
-export default MatrixPenilaian;
+Screen.propTypes = {
+  params: PropTypes.shape().isRequired,
+};
+export default Screen;

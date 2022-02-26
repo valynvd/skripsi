@@ -1,7 +1,8 @@
 import { get } from './base/index';
-import { POINPENILAIAN, FOLDER1BYMATRIX } from './urls';
+import { POINPENILAIAN, FOLDERBYMATRIX, FOLDERBYFOLDER } from './urls';
 
 export default {
   getMatrixPenilaian: () => get(POINPENILAIAN),
-  getFolder1byMatrix: (id) => get(`${FOLDER1BYMATRIX}${id}`),
+  getFolderbyMatrix: (id) => get(`${FOLDERBYMATRIX}${id}`),
+  getFolderbyFolder: (id) => get(`${FOLDERBYFOLDER}${id}`),
 };

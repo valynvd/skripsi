@@ -4,12 +4,14 @@ import Layout from '../Layout/index';
 import MainWrapper from './MainWrapper';
 import LogIn from '../LogIn/index';
 import Akreditasi from '../Akreditasi/index';
-import Folder1 from '../Folder1/index';
+import Folder from '../Folder/index';
+import SubFolder from '../SubFolder/index';
 import Dashboard from '../Dashboard/index';
 
 const Pages = () => (
   <Switch>
-    <Route path="/dashboard/folder1/:id" component={Folder1} />
+    <Route path="/dashboard/subfolder/:id" component={SubFolder} />
+    <Route path="/dashboard/folder/:id" component={Folder} />
     <Route path="/dashboard/akreditasi" component={Akreditasi} />
     <Route path="/dashboard" component={Dashboard} />
   </Switch>

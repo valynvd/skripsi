@@ -3,7 +3,7 @@ import { Col, Container, Row } from 'reactstrap';
 import { useParams, useHistory } from 'react-router-dom';
 import Screen from './components/Screen';
 
-const Folder1 = () => {
+const Folder = () => {
   const params = useParams();
   // eslint-disable-next-line no-console
   console.log(params);
@@ -23,4 +23,4 @@ const Folder1 = () => {
   );
 };
 
-export default Folder1;
+export default Folder;
