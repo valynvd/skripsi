@@ -36,7 +36,7 @@ urlpatterns = [
   path('', include(router.urls)),
   #Akreditasi custom request
   path('folderbymatrix/<matrix_id>', views_akreditasi.FolderFileByPoinPenilaian.as_view({'get': 'list'})),
-
+  path('folderbyfolder/<folder_id>', views_akreditasi.FolderFileByFolder.as_view({'get': 'list'})),
   #  documentation
   path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
   path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),

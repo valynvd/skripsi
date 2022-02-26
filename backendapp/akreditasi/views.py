@@ -27,6 +27,14 @@ class FolderFileByPoinPenilaian(viewsets.ModelViewSet):
         matrix_id = self.kwargs['matrix_id']
         return models.FileFolder.objects.filter(matrix__id = matrix_id).order_by('jenis','nama')
 
+class FolderFileByFolder(viewsets.ModelViewSet):
+    serializer_class = serializers.FileFolderSerializers
+    queryset = models.FileFolder.objects.all()
+
+    def get_queryset(self):
+        folder_id = self.kwargs['folder_id']
+        return models.FileFolder.objects.filter(parent_folder__id = folder_id).order_by('jenis','nama')
+
 class FileFolderViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.FileFolderSerializers
     queryset = models.FileFolder.objects.all()
