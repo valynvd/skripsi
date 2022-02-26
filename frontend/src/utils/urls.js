@@ -25,3 +25,4 @@ export const EVALUASIPERKULIAHAN = `${API}/evaluasiperkulian/`;
 export const PORTOFOLIOPERKULIAHAN = `${API}/portofolioperkuliahan/`;
 // AKREDITASI
 export const POINPENILAIAN = `${API}/poinpenilaian/`;
+export const FOLDER1BYMATRIX = `${API}/folder1bymatrix/`;

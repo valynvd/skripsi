@@ -10,6 +10,7 @@ import {
   Spinner,
 } from 'reactstrap';
 import { useHistory } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -20,15 +21,15 @@ import Divider from '@mui/material/Divider';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import dataApi from '../../../utils/dataApi';
 
-const Screen = () => {
+const Screen = ({ params }) => {
   const [searchText, setSearchText] = useState('');
-  const [matrixPenilaian, setMatrixPenilaian] = useState([]);
+  const [folderFile, setfolderFile] = useState([]);
   const [isFetching, setFetching] = useState(true);
   const history = useHistory();
 
   const getData = async () => {
     try {
-      const resp = await dataApi.getMatrixPenilaian();
+      const resp = await dataApi.getFolder1byMatrix(params.id);
       return resp;
     } catch (error) {
       return [];
@@ -37,8 +38,8 @@ const Screen = () => {
   useEffect(async () => {
     const matrix = await getData();
     // eslint-disable-next-line no-console
-    console.log(matrix);
-    setMatrixPenilaian(matrix.data);
+    console.log('holaaa', matrix);
+    setfolderFile(matrix.data);
     setFetching(false);
   }, []);
 
@@ -46,7 +47,7 @@ const Screen = () => {
     setFetching(false);
   };
 
-  const folders = matrixPenilaian.map((val) => {
+  const folders = folderFile.map((val) => {
     // eslint-disable-next-line no-console
     console.log(val);
     return (
@@ -58,7 +59,7 @@ const Screen = () => {
           <ListItemIcon>
             <FolderOpenIcon />
           </ListItemIcon>
-          <ListItemText primary={`${val.kode} ${val.element}`} />
+          <ListItemText primary={`${val.nama}`} />
         </ListItemButton>
       </ListItem>
     );
@@ -98,4 +99,7 @@ const Screen = () => {
   );
 };
 
+Screen.propTypes = {
+  params: PropTypes.shape().isRequired,
+};
 export default Screen;

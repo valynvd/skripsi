@@ -36,8 +36,6 @@ const MatrixPenilaian = () => {
   };
   useEffect(async () => {
     const matrix = await getData();
-    // eslint-disable-next-line no-console
-    console.log(matrix);
     setMatrixPenilaian(matrix.data);
     setFetching(false);
   }, []);
@@ -46,25 +44,21 @@ const MatrixPenilaian = () => {
     setFetching(false);
   };
 
-  const folders = matrixPenilaian.map((val) => {
-    // eslint-disable-next-line no-console
-    console.log(val);
-    return (
-      <ListItem key={val.id} disablePadding>
-        <ListItemButton onClick={() => {
-          history.push(`/dashboard/folder1/${val.id}`, {
-            data: val,
-          });
-        }}
-        >
-          <ListItemIcon>
-            <FolderOpenIcon />
-          </ListItemIcon>
-          <ListItemText primary={`${val.kode} ${val.element}`} />
-        </ListItemButton>
-      </ListItem>
-    );
-  });
+  const folders = matrixPenilaian.map((val) => (
+    <ListItem key={val.id} disablePadding>
+      <ListItemButton onClick={() => {
+        history.push(`/dashboard/folder1/${val.id}`, {
+          data: val,
+        });
+      }}
+      >
+        <ListItemIcon>
+          <FolderOpenIcon />
+        </ListItemIcon>
+        <ListItemText primary={`${val.kode} ${val.element}`} />
+      </ListItemButton>
+    </ListItem>
+  ));
 
   return (
     <Col md={12}>
