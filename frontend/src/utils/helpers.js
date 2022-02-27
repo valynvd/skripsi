@@ -20,7 +20,7 @@ export const clearStorage = () => {
 export const getToken = () => {
   const oidc = getStorageKey(AUTH);
   // eslint-disable-next-line no-console
-  // console.log('token', oidc);
+  console.log('token', oidc);
   // const oidc = { auth_token: '12345' };
   if (oidc) {
     return oidc.auth_token;

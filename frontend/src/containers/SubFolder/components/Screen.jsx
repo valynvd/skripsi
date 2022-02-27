@@ -8,6 +8,7 @@ import {
   Input,
   InputGroup,
   Spinner,
+  Row,
 } from 'reactstrap';
 import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -25,13 +26,13 @@ const Screen = ({ params }) => {
   const [searchText, setSearchText] = useState('');
   const [folderFile, setfolderFile] = useState([]);
   const [isFetching, setFetching] = useState(true);
-  // const [label, setLabel] = useState('');
+  const [label, setLabel] = useState('');
   const history = useHistory();
 
   const getData = async () => {
     try {
       // eslint-disable-next-line no-console
-      console.log('params', params.id);
+      // console.log('params', params.id);
       const resp = await dataApi.getFolderbyFolder(params.id);
       return resp;
     } catch (error) {
@@ -39,10 +40,26 @@ const Screen = ({ params }) => {
     }
   };
   useEffect(async () => {
-    const matrix = await getData();
+    const folders = await getData();
     // eslint-disable-next-line no-console
-    console.log('holaaa', matrix);
-    setfolderFile(matrix.data);
+    console.log('holaaa', folders);
+    setfolderFile(folders.data);
+    if (folders.data.length > 0) {
+      const firstData = folders.data[0];
+      const parent = firstData.parent_folder;
+      setLabel(parent.nama);
+      // eslint-disable-next-line no-console
+      console.log(parent.nama);
+      // while (parent !== null) {
+      //   const temp = label;
+      //   setLabel(temp.concat(parent.nama));
+      //   // eslint-disable-next-line no-console
+      //   console.log('nama', parent.nama);
+      //   parent = parent.parent_folder;
+      //   // eslint-disable-next-line no-console
+      //   console.log('parent', parent);
+      // }
+    }
     setFetching(false);
   }, [params]);
 
@@ -50,27 +67,28 @@ const Screen = ({ params }) => {
     setFetching(false);
   };
 
-  const folders = folderFile.map((val) => {
-    // eslint-disable-next-line no-console
-    console.log(val);
-    return (
-      <ListItem key={val.id} disablePadding>
-        <ListItemButton onClick={() => {
-          history.push(`/dashboard/subfolder/${val.id}`);
-        }}
-        >
-          <ListItemIcon>
-            <FolderOpenIcon />
-          </ListItemIcon>
-          <ListItemText primary={`${val.nama}`} />
-        </ListItemButton>
-      </ListItem>
-    );
-  });
+  const folders = folderFile.map((val) => (
+    <ListItem key={val.id} disablePadding>
+      <ListItemButton onClick={() => {
+        history.push(`/dashboard/subfolder/${val.id}`);
+      }}
+      >
+        <ListItemIcon>
+          <FolderOpenIcon />
+        </ListItemIcon>
+        <ListItemText primary={`${val.nama}`} />
+      </ListItemButton>
+    </ListItem>
+  ));
 
   return (
     <Col md={12}>
       <Card>
+        <Row>
+          <Col md={12}>
+            <h3 className="page-title">{label}</h3>
+          </Col>
+        </Row>
         <CardBody>
           <div className="mb-3">
             <InputGroup className="d-flex align-items-center">
