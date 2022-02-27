@@ -25,6 +25,7 @@ const Screen = ({ params }) => {
   const [searchText, setSearchText] = useState('');
   const [folderFile, setfolderFile] = useState([]);
   const [isFetching, setFetching] = useState(true);
+  // const [label, setLabel] = useState('');
   const history = useHistory();
 
   const getData = async () => {
