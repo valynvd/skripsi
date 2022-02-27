@@ -17,7 +17,7 @@ const SidebarContent = ({ onClick }) => {
         <SidebarCategory title="Akreditasi" icon="diamond">
           <SidebarLink title="Matrix Penilaian" route="/dashboard/akreditasi" onClick={handleHideSidebar} />
         </SidebarCategory>
-        <SidebarCategory title="Title" icon="diamond">
+        <SidebarCategory title="Aktivitas Prodi" icon="diamond">
           <SidebarLink title="Evaluasi Perkuliahan" route="/dashboard/evaluasi" onClick={handleHideSidebar} />
           <SidebarLink title="Portofolio Perkuliahan" route="/dashboard/portofolio" onClick={handleHideSidebar} />
         </SidebarCategory>
