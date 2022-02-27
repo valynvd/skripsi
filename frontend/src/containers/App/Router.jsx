@@ -7,12 +7,18 @@ import Akreditasi from '../Akreditasi/index';
 import Folder from '../Folder/index';
 import SubFolder from '../SubFolder/index';
 import Dashboard from '../Dashboard/index';
+import ListEvaluasi from '../Title/EvaluasiPerkuliahan/List/index';
+import DetailEvaluasi from '../Title/EvaluasiPerkuliahan/Detail/index';
+import Portofolio from '../Title/PortofolioPerkuliahan/index';
 
 const Pages = () => (
   <Switch>
     <Route path="/dashboard/subfolder/:id" component={SubFolder} />
     <Route path="/dashboard/folder/:id" component={Folder} />
+    <Route path="/dashboard/evaluasi/:id" exact component={DetailEvaluasi} />
     <Route path="/dashboard/akreditasi" component={Akreditasi} />
+    <Route path="/dashboard/evaluasi" exact component={ListEvaluasi} />
+    <Route path="/dashboard/portofolio" exact component={Portofolio} />
     <Route path="/dashboard" component={Dashboard} />
   </Switch>
 );

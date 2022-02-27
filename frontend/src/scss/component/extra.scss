@@ -1,0 +1,7 @@
+.icon {
+    @include themify($themes) {
+      color: themed('colorIcon2');
+    }
+  }
+  
+  
