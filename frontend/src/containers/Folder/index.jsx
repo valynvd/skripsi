@@ -5,8 +5,6 @@ import Screen from './components/Screen';
 
 const Folder = () => {
   const params = useParams();
-  // eslint-disable-next-line no-console
-  console.log(params);
   const history = useHistory();
   const { data } = history.location.state;
   return (

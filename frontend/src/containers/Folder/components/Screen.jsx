@@ -31,6 +31,7 @@ const Screen = ({ params, data }) => {
   const [folderFile, setfolderFile] = useState([]);
   const [isFetching, setFetching] = useState(true);
   const [isCreateFormOpen, setCreateFormOpen] = useState(false);
+  const [filteredMatrixPenilaian, setFilteredMatrixPenilaian] = useState([]);
   const history = useHistory();
 
   const getData = async () => {
@@ -43,9 +44,8 @@ const Screen = ({ params, data }) => {
   };
   useEffect(async () => {
     const matrix = await getData();
-    // eslint-disable-next-line no-console
-    console.log('holaaa', matrix);
     setfolderFile(matrix.data);
+    setFilteredMatrixPenilaian(matrix.data);
     setFetching(false);
   }, []);
 
@@ -60,40 +60,36 @@ const Screen = ({ params, data }) => {
   const handleCloseForm = () => {
     setCreateFormOpen(false);
   };
-  const folders = folderFile.map((val) => {
-    // eslint-disable-next-line no-console
-    console.log(val);
-    return (
-      <ListItem key={val.id} disablePadding>
-        {val.jenis === 'folder' ? (
-          <ListItemButton onClick={() => {
-            if (val.jenis === 'folder') {
-              history.push(`/dashboard/subfolder/${val.id}`);
-            } else {
-              window.open(val.files);
-            }
-          }}
-          >
-            <ListItemIcon>
-              {val.jenis === 'folder' ? <FolderOpenIcon /> : <FilePresentIcon />}
-            </ListItemIcon>
-            <ListItemText primary={`${val.nama}`} />
-          </ListItemButton>
-        ) : (
-          <div className="ml-1 pl-4">
-            <Row className="align-items-center">
-              <div className="pl-1">
-                <FilePresentIcon />
-              </div>
-              <div className="pl-3">
-                <ButtonMUI href={val.files} target="_blank">{val.nama}</ButtonMUI>
-              </div>
-            </Row>
-          </div>
-        )}
-      </ListItem>
-    );
-  });
+  const folders = filteredMatrixPenilaian.map((val) => (
+    <ListItem key={val.id} disablePadding>
+      {val.jenis === 'folder' ? (
+        <ListItemButton onClick={() => {
+          if (val.jenis === 'folder') {
+            history.push(`/dashboard/subfolder/${val.id}`);
+          } else {
+            window.open(val.files);
+          }
+        }}
+        >
+          <ListItemIcon>
+            {val.jenis === 'folder' ? <FolderOpenIcon /> : <FilePresentIcon />}
+          </ListItemIcon>
+          <ListItemText primary={`${val.nama}`} />
+        </ListItemButton>
+      ) : (
+        <div className="ml-1 pl-4">
+          <Row className="align-items-center">
+            <div className="pl-1">
+              <FilePresentIcon />
+            </div>
+            <div className="pl-3">
+              <ButtonMUI href={val.files} target="_blank">{val.nama}</ButtonMUI>
+            </div>
+          </Row>
+        </div>
+      )}
+    </ListItem>
+  ));
 
   return (
     <Col md={12}>
@@ -107,9 +103,15 @@ const Screen = ({ params, data }) => {
                 placeholder="keywords"
                 type="text"
                 onChange={(e) => {
-                  // eslint-disable-next-line no-console
-                  console.log(e.target.value);
                   setSearchText(e.target.value);
+                  if (e.target.value === '') {
+                    setFilteredMatrixPenilaian(folderFile);
+                  } else {
+                    const filtered = folderFile.filter(
+                      (el) => el.nama.toLowerCase().includes(e.target.value.toLowerCase()),
+                    );
+                    setFilteredMatrixPenilaian(filtered);
+                  }
                 }}
               />
               <Button className="mb-0 ml-3" onClick={onFetch}>Cari</Button>

@@ -89,8 +89,6 @@ const MatrixPenilaian = () => {
                 placeholder="keywords"
                 type="text"
                 onChange={(e) => {
-                  // eslint-disable-next-line no-console
-                  console.log(e.target.value);
                   setSearchText(e.target.value);
                   if (e.target.value === '') {
                     setFilteredMatrixPenilaian(matrixPenilaian);
