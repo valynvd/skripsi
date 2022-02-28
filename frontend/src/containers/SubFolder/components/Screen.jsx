@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 import {
-  Button,
   Card,
   CardBody,
   Col,
@@ -15,14 +14,13 @@ import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
+import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import Divider from '@mui/material/Divider';
-import ButtonMUI from '@mui/material/Button';
+import Button from '@mui/material/Button';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import FilePresentIcon from '@mui/icons-material/FilePresent';
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
+import DeleteIcon from '@mui/icons-material/Delete';
 import dataApi from '../../../utils/dataApi';
 import CreateForm from './CreateForm';
 
@@ -79,29 +77,60 @@ const Screen = ({ params }) => {
   const folders = folderFile.map((val) => (
     <ListItem key={val.id} disablePadding>
       {val.jenis === 'folder' ? (
-        <ListItemButton onClick={() => {
-          if (val.jenis === 'folder') {
-            history.push(`/dashboard/subfolder/${val.id}`);
-          } else {
-            window.open(val.files);
-          }
-        }}
-        >
-          <ListItemIcon>
-            {val.jenis === 'folder' ? <FolderOpenIcon /> : <FilePresentIcon />}
-          </ListItemIcon>
-          <ListItemText primary={`${val.nama}`} />
-        </ListItemButton>
+        <div className="pl-2" style={{ width: '100%' }}>
+          <Box
+            sx={{
+              display: 'flex', p: 1, bgcolor: 'background.paper', borderRadius: 1,
+            }}
+          >
+            <Box sx={{ flexGrow: 1 }}><FolderOpenIcon />
+              <Box className="pl-4" sx={{ display: 'inline' }}>
+                <Button onClick={() => {
+                  if (val.jenis === 'folder') {
+                    history.push(`/dashboard/subfolder/${val.id}`);
+                  } else {
+                    window.open(val.files);
+                  }
+                }}
+                >{val.nama}
+                </Button>
+              </Box>
+            </Box>
+            <Box>
+              <Button variant="transparent" startIcon={<ModeEditIcon />}>
+                Edit
+              </Button>
+            </Box>
+            <Box>
+              <Button variant="transparent" startIcon={<DeleteIcon />}>
+                Delete
+              </Button>
+            </Box>
+          </Box>
+        </div>
       ) : (
-        <div className="ml-1 pl-4">
-          <Row className="align-items-center">
-            <div className="pl-1">
-              <FilePresentIcon />
-            </div>
-            <div className="pl-3">
-              <ButtonMUI href={val.files} target="_blank">{val.nama}</ButtonMUI>
-            </div>
-          </Row>
+        <div className="pl-2" style={{ width: '100%' }}>
+          <Box
+            sx={{
+              display: 'flex', p: 1, bgcolor: 'background.paper', borderRadius: 1,
+            }}
+          >
+            <Box sx={{ flexGrow: 1 }}><InsertDriveFileIcon />
+              <Box className="pl-4" sx={{ display: 'inline' }}>
+                <Button href={val.files} target="_blank">{val.nama}</Button>
+              </Box>
+            </Box>
+            <Box>
+              <Button variant="transparent" startIcon={<ModeEditIcon />}>
+                Edit
+              </Button>
+            </Box>
+            <Box>
+              <Button variant="transparent" startIcon={<DeleteIcon />}>
+                Delete
+              </Button>
+            </Box>
+          </Box>
         </div>
       )}
     </ListItem>
