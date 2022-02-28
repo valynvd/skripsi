@@ -20,6 +20,7 @@ import ListItemText from '@mui/material/ListItemText';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import Divider from '@mui/material/Divider';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
+import FilePresentIcon from '@mui/icons-material/FilePresent';
 import dataApi from '../../../utils/dataApi';
 import CreateForm from './CreateForm';
 
@@ -67,7 +68,7 @@ const Screen = ({ params, data }) => {
         }}
         >
           <ListItemIcon>
-            <FolderOpenIcon />
+            {val.jenis === 'folder' ? <FolderOpenIcon /> : <FilePresentIcon />}
           </ListItemIcon>
           <ListItemText primary={`${val.nama}`} />
         </ListItemButton>

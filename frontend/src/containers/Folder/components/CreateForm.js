@@ -23,22 +23,25 @@ const CreateForm = ({ isOpen, handleClose, data }) => {
     // eslint-disable-next-line no-console
     console.log('data.id', data.id);
     const dataForm = new FormData();
-    dataForm.append('jenis', jenis);
     dataForm.append('nama', nama);
-    dataForm.append('parent_folder', null);
+    dataForm.append('jenis', jenis);
+    dataForm.append('matrix', data.id);
+    // eslint-disable-next-line no-console
+    console.log(file);
     if (file) {
       dataForm.append('files', file);
     }
-    try {
-    //   console.log(dataApi);
-      dataApi.postFolderFile(dataForm);
-    //   handleClose();
-    } catch (error) {
+    dataApi.postFolderFile(dataForm).then((resp) => {
       // eslint-disable-next-line no-console
-      console.log(error);
+      console.log(resp);
+      handleClose();
+      window.location.reload();
+    }).catch((err) => {
+      // eslint-disable-next-line no-console
+      console.log(err);
       setError(true);
       setTimeout(() => setError(false), 3000);
-    }
+    });
   };
 
   const style = {
