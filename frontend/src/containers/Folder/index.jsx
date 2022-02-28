@@ -17,7 +17,7 @@ const Folder = () => {
         </Col>
       </Row>
       <Row>
-        <Screen params={params} />
+        <Screen data={data} params={params} />
       </Row>
     </Container>
   );

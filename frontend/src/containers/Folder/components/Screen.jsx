@@ -17,14 +17,17 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import Divider from '@mui/material/Divider';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import dataApi from '../../../utils/dataApi';
+import CreateForm from './CreateForm';
 
-const Screen = ({ params }) => {
+const Screen = ({ params, data }) => {
   const [searchText, setSearchText] = useState('');
   const [folderFile, setfolderFile] = useState([]);
   const [isFetching, setFetching] = useState(true);
+  const [isCreateFormOpen, setCreateFormOpen] = useState(false);
   const history = useHistory();
 
   const getData = async () => {
@@ -47,6 +50,13 @@ const Screen = ({ params }) => {
     setFetching(false);
   };
 
+  const handleCreateForm = () => {
+    setCreateFormOpen(true);
+  };
+
+  const handleCloseForm = () => {
+    setCreateFormOpen(false);
+  };
   const folders = folderFile.map((val) => {
     // eslint-disable-next-line no-console
     console.log(val);
@@ -67,6 +77,7 @@ const Screen = ({ params }) => {
 
   return (
     <Col md={12}>
+      <CreateForm data={data} isOpen={isCreateFormOpen} handleClose={handleCloseForm} />
       <Card>
         <CardBody>
           <div className="mb-3">
@@ -86,6 +97,9 @@ const Screen = ({ params }) => {
           </div>
           { isFetching && <Spinner className="table-fetch-spinner" /> }
           <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
+            <div className="pl-3 pb-1">
+              <AddCircleOutlineIcon onClick={handleCreateForm} />
+            </div>
             <Divider />
             <nav aria-label="main mailbox folders">
               <List>
@@ -101,5 +115,6 @@ const Screen = ({ params }) => {
 
 Screen.propTypes = {
   params: PropTypes.shape().isRequired,
+  data: PropTypes.shape().isRequired,
 };
 export default Screen;
