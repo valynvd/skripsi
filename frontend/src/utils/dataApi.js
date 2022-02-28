@@ -8,4 +8,5 @@ export default {
   getFolderbyMatrix: (id) => get(`${FOLDERBYMATRIX}${id}`),
   getFolderbyFolder: (id) => get(`${FOLDERBYFOLDER}${id}`),
   postFolderFile: (body, params) => post(FOLDER, body, params),
+  postMatrixPenilaian: (body, params) => post(POINPENILAIAN, body, params),
 };

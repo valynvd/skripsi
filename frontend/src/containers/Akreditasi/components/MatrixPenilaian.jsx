@@ -16,14 +16,18 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import Divider from '@mui/material/Divider';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import dataApi from '../../../utils/dataApi';
+import CreateForm from './CreateForm';
 
 const MatrixPenilaian = () => {
   const [searchText, setSearchText] = useState('');
   const [matrixPenilaian, setMatrixPenilaian] = useState([]);
+  const [filteredMatrixPenilaian, setFilteredMatrixPenilaian] = useState([]);
   const [isFetching, setFetching] = useState(true);
+  const [isCreateFormOpen, setCreateFormOpen] = useState(false);
   const history = useHistory();
 
   const getData = async () => {
@@ -37,6 +41,7 @@ const MatrixPenilaian = () => {
   useEffect(async () => {
     const matrix = await getData();
     setMatrixPenilaian(matrix.data);
+    setFilteredMatrixPenilaian(matrix.data);
     setFetching(false);
   }, []);
 
@@ -44,7 +49,15 @@ const MatrixPenilaian = () => {
     setFetching(false);
   };
 
-  const folders = matrixPenilaian.map((val) => (
+  const handleCreateForm = () => {
+    setCreateFormOpen(true);
+  };
+
+  const handleCloseForm = () => {
+    setCreateFormOpen(false);
+  };
+
+  const folders = filteredMatrixPenilaian.map((val) => (
     <ListItem key={val.id} disablePadding>
       <ListItemButton onClick={() => {
         history.push(`/dashboard/folder/${val.id}`, {
@@ -62,6 +75,7 @@ const MatrixPenilaian = () => {
 
   return (
     <Col md={12}>
+      <CreateForm isOpen={isCreateFormOpen} handleClose={handleCloseForm} />
       <Card>
         <CardBody>
           <div className="card__title">
@@ -78,6 +92,14 @@ const MatrixPenilaian = () => {
                   // eslint-disable-next-line no-console
                   console.log(e.target.value);
                   setSearchText(e.target.value);
+                  if (e.target.value === '') {
+                    setFilteredMatrixPenilaian(matrixPenilaian);
+                  } else {
+                    const filtered = matrixPenilaian.filter(
+                      (el) => el.element.toLowerCase().includes(e.target.value.toLowerCase()),
+                    );
+                    setFilteredMatrixPenilaian(filtered);
+                  }
                 }}
               />
               <Button className="mb-0 ml-3" onClick={onFetch}>Cari</Button>
@@ -85,6 +107,9 @@ const MatrixPenilaian = () => {
           </div>
           { isFetching && <Spinner className="table-fetch-spinner" /> }
           <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
+            <div className="pl-3 pb-1">
+              <AddCircleOutlineIcon onClick={handleCreateForm} />
+            </div>
             <Divider />
             <nav aria-label="main mailbox folders">
               <List>
