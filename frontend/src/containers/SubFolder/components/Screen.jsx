@@ -20,12 +20,16 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import dataApi from '../../../utils/dataApi';
+import CreateForm from './CreateForm';
 
 const Screen = ({ params }) => {
   const [searchText, setSearchText] = useState('');
   const [folderFile, setfolderFile] = useState([]);
   const [isFetching, setFetching] = useState(true);
+  const [currentFileFolder, setCurrentFileFolder] = useState(null);
+  const [isCreateFormOpen, setCreateFormOpen] = useState(false);
   const [label, setLabel] = useState('');
   const history = useHistory();
 
@@ -39,32 +43,41 @@ const Screen = ({ params }) => {
       return [];
     }
   };
+  const getFileFolder = async () => {
+    try {
+      const resp = await dataApi.getCurrentFileFolder(params.id);
+      // eslint-disable-next-line no-console
+      console.log('resp params', resp.data);
+      return resp;
+    } catch (error) {
+      return [];
+    }
+  };
   useEffect(async () => {
     const folders = await getData();
+    const currentFF = await getFileFolder();
     // eslint-disable-next-line no-console
-    console.log('holaaa', folders);
+    console.log('currentFF', currentFF.data);
+    setCurrentFileFolder(currentFF.data);
     setfolderFile(folders.data);
     if (folders.data.length > 0) {
       const firstData = folders.data[0];
       const parent = firstData.parent_folder;
       setLabel(parent.nama);
-      // eslint-disable-next-line no-console
-      console.log(parent.nama);
-      // while (parent !== null) {
-      //   const temp = label;
-      //   setLabel(temp.concat(parent.nama));
-      //   // eslint-disable-next-line no-console
-      //   console.log('nama', parent.nama);
-      //   parent = parent.parent_folder;
-      //   // eslint-disable-next-line no-console
-      //   console.log('parent', parent);
-      // }
     }
     setFetching(false);
   }, [params]);
 
   const onFetch = () => {
     setFetching(false);
+  };
+
+  const handleCreateForm = () => {
+    setCreateFormOpen(true);
+  };
+
+  const handleCloseForm = () => {
+    setCreateFormOpen(false);
   };
 
   const folders = folderFile.map((val) => (
@@ -83,6 +96,7 @@ const Screen = ({ params }) => {
 
   return (
     <Col md={12}>
+      <CreateForm data={currentFileFolder} isOpen={isCreateFormOpen} handleClose={handleCloseForm} />
       <Card>
         <Row>
           <Col md={12}>
@@ -107,6 +121,9 @@ const Screen = ({ params }) => {
           </div>
           { isFetching && <Spinner className="table-fetch-spinner" /> }
           <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
+            <div className="pl-3 pb-1">
+              <AddCircleOutlineIcon onClick={handleCreateForm} />
+            </div>
             <Divider />
             <nav aria-label="main mailbox folders">
               <List>
