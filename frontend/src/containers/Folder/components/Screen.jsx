@@ -8,6 +8,7 @@ import {
   Input,
   InputGroup,
   Spinner,
+  Row,
 } from 'reactstrap';
 import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -15,6 +16,7 @@ import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
+import ButtonMUI from '@mui/material/Button';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
@@ -63,15 +65,32 @@ const Screen = ({ params, data }) => {
     console.log(val);
     return (
       <ListItem key={val.id} disablePadding>
-        <ListItemButton onClick={() => {
-          history.push(`/dashboard/subfolder/${val.id}`);
-        }}
-        >
-          <ListItemIcon>
-            {val.jenis === 'folder' ? <FolderOpenIcon /> : <FilePresentIcon />}
-          </ListItemIcon>
-          <ListItemText primary={`${val.nama}`} />
-        </ListItemButton>
+        {val.jenis === 'folder' ? (
+          <ListItemButton onClick={() => {
+            if (val.jenis === 'folder') {
+              history.push(`/dashboard/subfolder/${val.id}`);
+            } else {
+              window.open(val.files);
+            }
+          }}
+          >
+            <ListItemIcon>
+              {val.jenis === 'folder' ? <FolderOpenIcon /> : <FilePresentIcon />}
+            </ListItemIcon>
+            <ListItemText primary={`${val.nama}`} />
+          </ListItemButton>
+        ) : (
+          <div className="ml-1 pl-4">
+            <Row className="align-items-center">
+              <div className="pl-1">
+                <FilePresentIcon />
+              </div>
+              <div className="pl-3">
+                <ButtonMUI href={val.files} target="_blank">{val.nama}</ButtonMUI>
+              </div>
+            </Row>
+          </div>
+        )}
       </ListItem>
     );
   });
