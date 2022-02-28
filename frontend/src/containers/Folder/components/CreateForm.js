@@ -66,14 +66,14 @@ const CreateForm = ({ isOpen, handleClose, data }) => {
           aria-describedby="modal-modal-description"
         >
           <Box sx={style}>
-            {isError && (
-            <Alert color="danger">
-              Error Upload Data
-            </Alert>
-            )}
             <Col md={12} lg={12}>
               <Card>
                 <CardBody>
+                  {isError && (
+                  <Alert color="danger">
+                    Error Upload Data. Cek kembali data yang Anda isi.
+                  </Alert>
+                  )}
                   <div className="card__title">
                     <h5 className="bold-text">Create Data</h5>
                     <h5 className="subhead">{`${data.kode} ${data.element}`}</h5>
