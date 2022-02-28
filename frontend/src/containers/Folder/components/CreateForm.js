@@ -1,16 +1,44 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
-  Card, CardBody, Col, Button, ButtonToolbar, Container, Row,
+  Card, CardBody, Col, Button, ButtonToolbar, Container, Row, Alert,
 } from 'reactstrap';
 import Box from '@mui/material/Box';
 import PropTypes from 'prop-types';
 import { Field, reduxForm } from 'redux-form';
 import Modal from '@mui/material/Modal';
 import renderFileInputField from '../../../shared/components/form/FileInput';
+import renderSelectField from '../../../shared/components/form/Select';
+import dataApi from '../../../utils/dataApi';
 
 const CreateForm = ({ isOpen, handleClose, data }) => {
+  const [jenis, setJenis] = useState('Folder');
+  const [nama, setNama] = useState('');
+  const [file, setFile] = useState(null);
+  const [isError, setError] = useState(false);
   const handleSubmit = () => {
-    handleClose();
+    // eslint-disable-next-line no-console
+    console.log('jenis', jenis);
+    // eslint-disable-next-line no-console
+    console.log('nama', nama);
+    // eslint-disable-next-line no-console
+    console.log('data.id', data.id);
+    const dataForm = new FormData();
+    dataForm.append('jenis', jenis);
+    dataForm.append('nama', nama);
+    dataForm.append('parent_folder', null);
+    if (file) {
+      dataForm.append('files', file);
+    }
+    try {
+    //   console.log(dataApi);
+      dataApi.postFolderFile(dataForm);
+    //   handleClose();
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.log(error);
+      setError(true);
+      setTimeout(() => setError(false), 3000);
+    }
   };
 
   const style = {
@@ -35,6 +63,11 @@ const CreateForm = ({ isOpen, handleClose, data }) => {
           aria-describedby="modal-modal-description"
         >
           <Box sx={style}>
+            {isError && (
+            <Alert color="danger">
+              Error Upload Data
+            </Alert>
+            )}
             <Col md={12} lg={12}>
               <Card>
                 <CardBody>
@@ -42,76 +75,52 @@ const CreateForm = ({ isOpen, handleClose, data }) => {
                     <h5 className="bold-text">Create Data</h5>
                     <h5 className="subhead">{`${data.kode} ${data.element}`}</h5>
                   </div>
-                  <form className="form form--horizontal" onSubmit={handleSubmit}>
+                  <form className="form form--horizontal">
                     <div className="form__form-group">
-                      <span className="form__form-group-label">Default Label</span>
+                      <span className="form__form-group-label">Jenis</span>
                       <div className="form__form-group-field">
                         <Field
-                          name="defaultInput"
+                          default="folder"
+                          name="select"
+                          component={renderSelectField}
+                          options={[
+                            { value: 'folder', label: 'Folder' },
+                            { value: 'file', label: 'File' },
+                          ]}
+                          onChange={(e) => setJenis(e.value)}
+                        />
+                      </div>
+                    </div>
+                    <div className="form__form-group">
+                      <span className="form__form-group-label">Nama {jenis}</span>
+                      <div className="form__form-group-field">
+                        <Field
+                          name="nama_folderfile"
                           component="input"
                           type="text"
-                          placeholder="Default Input"
+                          placeholder={`Tulis nama ${jenis}`}
+                          onChange={(e) => {
+                            setNama(e.target.value);
+                          }}
                         />
                       </div>
                     </div>
-                    <div className="form__form-group">
-                      <span className="form__form-group-label">Disabled Field</span>
-                      <div className="form__form-group-field">
-                        <Field
-                          name="disableInput"
-                          component="input"
-                          type="text"
-                          placeholder="Disabled Input"
-                          disabled
-                        />
-                      </div>
-                    </div>
-                    <div className="form__form-group">
-                      <span className="form__form-group-label">E-mail</span>
-                      <div className="form__form-group-field">
-                        <Field
-                          name="email"
-                          component="input"
-                          type="email"
-                          placeholder="example@mail.com"
-                        />
-                      </div>
-                    </div>
-                    <div className="form__form-group">
-                      <span className="form__form-group-label">Field with description</span>
-                      <div className="form__form-group-field">
-                        <Field
-                          name="descriptionInput"
-                          component="input"
-                          type="text"
-                        />
-                      </div>
-                      <span className="form__form-group-description">
-                        Zealously now pronounce existence add you instantly say offending.
-                      </span>
-                    </div>
-                    <div className="form__form-group">
-                      <div className="form__form-group-field">
-                        <Field
-                          name="textarea"
-                          component="textarea"
-                          type="text"
-                        />
-                      </div>
-                    </div>
+                    {jenis === 'file' && (
                     <div className="form__form-group">
                       <span className="form__form-group-label">
-                        Add file
+                        File Pendukung
                       </span>
                       <div className="form__form-group-field">
                         <Field
                           name="file"
                           component={renderFileInputField}
+                          onChange={(e) => setFile(e.file)}
                         />
                       </div>
                     </div>
+                    )}
                     <ButtonToolbar className="form__button-toolbar">
-                      <Button color="primary" type="submit">Submit</Button>
+                      <Button color="primary" onClick={handleSubmit}>Submit</Button>
                       <Button type="button" onClick={handleClose}>
                         Cancel
                       </Button>

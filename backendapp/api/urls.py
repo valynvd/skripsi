@@ -30,7 +30,7 @@ router.register('evaluasiperkulian', views.EvaluasiPerkuliahanViewSet)
 router.register('portofolioperkuliahan', views.PortofolioPerkuliahanViewSet)
 #Akreditasi
 router.register('poinpenilaian', views_akreditasi.PoinPenilaianViewSet)
-router.register('filefolder', views_akreditasi.FileFolderViewSet)
+router.register('filefolder', views_akreditasi.ListFileFolderViewSet)
 
 urlpatterns = [
   path('', include(router.urls)),

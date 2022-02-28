@@ -14,4 +14,9 @@ class FileFolderSerializers(serializers.ModelSerializer):
       model = models.FileFolder
       fields = '__all__'
 
+class ListFileFolderSerializers(serializers.ModelSerializer):
+  class Meta:
+      model = models.FileFolder
+      fields = '__all__'
+
 
