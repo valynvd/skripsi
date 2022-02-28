@@ -19,8 +19,10 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Divider from '@mui/material/Divider';
+import ButtonMUI from '@mui/material/Button';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import FilePresentIcon from '@mui/icons-material/FilePresent';
 import dataApi from '../../../utils/dataApi';
 import CreateForm from './CreateForm';
 
@@ -35,8 +37,6 @@ const Screen = ({ params }) => {
 
   const getData = async () => {
     try {
-      // eslint-disable-next-line no-console
-      // console.log('params', params.id);
       const resp = await dataApi.getFolderbyFolder(params.id);
       return resp;
     } catch (error) {
@@ -46,8 +46,6 @@ const Screen = ({ params }) => {
   const getFileFolder = async () => {
     try {
       const resp = await dataApi.getCurrentFileFolder(params.id);
-      // eslint-disable-next-line no-console
-      console.log('resp params', resp.data);
       return resp;
     } catch (error) {
       return [];
@@ -56,8 +54,6 @@ const Screen = ({ params }) => {
   useEffect(async () => {
     const folders = await getData();
     const currentFF = await getFileFolder();
-    // eslint-disable-next-line no-console
-    console.log('currentFF', currentFF.data);
     setCurrentFileFolder(currentFF.data);
     setfolderFile(folders.data);
     if (folders.data.length > 0) {
@@ -82,15 +78,32 @@ const Screen = ({ params }) => {
 
   const folders = folderFile.map((val) => (
     <ListItem key={val.id} disablePadding>
-      <ListItemButton onClick={() => {
-        history.push(`/dashboard/subfolder/${val.id}`);
-      }}
-      >
-        <ListItemIcon>
-          <FolderOpenIcon />
-        </ListItemIcon>
-        <ListItemText primary={`${val.nama}`} />
-      </ListItemButton>
+      {val.jenis === 'folder' ? (
+        <ListItemButton onClick={() => {
+          if (val.jenis === 'folder') {
+            history.push(`/dashboard/subfolder/${val.id}`);
+          } else {
+            window.open(val.files);
+          }
+        }}
+        >
+          <ListItemIcon>
+            {val.jenis === 'folder' ? <FolderOpenIcon /> : <FilePresentIcon />}
+          </ListItemIcon>
+          <ListItemText primary={`${val.nama}`} />
+        </ListItemButton>
+      ) : (
+        <div className="ml-1 pl-4">
+          <Row className="align-items-center">
+            <div className="pl-1">
+              <FilePresentIcon />
+            </div>
+            <div className="pl-3">
+              <ButtonMUI href={val.files} target="_blank">{val.nama}</ButtonMUI>
+            </div>
+          </Row>
+        </div>
+      )}
     </ListItem>
   ));
 

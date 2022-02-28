@@ -16,16 +16,10 @@ const CreateForm = ({ isOpen, handleClose, data }) => {
   const [file, setFile] = useState(null);
   const [isError, setError] = useState(false);
   const handleSubmit = () => {
-    // eslint-disable-next-line no-console
-    console.log('jenis', jenis);
-    // eslint-disable-next-line no-console
-    console.log('nama', nama);
-    // eslint-disable-next-line no-console
-    console.log('data.id', data.id);
     const dataForm = new FormData();
     dataForm.append('nama', nama);
     dataForm.append('jenis', jenis);
-    dataForm.append('matrix', data.id);
+    dataForm.append('parent_folder', data.id);
     // eslint-disable-next-line no-console
     console.log(file);
     if (file) {
