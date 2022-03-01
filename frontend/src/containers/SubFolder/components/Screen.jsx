@@ -12,7 +12,6 @@ import {
 import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
-import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import Divider from '@mui/material/Divider';
@@ -24,6 +23,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import dataApi from '../../../utils/dataApi';
 import CreateForm from './CreateForm';
 import DeleteForm from './DeleteForm';
+import EditForm from './EditForm';
 
 const Screen = ({ params }) => {
   const [searchText, setSearchText] = useState('');
@@ -32,7 +32,9 @@ const Screen = ({ params }) => {
   const [currentFileFolder, setCurrentFileFolder] = useState(null);
   const [isCreateFormOpen, setCreateFormOpen] = useState(false);
   const [isDeleteFormOpen, setDeleteFormOpen] = useState(false);
-  const [tobedeletedData, setTobedeletedData] = useState(null);
+  const [isEditFormOpen, setEditFormOpen] = useState(false);
+  const [selectedData, setSelectedData] = useState(null);
+  const [selectedDataEdit, setSelectedDataEdit] = useState(null);
   const [label, setLabel] = useState('');
   const history = useHistory();
 
@@ -79,12 +81,22 @@ const Screen = ({ params }) => {
 
   const handleDeleteForm = (val) => {
     setDeleteFormOpen(true);
-    setTobedeletedData(val);
+    setSelectedData(val);
   };
 
   const closeDeleteForm = () => {
     setDeleteFormOpen(false);
-    setTobedeletedData(null);
+    setSelectedData(null);
+  };
+
+  const handleEditForm = (val) => {
+    setSelectedDataEdit(val);
+    setEditFormOpen(true);
+  };
+
+  const closeEditForm = () => {
+    setEditFormOpen(false);
+    setSelectedDataEdit(null);
   };
 
   const folders = folderFile.map((val) => (
@@ -110,7 +122,13 @@ const Screen = ({ params }) => {
               </Box>
             </Box>
             <Box>
-              <Button variant="transparent" startIcon={<ModeEditIcon />}>
+              <Button
+                onClick={() => {
+                  handleEditForm(val);
+                }}
+                variant="transparent"
+                startIcon={<ModeEditIcon />}
+              >
                 Edit
               </Button>
             </Box>
@@ -126,6 +144,7 @@ const Screen = ({ params }) => {
               </Button>
             </Box>
           </Box>
+          <Divider />
         </div>
       ) : (
         <div className="pl-2" style={{ width: '100%' }}>
@@ -140,7 +159,13 @@ const Screen = ({ params }) => {
               </Box>
             </Box>
             <Box>
-              <Button variant="transparent" startIcon={<ModeEditIcon />}>
+              <Button
+                onClick={() => {
+                  handleEditForm(val);
+                }}
+                variant="transparent"
+                startIcon={<ModeEditIcon />}
+              >
                 Edit
               </Button>
             </Box>
@@ -156,6 +181,7 @@ const Screen = ({ params }) => {
               </Button>
             </Box>
           </Box>
+          <Divider />
         </div>
       )}
     </ListItem>
@@ -164,7 +190,8 @@ const Screen = ({ params }) => {
   return (
     <Col md={12}>
       <CreateForm data={currentFileFolder} isOpen={isCreateFormOpen} handleClose={handleCloseForm} />
-      <DeleteForm data={tobedeletedData} isOpen={isDeleteFormOpen} handleClose={closeDeleteForm} />
+      <DeleteForm data={selectedData} isOpen={isDeleteFormOpen} handleClose={closeDeleteForm} />
+      <EditForm data={selectedDataEdit} isOpen={isEditFormOpen} handleClose={closeEditForm} />
       <Card>
         <Row>
           <Col md={12}>
@@ -193,11 +220,7 @@ const Screen = ({ params }) => {
               <AddCircleOutlineIcon onClick={handleCreateForm} />
             </div>
             <Divider />
-            <nav aria-label="main mailbox folders">
-              <List>
-                {folders}
-              </List>
-            </nav>
+            {folders}
           </Box>
         </CardBody>
       </Card>

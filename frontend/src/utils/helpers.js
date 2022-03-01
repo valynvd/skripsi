@@ -1,4 +1,4 @@
-import { AUTH } from './naming';
+import { AUTH, USER_DETAIL } from './naming';
 
 export const setStorageKey = (key, val) => {
   localStorage.setItem(key, JSON.stringify(val));
@@ -15,6 +15,7 @@ export const getStorageKey = (key) => {
 
 export const clearStorage = () => {
   localStorage.removeItem(AUTH);
+  localStorage.removeItem(USER_DETAIL);
 };
 
 export const getToken = () => {
