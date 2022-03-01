@@ -3,5 +3,11 @@
       color: themed('colorIcon2');
     }
   }
+
+.spinner {
+  @include themify($themes) {
+    color: themed('colorSpinner');
+  }
+}
   
   
