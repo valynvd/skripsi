@@ -23,6 +23,7 @@ import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import DeleteIcon from '@mui/icons-material/Delete';
 import dataApi from '../../../utils/dataApi';
 import CreateForm from './CreateForm';
+import DeleteForm from './DeleteForm';
 
 const Screen = ({ params }) => {
   const [searchText, setSearchText] = useState('');
@@ -30,6 +31,8 @@ const Screen = ({ params }) => {
   const [isFetching, setFetching] = useState(true);
   const [currentFileFolder, setCurrentFileFolder] = useState(null);
   const [isCreateFormOpen, setCreateFormOpen] = useState(false);
+  const [isDeleteFormOpen, setDeleteFormOpen] = useState(false);
+  const [tobedeletedData, setTobedeletedData] = useState(null);
   const [label, setLabel] = useState('');
   const history = useHistory();
 
@@ -74,6 +77,16 @@ const Screen = ({ params }) => {
     setCreateFormOpen(false);
   };
 
+  const handleDeleteForm = (val) => {
+    setDeleteFormOpen(true);
+    setTobedeletedData(val);
+  };
+
+  const closeDeleteForm = () => {
+    setDeleteFormOpen(false);
+    setTobedeletedData(null);
+  };
+
   const folders = folderFile.map((val) => (
     <ListItem key={val.id} disablePadding>
       {val.jenis === 'folder' ? (
@@ -102,7 +115,13 @@ const Screen = ({ params }) => {
               </Button>
             </Box>
             <Box>
-              <Button variant="transparent" startIcon={<DeleteIcon />}>
+              <Button
+                onClick={() => {
+                  handleDeleteForm(val);
+                }}
+                variant="transparent"
+                startIcon={<DeleteIcon />}
+              >
                 Delete
               </Button>
             </Box>
@@ -126,7 +145,13 @@ const Screen = ({ params }) => {
               </Button>
             </Box>
             <Box>
-              <Button variant="transparent" startIcon={<DeleteIcon />}>
+              <Button
+                onClick={() => {
+                  handleDeleteForm(val);
+                }}
+                variant="transparent"
+                startIcon={<DeleteIcon />}
+              >
                 Delete
               </Button>
             </Box>
@@ -139,6 +164,7 @@ const Screen = ({ params }) => {
   return (
     <Col md={12}>
       <CreateForm data={currentFileFolder} isOpen={isCreateFormOpen} handleClose={handleCloseForm} />
+      <DeleteForm data={tobedeletedData} isOpen={isDeleteFormOpen} handleClose={closeDeleteForm} />
       <Card>
         <Row>
           <Col md={12}>
