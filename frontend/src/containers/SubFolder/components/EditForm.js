@@ -24,19 +24,12 @@ const EditForm = ({ isOpen, handleClose, data }) => {
   useEffect(() => {
     // console.log('cintaa', data);
     if (data) {
-      console.log(setJenis);
-      console.log(setNama);
-      console.log(setFile);
-      console.log(setEditJenis);
-      console.log(setEditNama);
-      console.log(setEditFile);
-
-      // setJenis(data.jenis);
-      // setNama(data.nama);
-      // setFile(data.files);
-      // setEditJenis(data.jenis);
-      // setEditNama(data.nama);
-      // setEditFile(data.files);
+      setJenis(data.jenis);
+      setNama(data.nama);
+      setFile(data.files);
+      setEditJenis(data.jenis);
+      setEditNama(data.nama);
+      setEditFile(data.files);
     }
   }, [data]);
   const handleSubmit = () => {
@@ -95,7 +88,7 @@ const EditForm = ({ isOpen, handleClose, data }) => {
                   )}
                   <div className="card__title">
                     <h5 className="bold-text">Edit Data</h5>
-                    <h5 className="subhead">lalala</h5>
+                    <h5 className="subhead">{data && data.nama}</h5>
                   </div>
                   <form className="form form--horizontal">
                     <div className="form__form-group">
