@@ -24,13 +24,13 @@ const EditForm = ({
   const [isError, setError] = useState(false);
 
   useEffect(() => {
-    // console.log('cintaa', data);
     if (data) {
       const initData = {
         jenis: data.jenis === 'folder'
           ? { value: 'folder', label: 'Folder' }
           : { value: 'file', label: 'File' },
         nama_folderfile: data.nama,
+        file: data.files,
       };
       initialize(initData);
       setJenis(data.jenis);
@@ -44,22 +44,22 @@ const EditForm = ({
   const handleSubmit = () => {
     const dataForm = new FormData();
     if (jenis !== editJenis && editJenis !== '') {
-      dataForm.append('jenis', jenis);
+      dataForm.append('jenis', editJenis);
     }
     if (nama !== editNama && editNama !== '') {
-      dataForm.append('nama', nama);
+      dataForm.append('nama', editNama);
     }
-    if (editFile) {
-      dataForm.append('files', file);
+    if (file !== editFile) {
+      dataForm.append('files', editFile);
     }
-    dataApi.editFolderFile(dataForm).then((resp) => {
+    dataApi.editFolderFile(data.id, dataForm).then((resp) => {
       // eslint-disable-next-line no-console
-      console.log(resp);
+      console.log('success edit', resp);
       handleClose();
       window.location.reload();
     }).catch((err) => {
       // eslint-disable-next-line no-console
-      console.log(err);
+      console.log('error edit', err);
       setError(true);
       setTimeout(() => setError(false), 3000);
     });
@@ -134,11 +134,19 @@ const EditForm = ({
                         File Pendukung
                       </span>
                       <div className="form__form-group-field">
-                        <Field
-                          name="file"
-                          component={renderFileInputField}
-                          onChange={(e) => setEditFile(e.file)}
-                        />
+                        <div>
+                          <a
+                            href={file}
+                            target="_blank"
+                            rel="noreferrer"
+                          > Download file
+                          </a>
+                          <Field
+                            name="file"
+                            component={renderFileInputField}
+                            onChange={(e) => setEditFile(e.file)}
+                          />
+                        </div>
                       </div>
                     </div>
                     )}

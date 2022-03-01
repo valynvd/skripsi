@@ -14,5 +14,5 @@ export default {
   getCurrentFileFolder: (id) => get(`${FOLDER}${id}/`),
   postFolderFile: (body, params) => post(FOLDER, body, params),
   deleteFileFolder: (id) => deleteRequest(`${FOLDER}${id}/`),
-  editFolderFile: (body, params) => patch(FOLDER, body, params),
+  editFolderFile: (id, body, params) => patch(`${FOLDER}${id}/`, body, params),
 };
