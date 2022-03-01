@@ -10,7 +10,9 @@ import renderFileInputField from '../../../shared/components/form/FileInput';
 import renderSelectField from '../../../shared/components/form/Select';
 import dataApi from '../../../utils/dataApi';
 
-const EditForm = ({ isOpen, handleClose, data }) => {
+const EditForm = ({
+  isOpen, handleClose, data, initialize,
+}) => {
   const [jenis, setJenis] = useState(null);
   const [nama, setNama] = useState(null);
   const [file, setFile] = useState(null);
@@ -24,6 +26,13 @@ const EditForm = ({ isOpen, handleClose, data }) => {
   useEffect(() => {
     // console.log('cintaa', data);
     if (data) {
+      const initData = {
+        jenis: data.jenis === 'folder'
+          ? { value: 'folder', label: 'Folder' }
+          : { value: 'file', label: 'File' },
+        nama_folderfile: data.nama,
+      };
+      initialize(initData);
       setJenis(data.jenis);
       setNama(data.nama);
       setFile(data.files);
@@ -31,7 +40,7 @@ const EditForm = ({ isOpen, handleClose, data }) => {
       setEditNama(data.nama);
       setEditFile(data.files);
     }
-  }, [data]);
+  }, [data, initialize]);
   const handleSubmit = () => {
     const dataForm = new FormData();
     if (jenis !== editJenis && editJenis !== '') {
@@ -95,8 +104,7 @@ const EditForm = ({ isOpen, handleClose, data }) => {
                       <span className="form__form-group-label">Jenis</span>
                       <div className="form__form-group-field">
                         <Field
-                          default="folder"
-                          name="select"
+                          name="jenis"
                           component={renderSelectField}
                           options={[
                             { value: 'folder', label: 'Folder' },
@@ -153,6 +161,7 @@ const EditForm = ({ isOpen, handleClose, data }) => {
 
 EditForm.propTypes = {
   handleClose: PropTypes.func.isRequired,
+  initialize: PropTypes.func.isRequired,
   isOpen: PropTypes.bool.isRequired,
   data: PropTypes.shape().isRequired,
 };
