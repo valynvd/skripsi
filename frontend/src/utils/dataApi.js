@@ -14,7 +14,9 @@ export default {
   getFolderbyFolder: (id) => get(`${FOLDERBYFOLDER}${id}`),
   postMatrixPenilaian: (body, params) => post(POINPENILAIAN, body, params),
   postPenugasanPengajaran: (body, params) => post(PENUGASANPENGAJARAN, body, params),
+  editPenugasanPengajaran: (id, body, params) => patch(`${PENUGASANPENGAJARAN}${id}/`, body, params),
   editEvaluasiPerkuliahan: (id, body, params) => patch(`${EVALUASIPERKULIAHAN}${id}/`, body, params),
+  deletePenugasanPengajaran: (id) => deleteRequest(`${PENUGASANPENGAJARAN}${id}/`),
   deleteEvaluasiPerkuliahan: (id) => deleteRequest(`${EVALUASIPERKULIAHAN}${id}/`),
   // CRUD for FileFolder
   getCurrentFileFolder: (id) => get(`${FOLDER}${id}/`),
