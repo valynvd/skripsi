@@ -95,7 +95,7 @@ const EditForm = ({
   const handleSubmit = () => {
     const dataForm = new FormData();
     if (Id !== editId && editId !== '') {
-      dataForm.append('sks_realisasi', editId);
+      dataForm.append('id', editId);
     }
     if (sksRealisasi !== editSKSRealisasi && editSKSRealisasi !== '') {
       dataForm.append('sks_realisasi', editSKSRealisasi);

@@ -9,13 +9,17 @@ import SubFolder from '../SubFolder/index';
 import Dashboard from '../Dashboard/index';
 import ListEvaluasi from '../Title/EvaluasiPerkuliahan/List/index';
 import DetailEvaluasi from '../Title/EvaluasiPerkuliahan/Detail/index';
-import Portofolio from '../Title/PortofolioPerkuliahan/index';
+import Portofolio from '../Title/PortofolioPerkuliahan/List/index';
+import SubPortofolio from '../Title/PortofolioPerkuliahan/SubList/index';
+import DetailPortofolio from '../Title/PortofolioPerkuliahan/Detail/index';
 
 const Pages = () => (
   <Switch>
     <Route path="/dashboard/subfolder/:id" component={SubFolder} />
     <Route path="/dashboard/folder/:id" component={Folder} />
     <Route path="/dashboard/evaluasi/:id" exact component={DetailEvaluasi} />
+    <Route path="/dashboard/portofolio/:id" exact component={SubPortofolio} />
+    <Route path="/dashboard/portofolio/detail/:id" exact component={DetailPortofolio} />
     <Route path="/dashboard/akreditasi" component={Akreditasi} />
     <Route path="/dashboard/evaluasi" exact component={ListEvaluasi} />
     <Route path="/dashboard/portofolio" exact component={Portofolio} />
