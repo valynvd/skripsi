@@ -22,9 +22,9 @@ const EditForm = ({
   const [sksRealisasi, setSKSRealisasi] = useState(null);
   const [tahun, setTahun] = useState(null);
   const [periode, setPeriode] = useState(null);
-  /* const [suratPenugasan, setSuratPenugasan] = useState(null);
+  const [suratPenugasan, setSuratPenugasan] = useState(null);
   const [dosenPengampu, setDosenPengampu] = useState(null);
-  const [mataKuliah, setMataKuliah] = useState(null); */
+  const [mataKuliah, setMataKuliah] = useState(null);
   // Variabel state for edit
   const [editId, setEditId] = useState(null);
   const [editSKSRealisasi, setEditSKSRealisasi] = useState(null);
@@ -38,6 +38,14 @@ const EditForm = ({
   const [matakuliahId, setmatakuliahId] = useState([]);
 
   const [isError, setError] = useState(false);
+
+  function titleCase(str) {
+    const splitStr = str.toLowerCase().split(' ');
+    for (let i = 0; i < splitStr.length; i++) {
+      splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
+    }
+    return splitStr.join(' ');
+  }
 
   useEffect(() => {
     axios.get('https://ec2-13-250-45-157.ap-southeast-1.compute.amazonaws.com/api-stem/suratpenugasan/', { headers: { Authorization: 'Token 09c9448751b03b41f5f5da66e549aa3290eef362' } })
@@ -71,15 +79,15 @@ const EditForm = ({
       });
 
     if (data) {
+      console.log(data);
       const initData = {
         id: data.id,
         sks_realisasi: data.sks_realisasi,
         tahun: data.tahun,
-        periode: data.periode === 'ganjil'
-          ? { value: 'ganjil', label: 'Ganjil' }
-          : data.periode === 'genap'
-            ? { value: 'genap', label: 'Genap' }
-            : { value: 'semester pendek', label: 'Semester Pendek' },
+        periode: { value: data.periode, label: titleCase(data.periode) },
+        surat_penugasan: { value: data.surat_penugasan_detail.id, label: data.surat_penugasan_detail.judul },
+        dosen_pengampu: { value: data.dosen_pengampu_detail.id, label: data.dosen_pengampu_detail.name },
+        mata_kuliah: { value: data.mata_kuliah_detail.id, label: data.mata_kuliah_detail.name },
       };
       initialize(initData);
       setId(data.id);
@@ -94,17 +102,18 @@ const EditForm = ({
   }, [data, initialize]);
   const handleSubmit = () => {
     const dataForm = new FormData();
-    if (Id !== editId && editId !== '') {
-      dataForm.append('id', editId);
-    }
     if (sksRealisasi !== editSKSRealisasi && editSKSRealisasi !== '') {
       dataForm.append('sks_realisasi', editSKSRealisasi);
     }
     if (tahun !== editTahun && editTahun !== '') {
-      dataForm.append('evaluation_report', editTahun);
+      dataForm.append('tahun', editTahun);
     }
     if (periode !== editPeriode && editPeriode !== '') {
       dataForm.append('periode', editPeriode);
+    }
+    // eslint-disable-next-line camelcase
+    if (suratPenugasan !== editSuratPenugasan && suratPenugasan !== '') {
+      dataForm.append('surat_penugasan', editSuratPenugasan);
     }
     dataApi.editPenugasanPengajaran(data.id, dataForm).then((resp) => {
       // eslint-disable-next-line no-console
@@ -229,7 +238,7 @@ const EditForm = ({
                         <Field
                           name="dosen_pengampu"
                           component={renderSelectField}
-                          options={penugasanId}
+                          options={dosenId}
                           onChange={(e) => setEditDosenPengampu(e.value)}
                         />
                       </div>
@@ -240,7 +249,7 @@ const EditForm = ({
                         <Field
                           name="mata_kuliah"
                           component={renderSelectField}
-                          options={penugasanId}
+                          options={matakuliahId}
                           onChange={(e) => setEditMataKuliah(e.value)}
                         />
                       </div>

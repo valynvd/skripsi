@@ -91,8 +91,6 @@ const ListEvaluasiPerkuliahan = () => {
     for (let i = 0; i < filteredPenugasan.length; i++) {
       test.push(
         <>
-          <EditForm data={selectedDataEdit} isOpen={isEditFormOpen} handleClose={handleCloseEditForm} />
-          <DeleteForm data={selectedDataDelete} isOpen={isDeleteFormOpen} handleClose={handleCloseDeleteForm} />
           <List>
             <ListItem disablePadding>
               <ListItemButton onClick={() => {
@@ -134,6 +132,8 @@ const ListEvaluasiPerkuliahan = () => {
 
   return (
     <Col md={12}>
+      <EditForm data={selectedDataEdit} isOpen={isEditFormOpen} handleClose={handleCloseEditForm} />
+      <DeleteForm data={selectedDataDelete} isOpen={isDeleteFormOpen} handleClose={handleCloseDeleteForm} />
       <Card>
         <CreateForm isOpen={isCreateFormOpen} handleClose={handleCloseForm} />
         <CardBody>
