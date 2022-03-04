@@ -66,9 +66,12 @@ const MatrixPenilaian = () => {
       }}
       >
         <ListItemIcon>
-          <FolderOpenIcon />
+          <FolderOpenIcon className="icon" />
         </ListItemIcon>
-        <ListItemText primary={`${val.kode} ${val.element}`} />
+        {/* <ListItemText primary={`${val.kode} ${val.element}`} /> */}
+        <ListItemText>
+          <p>{val.kode} {val.element}</p>
+        </ListItemText>
       </ListItemButton>
     </ListItem>
   ));
@@ -104,9 +107,9 @@ const MatrixPenilaian = () => {
             </InputGroup>
           </div>
           { isFetching && <Spinner className="table-fetch-spinner" /> }
-          <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
+          <Box>
             <div className="pl-3 pb-1">
-              <AddCircleOutlineIcon onClick={handleCreateForm} />
+              <AddCircleOutlineIcon onClick={handleCreateForm} className="icon" />
             </div>
             <Divider />
             <nav aria-label="main mailbox folders">

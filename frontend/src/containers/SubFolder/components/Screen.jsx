@@ -16,6 +16,9 @@ import ListItem from '@mui/material/ListItem';
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import Divider from '@mui/material/Divider';
 import Button from '@mui/material/Button';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
@@ -67,6 +70,11 @@ const Screen = ({ params }) => {
     setFetching(false);
   }, [params]);
 
+  const openInNewTab = (url) => {
+    const newWindow = window.open(url, '_blank', 'noopener,noreferrer');
+    if (newWindow) newWindow.opener = null;
+  };
+
   const onFetch = () => {
     setFetching(false);
   };
@@ -102,82 +110,92 @@ const Screen = ({ params }) => {
   const folders = folderFile.map((val) => (
     <ListItem key={val.id} disablePadding>
       {val.jenis === 'folder' ? (
-        <div className="pl-2" style={{ width: '100%' }}>
+        <div style={{ width: '100%' }}>
           <Box
             sx={{
-              display: 'flex', p: 1, bgcolor: 'background.paper', borderRadius: 1,
+              display: 'flex', borderRadius: 1,
             }}
           >
-            <Box sx={{ flexGrow: 1 }}><FolderOpenIcon />
-              <Box className="pl-4" sx={{ display: 'inline' }}>
-                <Button onClick={() => {
-                  if (val.jenis === 'folder') {
-                    history.push(`/dashboard/subfolder/${val.id}`);
-                  } else {
-                    window.open(val.files);
-                  }
-                }}
-                >{val.nama}
-                </Button>
-              </Box>
+            <Box sx={{ flexGrow: 1 }}>
+              <ListItemButton onClick={() => {
+                history.push(`/dashboard/subfolder/${val.id}`);
+              }}
+              >
+                <ListItemIcon>
+                  <FolderOpenIcon className="icon" />
+                </ListItemIcon>
+                <ListItemText>
+                  <p>{val.nama}</p>
+                </ListItemText>
+              </ListItemButton>
             </Box>
-            <Box>
+            <Box className="align-self-center">
               <Button
                 onClick={() => {
                   handleEditForm(val);
                 }}
                 variant="transparent"
                 startIcon={<ModeEditIcon />}
+                className="icon"
               >
-                Edit
+                <h5 className="bold-text">Edit</h5>
               </Button>
             </Box>
-            <Box>
+            <Box className="align-self-center">
               <Button
                 onClick={() => {
                   handleDeleteForm(val);
                 }}
                 variant="transparent"
                 startIcon={<DeleteIcon />}
+                className="icon"
               >
-                Delete
+                <h5 className="bold-text">Delete</h5>
               </Button>
             </Box>
           </Box>
           <Divider />
         </div>
       ) : (
-        <div className="pl-2" style={{ width: '100%' }}>
+        <div style={{ width: '100%' }}>
           <Box
             sx={{
-              display: 'flex', p: 1, bgcolor: 'background.paper', borderRadius: 1,
+              display: 'flex', borderRadius: 1,
             }}
           >
-            <Box sx={{ flexGrow: 1 }}><InsertDriveFileIcon />
-              <Box className="pl-4" sx={{ display: 'inline' }}>
-                <Button href={val.files} target="_blank">{val.nama}</Button>
-              </Box>
+            <Box sx={{ flexGrow: 1 }}>
+              <ListItemButton onClick={() => openInNewTab(val.files)}>
+                <ListItemIcon>
+                  <InsertDriveFileIcon className="icon" />
+                </ListItemIcon>
+                <ListItemText>
+                  <p>{val.nama}</p>
+                </ListItemText>
+              </ListItemButton>
+
             </Box>
-            <Box>
+            <Box className="align-self-center">
               <Button
                 onClick={() => {
                   handleEditForm(val);
                 }}
                 variant="transparent"
                 startIcon={<ModeEditIcon />}
+                className="icon"
               >
-                Edit
+                <h5 className="bold-text">Edit</h5>
               </Button>
             </Box>
-            <Box>
+            <Box className="align-self-center">
               <Button
                 onClick={() => {
                   handleDeleteForm(val);
                 }}
                 variant="transparent"
                 startIcon={<DeleteIcon />}
+                className="icon"
               >
-                Delete
+                <h5 className="bold-text">Delete</h5>
               </Button>
             </Box>
           </Box>
@@ -215,9 +233,9 @@ const Screen = ({ params }) => {
             </InputGroup>
           </div>
           { isFetching && <Spinner className="table-fetch-spinner" /> }
-          <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
+          <Box>
             <div className="pl-3 pb-1">
-              <AddCircleOutlineIcon onClick={handleCreateForm} />
+              <AddCircleOutlineIcon onClick={handleCreateForm} className="icon" />
             </div>
             <Divider />
             {folders}

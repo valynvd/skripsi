@@ -8,7 +8,6 @@ import {
   Input,
   InputGroup,
   Spinner,
-  Row,
 } from 'reactstrap';
 import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -16,7 +15,6 @@ import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
-import ButtonMUI from '@mui/material/Button';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
@@ -64,29 +62,25 @@ const Screen = ({ params, data }) => {
     <ListItem key={val.id} disablePadding>
       {val.jenis === 'folder' ? (
         <ListItemButton onClick={() => {
-          if (val.jenis === 'folder') {
-            history.push(`/dashboard/subfolder/${val.id}`);
-          } else {
-            window.open(val.files);
-          }
+          history.push(`/dashboard/subfolder/${val.id}`);
         }}
         >
           <ListItemIcon>
-            {val.jenis === 'folder' ? <FolderOpenIcon /> : <FilePresentIcon />}
+            <FolderOpenIcon className="icon" />
           </ListItemIcon>
-          <ListItemText primary={`${val.nama}`} />
+          <ListItemText>
+            <p>{val.nama}</p>
+          </ListItemText>
         </ListItemButton>
       ) : (
-        <div className="ml-1 pl-4">
-          <Row className="align-items-center">
-            <div className="pl-1">
-              <FilePresentIcon />
-            </div>
-            <div className="pl-3">
-              <ButtonMUI href={val.files} target="_blank">{val.nama}</ButtonMUI>
-            </div>
-          </Row>
-        </div>
+        <ListItemButton onClick={() => { window.open(val.files); }}>
+          <ListItemIcon>
+            <FilePresentIcon className="icon" />
+          </ListItemIcon>
+          <ListItemText>
+            <p>{val.nama}</p>
+          </ListItemText>
+        </ListItemButton>
       )}
     </ListItem>
   ));
@@ -118,9 +112,9 @@ const Screen = ({ params, data }) => {
             </InputGroup>
           </div>
           { isFetching && <Spinner className="table-fetch-spinner" /> }
-          <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>
+          <Box>
             <div className="pl-3 pb-1">
-              <AddCircleOutlineIcon onClick={handleCreateForm} />
+              <AddCircleOutlineIcon onClick={handleCreateForm} className="icon" />
             </div>
             <Divider />
             <nav aria-label="main mailbox folders">
