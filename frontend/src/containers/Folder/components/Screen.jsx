@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 import {
-  Button,
   Card,
   CardBody,
   Col,
@@ -12,23 +11,32 @@ import {
 import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import Divider from '@mui/material/Divider';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import FilePresentIcon from '@mui/icons-material/FilePresent';
 import dataApi from '../../../utils/dataApi';
 import CreateForm from './CreateForm';
+import EditForm from './EditForm';
+import DeleteForm from './DeleteForm';
 
 const Screen = ({ params, data }) => {
   const [searchText, setSearchText] = useState('');
   const [folderFile, setfolderFile] = useState([]);
   const [isFetching, setFetching] = useState(true);
   const [isCreateFormOpen, setCreateFormOpen] = useState(false);
+  const [isEditFormOpen, setEditFormOpen] = useState(false);
+  const [isDeleteFormOpen, setDeleteFormOpen] = useState(false);
+  const [selectedDataEdit, setSelectedDataEdit] = useState(null);
+  const [selectedDataDelete, setSelectedDataDelete] = useState(null);
   const [filteredMatrixPenilaian, setFilteredMatrixPenilaian] = useState([]);
   const history = useHistory();
 
@@ -58,29 +66,88 @@ const Screen = ({ params, data }) => {
   const handleCloseForm = () => {
     setCreateFormOpen(false);
   };
+
+  const handleEditForm = (a) => {
+    setSelectedDataEdit(a);
+    setEditFormOpen(true);
+  };
+
+  const handleCloseEditForm = () => {
+    setEditFormOpen(false);
+  };
+
+  const handleDeleteForm = (a) => {
+    setSelectedDataDelete(a);
+    setDeleteFormOpen(true);
+  };
+
+  const handleCloseDeleteForm = () => {
+    setDeleteFormOpen(false);
+  };
+
   const folders = filteredMatrixPenilaian.map((val) => (
     <ListItem key={val.id} disablePadding>
       {val.jenis === 'folder' ? (
-        <ListItemButton onClick={() => {
-          history.push(`/dashboard/subfolder/${val.id}`);
-        }}
-        >
-          <ListItemIcon>
-            <FolderOpenIcon className="icon" />
-          </ListItemIcon>
-          <ListItemText>
-            <p>{val.nama}</p>
-          </ListItemText>
-        </ListItemButton>
+        <>
+          <ListItemButton onClick={() => {
+            history.push(`/dashboard/subfolder/${val.id}`);
+          }}
+          >
+            <ListItemIcon>
+              <FolderOpenIcon className="icon" />
+            </ListItemIcon>
+            <ListItemText>
+              <p>{val.nama}</p>
+            </ListItemText>
+          </ListItemButton>
+          <Box className="row">
+            <Button
+              onClick={() => handleEditForm(val)}
+              variant="transparent"
+              startIcon={<ModeEditIcon />}
+              className="icon"
+            >
+              <h5 className="bold-text">Edit</h5>
+            </Button>
+            <Button
+              onClick={() => handleDeleteForm(val)}
+              variant="transparent"
+              startIcon={<DeleteIcon />}
+              className="icon"
+            >
+              <h5 className="bold-text">Delete</h5>
+            </Button>
+          </Box>
+        </>
       ) : (
-        <ListItemButton onClick={() => { window.open(val.files); }}>
-          <ListItemIcon>
-            <FilePresentIcon className="icon" />
-          </ListItemIcon>
-          <ListItemText>
-            <p>{val.nama}</p>
-          </ListItemText>
-        </ListItemButton>
+        <>
+          <ListItemButton onClick={() => { window.open(val.files); }}>
+            <ListItemIcon>
+              <FilePresentIcon className="icon" />
+            </ListItemIcon>
+            <ListItemText>
+              <p>{val.nama}</p>
+            </ListItemText>
+          </ListItemButton>
+          <Box className="row">
+            <Button
+              onClick={() => handleEditForm(val)}
+              variant="transparent"
+              startIcon={<ModeEditIcon />}
+              className="icon"
+            >
+              <h5 className="bold-text">Edit</h5>
+            </Button>
+            <Button
+              onClick={() => handleDeleteForm(val)}
+              variant="transparent"
+              startIcon={<DeleteIcon />}
+              className="icon"
+            >
+              <h5 className="bold-text">Delete</h5>
+            </Button>
+          </Box>
+        </>
       )}
     </ListItem>
   ));
@@ -88,6 +155,8 @@ const Screen = ({ params, data }) => {
   return (
     <Col md={12}>
       <CreateForm data={data} isOpen={isCreateFormOpen} handleClose={handleCloseForm} />
+      <EditForm data={selectedDataEdit} isOpen={isEditFormOpen} handleClose={handleCloseEditForm} />
+      <DeleteForm data={selectedDataDelete} isOpen={isDeleteFormOpen} handleClose={handleCloseDeleteForm} />
       <Card>
         <CardBody>
           <div className="mb-3">

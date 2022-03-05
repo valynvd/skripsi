@@ -94,10 +94,16 @@ const EditForm = ({
       setSKSRealisasi(data.sks_realisasi);
       setTahun(data.tahun);
       setPeriode(data.periode);
+      setSuratPenugasan(data.surat_penugasan);
+      setDosenPengampu(data.dosen_pengampu);
+      setMataKuliah(data.mata_kuliah);
       setEditId(data.id);
       setEditSKSRealisasi(data.sks_realisasi);
       setEditTahun(data.tahun);
       setEditPeriode(data.periode);
+      setEditSuratPenugasan(data.surat_penugasan);
+      setEditDosenPengampu(data.dosen_pengampu);
+      setEditMataKuliah(data.mata_kuliah);
     }
   }, [data, initialize]);
   const handleSubmit = () => {
@@ -114,6 +120,12 @@ const EditForm = ({
     // eslint-disable-next-line camelcase
     if (suratPenugasan !== editSuratPenugasan && suratPenugasan !== '') {
       dataForm.append('surat_penugasan', editSuratPenugasan);
+    }
+    if (dosenPengampu !== editDosenPengampu && dosenPengampu !== '') {
+      dataForm.append('dosen_pengampu', editDosenPengampu);
+    }
+    if (mataKuliah !== editMataKuliah && mataKuliah !== '') {
+      dataForm.append('surat_penugasan', editMataKuliah);
     }
     dataApi.editPenugasanPengajaran(data.id, dataForm).then((resp) => {
       // eslint-disable-next-line no-console

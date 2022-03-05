@@ -12,6 +12,7 @@ import {
 } from './urls';
 
 export default {
+  // GET
   getMatrixPenilaian: () => get(POINPENILAIAN),
   getEvaluasiPerkuliahan: () => get(EVALUASIPERKULIAHAN),
   getPenugasanPengajaran: () => get(PENUGASANPENGAJARAN),
@@ -20,11 +21,16 @@ export default {
   getPortofolioPerkuliahanbyId: (id) => get(`${PORTOFOLIOPERKULIAHAN}${id}/`),
   getFolderbyMatrix: (id) => get(`${FOLDERBYMATRIX}${id}`),
   getFolderbyFolder: (id) => get(`${FOLDERBYFOLDER}${id}`),
+  // POST
   postMatrixPenilaian: (body, params) => post(POINPENILAIAN, body, params),
   postPenugasanPengajaran: (body, params) => post(PENUGASANPENGAJARAN, body, params),
+  // EDIT
+  editMatrixPenilaian: (id, body, params) => patch(`${POINPENILAIAN}${id}/`, body, params),
   editPenugasanPengajaran: (id, body, params) => patch(`${PENUGASANPENGAJARAN}${id}/`, body, params),
   editEvaluasiPerkuliahan: (id, body, params) => patch(`${EVALUASIPERKULIAHAN}${id}/`, body, params),
   editPortofolioPerkuliahan: (id, body, params) => patch(`${PORTOFOLIOPERKULIAHAN}${id}/`, body, params),
+  // DELETE
+  deleteMatrixPenilaian: (id) => deleteRequest(`${POINPENILAIAN}${id}/`),
   deletePenugasanPengajaran: (id) => deleteRequest(`${PENUGASANPENGAJARAN}${id}/`),
   deleteEvaluasiPerkuliahan: (id) => deleteRequest(`${EVALUASIPERKULIAHAN}${id}/`),
   deletePortofolioPerkuliahan: (id) => deleteRequest(`${PORTOFOLIOPERKULIAHAN}${id}/`),

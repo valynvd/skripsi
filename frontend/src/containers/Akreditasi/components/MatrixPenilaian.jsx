@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 import {
-  Button,
   Card,
   CardBody,
   Col,
@@ -11,6 +10,7 @@ import {
 } from 'reactstrap';
 import { useHistory } from 'react-router-dom';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -19,8 +19,12 @@ import ListItemText from '@mui/material/ListItemText';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import Divider from '@mui/material/Divider';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ModeEditIcon from '@mui/icons-material/ModeEdit';
 import dataApi from '../../../utils/dataApi';
 import CreateForm from './CreateForm';
+import EditForm from './EditForm';
+import DeleteForm from './DeleteForm';
 
 const MatrixPenilaian = () => {
   const [searchText, setSearchText] = useState('');
@@ -28,6 +32,10 @@ const MatrixPenilaian = () => {
   const [filteredMatrixPenilaian, setFilteredMatrixPenilaian] = useState([]);
   const [isFetching, setFetching] = useState(true);
   const [isCreateFormOpen, setCreateFormOpen] = useState(false);
+  const [isEditFormOpen, setEditFormOpen] = useState(false);
+  const [isDeleteFormOpen, setDeleteFormOpen] = useState(false);
+  const [selectedDataEdit, setSelectedDataEdit] = useState(null);
+  const [selectedDataDelete, setSelectedDataDelete] = useState(null);
   const history = useHistory();
 
   const getData = async () => {
@@ -57,6 +65,24 @@ const MatrixPenilaian = () => {
     setCreateFormOpen(false);
   };
 
+  const handleEditForm = (a) => {
+    setSelectedDataEdit(a);
+    setEditFormOpen(true);
+  };
+
+  const handleCloseEditForm = () => {
+    setEditFormOpen(false);
+  };
+
+  const handleDeleteForm = (a) => {
+    setSelectedDataDelete(a);
+    setDeleteFormOpen(true);
+  };
+
+  const handleCloseDeleteForm = () => {
+    setDeleteFormOpen(false);
+  };
+
   const folders = filteredMatrixPenilaian.map((val) => (
     <ListItem key={val.id} disablePadding>
       <ListItemButton onClick={() => {
@@ -68,17 +94,36 @@ const MatrixPenilaian = () => {
         <ListItemIcon>
           <FolderOpenIcon className="icon" />
         </ListItemIcon>
-        {/* <ListItemText primary={`${val.kode} ${val.element}`} /> */}
         <ListItemText>
           <p>{val.kode} {val.element}</p>
         </ListItemText>
       </ListItemButton>
+      <Box className="row">
+        <Button
+          onClick={() => handleEditForm(val)}
+          variant="transparent"
+          startIcon={<ModeEditIcon />}
+          className="icon"
+        >
+          <h5 className="bold-text">Edit</h5>
+        </Button>
+        <Button
+          onClick={() => handleDeleteForm(val)}
+          variant="transparent"
+          startIcon={<DeleteIcon />}
+          className="icon"
+        >
+          <h5 className="bold-text">Delete</h5>
+        </Button>
+      </Box>
     </ListItem>
   ));
 
   return (
     <Col md={12}>
       <CreateForm isOpen={isCreateFormOpen} handleClose={handleCloseForm} />
+      <EditForm data={selectedDataEdit} isOpen={isEditFormOpen} handleClose={handleCloseEditForm} />
+      <DeleteForm data={selectedDataDelete} isOpen={isDeleteFormOpen} handleClose={handleCloseDeleteForm} />
       <Card>
         <CardBody>
           <div className="card__title">
