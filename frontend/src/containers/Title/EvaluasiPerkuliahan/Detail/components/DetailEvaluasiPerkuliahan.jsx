@@ -85,7 +85,7 @@ const DetailEvaluasiPerkuliahan = ({ id }) => {
               <h5 className="bold-text">Detail</h5>
             </div>
 
-            <AddCircleOutlineIcon className="icon" />
+            <AddCircleOutlineIcon className="icon" onClick={handleCreateForm} />
             <Divider />
 
             <h5>No Data Available At This Page</h5>
@@ -98,8 +98,6 @@ const DetailEvaluasiPerkuliahan = ({ id }) => {
       if (post[i].penugasan === Id) {
         test.push(
           <>
-            <EditForm data={post[i]} isOpen={isEditFormOpen} handleClose={handleCloseEditForm} />
-            <DeleteForm data={post[i]} isOpen={isDeleteFormOpen} handleClose={handleCloseDeleteForm} />
             <div className="card__title">
               <h5 className="bold-text">Detail</h5>
             </div>
@@ -141,6 +139,8 @@ const DetailEvaluasiPerkuliahan = ({ id }) => {
             <br />
             <h5 className="bold-text">NOTES</h5>
             <p>{post[i].notes}</p>
+            <EditForm data={post[i]} isOpen={isEditFormOpen} handleClose={handleCloseEditForm} />
+            <DeleteForm data={post[i]} isOpen={isDeleteFormOpen} handleClose={handleCloseDeleteForm} />
           </>,
         );
         test.shift();

@@ -8,7 +8,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 import {
-  Card, CardBody, Col, Input, InputGroup,
+  Card, CardBody, Col, Spinner,
 } from 'reactstrap';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
@@ -100,46 +100,55 @@ const DetailPortofolioPerkuliahan = ({ id }) => {
 
         <div>
           <h5 className="bold-text">Outcomes Mata Kuliah</h5>
+          { isFetching && <Spinner className="spinner table-fetch-spinner mt-2" /> }
           <p>{portofolio.outcomes_mata_kuliah}</p>
         </div>
         <hr />
         <div>
           <h5 className="bold-text">Metode Mata Kuliah</h5>
+          { isFetching && <Spinner className="spinner table-fetch-spinner mt-2" /> }
           <p>{portofolio.metode_mata_kuliah}</p>
         </div>
         <hr />
         <div>
           <h5 className="bold-text">Sistem Penilaian</h5>
+          { isFetching && <Spinner className="spinner table-fetch-spinner mt-2" /> }
           <p>{portofolio.sistem_penilaian}</p>
         </div>
         <hr />
         <div>
           <h5 className="bold-text">Statistik Kelas</h5>
+          { isFetching && <Spinner className="spinner table-fetch-spinner mt-2" /> }
           <p>{portofolio.statistik_kelas}</p>
         </div>
         <hr />
         <div>
           <h5 className="bold-text">Analisis Statistik Ketercapaian</h5>
+          { isFetching && <Spinner className="spinner table-fetch-spinner mt-2" /> }
           <p>{portofolio.analisis_statistik_ketercapaian}</p>
         </div>
         <hr />
         <div>
           <h5 className="bold-text">Komentar Questioner</h5>
+          { isFetching && <Spinner className="spinner table-fetch-spinner mt-2" /> }
           <p>{portofolio.komentar_questioner}</p>
         </div>
         <hr />
         <div>
           <h5 className="bold-text">Refleksi Pelaksanaan</h5>
+          { isFetching && <Spinner className="spinner table-fetch-spinner mt-2" /> }
           <p>{portofolio.refleksi_pelaksanaan}</p>
         </div>
         <hr />
         <div>
           <h5 className="bold-text">Rekomendasi Perbaikan Dosen</h5>
+          { isFetching && <Spinner className="spinner table-fetch-spinner mt-2" /> }
           <p>{portofolio.rekomendasi_perbaikan_dosen}</p>
         </div>
         <hr />
         <div>
           <h5 className="bold-text">Rekomendasi Perbaikan Univ</h5>
+          { isFetching && <Spinner className="spinner table-fetch-spinner mt-2" /> }
           <p>{portofolio.rekomendasi_perbaikan_univ}</p>
         </div>
       </>,

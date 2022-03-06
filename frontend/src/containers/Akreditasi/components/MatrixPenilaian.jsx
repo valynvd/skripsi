@@ -151,7 +151,7 @@ const MatrixPenilaian = () => {
               <Button className="mb-0 ml-3" onClick={onFetch}>Cari</Button>
             </InputGroup>
           </div>
-          { isFetching && <Spinner className="table-fetch-spinner" /> }
+          { isFetching && <Spinner className="spinner table-fetch-spinner" /> }
           <Box>
             <div className="pl-3 pb-1">
               <AddCircleOutlineIcon onClick={handleCreateForm} className="icon" />
