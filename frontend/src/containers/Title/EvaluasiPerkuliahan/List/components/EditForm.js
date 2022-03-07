@@ -125,7 +125,7 @@ const EditForm = ({
       dataForm.append('dosen_pengampu', editDosenPengampu);
     }
     if (mataKuliah !== editMataKuliah && mataKuliah !== '') {
-      dataForm.append('surat_penugasan', editMataKuliah);
+      dataForm.append('mata_kuliah', editMataKuliah);
     }
     dataApi.editPenugasanPengajaran(data.id, dataForm).then((resp) => {
       // eslint-disable-next-line no-console

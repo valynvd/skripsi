@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-console */
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-plusplus */
@@ -9,6 +10,7 @@ import {
 import axios from 'axios';
 import Box from '@mui/material/Box';
 import PropTypes from 'prop-types';
+import { useParams } from 'react-router-dom';
 import { Field, reduxForm } from 'redux-form';
 import Modal from '@mui/material/Modal';
 import dataApi from '../../../../../utils/dataApi';
@@ -21,6 +23,7 @@ const CreateForm = ({ isOpen, handleClose }) => {
   const [rubrik, setRubrik] = useState(null);
   const [notes, setNotes] = useState('');
   const [isError, setError] = useState(false);
+  const { id } = useParams();
 
   const handleSubmit = () => {
     const dataForm = new FormData();
@@ -28,8 +31,9 @@ const CreateForm = ({ isOpen, handleClose }) => {
     dataForm.append('evaluation_report', evaluationReport);
     dataForm.append('rubrik', rubrik);
     dataForm.append('notes', notes);
+    dataForm.append('penugasan', id);
 
-    dataApi.postPenugasanPengajaran(dataForm).then((resp) => {
+    dataApi.postEvaluasiPerkuliahan(dataForm).then((resp) => {
       // eslint-disable-next-line no-console
       console.log(resp);
       handleClose();

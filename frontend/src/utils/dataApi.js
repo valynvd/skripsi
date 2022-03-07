@@ -25,6 +25,7 @@ export default {
   postMatrixPenilaian: (body, params) => post(POINPENILAIAN, body, params),
   postPenugasanPengajaran: (body, params) => post(PENUGASANPENGAJARAN, body, params),
   postPortofolioPerkuliahan: (body, params) => post(PORTOFOLIOPERKULIAHAN, body, params),
+  postEvaluasiPerkuliahan: (body, params) => post(EVALUASIPERKULIAHAN, body, params),
   // EDIT
   editMatrixPenilaian: (id, body, params) => patch(`${POINPENILAIAN}${id}/`, body, params),
   editPenugasanPengajaran: (id, body, params) => patch(`${PENUGASANPENGAJARAN}${id}/`, body, params),

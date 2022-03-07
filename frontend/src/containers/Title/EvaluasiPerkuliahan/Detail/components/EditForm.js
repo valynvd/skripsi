@@ -119,7 +119,7 @@ const EditForm = ({
                           > Download file
                           </a>
                           <Field
-                            name="file"
+                            name="rps"
                             component={renderFileInputField}
                             onChange={(e) => setEditRPS(e.file)}
                           />
@@ -139,7 +139,7 @@ const EditForm = ({
                           > Download file
                           </a>
                           <Field
-                            name="file"
+                            name="evaluation_report"
                             component={renderFileInputField}
                             onChange={(e) => setEditEvaluationReport(e.file)}
                           />
@@ -159,7 +159,7 @@ const EditForm = ({
                           > Download file
                           </a>
                           <Field
-                            name="file"
+                            name="rubrik"
                             component={renderFileInputField}
                             onChange={(e) => setEditRubrik(e.file)}
                           />
