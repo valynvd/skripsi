@@ -14,8 +14,8 @@ const DeleteForm = ({ isOpen, handleClose, data }) => {
     dataApi.deleteEvaluasiPerkuliahan(data.id).then((resp) => {
       // eslint-disable-next-line no-console
       console.log(resp);
+      window.location.assign('/dashboard/evaluasi/');
       handleClose();
-      window.location.reload();
     }).catch((err) => {
       // eslint-disable-next-line no-console
       console.log(err);

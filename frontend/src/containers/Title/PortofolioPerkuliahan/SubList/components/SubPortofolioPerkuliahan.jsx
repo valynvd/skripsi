@@ -24,6 +24,7 @@ import dataApi from '../../../../../utils/dataApi';
 
 const SubPortofolioPerkuliahan = ({ id }) => {
   const [searchText, setSearchText] = useState('');
+  const [createId, setCreateId] = useState(null);
   const [post, setPost] = useState([]);
   const [portofolio, setPortofolio] = useState([]);
   const [filteredPortofolio, setFilteredPortofolio] = useState([]);
@@ -52,7 +53,8 @@ const SubPortofolioPerkuliahan = ({ id }) => {
     setFetching(false);
   }, []);
 
-  const handleCreateForm = () => {
+  const handleCreateForm = (a) => {
+    setCreateId(a);
     setCreateFormOpen(true);
   };
 
@@ -60,14 +62,14 @@ const SubPortofolioPerkuliahan = ({ id }) => {
     setCreateFormOpen(false);
   };
 
+  const Id = parseInt(id, 10);
+
   const printPortofolio = () => {
     const test = [];
     for (let i = 0; i < filteredPortofolio.length; i++) {
-      const Id = parseInt(id, 10);
       if (filteredPortofolio[i].penugasan === Id) {
         test.push(
           <>
-            <CreateForm isOpen={isCreateFormOpen} handleClose={handleCloseForm} />
             <List>
               <ListItem disablePadding>
                 <ListItemButton onClick={() => {
@@ -92,6 +94,7 @@ const SubPortofolioPerkuliahan = ({ id }) => {
 
   return (
     <Col md={12}>
+      <CreateForm data={createId} isOpen={isCreateFormOpen} handleClose={handleCloseForm} />
       <Card>
         <CardBody>
           <div className="card__title">
@@ -121,7 +124,7 @@ const SubPortofolioPerkuliahan = ({ id }) => {
           </div>
 
           <div className="pl-3 pb-1">
-            <AddCircleOutlineIcon className="icon" onClick={handleCreateForm} />
+            <AddCircleOutlineIcon className="icon" onClick={() => handleCreateForm(Id)} />
           </div>
           <Divider />
           { isFetching && <Spinner className="spinner table-fetch-spinner m-2" /> }

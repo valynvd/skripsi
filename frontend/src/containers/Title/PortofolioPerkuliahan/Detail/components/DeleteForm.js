@@ -17,7 +17,7 @@ const DeleteForm = ({ isOpen, handleClose, data }) => {
       // eslint-disable-next-line no-console
       console.log(resp);
       handleClose();
-      window.location.reload();
+      window.location.assign(`/dashboard/portofolio/${data.penugasan}`);
     }).catch((err) => {
       // eslint-disable-next-line no-console
       console.log(err);

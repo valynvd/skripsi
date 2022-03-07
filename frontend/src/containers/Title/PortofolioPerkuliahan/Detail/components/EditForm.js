@@ -29,7 +29,7 @@ const EditForm = ({
   const [refleksi, setRefleksi] = useState(null);
   const [rekomendasiDosen, setRekomendasiDosen] = useState(null);
   const [rekomendasiUniv, setRekomendasiUniv] = useState(null);
-  const [suratPenugasan, setSuratPenugasan] = useState(null);
+  const [Penugasan, setPenugasan] = useState(null);
   // Variabel state for edit
   const [editId, setEditId] = useState(null);
   const [editOutcomes, setEditOutcomes] = useState(null);
@@ -41,7 +41,7 @@ const EditForm = ({
   const [editRefleksi, setEditRefleksi] = useState(null);
   const [editRekomendasiDosen, setEditRekomendasiDosen] = useState(null);
   const [editRekomendasiUniv, setEditRekomendasiUniv] = useState(null);
-  const [editSuratPenugasan, setEditSuratPenugasan] = useState(null);
+  const [editPenugasan, setEditPenugasan] = useState(null);
   // Others
   const [penugasanId, setpenugasanId] = useState([]);
 
@@ -70,7 +70,7 @@ const EditForm = ({
         refleksi_pelaksanaan: data.refleksi_pelaksanaan,
         rekomendasi_perbaikan_dosen: data.rekomendasi_perbaikan_dosen,
         rekomendasi_perbaikan_univ: data.rekomendasi_perbaikan_univ,
-        surat_penugasan: data.surat_penugasan,
+        penugasan: data.penugasan,
       };
       initialize(initData);
       setId(data.id);
@@ -83,7 +83,7 @@ const EditForm = ({
       setRefleksi(data.refleksi_pelaksanaan);
       setRekomendasiDosen(data.rekomendasi_perbaikan_dosen);
       setRekomendasiUniv(data.rekomendasi_perbaikan_univ);
-      setSuratPenugasan(data.surat_penugasan);
+      setPenugasan(data.penugasan);
 
       setEditId(data.id);
       setEditOutcomes(data.outcomes_mata_kuliah);
@@ -95,7 +95,7 @@ const EditForm = ({
       setEditRefleksi(data.refleksi_pelaksanaan);
       setEditRekomendasiDosen(data.rekomendasi_perbaikan_dosen);
       setEditRekomendasiUniv(data.rekomendasi_perbaikan_univ);
-      setEditSuratPenugasan(data.surat_penugasan);
+      setEditPenugasan(data.penugasan);
     }
   }, [data, initialize]);
   const handleSubmit = () => {
@@ -130,8 +130,8 @@ const EditForm = ({
     if (rekomendasiUniv !== editRekomendasiUniv && editRekomendasiUniv !== '') {
       dataForm.append('rekomendasi_perbaikan_univ', editRekomendasiUniv);
     }
-    if (suratPenugasan !== editSuratPenugasan && editSuratPenugasan !== '') {
-      dataForm.append('surat_penugasan', editSuratPenugasan);
+    if (Penugasan !== editPenugasan && editPenugasan !== '') {
+      dataForm.append('penugasan', editPenugasan);
     }
     dataApi.editPortofolioPerkuliahan(data.id, dataForm).then((resp) => {
       // eslint-disable-next-line no-console
@@ -307,18 +307,6 @@ const EditForm = ({
                           onChange={(e) => {
                             setEditRekomendasiUniv(e.target.value);
                           }}
-                        />
-                      </div>
-                    </div>
-                    <div className="form__form-group">
-                      <span className="form__form-group-label">Surat Penugasan</span>
-                      <div className="form__form-group-field">
-                        <Field
-                          name="surat_penugasan"
-                          component={renderSelectField}
-                          options={penugasanId}
-                          disabled
-                          onChange={(e) => setEditSuratPenugasan(e.value)}
                         />
                       </div>
                     </div>

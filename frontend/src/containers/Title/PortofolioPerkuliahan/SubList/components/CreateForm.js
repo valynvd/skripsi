@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable camelcase */
 /* eslint-disable no-console */
 /* eslint-disable no-unused-vars */
@@ -15,7 +16,7 @@ import Dialog from '@mui/material/Dialog';
 import dataApi from '../../../../../utils/dataApi';
 import renderSelectField from '../../../../../shared/components/form/Select';
 
-const CreateForm = ({ isOpen, handleClose }) => {
+const CreateForm = ({ isOpen, handleClose, data }) => {
   const [outcomes, setOutcomes] = useState(null);
   const [metode, setMetode] = useState(null);
   const [sistemPenilaian, setSistemPenilaian] = useState(null);
@@ -25,7 +26,7 @@ const CreateForm = ({ isOpen, handleClose }) => {
   const [refleksi, setRefleksi] = useState(null);
   const [rekomendasiDosen, setRekomendasiDosen] = useState(null);
   const [rekomendasiUniv, setRekomendasiUniv] = useState(null);
-  const [suratPenugasan, setSuratPenugasan] = useState(null);
+  const [penugasan, setPenugasan] = useState(null);
   const [penugasanId, setpenugasanId] = useState([]);
   const [isError, setError] = useState(false);
 
@@ -52,9 +53,9 @@ const CreateForm = ({ isOpen, handleClose }) => {
     dataForm.append('refleksi_pelaksanaan', refleksi);
     dataForm.append('rekomendasi_perbaikan_dosen', rekomendasiDosen);
     dataForm.append('rekomendasi_perbaikan_univ', rekomendasiUniv);
-    dataForm.append('surat_penugasan', suratPenugasan);
+    dataForm.append('penugasan', data);
 
-    dataApi.postPenugasanPengajaran(dataForm).then((resp) => {
+    dataApi.postPortofolioPerkuliahan(dataForm).then((resp) => {
       // eslint-disable-next-line no-console
       console.log(resp);
       handleClose();
@@ -217,19 +218,19 @@ const CreateForm = ({ isOpen, handleClose }) => {
                         />
                       </div>
                     </div>
-                    <div className="form__form-group">
-                      <span className="form__form-group-label">Surat Penugasan</span>
+                    {/* <div className="form__form-group">
+                      <span className="form__form-group-label">Penugasan</span>
                       <div className="form__form-group-field">
                         <Field
-                          name="surat_penugasan"
+                          name="penugasan"
                           component={renderSelectField}
                           options={penugasanId}
                           onChange={(e) => {
-                            setSuratPenugasan(e.value);
+                            setPenugasan(e.value);
                           }}
                         />
                       </div>
-                    </div>
+                    </div> */}
                     <ButtonToolbar className="form__button-toolbar">
                       <Button color="primary" onClick={handleSubmit}>Submit</Button>
                       <Button type="button" onClick={handleClose}>
