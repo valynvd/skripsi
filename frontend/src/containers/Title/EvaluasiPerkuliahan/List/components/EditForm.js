@@ -79,7 +79,6 @@ const EditForm = ({
       });
 
     if (data) {
-      console.log(data);
       const initData = {
         id: data.id,
         sks_realisasi: data.sks_realisasi,
@@ -118,10 +117,10 @@ const EditForm = ({
       dataForm.append('periode', editPeriode);
     }
     // eslint-disable-next-line camelcase
-    if (suratPenugasan !== editSuratPenugasan && suratPenugasan !== '') {
+    if (suratPenugasan !== editSuratPenugasan && editSuratPenugasan !== '') {
       dataForm.append('surat_penugasan', editSuratPenugasan);
     }
-    if (dosenPengampu !== editDosenPengampu && dosenPengampu !== '') {
+    if (dosenPengampu !== editDosenPengampu && editDosenPengampu !== '') {
       dataForm.append('dosen_pengampu', editDosenPengampu);
     }
     if (mataKuliah !== editMataKuliah && mataKuliah !== '') {

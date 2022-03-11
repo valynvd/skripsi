@@ -9,30 +9,41 @@ import {
   PENUGASANPENGAJARAN,
   EVALUASIPERKULIAHAN,
   PORTOFOLIOPERKULIAHAN,
+  SURATPENUGASAN,
+  MATAKULIAH,
 } from './urls';
 
 export default {
   // GET
   getMatrixPenilaian: () => get(POINPENILAIAN),
+  getMataKuliah: () => get(MATAKULIAH),
   getEvaluasiPerkuliahan: () => get(EVALUASIPERKULIAHAN),
+  getSuratPenugasan: () => get(SURATPENUGASAN),
   getPenugasanPengajaran: () => get(PENUGASANPENGAJARAN),
   getPortofolioPerkuliahan: () => get(PORTOFOLIOPERKULIAHAN),
+  getMataKuliahbyId: (id) => get(`${MATAKULIAH}${id}/`),
   getEvaluasiPerkuliahanbyId: (id) => get(`${EVALUASIPERKULIAHAN}${id}/`),
   getPortofolioPerkuliahanbyId: (id) => get(`${PORTOFOLIOPERKULIAHAN}${id}/`),
   getFolderbyMatrix: (id) => get(`${FOLDERBYMATRIX}${id}`),
   getFolderbyFolder: (id) => get(`${FOLDERBYFOLDER}${id}`),
   // POST
   postMatrixPenilaian: (body, params) => post(POINPENILAIAN, body, params),
+  postMataKuliah: (body, params) => post(MATAKULIAH, body, params),
+  postSuratPenugasan: (body, params) => post(SURATPENUGASAN, body, params),
   postPenugasanPengajaran: (body, params) => post(PENUGASANPENGAJARAN, body, params),
   postPortofolioPerkuliahan: (body, params) => post(PORTOFOLIOPERKULIAHAN, body, params),
   postEvaluasiPerkuliahan: (body, params) => post(EVALUASIPERKULIAHAN, body, params),
   // EDIT
   editMatrixPenilaian: (id, body, params) => patch(`${POINPENILAIAN}${id}/`, body, params),
+  editMataKuliah: (id, body, params) => patch(`${MATAKULIAH}${id}/`, body, params),
+  editSuratPenugasan: (id, body, params) => patch(`${SURATPENUGASAN}${id}/`, body, params),
   editPenugasanPengajaran: (id, body, params) => patch(`${PENUGASANPENGAJARAN}${id}/`, body, params),
   editEvaluasiPerkuliahan: (id, body, params) => patch(`${EVALUASIPERKULIAHAN}${id}/`, body, params),
   editPortofolioPerkuliahan: (id, body, params) => patch(`${PORTOFOLIOPERKULIAHAN}${id}/`, body, params),
   // DELETE
   deleteMatrixPenilaian: (id) => deleteRequest(`${POINPENILAIAN}${id}/`),
+  deleteMataKuliah: (id) => deleteRequest(`${MATAKULIAH}${id}/`),
+  deleteSuratPenugasan: (id) => deleteRequest(`${SURATPENUGASAN}${id}/`),
   deletePenugasanPengajaran: (id) => deleteRequest(`${PENUGASANPENGAJARAN}${id}/`),
   deleteEvaluasiPerkuliahan: (id) => deleteRequest(`${EVALUASIPERKULIAHAN}${id}/`),
   deletePortofolioPerkuliahan: (id) => deleteRequest(`${PORTOFOLIOPERKULIAHAN}${id}/`),
