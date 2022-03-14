@@ -23,6 +23,7 @@ export default {
   getPortofolioPerkuliahan: () => get(PORTOFOLIOPERKULIAHAN),
   getMataKuliahbyId: (id) => get(`${MATAKULIAH}${id}/`),
   getEvaluasiPerkuliahanbyId: (id) => get(`${EVALUASIPERKULIAHAN}${id}/`),
+  getPenugasanPengajaranbyId: (id) => get(`${PENUGASANPENGAJARAN}${id}/`),
   getPortofolioPerkuliahanbyId: (id) => get(`${PORTOFOLIOPERKULIAHAN}${id}/`),
   getFolderbyMatrix: (id) => get(`${FOLDERBYMATRIX}${id}`),
   getFolderbyFolder: (id) => get(`${FOLDERBYFOLDER}${id}`),

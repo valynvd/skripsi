@@ -17,10 +17,10 @@ import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
+import Book from '@mui/icons-material/Book';
 import Divider from '@mui/material/Divider';
 import CreateForm from './CreateForm';
 import EditForm from './EditForm';
@@ -98,7 +98,7 @@ const ListMataKuliah = () => {
               }}
               >
                 <ListItemIcon>
-                  <FolderOpenIcon className="icon" />
+                  <Book className="icon" />
                 </ListItemIcon>
                 <ListItemText>
                   <p>[{filteredMataKuliah[i].kode}] {filteredMataKuliah[i].name}</p>

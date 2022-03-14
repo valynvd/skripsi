@@ -27,7 +27,7 @@ import EditForm from './EditForm';
 import DeleteForm from './DeleteForm';
 import dataApi from '../../../../../utils/dataApi';
 
-const ListEvaluasiPerkuliahan = () => {
+const ListPenugasanPengajaran = () => {
   const [searchText, setSearchText] = useState('');
   const [post, setPost] = useState([]);
   const [penugasan, setPenugasan] = useState([]);
@@ -94,7 +94,7 @@ const ListEvaluasiPerkuliahan = () => {
           <List>
             <ListItem disablePadding>
               <ListItemButton onClick={() => {
-                history.push(`/dashboard/evaluasi/${filteredPenugasan[i].id}`);
+                history.push(`/dashboard/penugasan/${filteredPenugasan[i].id}`);
               }}
               >
                 <ListItemIcon>
@@ -104,6 +104,24 @@ const ListEvaluasiPerkuliahan = () => {
                   <p>[{filteredPenugasan[i].surat_penugasan_detail.judul}] - {filteredPenugasan[i].dosen_pengampu_detail.inisial} - {filteredPenugasan[i].mata_kuliah_detail.name}</p>
                 </ListItemText>
               </ListItemButton>
+              <Box className="row">
+                <Button
+                  onClick={() => handleEditForm(filteredPenugasan[i])}
+                  variant="transparent"
+                  startIcon={<ModeEditIcon />}
+                  className="icon"
+                >
+                  <h5 className="bold-text">Edit</h5>
+                </Button>
+                <Button
+                  onClick={() => handleDeleteForm(filteredPenugasan[i])}
+                  variant="transparent"
+                  startIcon={<DeleteIcon />}
+                  className="icon"
+                >
+                  <h5 className="bold-text">Delete</h5>
+                </Button>
+              </Box>
             </ListItem>
           </List>
         </>,
@@ -120,7 +138,7 @@ const ListEvaluasiPerkuliahan = () => {
         <CreateForm isOpen={isCreateFormOpen} handleClose={handleCloseForm} />
         <CardBody>
           <div className="card__title">
-            <h5 className="bold-text">Evaluasi</h5>
+            <h5 className="bold-text">Penugasan Pengajaran</h5>
           </div>
 
           <div className="mb-3">
@@ -157,4 +175,4 @@ const ListEvaluasiPerkuliahan = () => {
   );
 };
 
-export default ListEvaluasiPerkuliahan;
+export default ListPenugasanPengajaran;

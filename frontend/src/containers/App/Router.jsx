@@ -13,6 +13,8 @@ import Portofolio from '../Title/PortofolioPerkuliahan/List/index';
 import SubPortofolio from '../Title/PortofolioPerkuliahan/SubList/index';
 import DetailPortofolio from '../Title/PortofolioPerkuliahan/Detail/index';
 import SuratPenugasan from '../Title/SuratPenugasan/index';
+import ListPenugasan from '../Title/PenugasanPengajaran/List/index';
+import DetailPenugasan from '../Title/PenugasanPengajaran/Detail/index';
 import MataKuliahList from '../Title/MataKuliah/List/index';
 import MataKuliahDetail from '../Title/MataKuliah/Detail/index';
 
@@ -24,10 +26,12 @@ const Pages = () => (
     <Route path="/dashboard/evaluasi/:id" exact component={DetailEvaluasi} />
     <Route path="/dashboard/portofolio/:id" exact component={SubPortofolio} />
     <Route path="/dashboard/portofolio/detail/:id" exact component={DetailPortofolio} />
+    <Route path="/dashboard/penugasan/:id" exact component={DetailPenugasan} />
     <Route path="/dashboard/akreditasi" component={Akreditasi} />
     <Route path="/dashboard/evaluasi" exact component={ListEvaluasi} />
     <Route path="/dashboard/portofolio" exact component={Portofolio} />
     <Route path="/dashboard/suratpenugasan" exact component={SuratPenugasan} />
+    <Route path="/dashboard/penugasan" exact component={ListPenugasan} />
     <Route path="/dashboard/matakuliah" exact component={MataKuliahList} />
     <Route path="/dashboard" component={Dashboard} />
   </Switch>
