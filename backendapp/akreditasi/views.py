@@ -50,6 +50,18 @@ class ListFileFolderViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.ListFileFolderSerializers
     queryset = models.FileFolder.objects.all()
 
+class KriteriaViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.KriteriaSerializers
+    queryset = models.Kriteria.objects.all()
+
+class FolderFileByKriteria(viewsets.ModelViewSet):
+    serializer_class = serializers.FileFolderSerializers
+    queryset = models.FileFolder.objects.all()
+
+    def get_queryset(self):
+        kriteria_id = self.kwargs['kriteria_id']
+        return models.FileFolder.objects.filter(kriteria__id = kriteria_id).order_by('nama')
+
     # def get_permissions(self):
     #     if self.action in ['list','retrieve']:
     #         self.permission_classes = [AllowAny]
