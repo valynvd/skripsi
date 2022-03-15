@@ -23,6 +23,9 @@ const SidebarContent = ({ onClick }) => {
           <SidebarLink title="Surat Penugasan" route="/dashboard/suratpenugasan" onClick={handleHideSidebar} />
           <SidebarLink title="Penugasan Pengajaran" route="/dashboard/penugasan" onClick={handleHideSidebar} />
           <SidebarLink title="Mata Kuliah" route="/dashboard/matakuliah" onClick={handleHideSidebar} />
+          <SidebarLink title="Kurikulum" route="/dashboard/kurikulum" onClick={handleHideSidebar} />
+          <SidebarLink title="Program Studi" route="/dashboard/programstudi" onClick={handleHideSidebar} />
+          <SidebarLink title="Dosen" route="/dashboard/dosen" onClick={handleHideSidebar} />
         </SidebarCategory>
       </ul>
     </div>

@@ -17,6 +17,12 @@ import ListPenugasan from '../Title/PenugasanPengajaran/List/index';
 import DetailPenugasan from '../Title/PenugasanPengajaran/Detail/index';
 import MataKuliahList from '../Title/MataKuliah/List/index';
 import MataKuliahDetail from '../Title/MataKuliah/Detail/index';
+import ListKurikulum from '../Title/Kurikulum/List/index';
+import DetailKurikulum from '../Title/Kurikulum/Detail/index';
+import ListProstudi from '../Title/ProgramStudi/List/index';
+import DetailProstudi from '../Title/ProgramStudi/Detail/index';
+import ListDosen from '../Title/Dosen/List/index';
+import DetailDos from '../Title/Dosen/Detail/index';
 
 const Pages = () => (
   <Switch>
@@ -27,12 +33,18 @@ const Pages = () => (
     <Route path="/dashboard/portofolio/:id" exact component={SubPortofolio} />
     <Route path="/dashboard/portofolio/detail/:id" exact component={DetailPortofolio} />
     <Route path="/dashboard/penugasan/:id" exact component={DetailPenugasan} />
+    <Route path="/dashboard/kurikulum/:id" exact component={DetailKurikulum} />
+    <Route path="/dashboard/dosen/:id" exact component={DetailDos} />
+    <Route path="/dashboard/programstudi/:id" exact component={DetailProstudi} />
     <Route path="/dashboard/akreditasi" component={Akreditasi} />
     <Route path="/dashboard/evaluasi" exact component={ListEvaluasi} />
     <Route path="/dashboard/portofolio" exact component={Portofolio} />
     <Route path="/dashboard/suratpenugasan" exact component={SuratPenugasan} />
     <Route path="/dashboard/penugasan" exact component={ListPenugasan} />
     <Route path="/dashboard/matakuliah" exact component={MataKuliahList} />
+    <Route path="/dashboard/kurikulum" exact component={ListKurikulum} />
+    <Route path="/dashboard/programstudi" exact component={ListProstudi} />
+    <Route path="/dashboard/dosen" exact component={ListDosen} />
     <Route path="/dashboard" component={Dashboard} />
   </Switch>
 );

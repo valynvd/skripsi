@@ -11,6 +11,9 @@ import {
   PORTOFOLIOPERKULIAHAN,
   SURATPENUGASAN,
   MATAKULIAH,
+  KURIKULUM,
+  PROGRAMSTUDI,
+  DOSEN,
 } from './urls';
 
 export default {
@@ -21,6 +24,12 @@ export default {
   getSuratPenugasan: () => get(SURATPENUGASAN),
   getPenugasanPengajaran: () => get(PENUGASANPENGAJARAN),
   getPortofolioPerkuliahan: () => get(PORTOFOLIOPERKULIAHAN),
+  getKurikulum: () => get(KURIKULUM),
+  getProgramStudi: () => get(PROGRAMSTUDI),
+  getDosen: () => get(DOSEN),
+  getDosenbyId: (id) => get(`${DOSEN}${id}/`),
+  getProgramStudibyId: (id) => get(`${PROGRAMSTUDI}${id}/`),
+  getKurikulumbyId: (id) => get(`${KURIKULUM}${id}/`),
   getMataKuliahbyId: (id) => get(`${MATAKULIAH}${id}/`),
   getEvaluasiPerkuliahanbyId: (id) => get(`${EVALUASIPERKULIAHAN}${id}/`),
   getPenugasanPengajaranbyId: (id) => get(`${PENUGASANPENGAJARAN}${id}/`),
@@ -32,6 +41,9 @@ export default {
   postMataKuliah: (body, params) => post(MATAKULIAH, body, params),
   postSuratPenugasan: (body, params) => post(SURATPENUGASAN, body, params),
   postPenugasanPengajaran: (body, params) => post(PENUGASANPENGAJARAN, body, params),
+  postKurikulum: (body, params) => post(KURIKULUM, body, params),
+  postDosen: (body, params) => post(DOSEN, body, params),
+  postProgramStudi: (body, params) => post(PROGRAMSTUDI, body, params),
   postPortofolioPerkuliahan: (body, params) => post(PORTOFOLIOPERKULIAHAN, body, params),
   postEvaluasiPerkuliahan: (body, params) => post(EVALUASIPERKULIAHAN, body, params),
   // EDIT
@@ -39,6 +51,8 @@ export default {
   editMataKuliah: (id, body, params) => patch(`${MATAKULIAH}${id}/`, body, params),
   editSuratPenugasan: (id, body, params) => patch(`${SURATPENUGASAN}${id}/`, body, params),
   editPenugasanPengajaran: (id, body, params) => patch(`${PENUGASANPENGAJARAN}${id}/`, body, params),
+  editKurikulum: (id, body, params) => patch(`${KURIKULUM}${id}/`, body, params),
+  editProgramStudi: (id, body, params) => patch(`${PROGRAMSTUDI}${id}/`, body, params),
   editEvaluasiPerkuliahan: (id, body, params) => patch(`${EVALUASIPERKULIAHAN}${id}/`, body, params),
   editPortofolioPerkuliahan: (id, body, params) => patch(`${PORTOFOLIOPERKULIAHAN}${id}/`, body, params),
   // DELETE
@@ -46,6 +60,9 @@ export default {
   deleteMataKuliah: (id) => deleteRequest(`${MATAKULIAH}${id}/`),
   deleteSuratPenugasan: (id) => deleteRequest(`${SURATPENUGASAN}${id}/`),
   deletePenugasanPengajaran: (id) => deleteRequest(`${PENUGASANPENGAJARAN}${id}/`),
+  deleteKurikulum: (id) => deleteRequest(`${KURIKULUM}${id}/`),
+  deleteProgramStudi: (id) => deleteRequest(`${PROGRAMSTUDI}${id}/`),
+  deleteDosen: (id) => deleteRequest(`${DOSEN}${id}/`),
   deleteEvaluasiPerkuliahan: (id) => deleteRequest(`${EVALUASIPERKULIAHAN}${id}/`),
   deletePortofolioPerkuliahan: (id) => deleteRequest(`${PORTOFOLIOPERKULIAHAN}${id}/`),
   // CRUD for FileFolder

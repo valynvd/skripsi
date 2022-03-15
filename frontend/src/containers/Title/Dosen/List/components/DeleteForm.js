@@ -13,7 +13,7 @@ import dataApi from '../../../../../utils/dataApi';
 const DeleteForm = ({ isOpen, handleClose, data }) => {
   const [isError, setError] = useState(false);
   const handleSubmit = () => {
-    dataApi.deleteDosen(data.id).then((resp) => {
+    dataApi.deleteProgramStudi(data.id).then((resp) => {
       // eslint-disable-next-line no-console
       console.log(resp);
       handleClose();

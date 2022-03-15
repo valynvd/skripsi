@@ -52,7 +52,9 @@ const DetailMataKuliah = ({ id }) => {
         <div>
           <h5 className="bold-text">Kurikulum</h5>
           { isFetching && <Spinner className="spinner table-fetch-spinner mt-2" /> }
-          <p>{mataKuliah.kurikulum}</p>
+          { mataKuliah.kurikulum_detail === null || mataKuliah.kurikulum_detail === undefined
+            ? <p>None</p>
+            : <p>{mataKuliah.kurikulum_detail.name}</p>}
         </div>
         <hr />
         <div>
@@ -91,7 +93,7 @@ const DetailMataKuliah = ({ id }) => {
             <h5 className="bold-text">{mataKuliah.name}</h5>
           </div>
 
-          {printMataKuliah()}
+          {isFetching ? null : printMataKuliah() }
         </CardBody>
       </Card>
     </Col>

@@ -10,15 +10,19 @@ import { useHistory } from 'react-router-dom';
 import {
   Card, CardBody, Col, Spinner,
 } from 'reactstrap';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import dataApi from '../../../../../utils/dataApi';
 
-const DetailPenugasanPengajaran = ({ id }) => {
+const DetailProgramStudi = ({ id }) => {
   const [post, setPost] = useState([]);
   const [isFetching, setFetching] = useState(true);
 
   const getData = async () => {
     try {
-      const resp = await dataApi.getPenugasanPengajaranbyId(id);
+      const resp = await dataApi.getProgramStudibyId(id);
       return resp;
     } catch (error) {
       return [];
@@ -26,6 +30,7 @@ const DetailPenugasanPengajaran = ({ id }) => {
   };
   useEffect(async () => {
     const matrix = await getData();
+    console.log(matrix.data);
     setPost(matrix.data);
     setFetching(false);
   }, []);
@@ -40,39 +45,15 @@ const DetailPenugasanPengajaran = ({ id }) => {
     test.push(
       <>
         <div>
-          <h5 className="bold-text">SKS Realisasi</h5>
+          <h5 className="bold-text">Name</h5>
           { isFetching && <Spinner className="spinner table-fetch-spinner mt-2" /> }
-          <p>{post.sks_realisasi}</p>
+          <p>{post.name}</p>
         </div>
         <hr />
         <div>
-          <h5 className="bold-text">Tahun</h5>
+          <h5 className="bold-text">Kode</h5>
           { isFetching && <Spinner className="spinner table-fetch-spinner mt-2" /> }
-          <p>{post.tahun}</p>
-        </div>
-        <hr />
-        <div>
-          <h5 className="bold-text">Periode</h5>
-          { isFetching && <Spinner className="spinner table-fetch-spinner mt-2" /> }
-          <p>{post.periode}</p>
-        </div>
-        <hr />
-        <div>
-          <h5 className="bold-text">Surat Penugasan</h5>
-          { isFetching && <Spinner className="spinner table-fetch-spinner mt-2" /> }
-          <p>{post.surat_penugasan_detail.judul}</p>
-        </div>
-        <hr />
-        <div>
-          <h5 className="bold-text">Dosen Pengampu</h5>
-          { isFetching && <Spinner className="spinner table-fetch-spinner mt-2" /> }
-          <p>{post.dosen_pengampu_detail.name}</p>
-        </div>
-        <hr />
-        <div>
-          <h5 className="bold-text">Mata Kuliah</h5>
-          { isFetching && <Spinner className="spinner table-fetch-spinner mt-2" /> }
-          <p>{post.mata_kuliah_detail.name}</p>
+          <p>{post.kode}</p>
         </div>
       </>,
     );
@@ -94,4 +75,4 @@ const DetailPenugasanPengajaran = ({ id }) => {
   );
 };
 
-export default DetailPenugasanPengajaran;
+export default DetailProgramStudi;
