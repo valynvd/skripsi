@@ -15,7 +15,16 @@ const SidebarContent = ({ onClick }) => {
       </ul>
       <ul className="sidebar__block">
         <SidebarCategory title="Akreditasi" icon="diamond">
-          <SidebarLink title="Matrix Penilaian" route="/dashboard/akreditasi" onClick={handleHideSidebar} />
+          {/* <SidebarLink title="Matrix Penilaian" route="/dashboard/akreditasi" onClick={handleHideSidebar} /> */}
+          <SidebarLink title="Kriteria 1" route="/dashboard/kriteria/1" onClick={handleHideSidebar} />
+          <SidebarLink title="Kriteria 2" route="/dashboard/kriteria/2" onClick={handleHideSidebar} />
+          <SidebarLink title="Kriteria 3" route="/dashboard/kriteria/3" onClick={handleHideSidebar} />
+          <SidebarLink title="Kriteria 4" route="/dashboard/kriteria/4" onClick={handleHideSidebar} />
+          <SidebarLink title="Kriteria 5" route="/dashboard/kriteria/5" onClick={handleHideSidebar} />
+          <SidebarLink title="Kriteria 6" route="/dashboard/kriteria/6" onClick={handleHideSidebar} />
+          <SidebarLink title="Kriteria 7" route="/dashboard/kriteria/7" onClick={handleHideSidebar} />
+          <SidebarLink title="Kriteria 8" route="/dashboard/kriteria/8" onClick={handleHideSidebar} />
+          <SidebarLink title="Kriteria 9" route="/dashboard/kriteria/9" onClick={handleHideSidebar} />
         </SidebarCategory>
         <SidebarCategory title="Aktivitas Prodi" icon="diamond">
           <SidebarLink title="Evaluasi Perkuliahan" route="/dashboard/evaluasi" onClick={handleHideSidebar} />

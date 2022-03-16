@@ -28,3 +28,4 @@ export const POINPENILAIAN = `${API}/poinpenilaian/`;
 export const FOLDER = `${API}/filefolder/`;
 export const FOLDERBYMATRIX = `${API}/folderbymatrix/`;
 export const FOLDERBYFOLDER = `${API}/folderbyfolder/`;
+export const FOLDERBYKRITERIA = `${API}/folderbykriteria/`;

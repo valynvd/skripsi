@@ -1,63 +1,99 @@
-/* eslint-disable no-console */
+/* eslint-disable no-plusplus */
+/* eslint-disable max-len */
 import React, { useState, useEffect } from 'react';
 import {
   Card, CardBody, Col, Button, ButtonToolbar, Container, Row, Alert,
 } from 'reactstrap';
+import axios from 'axios';
 import Box from '@mui/material/Box';
 import PropTypes from 'prop-types';
 import { Field, reduxForm } from 'redux-form';
 import Modal from '@mui/material/Modal';
+import renderFileInputField from '../../../shared/components/form/FileInput';
+import renderSelectField from '../../../shared/components/form/Select';
 import dataApi from '../../../utils/dataApi';
 
 const EditForm = ({
   isOpen, handleClose, data, initialize,
 }) => {
-  const [kode, setKode] = useState(null);
-  const [element, setElement] = useState(null);
-  const [indikator, setIndikator] = useState(null);
-  const [skorMaksimal, setSkorMaksimal] = useState(null);
+  const [jenis, setJenis] = useState(null);
+  const [nama, setNama] = useState(null);
+  const [file, setFile] = useState(null);
+  const [dosen, setDosen] = useState(null);
+  const [prodi, setProdi] = useState(null);
+  const [dosenId, setDosenId] = useState(null);
+  const [prodiId, setProdiId] = useState(null);
   // Variabel state for edit
-  const [editKode, setEditKode] = useState(null);
-  const [editElement, setEditElement] = useState(null);
-  const [editIndikator, setEditIndikator] = useState(null);
-  const [editSkorMaksimal, setEditSkorMaksimal] = useState(null);
+  const [editJenis, setEditJenis] = useState(null);
+  const [editNama, setEditNama] = useState(null);
+  const [editFile, setEditFile] = useState(null);
+  const [editDosen, setEditDosen] = useState(null);
+  const [editProdi, setEditProdi] = useState(null);
 
   const [isError, setError] = useState(false);
 
   useEffect(() => {
+    axios.get('https://ec2-13-250-45-157.ap-southeast-1.compute.amazonaws.com/api-stem/dosen/', { headers: { Authorization: 'Token 09c9448751b03b41f5f5da66e549aa3290eef362' } })
+      .then((response) => {
+        const testing = response.data;
+        const Data = [{ value: null, label: '---' }];
+        for (let i = 0; i < testing.length; i++) {
+          Data.push((({ id, name }) => ({ value: id, label: name }))(testing[i]));
+        }
+        setDosenId(Data);
+      });
+
+    axios.get('https://ec2-13-250-45-157.ap-southeast-1.compute.amazonaws.com/api-stem/programstudi/', { headers: { Authorization: 'Token 09c9448751b03b41f5f5da66e549aa3290eef362' } })
+      .then((response) => {
+        const testing = response.data;
+        const Data = [{ value: null, label: '---' }];
+        for (let i = 0; i < testing.length; i++) {
+          Data.push((({ id, name }) => ({ value: id, label: name }))(testing[i]));
+        }
+        setProdiId(Data);
+      });
+
     if (data) {
       const initData = {
-        kode: data.kode,
-        element: data.element,
-        indikator: data.indikator,
-        skor_maksimal: data.skor_maksimal,
+        jenis: data.jenis === 'folder'
+          ? { value: 'folder', label: 'Folder' }
+          : { value: 'file', label: 'File' },
+        nama_folderfile: data.nama,
+        file: data.files,
+        dosen: { value: data.dosen_detail.id, label: data.dosen_detail.name },
+        prodi: { value: data.prodi_detail.id, label: data.prodi_detail.name },
       };
       initialize(initData);
-      setKode(data.kode);
-      setElement(data.element);
-      setIndikator(data.indikator);
-      setSkorMaksimal(data.skor_maksimal);
-      setEditKode(data.kode);
-      setEditElement(data.element);
-      setEditIndikator(data.indikator);
-      setEditSkorMaksimal(data.skor_maksimal);
+      setJenis(data.jenis);
+      setNama(data.nama);
+      setFile(data.files);
+      setDosen(data.dosen);
+      setProdi(data.prodi);
+      setEditJenis(data.jenis);
+      setEditNama(data.nama);
+      setEditFile(data.files);
+      setEditDosen(data.dosen);
+      setEditProdi(data.prodi);
     }
   }, [data, initialize]);
   const handleSubmit = () => {
     const dataForm = new FormData();
-    if (kode !== editKode && editKode !== '') {
-      dataForm.append('kode', editKode);
+    if (jenis !== editJenis && editJenis !== '') {
+      dataForm.append('jenis', editJenis);
     }
-    if (element !== editElement && editElement !== '') {
-      dataForm.append('element', editElement);
+    if (nama !== editNama && editNama !== '') {
+      dataForm.append('nama', editNama);
     }
-    if (indikator !== editIndikator && editIndikator !== '') {
-      dataForm.append('indikator', editIndikator);
+    if (file !== editFile) {
+      dataForm.append('files', editFile);
     }
-    if (skorMaksimal !== editSkorMaksimal && editSkorMaksimal !== '') {
-      dataForm.append('skor_maksimal', editSkorMaksimal);
+    if (dosen !== editDosen && editDosen !== '') {
+      dataForm.append('dosen', editDosen);
     }
-    dataApi.editMatrixPenilaian(data.id, dataForm).then((resp) => {
+    if (prodi !== editProdi && editProdi !== '') {
+      dataForm.append('prodi', editProdi);
+    }
+    dataApi.editFolderFile(data.id, dataForm).then((resp) => {
       // eslint-disable-next-line no-console
       console.log('success edit', resp);
       handleClose();
@@ -106,58 +142,74 @@ const EditForm = ({
                   </div>
                   <form className="form form--horizontal">
                     <div className="form__form-group">
-                      <span className="form__form-group-label">Kode</span>
+                      <span className="form__form-group-label">Jenis</span>
                       <div className="form__form-group-field">
                         <Field
-                          name="kode"
+                          name="jenis"
+                          component={renderSelectField}
+                          options={[
+                            { value: 'folder', label: 'Folder' },
+                            { value: 'file', label: 'File' },
+                          ]}
+                          onChange={(e) => setEditJenis(e.value)}
+                        />
+                      </div>
+                    </div>
+                    <div className="form__form-group">
+                      <span className="form__form-group-label">Nama {jenis}</span>
+                      <div className="form__form-group-field">
+                        <Field
+                          name="nama_folderfile"
                           component="input"
                           type="text"
-                          placeholder="Tulis Kode"
+                          placeholder={`Tulis nama ${jenis}`}
                           onChange={(e) => {
-                            setEditKode(e.target.value);
+                            setEditNama(e.target.value);
                           }}
                         />
                       </div>
                     </div>
+                    {jenis === 'file' && (
                     <div className="form__form-group">
-                      <span className="form__form-group-label">Element</span>
+                      <span className="form__form-group-label">
+                        File Pendukung
+                      </span>
+                      <div className="form__form-group-field">
+                        <div>
+                          <a
+                            href={file}
+                            target="_blank"
+                            rel="noreferrer"
+                          > Download file
+                          </a>
+                          <Field
+                            name="file"
+                            component={renderFileInputField}
+                            onChange={(e) => setEditFile(e.file)}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    )}
+                    <div className="form__form-group">
+                      <span className="form__form-group-label">Dosen</span>
                       <div className="form__form-group-field">
                         <Field
-                          name="element"
-                          component="input"
-                          type="text"
-                          placeholder="Tulis Element"
-                          onChange={(e) => {
-                            setEditElement(e.target.value);
-                          }}
+                          name="dosen"
+                          component={renderSelectField}
+                          options={dosenId}
+                          onChange={(e) => setEditDosen(e.value)}
                         />
                       </div>
                     </div>
                     <div className="form__form-group">
-                      <span className="form__form-group-label">Indikator</span>
+                      <span className="form__form-group-label">Prodi</span>
                       <div className="form__form-group-field">
                         <Field
-                          name="indikator"
-                          component="textarea"
-                          type="text"
-                          placeholder="Tulis Indikator"
-                          onChange={(e) => {
-                            setEditIndikator(e.target.value);
-                          }}
-                        />
-                      </div>
-                    </div>
-                    <div className="form__form-group">
-                      <span className="form__form-group-label">Skor Maksimal</span>
-                      <div className="form__form-group-field">
-                        <Field
-                          name="skor_maksimal"
-                          component="textarea"
-                          type="text"
-                          placeholder="Tulis Skor Maksimal"
-                          onChange={(e) => {
-                            setEditSkorMaksimal(e.target.value);
-                          }}
+                          name="prodi"
+                          component={renderSelectField}
+                          options={prodiId}
+                          onChange={(e) => setEditProdi(e.value)}
                         />
                       </div>
                     </div>

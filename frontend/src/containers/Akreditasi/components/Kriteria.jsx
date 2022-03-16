@@ -1,3 +1,6 @@
+/* eslint-disable max-len */
+/* eslint-disable no-console */
+/* eslint-disable react/prop-types */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 import {
@@ -26,10 +29,10 @@ import CreateForm from './CreateForm';
 import EditForm from './EditForm';
 import DeleteForm from './DeleteForm';
 
-const MatrixPenilaian = () => {
+const Kriteria = ({ id }) => {
   const [searchText, setSearchText] = useState('');
-  const [matrixPenilaian, setMatrixPenilaian] = useState([]);
-  const [filteredMatrixPenilaian, setFilteredMatrixPenilaian] = useState([]);
+  const [kriteria, setKriteria] = useState([]);
+  const [filteredKriteria, setFilteredKriteria] = useState([]);
   const [isFetching, setFetching] = useState(true);
   const [isCreateFormOpen, setCreateFormOpen] = useState(false);
   const [isEditFormOpen, setEditFormOpen] = useState(false);
@@ -40,18 +43,19 @@ const MatrixPenilaian = () => {
 
   const getData = async () => {
     try {
-      const resp = await dataApi.getMatrixPenilaian();
+      const resp = await dataApi.getFolderbyKriteria(id);
       return resp;
     } catch (error) {
       return [];
     }
   };
+
   useEffect(async () => {
     const matrix = await getData();
-    setMatrixPenilaian(matrix.data);
-    setFilteredMatrixPenilaian(matrix.data);
+    setKriteria(matrix.data);
+    setFilteredKriteria(matrix.data);
     setFetching(false);
-  }, []);
+  }, [id]);
 
   const onFetch = () => {
     setFetching(false);
@@ -83,10 +87,21 @@ const MatrixPenilaian = () => {
     setDeleteFormOpen(false);
   };
 
-  const folders = filteredMatrixPenilaian.map((val) => (
+  const printTitle = () => {
+    const test = [];
+    test.push(
+      <div className="card__title">
+        <h5 className="bold-text">Kriteria {id}</h5>
+        {kriteria[0] === undefined ? <div /> : <h5 className="subhead">{kriteria[0].kriteria_detail.deskripsi}</h5>}
+      </div>,
+    );
+    return test;
+  };
+
+  const folders = filteredKriteria.map((val) => (
     <ListItem key={val.id} disablePadding>
       <ListItemButton onClick={() => {
-        history.push(`/dashboard/folder/${val.id}`, {
+        history.push(`/dashboard/subfolder/${val.id}`, {
           data: val,
         });
       }}
@@ -95,7 +110,7 @@ const MatrixPenilaian = () => {
           <FolderOpenIcon className="icon" />
         </ListItemIcon>
         <ListItemText>
-          <p>{val.kode} {val.element}</p>
+          <p>{val.nama}</p>
         </ListItemText>
       </ListItemButton>
       <Box className="row">
@@ -121,15 +136,12 @@ const MatrixPenilaian = () => {
 
   return (
     <Col md={12}>
-      <CreateForm isOpen={isCreateFormOpen} handleClose={handleCloseForm} />
+      <CreateForm data={id} isOpen={isCreateFormOpen} handleClose={handleCloseForm} />
       <EditForm data={selectedDataEdit} isOpen={isEditFormOpen} handleClose={handleCloseEditForm} />
       <DeleteForm data={selectedDataDelete} isOpen={isDeleteFormOpen} handleClose={handleCloseDeleteForm} />
       <Card>
         <CardBody>
-          <div className="card__title">
-            <h5 className="bold-text">Matrix Penilaian</h5>
-            <h5 className="subhead">Data berdasarkan lampiran 6a BAN PT</h5>
-          </div>
+          {isFetching ? null : printTitle()}
           <div className="mb-3">
             <InputGroup className="d-flex align-items-center">
               <Input
@@ -139,12 +151,12 @@ const MatrixPenilaian = () => {
                 onChange={(e) => {
                   setSearchText(e.target.value);
                   if (e.target.value === '') {
-                    setFilteredMatrixPenilaian(matrixPenilaian);
+                    setFilteredKriteria(kriteria);
                   } else {
-                    const filtered = matrixPenilaian.filter(
+                    const filtered = kriteria.filter(
                       (el) => el.element.toLowerCase().includes(e.target.value.toLowerCase()),
                     );
-                    setFilteredMatrixPenilaian(filtered);
+                    setFilteredKriteria(filtered);
                   }
                 }}
               />
@@ -169,4 +181,4 @@ const MatrixPenilaian = () => {
   );
 };
 
-export default MatrixPenilaian;
+export default Kriteria;

@@ -1,5 +1,3 @@
-/* eslint-disable max-len */
-/* eslint-disable no-console */
 import React, { useState } from 'react';
 import {
   Card, CardBody, Col, Button, ButtonToolbar, Container, Row, Alert,
@@ -13,7 +11,7 @@ import dataApi from '../../../utils/dataApi';
 const DeleteForm = ({ isOpen, handleClose, data }) => {
   const [isError, setError] = useState(false);
   const handleSubmit = () => {
-    dataApi.deleteMatrixPenilaian(data.id).then((resp) => {
+    dataApi.deleteFileFolder(data.id).then((resp) => {
       // eslint-disable-next-line no-console
       console.log(resp);
       handleClose();
@@ -58,6 +56,7 @@ const DeleteForm = ({ isOpen, handleClose, data }) => {
                   )}
                   <div className="card__title">
                     <h5 className="bold-text">Delete Data</h5>
+                    <h5 className="subhead">{data && data.nama}</h5>
                   </div>
                   <form className="form form--horizontal">
                     <p>Apakah Anda yakin ingin menghapus data?</p>

@@ -1,34 +1,69 @@
-import React, { useState } from 'react';
+/* eslint-disable no-console */
+/* eslint-disable no-plusplus */
+/* eslint-disable max-len */
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useState, useEffect } from 'react';
 import {
   Card, CardBody, Col, Button, ButtonToolbar, Container, Row, Alert,
 } from 'reactstrap';
+import axios from 'axios';
 import Box from '@mui/material/Box';
 import PropTypes from 'prop-types';
 import { Field, reduxForm } from 'redux-form';
 import Modal from '@mui/material/Modal';
+import renderFileInputField from '../../../shared/components/form/FileInput';
+import renderSelectField from '../../../shared/components/form/Select';
 import dataApi from '../../../utils/dataApi';
 
-const CreateForm = ({ isOpen, handleClose }) => {
-  const [kode, setKode] = useState('');
-  const [element, setElement] = useState('');
-  const [indikator, setIndikator] = useState('');
-  const [skorMaksimal, setSkor] = useState('');
+const CreateForm = ({ isOpen, handleClose, data }) => {
+  const [jenis, setJenis] = useState('Folder');
+  const [nama, setNama] = useState('');
+  const [file, setFile] = useState(null);
+  const [dosen, setDosen] = useState(null);
+  const [prodi, setProdi] = useState(null);
+  const [dosenId, setDosenId] = useState([]);
+  const [prodiId, setProdiId] = useState([]);
   const [isError, setError] = useState(false);
+
+  useEffect(() => {
+    axios.get('https://ec2-13-250-45-157.ap-southeast-1.compute.amazonaws.com/api-stem/dosen/', { headers: { Authorization: 'Token 09c9448751b03b41f5f5da66e549aa3290eef362' } })
+      .then((response) => {
+        const testing = response.data;
+        const Data = [{ value: null, label: '---' }];
+        for (let i = 0; i < testing.length; i++) {
+          Data.push((({ id, name }) => ({ value: id, label: name }))(testing[i]));
+        }
+        setDosenId(Data);
+      });
+
+    axios.get('https://ec2-13-250-45-157.ap-southeast-1.compute.amazonaws.com/api-stem/programstudi/', { headers: { Authorization: 'Token 09c9448751b03b41f5f5da66e549aa3290eef362' } })
+      .then((response) => {
+        const testing = response.data;
+        const Data = [{ value: null, label: '---' }];
+        for (let i = 0; i < testing.length; i++) {
+          Data.push((({ id, name }) => ({ value: id, label: name }))(testing[i]));
+        }
+        setProdiId(Data);
+      });
+  }, []);
 
   const handleSubmit = () => {
     const dataForm = new FormData();
-    dataForm.append('kode', kode);
-    dataForm.append('element', element);
-    dataForm.append('indikator', indikator);
-    dataForm.append('skor_maksimal', skorMaksimal);
-
-    dataApi.postMatrixPenilaian(dataForm).then((resp) => {
-      // eslint-disable-next-line no-console
+    dataForm.append('nama', nama);
+    dataForm.append('jenis', jenis);
+    /* dataForm.append('matrix', null); */
+    dataForm.append('kriteria', data);
+    dataForm.append('dosen', dosen);
+    dataForm.append('prodi', prodi);
+    if (file) {
+      dataForm.append('files', file);
+    }
+    /* dataForm.append('parent_folder', null); */
+    dataApi.postFolderFile(dataForm).then((resp) => {
       console.log(resp);
       handleClose();
       window.location.reload();
     }).catch((err) => {
-      // eslint-disable-next-line no-console
       console.log(err);
       setError(true);
       setTimeout(() => setError(false), 3000);
@@ -67,61 +102,74 @@ const CreateForm = ({ isOpen, handleClose }) => {
                   )}
                   <div className="card__title">
                     <h5 className="bold-text">Create Data</h5>
-                    <h5 className="subhead">Matrix Penilaian</h5>
+                    {/* <h5 className="subhead">{`${data.kode} ${data.element}`}</h5> */}
                   </div>
                   <form className="form form--horizontal">
                     <div className="form__form-group">
-                      <span className="form__form-group-label">Kode</span>
+                      <span className="form__form-group-label">Jenis</span>
+                      <div className="form__form-group-field">
+                        <Field
+                          default="folder"
+                          name="select"
+                          component={renderSelectField}
+                          options={[
+                            { value: 'folder', label: 'Folder' },
+                            { value: 'file', label: 'File' },
+                          ]}
+                          onChange={(e) => setJenis(e.value)}
+                        />
+                      </div>
+                    </div>
+                    <div className="form__form-group">
+                      <span className="form__form-group-label">Nama {jenis}</span>
                       <div className="form__form-group-field">
                         <Field
                           name="nama_folderfile"
                           component="input"
                           type="text"
-                          placeholder="Tulis Kode Matrix"
+                          placeholder={`Tulis nama ${jenis}`}
                           onChange={(e) => {
-                            setKode(e.target.value);
+                            setNama(e.target.value);
+                          }}
+                        />
+                      </div>
+                    </div>
+                    {jenis === 'file' && (
+                    <div className="form__form-group">
+                      <span className="form__form-group-label">
+                        File Pendukung
+                      </span>
+                      <div className="form__form-group-field">
+                        <Field
+                          name="file"
+                          component={renderFileInputField}
+                          onChange={(e) => setFile(e.file)}
+                        />
+                      </div>
+                    </div>
+                    )}
+                    <div className="form__form-group">
+                      <span className="form__form-group-label">Dosen</span>
+                      <div className="form__form-group-field">
+                        <Field
+                          name="dosen"
+                          component={renderSelectField}
+                          options={dosenId}
+                          onChange={(e) => {
+                            setDosen(e.value);
                           }}
                         />
                       </div>
                     </div>
                     <div className="form__form-group">
-                      <span className="form__form-group-label">Element</span>
+                      <span className="form__form-group-label">Prodi</span>
                       <div className="form__form-group-field">
                         <Field
-                          name="element"
-                          component="input"
-                          type="text"
-                          placeholder="Tulis Kode Matrix"
+                          name="prodi"
+                          component={renderSelectField}
+                          options={prodiId}
                           onChange={(e) => {
-                            setElement(e.target.value);
-                          }}
-                        />
-                      </div>
-                    </div>
-                    <div className="form__form-group">
-                      <span className="form__form-group-label">Indikator</span>
-                      <div className="form__form-group-field">
-                        <Field
-                          name="indikator"
-                          component="textarea"
-                          type="text"
-                          placeholder="Tulis Indikator"
-                          onChange={(e) => {
-                            setIndikator(e.target.value);
-                          }}
-                        />
-                      </div>
-                    </div>
-                    <div className="form__form-group">
-                      <span className="form__form-group-label">Skor Maksimal</span>
-                      <div className="form__form-group-field">
-                        <Field
-                          name="skorMaksimal"
-                          component="textarea"
-                          type="text"
-                          placeholder="Deskripsikan skor maksimal"
-                          onChange={(e) => {
-                            setSkor(e.target.value);
+                            setProdi(e.value);
                           }}
                         />
                       </div>
@@ -146,6 +194,7 @@ const CreateForm = ({ isOpen, handleClose }) => {
 CreateForm.propTypes = {
   handleClose: PropTypes.func.isRequired,
   isOpen: PropTypes.bool.isRequired,
+  data: PropTypes.shape().isRequired,
 };
 
 export default reduxForm({

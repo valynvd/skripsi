@@ -36,7 +36,8 @@ const Pages = () => (
     <Route path="/dashboard/kurikulum/:id" exact component={DetailKurikulum} />
     <Route path="/dashboard/dosen/:id" exact component={DetailDos} />
     <Route path="/dashboard/programstudi/:id" exact component={DetailProstudi} />
-    <Route path="/dashboard/akreditasi" component={Akreditasi} />
+    {/* <Route path="/dashboard/akreditasi" component={Akreditasi} /> */}
+    <Route path="/dashboard/kriteria/:id" component={Akreditasi} />
     <Route path="/dashboard/evaluasi" exact component={ListEvaluasi} />
     <Route path="/dashboard/portofolio" exact component={Portofolio} />
     <Route path="/dashboard/suratpenugasan" exact component={SuratPenugasan} />

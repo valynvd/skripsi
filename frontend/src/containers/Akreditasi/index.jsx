@@ -1,16 +1,17 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
 import { Col, Container, Row } from 'reactstrap';
-import MatrixPenilaian from './components/MatrixPenilaian';
+import Kriteria from './components/Kriteria';
 
-const Akreditasi = () => (
+const Akreditasi = ({ match }) => (
   <Container className="dashboard">
     <Row>
       <Col md={12}>
-        <h3 className="page-title">Akreditasi</h3>
+        <h3 className="page-title">Kriteria {match.params.id}</h3>
       </Col>
     </Row>
     <Row>
-      <MatrixPenilaian />
+      <Kriteria id={match.params.id} />
     </Row>
   </Container>
 );
