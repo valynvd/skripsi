@@ -15,6 +15,7 @@ import {
   PROGRAMSTUDI,
   DOSEN,
   FOLDERBYKRITERIA,
+  KRITERIA,
 } from './urls';
 
 export default {
@@ -38,6 +39,7 @@ export default {
   getFolderbyMatrix: (id) => get(`${FOLDERBYMATRIX}${id}`),
   getFolderbyFolder: (id) => get(`${FOLDERBYFOLDER}${id}`),
   getFolderbyKriteria: (id) => get(`${FOLDERBYKRITERIA}${id}`),
+  getKriteria: () => get(KRITERIA),
   // POST
   postMatrixPenilaian: (body, params) => post(POINPENILAIAN, body, params),
   postMataKuliah: (body, params) => post(MATAKULIAH, body, params),

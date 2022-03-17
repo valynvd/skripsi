@@ -1,13 +1,31 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import SidebarLink from './SidebarLink';
 import SidebarCategory from './SidebarCategory';
+import dataApi from '../../../utils/dataApi';
 
 const SidebarContent = ({ onClick }) => {
+  const [listKriteria, setListKriteria] = useState([]);
   const handleHideSidebar = () => {
     onClick();
   };
 
+  const getKriteria = async () => {
+    try {
+      const resp = await dataApi.getKriteria();
+      // // eslint-disable-next-line no-console
+      // console.log('CINTA', resp);
+      setListKriteria(resp.data);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    // get sibar API
+    getKriteria();
+  }, []);
   return (
     <div className="sidebar__content">
       <ul className="sidebar__block">
@@ -16,17 +34,16 @@ const SidebarContent = ({ onClick }) => {
       <ul className="sidebar__block">
         <SidebarCategory title="Akreditasi" icon="diamond">
           {/* <SidebarLink title="Matrix Penilaian" route="/dashboard/akreditasi" onClick={handleHideSidebar} /> */}
-          <SidebarLink title="Kriteria 1" route="/dashboard/kriteria/1" onClick={handleHideSidebar} />
-          <SidebarLink title="Kriteria 2" route="/dashboard/kriteria/2" onClick={handleHideSidebar} />
-          <SidebarLink title="Kriteria 3" route="/dashboard/kriteria/3" onClick={handleHideSidebar} />
-          <SidebarLink title="Kriteria 4" route="/dashboard/kriteria/4" onClick={handleHideSidebar} />
-          <SidebarLink title="Kriteria 5" route="/dashboard/kriteria/5" onClick={handleHideSidebar} />
-          <SidebarLink title="Kriteria 6" route="/dashboard/kriteria/6" onClick={handleHideSidebar} />
-          <SidebarLink title="Kriteria 7" route="/dashboard/kriteria/7" onClick={handleHideSidebar} />
-          <SidebarLink title="Kriteria 8" route="/dashboard/kriteria/8" onClick={handleHideSidebar} />
-          <SidebarLink title="Kriteria 9" route="/dashboard/kriteria/9" onClick={handleHideSidebar} />
+          {listKriteria.length > 0 && listKriteria.map((el) => (
+            <SidebarLink
+              key={el.id}
+              title={el.nama}
+              route={`/dashboard/kriteria/${el.id}`}
+              onClick={handleHideSidebar}
+            />
+          ))}
         </SidebarCategory>
-        <SidebarCategory title="Aktivitas Prodi" icon="diamond">
+        {/* <SidebarCategory title="Aktivitas Prodi" icon="diamond">
           <SidebarLink title="Evaluasi Perkuliahan" route="/dashboard/evaluasi" onClick={handleHideSidebar} />
           <SidebarLink title="Portofolio Perkuliahan" route="/dashboard/portofolio" onClick={handleHideSidebar} />
           <SidebarLink title="Surat Penugasan" route="/dashboard/suratpenugasan" onClick={handleHideSidebar} />
@@ -35,7 +52,7 @@ const SidebarContent = ({ onClick }) => {
           <SidebarLink title="Kurikulum" route="/dashboard/kurikulum" onClick={handleHideSidebar} />
           <SidebarLink title="Program Studi" route="/dashboard/programstudi" onClick={handleHideSidebar} />
           <SidebarLink title="Dosen" route="/dashboard/dosen" onClick={handleHideSidebar} />
-        </SidebarCategory>
+        </SidebarCategory> */}
       </ul>
     </div>
   );
