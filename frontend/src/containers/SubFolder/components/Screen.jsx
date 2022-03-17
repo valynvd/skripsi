@@ -39,6 +39,7 @@ const Screen = ({ params }) => {
   const [selectedData, setSelectedData] = useState(null);
   const [selectedDataEdit, setSelectedDataEdit] = useState(null);
   const [label, setLabel] = useState('');
+  const [title, setTitle] = useState([]);
   const history = useHistory();
 
   const getData = async () => {
@@ -62,6 +63,7 @@ const Screen = ({ params }) => {
     const currentFF = await getFileFolder();
     setCurrentFileFolder(currentFF.data);
     setfolderFile(folders.data);
+    setTitle(history.location);
     if (folders.data.length > 0) {
       const firstData = folders.data[0];
       const parent = firstData.parent_folder;
@@ -107,6 +109,19 @@ const Screen = ({ params }) => {
     setSelectedDataEdit(null);
   };
 
+  const printTitle = () => {
+    const test = [];
+    if (title.state !== undefined) {
+      test.push(
+        <div className="card__title">
+          <h5 className="bold-text">{title.state.data.kriteria_detail.nama}</h5>
+          <h5 className="subhead">{title.state.data.kriteria_detail.deskripsi}</h5>
+        </div>,
+      );
+    }
+    return test;
+  };
+
   const folders = folderFile.map((val) => (
     <ListItem key={val.id} disablePadding>
       {val.jenis === 'folder' ? (
@@ -118,7 +133,9 @@ const Screen = ({ params }) => {
           >
             <Box sx={{ flexGrow: 1 }}>
               <ListItemButton onClick={() => {
-                history.push(`/dashboard/subfolder/${val.id}`);
+                history.push(`/dashboard/subfolder/${val.id}`, {
+                  data: history.location.state.data,
+                });
               }}
               >
                 <ListItemIcon>
@@ -217,6 +234,7 @@ const Screen = ({ params }) => {
           </Col>
         </Row>
         <CardBody>
+          {isFetching ? null : printTitle()}
           <div className="mb-3">
             <InputGroup className="d-flex align-items-center">
               <Input
@@ -224,8 +242,6 @@ const Screen = ({ params }) => {
                 placeholder="keywords"
                 type="text"
                 onChange={(e) => {
-                  // eslint-disable-next-line no-console
-                  console.log(e.target.value);
                   setSearchText(e.target.value);
                 }}
               />
