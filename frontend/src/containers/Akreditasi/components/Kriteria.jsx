@@ -91,7 +91,7 @@ const Kriteria = ({ id }) => {
     const test = [];
     test.push(
       <div className="card__title">
-        <h5 className="bold-text">Kriteria {id}</h5>
+        <h5 className="bold-text">{kriteria.length > 0 && kriteria[0].kriteria_detail.nama}</h5>
         {kriteria[0] === undefined ? <div /> : <h5 className="subhead">{kriteria[0].kriteria_detail.deskripsi}</h5>}
       </div>,
     );
