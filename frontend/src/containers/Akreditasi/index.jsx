@@ -7,7 +7,7 @@ const Akreditasi = ({ match }) => (
   <Container className="dashboard">
     <Row>
       <Col md={12}>
-        <h3 className="page-title">Kriteria {match.params.id}</h3>
+        <h3 className="page-title">Kriteria  {match.params.id}</h3>
       </Col>
     </Row>
     <Row>
