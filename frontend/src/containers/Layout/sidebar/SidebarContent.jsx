@@ -33,7 +33,7 @@ const SidebarContent = ({ onClick }) => {
       </ul>
       <ul className="sidebar__block">
         <SidebarCategory title="Akreditasi" icon="diamond">
-          {/* <SidebarLink title="Matrix Penilaian" route="/dashboard/akreditasi" onClick={handleHideSidebar} /> */}
+          <SidebarLink title="List Kriteria" route="/dashboard/listkriteria" onClick={handleHideSidebar} />
           {listKriteria.length > 0 && listKriteria.map((el) => (
             <SidebarLink
               key={el.id}

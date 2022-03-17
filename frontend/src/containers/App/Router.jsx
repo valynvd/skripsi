@@ -4,6 +4,7 @@ import Layout from '../Layout/index';
 import MainWrapper from './MainWrapper';
 import LogIn from '../LogIn/index';
 import Akreditasi from '../Akreditasi/index';
+import ListKriteria from '../Akreditasi/ListKriteria/index';
 import Folder from '../Folder/index';
 import SubFolder from '../SubFolder/index';
 import Dashboard from '../Dashboard/index';
@@ -38,6 +39,7 @@ const Pages = () => (
     <Route path="/dashboard/programstudi/:id" exact component={DetailProstudi} />
     {/* <Route path="/dashboard/akreditasi" component={Akreditasi} /> */}
     <Route path="/dashboard/kriteria/:id" component={Akreditasi} />
+    <Route path="/dashboard/listkriteria" component={ListKriteria} />
     <Route path="/dashboard/evaluasi" exact component={ListEvaluasi} />
     <Route path="/dashboard/portofolio" exact component={Portofolio} />
     <Route path="/dashboard/suratpenugasan" exact component={SuratPenugasan} />
