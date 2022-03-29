@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-plusplus */
 /* eslint-disable max-len */
 import React, { useState, useEffect } from 'react';
@@ -12,6 +13,7 @@ import Modal from '@mui/material/Modal';
 import renderFileInputField from '../../../shared/components/form/FileInput';
 import renderSelectField from '../../../shared/components/form/Select';
 import dataApi from '../../../utils/dataApi';
+import { USER_DETAIL } from '../../../utils/naming';
 
 const EditForm = ({
   isOpen, handleClose, data, initialize,
@@ -21,7 +23,7 @@ const EditForm = ({
   const [file, setFile] = useState(null);
   const [dosen, setDosen] = useState(null);
   const [prodi, setProdi] = useState(null);
-  const [dosenId, setDosenId] = useState(null);
+  /* const [dosenId, setDosenId] = useState(null); */
   const [prodiId, setProdiId] = useState(null);
   // Variabel state for edit
   const [editJenis, setEditJenis] = useState(null);
@@ -30,10 +32,14 @@ const EditForm = ({
   const [editDosen, setEditDosen] = useState(null);
   const [editProdi, setEditProdi] = useState(null);
 
+  const [role, setRole] = useState(null);
+  const [detail, setDetail] = useState(JSON.parse(localStorage.getItem(USER_DETAIL)));
+
   const [isError, setError] = useState(false);
 
   useEffect(() => {
-    axios.get('https://ec2-13-250-45-157.ap-southeast-1.compute.amazonaws.com/api-stem/dosen/', { headers: { Authorization: 'Token 09c9448751b03b41f5f5da66e549aa3290eef362' } })
+    setRole(detail.role);
+    /* axios.get('https://ec2-13-250-45-157.ap-southeast-1.compute.amazonaws.com/api-stem/dosen/', { headers: { Authorization: 'Token 09c9448751b03b41f5f5da66e549aa3290eef362' } })
       .then((response) => {
         const testing = response.data;
         const Data = [{ value: null, label: '---' }];
@@ -41,7 +47,7 @@ const EditForm = ({
           Data.push((({ id, name }) => ({ value: id, label: name }))(testing[i]));
         }
         setDosenId(Data);
-      });
+      }); */
 
     axios.get('https://ec2-13-250-45-157.ap-southeast-1.compute.amazonaws.com/api-stem/programstudi/', { headers: { Authorization: 'Token 09c9448751b03b41f5f5da66e549aa3290eef362' } })
       .then((response) => {
@@ -60,8 +66,7 @@ const EditForm = ({
           : { value: 'file', label: 'File' },
         nama_folderfile: data.nama,
         file: data.files,
-        dosen: { value: data.dosen_detail.id, label: data.dosen_detail.name },
-        prodi: { value: data.prodi_detail.id, label: data.prodi_detail.name },
+        prodi: role === 'Superadmin' ? { value: data.prodi_detail.id, label: data.prodi_detail.name } : data.prodi_detail.id,
       };
       initialize(initData);
       setJenis(data.jenis);
@@ -191,28 +196,21 @@ const EditForm = ({
                       </div>
                     </div>
                     )}
-                    <div className="form__form-group">
-                      <span className="form__form-group-label">Dosen</span>
-                      <div className="form__form-group-field">
-                        <Field
-                          name="dosen"
-                          component={renderSelectField}
-                          options={dosenId}
-                          onChange={(e) => setEditDosen(e.value)}
-                        />
-                      </div>
-                    </div>
-                    <div className="form__form-group">
-                      <span className="form__form-group-label">Prodi</span>
-                      <div className="form__form-group-field">
-                        <Field
-                          name="prodi"
-                          component={renderSelectField}
-                          options={prodiId}
-                          onChange={(e) => setEditProdi(e.value)}
-                        />
-                      </div>
-                    </div>
+                    {role === 'Superadmin'
+                      ? (
+                        <div className="form__form-group">
+                          <span className="form__form-group-label">Prodi</span>
+                          <div className="form__form-group-field">
+                            <Field
+                              name="prodi"
+                              component={renderSelectField}
+                              options={prodiId}
+                              onChange={(e) => setEditProdi(e.value)}
+                            />
+                          </div>
+                        </div>
+                      )
+                      : <div />}
                     <ButtonToolbar className="form__button-toolbar">
                       <Button color="primary" onClick={handleSubmit}>Update</Button>
                       <Button type="button" onClick={handleClose}>

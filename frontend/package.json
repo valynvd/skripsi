@@ -32,6 +32,8 @@
     "redux": "^4.0.5",
     "redux-actions": "^2.6.5",
     "redux-form": "^8.3.6",
+    "redux-storage": "^4.1.2",
+    "redux-storage-engine-localstorage": "^1.1.4",
     "redux-thunk": "^2.3.0",
     "smooth-scrollbar": "^8.5.3",
     "styled-components": "^5.3.3"

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-console */
 /* eslint-disable no-plusplus */
 /* eslint-disable max-len */
@@ -14,6 +15,7 @@ import Modal from '@mui/material/Modal';
 import renderFileInputField from '../../../shared/components/form/FileInput';
 import renderSelectField from '../../../shared/components/form/Select';
 import dataApi from '../../../utils/dataApi';
+import { USER_DETAIL } from '../../../utils/naming';
 
 const CreateForm = ({ isOpen, handleClose, data }) => {
   const [jenis, setJenis] = useState('Folder');
@@ -23,15 +25,23 @@ const CreateForm = ({ isOpen, handleClose, data }) => {
   const [prodi, setProdi] = useState(null);
   const [dosenId, setDosenId] = useState([]);
   const [prodiId, setProdiId] = useState([]);
+  const [role, setRole] = useState(null);
+  const [detail, setDetail] = useState(JSON.parse(localStorage.getItem(USER_DETAIL)));
   const [isError, setError] = useState(false);
 
   useEffect(() => {
+    setRole(detail.role);
+
     axios.get('https://ec2-13-250-45-157.ap-southeast-1.compute.amazonaws.com/api-stem/dosen/', { headers: { Authorization: 'Token 09c9448751b03b41f5f5da66e549aa3290eef362' } })
       .then((response) => {
         const testing = response.data;
         const Data = [{ value: null, label: '---' }];
         for (let i = 0; i < testing.length; i++) {
           Data.push((({ id, name }) => ({ value: id, label: name }))(testing[i]));
+          if (detail.fullname === response.data[i].name) {
+            setDosen(response.data[i].id);
+            setProdi(response.data[i].prodi_detail.id);
+          }
         }
         setDosenId(Data);
       });
@@ -53,7 +63,9 @@ const CreateForm = ({ isOpen, handleClose, data }) => {
     dataForm.append('jenis', jenis);
     /* dataForm.append('matrix', null); */
     dataForm.append('kriteria', data);
-    dataForm.append('dosen', dosen);
+    if (role === 'Faculty Member') {
+      dataForm.append('dosen', dosen);
+    }
     dataForm.append('prodi', prodi);
     if (file) {
       dataForm.append('files', file);
@@ -148,32 +160,24 @@ const CreateForm = ({ isOpen, handleClose, data }) => {
                       </div>
                     </div>
                     )}
-                    <div className="form__form-group">
-                      <span className="form__form-group-label">Dosen</span>
-                      <div className="form__form-group-field">
-                        <Field
-                          name="dosen"
-                          component={renderSelectField}
-                          options={dosenId}
-                          onChange={(e) => {
-                            setDosen(e.value);
-                          }}
-                        />
-                      </div>
-                    </div>
-                    <div className="form__form-group">
-                      <span className="form__form-group-label">Prodi</span>
-                      <div className="form__form-group-field">
-                        <Field
-                          name="prodi"
-                          component={renderSelectField}
-                          options={prodiId}
-                          onChange={(e) => {
-                            setProdi(e.value);
-                          }}
-                        />
-                      </div>
-                    </div>
+                    {role === 'Superadmin'
+                      ? (
+                        <div className="form__form-group">
+                          <span className="form__form-group-label">Prodi</span>
+                          <div className="form__form-group-field">
+                            <Field
+                              name="prodi"
+                              component={renderSelectField}
+                              options={prodiId}
+                              onChange={(e) => {
+                                setProdi(e.value);
+                              }}
+                            />
+                          </div>
+                        </div>
+                      )
+                      : <div />}
+
                     <ButtonToolbar className="form__button-toolbar">
                       <Button color="primary" onClick={handleSubmit}>Submit</Button>
                       <Button type="button" onClick={handleClose}>
