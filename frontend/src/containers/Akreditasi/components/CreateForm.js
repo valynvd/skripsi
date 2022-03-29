@@ -59,7 +59,7 @@ const CreateForm = ({ isOpen, handleClose, data }) => {
       dataForm.append('files', file);
     }
     /* dataForm.append('parent_folder', null); */
-    dataApi.postKriteria(dataForm).then((resp) => {
+    dataApi.postFolderFile(dataForm).then((resp) => {
       console.log(resp);
       handleClose();
       window.location.reload();
