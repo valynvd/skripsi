@@ -48,6 +48,7 @@ export default {
   postKurikulum: (body, params) => post(KURIKULUM, body, params),
   postDosen: (body, params) => post(DOSEN, body, params),
   postProgramStudi: (body, params) => post(PROGRAMSTUDI, body, params),
+  postKriteria: (body, params) => post(KRITERIA, body, params),
   postPortofolioPerkuliahan: (body, params) => post(PORTOFOLIOPERKULIAHAN, body, params),
   postEvaluasiPerkuliahan: (body, params) => post(EVALUASIPERKULIAHAN, body, params),
   // EDIT
@@ -57,6 +58,7 @@ export default {
   editPenugasanPengajaran: (id, body, params) => patch(`${PENUGASANPENGAJARAN}${id}/`, body, params),
   editKurikulum: (id, body, params) => patch(`${KURIKULUM}${id}/`, body, params),
   editProgramStudi: (id, body, params) => patch(`${PROGRAMSTUDI}${id}/`, body, params),
+  editKriteria: (id, body, params) => patch(`${KRITERIA}${id}/`, body, params),
   editEvaluasiPerkuliahan: (id, body, params) => patch(`${EVALUASIPERKULIAHAN}${id}/`, body, params),
   editPortofolioPerkuliahan: (id, body, params) => patch(`${PORTOFOLIOPERKULIAHAN}${id}/`, body, params),
   // DELETE
@@ -67,6 +69,7 @@ export default {
   deleteKurikulum: (id) => deleteRequest(`${KURIKULUM}${id}/`),
   deleteProgramStudi: (id) => deleteRequest(`${PROGRAMSTUDI}${id}/`),
   deleteDosen: (id) => deleteRequest(`${DOSEN}${id}/`),
+  deleteKriteria: (id) => deleteRequest(`${KRITERIA}${id}/`),
   deleteEvaluasiPerkuliahan: (id) => deleteRequest(`${EVALUASIPERKULIAHAN}${id}/`),
   deletePortofolioPerkuliahan: (id) => deleteRequest(`${PORTOFOLIOPERKULIAHAN}${id}/`),
   // CRUD for FileFolder

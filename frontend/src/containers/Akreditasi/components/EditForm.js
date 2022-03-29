@@ -93,7 +93,7 @@ const EditForm = ({
     if (prodi !== editProdi && editProdi !== '') {
       dataForm.append('prodi', editProdi);
     }
-    dataApi.editFolderFile(data.id, dataForm).then((resp) => {
+    dataApi.editKriteria(data.id, dataForm).then((resp) => {
       // eslint-disable-next-line no-console
       console.log('success edit', resp);
       handleClose();
