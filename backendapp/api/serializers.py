@@ -44,6 +44,7 @@ class PenugasanPengajaranSerializers(serializers.ModelSerializer):
       fields = '__all__'
 
 class EvaluasiPerkuliahanSerializers(serializers.ModelSerializer):
+  penugasan_detail = PenugasanPengajaranSerializers(source='penugasan', many=False, read_only=True)
   class Meta:
       model = models.EvaluasiPerkuliahan
       fields = '__all__'
