@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import ClipLoader from 'react-spinners/ClipLoader';
 
 const PrimaryButton = ({
@@ -6,15 +7,33 @@ const PrimaryButton = ({
   className,
   isLoading = false,
   isDisabled = false,
+  refresh = false,
   icon,
+  type = 'submit',
+  link,
+  onClick,
 }) => {
+  const navigate = useNavigate();
+
   return (
     <button
+      type={type}
       disabled={isLoading || isDisabled}
       className={`bg-primary-400 hover:bg-primary-500 duration-200 transition-all flex items-center justify-center px-6 py-1 border border-primary-400 font-medium rounded-full text-white space-x-2 ${className} ${
         (isLoading || isDisabled) &&
         '!bg-gray-200 !border-gray-400 !text-gray-500 cursor-not-allowed'
       }`}
+      onClick={() => {
+        if (onClick) {
+          onClick();
+        }
+        if (link) {
+          navigate(link);
+          if (refresh) {
+            navigate(0);
+          }
+        }
+      }}
     >
       <p>{children}</p>
       {icon}

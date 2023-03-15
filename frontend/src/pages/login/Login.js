@@ -9,7 +9,6 @@ import useAuth from '../../hooks/useAuth';
 import { BounceLoader } from 'react-spinners';
 
 const Login = () => {
-  const { register, handleSubmit } = useForm();
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
@@ -32,6 +31,7 @@ const Login = () => {
     }
   }, [from, navigate, setAuth]);
 
+  const { register, handleSubmit } = useForm();
   const { mutate: loginUser, isError, isLoading } = useLogin();
 
   const onSubmit = (data) => {

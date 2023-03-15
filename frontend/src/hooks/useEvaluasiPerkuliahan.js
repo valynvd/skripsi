@@ -7,9 +7,8 @@ const getEvaluasiPerkuliahan = () => {
   });
 };
 
-export const useEvaluasiPerkuliahanData = (onSuccess, onError) => {
+export const useEvaluasiPerkuliahanData = () => {
   return useQuery('evaluasi-perkuliahan', getEvaluasiPerkuliahan, {
-    onSuccess,
-    onError,
+    refetchOnWindowFocus: false,
   });
 };

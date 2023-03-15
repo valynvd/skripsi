@@ -2,6 +2,7 @@ import React from 'react';
 import NavigationLink from './NavigationLink';
 import { BiHome } from 'react-icons/bi';
 import { AiOutlineMail, AiOutlineFileText } from 'react-icons/ai';
+import { MdOutlineAssignment } from 'react-icons/md';
 
 const Navbar = () => {
   return (
@@ -29,6 +30,12 @@ const Navbar = () => {
             icon={<AiOutlineMail size={22} />}
           >
             Surat Penugasan
+          </NavigationLink>
+          <NavigationLink
+            url="/penugasan-pengajaran"
+            icon={<MdOutlineAssignment size={22} />}
+          >
+            Penugasan Pengajaran
           </NavigationLink>
         </div>
       </nav>

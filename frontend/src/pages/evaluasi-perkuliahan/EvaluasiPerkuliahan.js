@@ -1,25 +1,29 @@
-/* eslint-disable no-unused-vars */
-import React from 'react';
+import React, { useEffect } from 'react';
 import PrimaryButton from '../../components/PrimaryButton';
 import { BiPlusCircle } from 'react-icons/bi';
-import Table from './components/Table';
+import EvaluasiPerkuliahanTable from './components/EvaluasiPerkuliahanTable';
 import { useEvaluasiPerkuliahanData } from '../../hooks/useEvaluasiPerkuliahan';
 
 const EvaluasiPerkuliahan = () => {
   const { data: response, isLoading } = useEvaluasiPerkuliahanData();
 
-  console.log(response?.data);
+  useEffect(() => {
+    console.log(response?.data);
+  }, [response]);
 
   return (
-    <section id="evaluasi-perkuliahan" className="p-6 bg-white rounded-lg">
+    <section id="evaluasi-perkuliahan" className="p-6 bg-white rounded-lg over">
       <div className="flex justify-between items-center">
-        <p className="font-semibold">Daftar Evaluasi Perkuliahan</p>
+        <p className="font-semibold text-lg">Daftar Evaluasi Perkuliahan</p>
         <PrimaryButton icon={<BiPlusCircle size={22} />}>
-          Buat Surat Penugasan
+          Buat Evaluasi Perkuliahan
         </PrimaryButton>
       </div>
-      <div className="mt-8">
-        <Table loading={isLoading} data={response?.data ?? []} />
+      <div className="mt-8 w-full rounded-t-lg">
+        <EvaluasiPerkuliahanTable
+          loading={isLoading}
+          data={response?.data ?? []}
+        />
       </div>
     </section>
   );

@@ -7,7 +7,7 @@ const Base = () => {
   return (
     <div className="flex flex-row w-full h-full">
       <Navbar />
-      <div className="flex flex-col flex-1 bg-gray-100">
+      <div className="flex flex-col w-[calc(100%-20rem)] bg-gray-100">
         <Topbar />
         <div className="p-6 flex-1 overflow-y-auto">
           <Outlet />
