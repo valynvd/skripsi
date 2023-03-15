@@ -54,20 +54,20 @@ const Login = () => {
   }
 
   return (
-    <div className="w-full h-full flex">
-      <div className="p-10 w-1/2 h-full flex flex-col items-center space-y-16 justify-center bg-gradient-to-b from-[#ED1B24] to-[#222222_80.100%]">
+    <div className="w-full h-full flex flex-col sm:flex-row">
+      <div className="px-10 py-6 sm:p-10 w-full sm:w-1/2 sm:h-full flex flex-col items-center space-y-16 justify-center bg-gradient-to-b from-[#ED1B24] to-[#222222] sm:to-[#222222_80.100%]">
         <img
-          className="max-w-sm flex w-full"
+          className="max-w-4xs sm:max-w-sm flex w-full"
           src={require('../../assets/logo/prasmul-logo-white.png')}
           alt="prasmul"
         />
         <img
-          className="max-w-xl flex w-full"
+          className="max-w-xl hidden sm:flex w-full"
           src={require('../../assets/login/login-image.png')}
           alt="prasmul"
         />
       </div>
-      <div className="w-1/2 p-16 flex flex-col justify-center items-center">
+      <div className="w-full sm:w-1/2 p-8 md:p-16 flex flex-1 flex-col justify-center items-center">
         <p className="text-3xl font-semibold">Login</p>
         <form
           onSubmit={handleSubmit(onSubmit)}

@@ -13,6 +13,18 @@ module.exports = {
           400: 'hsla(0, 0%, 13%, 1)',
         },
       },
+      maxWidth: {
+        xs: '512px',
+        xxs: '448px',
+        '3xs': '384px',
+        '4xs': '322px',
+      },
+      screens: {
+        xs: '512px',
+        xxs: '448px',
+        '3xs': '384px',
+        '4xs': '322px',
+      },
     },
   },
   plugins: [],
