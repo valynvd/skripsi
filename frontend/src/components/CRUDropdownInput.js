@@ -1,6 +1,7 @@
 import React from 'react';
 import { Controller } from 'react-hook-form';
 import Select from 'react-select';
+import { primary400 } from '../utils/colors';
 
 const CRUDropdownInput = ({
   options,
@@ -25,7 +26,7 @@ const CRUDropdownInput = ({
               ...theme,
               colors: {
                 ...theme.colors,
-                primary: '#ed1d27',
+                primary: primary400,
                 primary25: '#fde3e4',
                 primary50: '#fbd0d2',
               },

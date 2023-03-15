@@ -68,7 +68,11 @@ const Login = () => {
         />
       </div>
       <div className="w-full sm:w-1/2 p-8 md:p-16 flex flex-1 flex-col justify-center items-center">
-        <p className="text-3xl font-semibold">Login</p>
+        <p className="text-xl text-center max-w-sm">
+          <span className="text-primary-400">SIMANTAP</span> Sistem Managemen
+          Tata Kelola Pendidikan Tinggi
+        </p>
+        <p className="text-3xl font-semibold mt-5">Login</p>
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="mt-16 space-y-6 w-full max-w-md"
