@@ -2,7 +2,7 @@ import React from 'react';
 
 const Home = () => {
   return (
-    <section className="relative" id="dashboard">
+    <section className="relative min-w-[30rem]" id="dashboard">
       <div className="bg-primary-400 z-0 w-full h-full absolute top-1 left-0 rounded-lg"></div>
       <div className="p-6 bg-white rounded-lg divide-y relative z-20">
         <h3 className="text-xl font-semibold pb-4">

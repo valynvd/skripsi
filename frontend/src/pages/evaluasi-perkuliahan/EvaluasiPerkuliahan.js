@@ -12,7 +12,7 @@ const EvaluasiPerkuliahan = () => {
   }, [response]);
 
   return (
-    <section id="evaluasi-perkuliahan" className="p-6 bg-white rounded-lg over">
+    <section id="evaluasi-perkuliahan" className="section-container">
       <div className="flex flex-col items-start lg:justify-between lg:items-center lg:flex-row space-y-2 lg:space-y-0">
         <p className="font-semibold text-lg">Daftar Evaluasi Perkuliahan</p>
         <PrimaryButton icon={<BiPlusCircle size={22} />}>

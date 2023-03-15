@@ -1,14 +1,23 @@
+/* eslint-disable no-unused-vars */
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { IconContext } from 'react-icons';
 import useOther from '../../hooks/useOther';
+import { useWindowSize } from '../../hooks/useWindowSize';
 
 const NavigationLink = ({ children, url, icon }) => {
-  const { navbarMinimize } = useOther();
+  const { navbarMinimize, setNavbarMinimize } = useOther();
+  const window = useWindowSize();
 
   return (
     <NavLink
       to={url}
+      onClick={() => {
+        console.log(window[0]);
+        if (window[0] <= 768) {
+          setNavbarMinimize(true);
+        }
+      }}
       className={({ isActive }) =>
         `text-white px-8 py-3 ${
           navbarMinimize && '!p-3 justify-center'

@@ -24,7 +24,12 @@ const Topbar = () => {
           alt="prasmul"
         />
       )}
-      <Menu as="div" className="relative inline-block text-left z-30 my-auto">
+      <Menu
+        as="div"
+        className={`relative hidden text-left z-30 my-auto ${
+          navbarMinimize ? '!inline-block' : 'xs:inline-block'
+        }`}
+      >
         <Menu.Button className="flex space-x-3 items-center justify-center">
           <div className="text-end">
             <p className="text-sm text-gray-400 leading-4">Selamat Datang,</p>

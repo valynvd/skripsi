@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+.section-container {
+  @apply p-6 bg-white rounded-lg min-w-[30rem];
+}
+
 @layer base {
   html {
     height: 100%;

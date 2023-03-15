@@ -21,7 +21,7 @@ const PenugasanPengajaran = () => {
   }, [response]);
 
   return (
-    <section id="penugasan-pengajaran" className="p-6 bg-white rounded-lg over">
+    <section id="penugasan-pengajaran" className="section-container">
       <Modal
         isOpen={openModal}
         setIsOpen={setOpenModal}

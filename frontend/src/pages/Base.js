@@ -16,7 +16,7 @@ const Base = () => {
         } bg-gray-100`}
       >
         <Topbar />
-        <div className="p-6 flex-1 overflow-y-auto">
+        <div className="p-6 flex-1 overflow-auto">
           <Outlet />
         </div>
       </div>

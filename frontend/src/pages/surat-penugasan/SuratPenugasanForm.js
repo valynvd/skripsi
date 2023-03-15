@@ -80,7 +80,7 @@ const SuratPenugasanForm = () => {
   };
 
   return (
-    <section id="surat-penugasan-form" className="p-6 bg-white rounded-lg over">
+    <section id="surat-penugasan-form" className="section-container">
       <p className="text-lg font-semibold">
         {id ? 'Edit' : 'Buat'} Surat Penugasan
       </p>
