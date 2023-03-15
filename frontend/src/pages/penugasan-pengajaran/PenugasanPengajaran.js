@@ -34,7 +34,7 @@ const PenugasanPengajaran = () => {
           })
         }
       />
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col items-start lg:justify-between lg:items-center lg:flex-row space-y-2 lg:space-y-0">
         <p className="font-semibold text-lg">Daftar Penugasan Pengajaran</p>
         <PrimaryButton
           icon={<BiPlusCircle size={22} />}

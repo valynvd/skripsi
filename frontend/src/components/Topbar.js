@@ -4,13 +4,26 @@ import { RiArrowDropDownFill } from 'react-icons/ri';
 import { Menu, Transition } from '@headlessui/react';
 import { useNavigate } from 'react-router-dom';
 import useAuth from '../hooks/useAuth';
+import useOther from '../hooks/useOther';
 
 const Topbar = () => {
   const navigate = useNavigate();
   const { auth } = useAuth();
+  const { navbarMinimize } = useOther();
 
   return (
-    <div className="h-[5.5rem] p-4 flex justify-end bg-white">
+    <div
+      className={`h-[5.5rem] p-4 flex justify-end bg-white ${
+        navbarMinimize && '3xs:justify-between'
+      }`}
+    >
+      {navbarMinimize && (
+        <img
+          className="h-full object-contain ml-4 hidden 3xs:block 3xs:w-16 xs:w-24"
+          src={require('../assets/logo/prasmul-logo-red.png')}
+          alt="prasmul"
+        />
+      )}
       <Menu as="div" className="relative inline-block text-left z-30 my-auto">
         <Menu.Button className="flex space-x-3 items-center justify-center">
           <div className="text-end">

@@ -16,11 +16,13 @@ const Navbar = () => {
       } duration-200 h-full flex flex-col`}
     >
       <div className="h-[5.5rem] py-4 bg-primary-400 flex items-center justify-center relative">
-        <img
-          className="w-[72%] h-full object-contain"
-          src={require('../../assets/logo/prasmul-logo-white.png')}
-          alt="prasmul"
-        />
+        {!navbarMinimize && (
+          <img
+            className="w-[72%] h-full object-contain"
+            src={require('../../assets/logo/prasmul-logo-white.png')}
+            alt="prasmul"
+          />
+        )}
         <button
           className={`absolute w-[2.5rem] transition-all duration-300 rounded-full h-[2.5rem] bg-gray-200 border-2 border-white right-0 translate-x-[50%] ${
             navbarMinimize && 'rotate-180'
