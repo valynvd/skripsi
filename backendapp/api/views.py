@@ -87,6 +87,24 @@ class EvaluasiPerkuliahanViewSet(viewsets.ModelViewSet):
             self.permission_classes = [IsAuthenticated]
         return super(self.__class__, self).get_permissions()
 
+class EvaluasiPerkuliahanByDosenViewSet(generics.ListAPIView):
+    serializer_class = serializers.EvaluasiPerkuliahanSerializers
+    queryset = models.EvaluasiPerkuliahan.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        evaluasiPerkuliahanByDosen = models.EvaluasiPerkuliahan.objects.filter(penugasan__dosen_pengampu__user__id=self.kwargs['userId'])
+        serializer = self.get_serializer(evaluasiPerkuliahanByDosen, many=True)
+
+        return Response(serializer.data)
+
+    def get_permissions(self):
+        print(self)
+        if self.request.method == 'GET':
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+
 class PortofolioPerkuliahanViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.PortofolioPerkuliahanSerializers
     queryset = models.PortofolioPerkuliahan.objects.all()
