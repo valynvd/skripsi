@@ -1,16 +1,17 @@
 import React from 'react';
+import { Controller } from 'react-hook-form';
 
 const CRUFileInput = ({
-  register,
+  registeredName,
   name,
-  type = 'text',
   required = false,
   errors = false,
   fileLink,
+  control,
 }) => {
   return (
     <div>
-      <p>{name.charAt(0).toUpperCase() + name.slice(1)}</p>
+      <p>{name}</p>
       {fileLink ? (
         <p className="text-sm mt-2">
           File Sebelum:{' '}
@@ -24,18 +25,28 @@ const CRUFileInput = ({
           </a>
         </p>
       ) : null}
-      <input
-        type={type}
-        className={`focus:outline-none w-full mt-1 rounded-lg px-3 py-2 focus:border-primary-400 border-[1px] ${
-          errors[name] && '!border-primary-400'
-        }`}
-        placeholder={`${name}...`}
-        {...register(name, {
-          required: required ? name + ' harus diisi' : false,
-        })}
+      <Controller
+        control={control}
+        name={registeredName}
+        render={({ field, value, name, ref }) => (
+          <input
+            name={name}
+            type="file"
+            className={`focus:outline-none w-full mt-1 rounded-lg px-3 py-2 focus:border-primary-400 border-[1px] ${
+              errors[name] && '!border-primary-400'
+            }`}
+            placeholder={`${name}...`}
+            onChange={(e) => {
+              field.onChange(e.target.files[0]);
+            }}
+          />
+        )}
       />
-      {errors[name] && (
-        <p className="mt-1 text-sm text-primary-400">{errors[name].message}</p>
+
+      {errors[registeredName] && (
+        <p className="mt-1 text-sm text-primary-400">
+          {errors[registeredName].message}
+        </p>
       )}
     </div>
   );

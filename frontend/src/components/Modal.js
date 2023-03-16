@@ -1,10 +1,8 @@
-/* eslint-disable no-unused-vars */
 import React, { Fragment, useRef } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import PrimaryButton from './PrimaryButton';
 import DeleteButton from './DeleteButton';
 
-const Modal = ({ isOpen, setIsOpen, deleteFunc }) => {
+const Modal = ({ isOpen, setIsOpen, deleteFunc, title }) => {
   let completeButtonRef = useRef(null);
 
   return (
@@ -40,7 +38,7 @@ const Modal = ({ isOpen, setIsOpen, deleteFunc }) => {
             <div className="flex min-h-full items-center justify-center p-4">
               <Dialog.Panel className="bg-white p-5 rounded-xl shadow-lg flex flex-col items-center justify-center text-center">
                 <Dialog.Title className="text-xl font-bold text-black-800">
-                  Hapus Surat Penugasan
+                  Hapus {title}
                 </Dialog.Title>
                 <p className="text-gray-600 mt-2 max-w-md">
                   Apakah anda yakin ingin menghapus data ini ?

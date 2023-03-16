@@ -23,6 +23,7 @@ const SuratPenugasan = () => {
   return (
     <section id="surat-penugasan" className="section-container">
       <Modal
+        title="Surat Penugasan"
         isOpen={openModal}
         setIsOpen={setOpenModal}
         deleteFunc={() =>

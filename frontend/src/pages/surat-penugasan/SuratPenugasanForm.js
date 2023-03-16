@@ -19,6 +19,7 @@ const SuratPenugasanForm = () => {
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors, dirtyFields },
   } = useForm({
     defaultValues: {
@@ -93,9 +94,11 @@ const SuratPenugasanForm = () => {
           registeredName="judul"
         />
         <CRUFileInput
+          control={control}
           fileLink={state?.files}
           register={register}
-          name="files"
+          registeredName="files"
+          name="File"
           type="file"
         />
         {errorMessage ? (

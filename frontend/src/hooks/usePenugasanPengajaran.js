@@ -35,9 +35,10 @@ const getPenugasanPengajaran = () => {
   });
 };
 
-export const usePenugasanPengajaranData = () => {
+export const usePenugasanPengajaranData = (options) => {
   return useQuery('penugasan-pengajaran', getPenugasanPengajaran, {
     refetchOnWindowFocus: false,
+    ...options,
   });
 };
 

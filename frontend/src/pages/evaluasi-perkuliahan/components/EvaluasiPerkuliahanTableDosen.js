@@ -5,7 +5,7 @@ import EditButton from '../../../components/EditButton';
 import DeleteButton from '../../../components/DeleteButton';
 import { useNavigate } from 'react-router-dom';
 
-const EvaluasiPerkuliahanTable = ({
+const EvaluasiPerkuliahanTableDosen = ({
   setOpenModal,
   setSelectedItem,
   ...options
@@ -13,10 +13,6 @@ const EvaluasiPerkuliahanTable = ({
   const navigate = useNavigate();
 
   const columns = [
-    {
-      Header: 'Dosen',
-      accessor: 'penugasan_detail.dosen_pengampu_detail.name',
-    },
     {
       Header: 'Mata Kuliah',
       accessor: 'penugasan_detail.mata_kuliah_detail.name',
@@ -73,4 +69,4 @@ const EvaluasiPerkuliahanTable = ({
   return <Table {...options} columns={columns} />;
 };
 
-export default EvaluasiPerkuliahanTable;
+export default EvaluasiPerkuliahanTableDosen;

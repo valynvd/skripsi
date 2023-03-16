@@ -9,47 +9,53 @@ const CRUDropdownInput = ({
   registeredName,
   name,
   defaultValue,
-  type = 'text',
   required = false,
-  errors = false,
 }) => {
   return (
     <div>
       <p className="mb-1">{name}</p>
       <Controller
+        rules={{ required: required ? `${name} harus diisi` : false }}
         control={control}
         name={registeredName}
-        render={({ field, value, name, ref }) => (
-          <Select
-            placeholder="pilih..."
-            theme={(theme) => ({
-              ...theme,
-              colors: {
-                ...theme.colors,
-                primary: primary400,
-                primary25: '#fde3e4',
-                primary50: '#fbd0d2',
-              },
-            })}
-            classNamePrefix="react-select"
-            styles={{
-              control: (base) => ({
-                ...base,
-                boxShadow: 'none',
-              }),
-            }}
-            classNames={{
-              control: (state) =>
-                `!px-0.5 !text-red-400 !py-0.5 ${
-                  state.isFocused ? '!border-primary-400' : '!border-gray-200'
-                }`,
-            }}
-            inputRef={ref}
-            options={options}
-            defaultValue={defaultValue}
-            value={options.find((c) => c.value === value)}
-            onChange={(val) => field.onChange(val.value)}
-          />
+        render={({ field, fieldState: { error } }) => (
+          <>
+            <Select
+              placeholder="pilih..."
+              theme={(theme) => ({
+                ...theme,
+                colors: {
+                  ...theme.colors,
+                  primary: primary400,
+                  primary25: '#fde3e4',
+                  primary50: '#fbd0d2',
+                },
+              })}
+              classNamePrefix="react-select"
+              styles={{
+                control: (base) => ({
+                  ...base,
+                  boxShadow: 'none',
+                }),
+              }}
+              classNames={{
+                control: (state) =>
+                  `!px-0.5 !text-red-400 !py-0.5 ${
+                    error ? '!border-primary-400' : ''
+                  } ${
+                    state.isFocused ? '!border-primary-400' : '!border-gray-200'
+                  }`,
+              }}
+              inputRef={field.ref}
+              options={options}
+              defaultValue={defaultValue}
+              value={options.find((c) => c.value === field.value)}
+              onChange={(val) => field.onChange(val.value)}
+            />
+            {error && (
+              <p className="mt-2 text-sm text-primary-400">{error.message}</p>
+            )}
+          </>
         )}
       />
     </div>

@@ -11,6 +11,7 @@ import PenugasanPengajaran from './penugasan-pengajaran/PenugasanPengajaran';
 import PenugasanPengajaranForm from './penugasan-pengajaran/PenugasanPengajaranForm';
 import RequireAuthWithRoles from '../components/RequireAuthWithRoles';
 import Unauthorized from './Unauthorized';
+import EvaluasiPerkuliahanForm from './evaluasi-perkuliahan/EvaluasiPerkuliahanForm';
 
 const Router = () => {
   return (
@@ -18,10 +19,11 @@ const Router = () => {
       <Route element={<RequireAuth />}>
         <Route path="/" element={<Base />}>
           <Route index element={<Home />} />
-          <Route
-            path="/evaluasi-perkuliahan"
-            element={<EvaluasiPerkuliahan />}
-          />
+          <Route path="/evaluasi-perkuliahan">
+            <Route index element={<EvaluasiPerkuliahan />} />
+            <Route path="form" element={<EvaluasiPerkuliahanForm />} />
+            <Route path=":id" element={<EvaluasiPerkuliahanForm />} />
+          </Route>
           <Route
             element={
               <RequireAuthWithRoles allowedRoles={['Admin', 'Superadmin']} />

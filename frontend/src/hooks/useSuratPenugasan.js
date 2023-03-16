@@ -17,7 +17,6 @@ const deleteSuratPenugasan = (data) => {
   return request({
     url: url + data + '/',
     method: 'delete',
-    data: data,
   });
 };
 
