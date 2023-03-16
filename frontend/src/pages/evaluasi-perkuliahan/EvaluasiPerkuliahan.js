@@ -54,12 +54,14 @@ const EvaluasiPerkuliahan = () => {
       />
       <div className="flex flex-col items-start lg:justify-between lg:items-center lg:flex-row space-y-2 lg:space-y-0">
         <p className="font-semibold text-lg">Daftar Evaluasi Perkuliahan</p>
-        <PrimaryButton
-          icon={<BiPlusCircle size={22} />}
-          link="/evaluasi-perkuliahan/form"
-        >
-          Buat Evaluasi Perkuliahan
-        </PrimaryButton>
+        {userRole?.admin && (
+          <PrimaryButton
+            icon={<BiPlusCircle size={22} />}
+            link="/evaluasi-perkuliahan/form"
+          >
+            Buat Evaluasi Perkuliahan
+          </PrimaryButton>
+        )}
       </div>
       <div className="mt-8 w-full rounded-t-lg">
         {userRole?.admin && (

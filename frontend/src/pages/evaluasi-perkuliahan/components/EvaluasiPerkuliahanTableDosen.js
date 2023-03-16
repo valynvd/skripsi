@@ -2,8 +2,8 @@ import React from 'react';
 import LinkButton from '../../../components/LinkButton';
 import Table from '../../../components/Table';
 import EditButton from '../../../components/EditButton';
-import DeleteButton from '../../../components/DeleteButton';
 import { useNavigate } from 'react-router-dom';
+import { TooltipAccept, TooltipWarning } from '../../../components/Tooltip';
 
 const EvaluasiPerkuliahanTableDosen = ({
   setOpenModal,
@@ -14,6 +14,20 @@ const EvaluasiPerkuliahanTableDosen = ({
 
   const columns = [
     {
+      Header: 'Info',
+      Cell: ({
+        cell: {
+          row: { original: value },
+        },
+      }) => {
+        return value.rps ? (
+          <TooltipAccept>RPS sudah diisi</TooltipAccept>
+        ) : (
+          <TooltipWarning>Tolong untuk segera mengisi RPS</TooltipWarning>
+        );
+      },
+    },
+    {
       Header: 'Mata Kuliah',
       accessor: 'penugasan_detail.mata_kuliah_detail.name',
     },
@@ -22,10 +36,12 @@ const EvaluasiPerkuliahanTableDosen = ({
       Header: 'RPS',
       accessor: 'rps',
       Cell: ({ value }) => {
-        return (
+        return value ? (
           <LinkButton href={value} className="inline-flex">
             Lihat
           </LinkButton>
+        ) : (
+          <p className="text-primary-400 font-semibold">Tidak ada</p>
         );
       },
     },
@@ -33,10 +49,25 @@ const EvaluasiPerkuliahanTableDosen = ({
       Header: 'Rubrik',
       accessor: 'rubrik',
       Cell: ({ value }) => {
-        return (
+        return value ? (
           <LinkButton href={value} className="inline-flex">
             Lihat
           </LinkButton>
+        ) : (
+          <p className="text-primary-400 font-semibold">Tidak ada</p>
+        );
+      },
+    },
+    {
+      Header: 'Evaluasi',
+      accessor: 'evaluation_report',
+      Cell: ({ value }) => {
+        return value ? (
+          <LinkButton href={value} className="inline-flex">
+            Lihat
+          </LinkButton>
+        ) : (
+          <p className="text-primary-400 font-semibold">Tidak ada</p>
         );
       },
     },
@@ -52,12 +83,6 @@ const EvaluasiPerkuliahanTableDosen = ({
             <EditButton
               onClick={() => {
                 navigate(`/evaluasi-perkuliahan/${value.id}`, { state: value });
-              }}
-            />
-            <DeleteButton
-              onClick={() => {
-                setSelectedItem(value.id);
-                setOpenModal(true);
               }}
             />
           </div>

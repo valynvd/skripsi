@@ -14,9 +14,11 @@ import CRUDropdownInput from '../../components/CRUDropdownInput';
 import { usePenugasanPengajaranData } from '../../hooks/usePenugasanPengajaran';
 import CRUFileInput from '../../components/CRUFileInput';
 import CRUTextAreaInput from '../../components/CRUTextAreaInput';
+import { useCheckRole } from '../../hooks/useCheckRole';
 
 const EvaluasiPerkuliahanForm = () => {
   const [errorMessage, setErrorMessage] = useState();
+  const userRole = useCheckRole();
   const { id } = useParams();
   const { state } = useLocation();
   const {
@@ -118,43 +120,47 @@ const EvaluasiPerkuliahanForm = () => {
           registeredName="rps"
           name="RPS"
         />
-        <CRUFileInput
-          fileLink={state?.evaluation_report}
-          control={control}
-          register={register}
-          registeredName="evaluation_report"
-          name="Evaluation Report"
-        />
-        <CRUFileInput
-          fileLink={state?.rubrik}
-          control={control}
-          register={register}
-          registeredName="rubrik"
-          name="Rubrik"
-        />
-        <CRUTextAreaInput
-          register={register}
-          name="Notes"
-          registeredName="notes"
-          errors={errors}
-        />
-        <CRUDropdownInput
-          required
-          control={control}
-          name="Penugasan Pengajaran"
-          registeredName="penugasan"
-          defaultValue={
-            state?.penugasan_detail
-              ? {
-                  value: state.penugasan_detail.id,
-                  label: `[${state.periode} ${state.tahun}]-${state.dosen_pengampu_detail?.inisial}-${state.mata_kuliah_detail?.name}`,
-                }
-              : null
-          }
-          options={
-            penugasanPengajaranDataSuccess ? dataPenugasanPengajaran : []
-          }
-        />
+        {userRole?.admin && (
+          <>
+            <CRUFileInput
+              fileLink={state?.evaluation_report}
+              control={control}
+              register={register}
+              registeredName="evaluation_report"
+              name="Evaluation Report"
+            />
+            <CRUFileInput
+              fileLink={state?.rubrik}
+              control={control}
+              register={register}
+              registeredName="rubrik"
+              name="Rubrik"
+            />
+            <CRUTextAreaInput
+              register={register}
+              name="Notes"
+              registeredName="notes"
+              errors={errors}
+            />
+            <CRUDropdownInput
+              required
+              control={control}
+              name="Penugasan Pengajaran"
+              registeredName="penugasan"
+              defaultValue={
+                state?.penugasan_detail
+                  ? {
+                      value: state.penugasan_detail.id,
+                      label: `[${state.periode} ${state.tahun}]-${state.dosen_pengampu_detail?.inisial}-${state.mata_kuliah_detail?.name}`,
+                    }
+                  : null
+              }
+              options={
+                penugasanPengajaranDataSuccess ? dataPenugasanPengajaran : []
+              }
+            />
+          </>
+        )}
         {errorMessage ? (
           <Alert className="inline-block">{errorMessage}</Alert>
         ) : null}
