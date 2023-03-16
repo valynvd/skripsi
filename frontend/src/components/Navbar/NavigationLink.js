@@ -13,7 +13,6 @@ const NavigationLink = ({ children, url, icon }) => {
     <NavLink
       to={url}
       onClick={() => {
-        console.log(window[0]);
         if (window[0] <= 768) {
           setNavbarMinimize(true);
         }

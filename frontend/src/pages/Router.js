@@ -9,6 +9,8 @@ import SuratPenugasan from './surat-penugasan/SuratPenugasan';
 import SuratPenugasanForm from './surat-penugasan/SuratPenugasanForm';
 import PenugasanPengajaran from './penugasan-pengajaran/PenugasanPengajaran';
 import PenugasanPengajaranForm from './penugasan-pengajaran/PenugasanPengajaranForm';
+import RequireAuthWithRoles from '../components/RequireAuthWithRoles';
+import Unauthorized from './Unauthorized';
 
 const Router = () => {
   return (
@@ -20,19 +22,26 @@ const Router = () => {
             path="/evaluasi-perkuliahan"
             element={<EvaluasiPerkuliahan />}
           />
-          <Route path="/surat-penugasan">
-            <Route index element={<SuratPenugasan />} />
-            <Route path="form" element={<SuratPenugasanForm />} />
-            <Route path=":id" element={<SuratPenugasanForm />} />
-          </Route>
-          <Route path="/penugasan-pengajaran">
-            <Route index element={<PenugasanPengajaran />} />
-            <Route path="form" element={<PenugasanPengajaranForm />} />
-            <Route path=":id" element={<PenugasanPengajaranForm />} />
+          <Route
+            element={
+              <RequireAuthWithRoles allowedRoles={['Admin', 'Superadmin']} />
+            }
+          >
+            <Route path="/surat-penugasan">
+              <Route index element={<SuratPenugasan />} />
+              <Route path="form" element={<SuratPenugasanForm />} />
+              <Route path=":id" element={<SuratPenugasanForm />} />
+            </Route>
+            <Route path="/penugasan-pengajaran">
+              <Route index element={<PenugasanPengajaran />} />
+              <Route path="form" element={<PenugasanPengajaranForm />} />
+              <Route path=":id" element={<PenugasanPengajaranForm />} />
+            </Route>
           </Route>
         </Route>
       </Route>
       <Route path="/login" element={<Login />} />
+      <Route path="/unauthorized" element={<Unauthorized />} />
     </Routes>
   );
 };

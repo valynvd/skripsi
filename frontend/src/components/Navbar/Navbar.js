@@ -5,8 +5,10 @@ import { AiOutlineMail, AiOutlineFileText } from 'react-icons/ai';
 import { MdOutlineAssignment, MdKeyboardArrowLeft } from 'react-icons/md';
 import { primary400 } from '../../utils/colors';
 import useOther from '../../hooks/useOther';
+import useAuth from '../../hooks/useAuth';
 
 const Navbar = () => {
+  const { auth } = useAuth();
   const { navbarMinimize, setNavbarMinimize } = useOther();
 
   return (
@@ -45,18 +47,23 @@ const Navbar = () => {
           >
             Evaluasi Perkuliahan
           </NavigationLink>
-          <NavigationLink
-            url="/surat-penugasan"
-            icon={<AiOutlineMail size={22} />}
-          >
-            Surat Penugasan
-          </NavigationLink>
-          <NavigationLink
-            url="/penugasan-pengajaran"
-            icon={<MdOutlineAssignment size={22} />}
-          >
-            Penugasan Pengajaran
-          </NavigationLink>
+          {(auth?.userData?.role === 'Admin' ||
+            auth?.userData?.role === 'Superadmin') && (
+            <>
+              <NavigationLink
+                url="/surat-penugasan"
+                icon={<AiOutlineMail size={22} />}
+              >
+                Surat Penugasan
+              </NavigationLink>
+              <NavigationLink
+                url="/penugasan-pengajaran"
+                icon={<MdOutlineAssignment size={22} />}
+              >
+                Penugasan Pengajaran
+              </NavigationLink>
+            </>
+          )}
         </div>
       </nav>
     </div>
