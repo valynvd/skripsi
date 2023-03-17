@@ -1,8 +1,7 @@
 import React from 'react';
 import Table from '../../../components/Table';
 import { useNavigate } from 'react-router-dom';
-import DeleteButton from '../../../components/DeleteButton';
-import EditButton from '../../../components/EditButton';
+import { EditIcon, DeleteIcon } from '../../../components/IconButton';
 
 const PenugasanPengajaranTable = ({
   setOpenModal,
@@ -33,12 +32,12 @@ const PenugasanPengajaranTable = ({
       }) => {
         return (
           <div className="flex flex-row space-x-2">
-            <EditButton
+            <EditIcon
               onClick={() => {
                 navigate(`/penugasan-pengajaran/${value.id}`, { state: value });
               }}
             />
-            <DeleteButton
+            <DeleteIcon
               onClick={() => {
                 setSelectedItem(value.id);
                 setOpenModal(true);

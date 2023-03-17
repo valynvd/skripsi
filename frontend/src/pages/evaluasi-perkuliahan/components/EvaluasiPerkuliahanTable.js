@@ -1,10 +1,14 @@
+/* eslint-disable no-unused-vars */
 import React from 'react';
-import LinkButton from '../../../components/LinkButton';
 import Table from '../../../components/Table';
 import EditButton from '../../../components/EditButton';
 import DeleteButton from '../../../components/DeleteButton';
 import { useNavigate } from 'react-router-dom';
-import { TooltipAccept, TooltipWarning } from '../../../components/Tooltip';
+import {
+  LinkIconAccepted,
+  LinkIconWarning,
+} from '../../../components/LinkIcon';
+import { DeleteIcon, EditIcon } from '../../../components/IconButton';
 
 const EvaluasiPerkuliahanTable = ({
   setOpenModal,
@@ -14,20 +18,20 @@ const EvaluasiPerkuliahanTable = ({
   const navigate = useNavigate();
 
   const columns = [
-    {
-      Header: 'Info',
-      Cell: ({
-        cell: {
-          row: { original: value },
-        },
-      }) => {
-        return value.rps ? (
-          <TooltipAccept>RPS sudah diisi</TooltipAccept>
-        ) : (
-          <TooltipWarning>Tolong untuk segera mengisi RPS</TooltipWarning>
-        );
-      },
-    },
+    // {
+    //   Header: 'Info',
+    //   Cell: ({
+    //     cell: {
+    //       row: { original: value },
+    //     },
+    //   }) => {
+    //     return value.rps ? (
+    //       <TooltipAccept>RPS sudah diisi</TooltipAccept>
+    //     ) : (
+    //       <TooltipWarning>Tolong untuk segera mengisi RPS</TooltipWarning>
+    //     );
+    //   },
+    // },
     {
       Header: 'Dosen',
       accessor: 'penugasan_detail.dosen_pengampu_detail.name',
@@ -41,39 +45,21 @@ const EvaluasiPerkuliahanTable = ({
       Header: 'RPS',
       accessor: 'rps',
       Cell: ({ value }) => {
-        return value ? (
-          <LinkButton href={value} className="inline-flex">
-            Lihat
-          </LinkButton>
-        ) : (
-          <p className="text-primary-400 font-semibold">Tidak ada</p>
-        );
+        return value ? <LinkIconAccepted href={value} /> : <LinkIconWarning />;
       },
     },
     {
       Header: 'Rubrik',
       accessor: 'rubrik',
       Cell: ({ value }) => {
-        return value ? (
-          <LinkButton href={value} className="inline-flex">
-            Lihat
-          </LinkButton>
-        ) : (
-          <p className="text-primary-400 font-semibold">Tidak ada</p>
-        );
+        return value ? <LinkIconAccepted href={value} /> : <LinkIconWarning />;
       },
     },
     {
       Header: 'Evaluasi',
       accessor: 'evaluation_report',
       Cell: ({ value }) => {
-        return value ? (
-          <LinkButton href={value} className="inline-flex">
-            Lihat
-          </LinkButton>
-        ) : (
-          <p className="text-primary-400 font-semibold">Tidak ada</p>
-        );
+        return value ? <LinkIconAccepted href={value} /> : <LinkIconWarning />;
       },
     },
     {
@@ -85,12 +71,12 @@ const EvaluasiPerkuliahanTable = ({
       }) => {
         return (
           <div className="flex flex-row space-x-2">
-            <EditButton
+            <EditIcon
               onClick={() => {
                 navigate(`/evaluasi-perkuliahan/${value.id}`, { state: value });
               }}
             />
-            <DeleteButton
+            <DeleteIcon
               onClick={() => {
                 setSelectedItem(value.id);
                 setOpenModal(true);
