@@ -53,7 +53,7 @@ const Dosen = ({ setOpenModal, setSelectedItem, ...options }) => {
     },
   ];
 
-  return <Table {...options} columns={columns} />;
+  return <Table {...options} userRole={userRole} columns={columns} />;
 };
 
 export default Dosen;

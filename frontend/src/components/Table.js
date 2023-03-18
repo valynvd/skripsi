@@ -10,9 +10,9 @@ import { RxTriangleUp, RxTriangleDown } from 'react-icons/rx';
 import { AiOutlineSearch } from 'react-icons/ai';
 import Pagination from './Pagination';
 
-const Table = ({ loading, data, columns }) => {
+const Table = ({ loading, data, columns, userRole }) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const memoColumns = useMemo(() => columns, []);
+  const memoColumns = useMemo(() => columns, [userRole]);
   const memoData = useMemo(() => data, [data]);
 
   const {
