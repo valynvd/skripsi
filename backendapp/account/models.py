@@ -56,7 +56,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['fullname', 'phone', 'role', 'is_active', 'is_staff']
+    REQUIRED_FIELDS = ['fullname', 'phone', 'role', 'is_active', 'is_staff', 'jabatan']
 
     objects = CustomUserManager()
 
