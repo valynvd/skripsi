@@ -12,6 +12,9 @@ import PenugasanPengajaranForm from './penugasan-pengajaran/PenugasanPengajaranF
 import RequireAuthWithRoles from '../components/RequireAuthWithRoles';
 import Unauthorized from './Unauthorized';
 import EvaluasiPerkuliahanForm from './evaluasi-perkuliahan/EvaluasiPerkuliahanForm';
+import RequireAuthWithPosition from '../components/RequireAuthWithPosition';
+import Dosen from './dosen/Dosen';
+import DosenForm from './dosen/DosenForm';
 
 const Router = () => {
   return (
@@ -23,6 +26,28 @@ const Router = () => {
             <Route index element={<EvaluasiPerkuliahan />} />
             <Route path="form" element={<EvaluasiPerkuliahanForm />} />
             <Route path=":id" element={<EvaluasiPerkuliahanForm />} />
+          </Route>
+          <Route
+            element={
+              <RequireAuthWithRoles
+                allowedRoles={['Admin', 'Superadmin', 'Faculty Member']}
+              />
+            }
+          >
+            <Route
+              element={
+                <RequireAuthWithPosition
+                  checkRole={['Faculty Member']}
+                  allowedPosition={['Kaprodi']}
+                />
+              }
+            >
+              <Route path="/dosen">
+                <Route index element={<Dosen />} />
+                <Route path="form" element={<DosenForm />} />
+                <Route path=":id" element={<DosenForm />} />
+              </Route>
+            </Route>
           </Route>
           <Route
             element={

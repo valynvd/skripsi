@@ -120,7 +120,7 @@ const EvaluasiPerkuliahanForm = () => {
           registeredName="rps"
           name="RPS"
         />
-        {userRole?.admin && (
+        {userRole.admin && (
           <>
             <CRUFileInput
               fileLink={state?.evaluation_report}

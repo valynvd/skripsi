@@ -21,11 +21,11 @@ const EvaluasiPerkuliahan = () => {
   const { mutate: deleteEvaluasiPerkuliahan } = useDeleteEvaluasiPerkuliahan();
   const { data: responseData, isLoading: isLoadingData } =
     useEvaluasiPerkuliahanData({
-      enabled: !!userRole?.admin,
+      enabled: !!userRole.admin,
     });
   const { data: responseDosen, isLoading: isLoadingDosen } =
     useEvaluasiPerkuliahanByDosen({
-      enabled: !!userRole?.facultyMember,
+      enabled: !!userRole.facultyMember,
     });
 
   useEffect(() => {
@@ -41,10 +41,10 @@ const EvaluasiPerkuliahan = () => {
         deleteFunc={() =>
           deleteEvaluasiPerkuliahan(selectedItem, {
             onSuccess: () => {
-              if (userRole?.admin) {
+              if (userRole.admin) {
                 queryClient.invalidateQueries('evaluasi-perkuliahan');
               }
-              if (userRole?.facultyMember) {
+              if (userRole.facultyMember) {
                 queryClient.invalidateQueries('evaluasi-perkuliahan-dosen');
               }
               setOpenModal(false);
@@ -54,7 +54,7 @@ const EvaluasiPerkuliahan = () => {
       />
       <div className="flex flex-col items-start lg:justify-between lg:items-center lg:flex-row space-y-2 lg:space-y-0">
         <p className="font-semibold text-lg">Daftar Evaluasi Perkuliahan</p>
-        {userRole?.admin && (
+        {userRole.admin && (
           <PrimaryButton
             icon={<BiPlusCircle size={22} />}
             link="/evaluasi-perkuliahan/form"
@@ -64,7 +64,7 @@ const EvaluasiPerkuliahan = () => {
         )}
       </div>
       <div className="mt-8 w-full rounded-t-lg">
-        {userRole?.admin && (
+        {userRole.admin && (
           <EvaluasiPerkuliahanTable
             loading={isLoadingData}
             data={responseData?.data ?? []}
@@ -72,7 +72,7 @@ const EvaluasiPerkuliahan = () => {
             setOpenModal={setOpenModal}
           />
         )}
-        {userRole?.facultyMember && (
+        {userRole.facultyMember && (
           <EvaluasiPerkuliahanTableDosen
             loading={isLoadingDosen}
             data={responseDosen?.data ?? []}

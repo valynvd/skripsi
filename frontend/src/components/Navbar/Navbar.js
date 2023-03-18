@@ -3,12 +3,13 @@ import NavigationLink from './NavigationLink';
 import { BiHome } from 'react-icons/bi';
 import { AiOutlineMail, AiOutlineFileText } from 'react-icons/ai';
 import { MdOutlineAssignment, MdKeyboardArrowLeft } from 'react-icons/md';
+import { RiUser2Line } from 'react-icons/ri';
 import { primary400 } from '../../utils/colors';
 import useOther from '../../hooks/useOther';
-import useAuth from '../../hooks/useAuth';
+import { useCheckRole } from '../../hooks/useCheckRole';
 
 const Navbar = () => {
-  const { auth } = useAuth();
+  const userRole = useCheckRole();
   const { navbarMinimize, setNavbarMinimize } = useOther();
 
   return (
@@ -41,14 +42,18 @@ const Navbar = () => {
           <NavigationLink url="/" icon={<BiHome size={22} />}>
             Dashboard
           </NavigationLink>
+          {(userRole.admin || (userRole.facultyMember && userRole.kaprodi)) && (
+            <NavigationLink url="/dosen" icon={<RiUser2Line size={22} />}>
+              Dosen
+            </NavigationLink>
+          )}
           <NavigationLink
             url="/evaluasi-perkuliahan"
             icon={<AiOutlineFileText size={22} />}
           >
             Evaluasi Perkuliahan
           </NavigationLink>
-          {(auth?.userData?.role === 'Admin' ||
-            auth?.userData?.role === 'Superadmin') && (
+          {userRole.admin && (
             <>
               <NavigationLink
                 url="/surat-penugasan"
