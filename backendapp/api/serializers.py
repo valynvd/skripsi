@@ -30,6 +30,12 @@ class DosenSerializers(serializers.ModelSerializer):
       model = models.Dosen
       fields = '__all__'
 
+class DosenSerializersAuthMe(serializers.ModelSerializer):
+  prodi_detail = ProgramStudiSerializers(source='prodi', many=False, read_only=True)
+  class Meta:
+      model = models.Dosen
+      fields = '__all__'
+
 class SuratPenugasanSerializers(serializers.ModelSerializer):
   class Meta:
       model = models.SuratPenugasan
