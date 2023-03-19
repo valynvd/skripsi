@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import CRUInput from '../../components/CRUInput';
 import PrimaryButton from '../../components/PrimaryButton';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import { usePostDosen, usePatchDosen } from '../../hooks/useDosen';
+import { usePostUser, usePatchUser } from '../../hooks/useUser';
 import { AlertError } from '../../components/Alert';
 import EditButton from '../../components/EditButton';
 import CRUDropdownInput from '../../components/CRUDropdownInput';
@@ -13,7 +13,7 @@ import { useProgramStudiData } from '../../hooks/useProdi';
 import useAuth from '../../hooks/useAuth';
 import { useCheckRole } from '../../hooks/useCheckRole';
 
-const DosenForm = () => {
+const UserForm = () => {
   const [errorMessage, setErrorMessage] = useState();
   const { id } = useParams();
   const { state } = useLocation();
@@ -39,8 +39,8 @@ const DosenForm = () => {
     }
   }, [state, id, reset]);
 
-  const { mutate: postDosen, isLoading: postDosenLoading } = usePostDosen();
-  const { mutate: patchDosen, isLoading: patchDosenLoading } = usePatchDosen();
+  const { mutate: postUser, isLoading: postUserLoading } = usePostUser();
+  const { mutate: patchUser, isLoading: patchUserLoading } = usePatchUser();
   const navigate = useNavigate();
 
   const { data: dataUser, isSuccess: userDataSuccess } = useUserData({
@@ -56,7 +56,7 @@ const DosenForm = () => {
     useProgramStudiData({
       select: (response) => {
         if (userRole.kaprodi) {
-          const prodi_detail = auth?.userData?.dosen_detail?.prodi_detail;
+          const prodi_detail = auth?.userData?.user_detail?.prodi_detail;
 
           return [{ value: prodi_detail?.id, label: prodi_detail?.name }];
         }
@@ -69,20 +69,22 @@ const DosenForm = () => {
     });
 
   const onSubmit = (data) => {
-    const dosenFormData = new FormData();
+    const userFormData = new FormData();
+
+    userFormData.append('is_active', true);
 
     Object.keys(dirtyFields).forEach((key) => {
       if (dirtyFields[key]) {
-        dosenFormData.append(key, data[key]);
+        userFormData.append(key, data[key]);
       }
     });
 
     if (id) {
-      patchDosen(
-        { data: dosenFormData, id: id },
+      patchUser(
+        { data: userFormData, id: id },
         {
           onSuccess: () => {
-            navigate('/dosen');
+            navigate('/user');
           },
           onError: (err) => {
             setErrorMessage(err.message);
@@ -93,9 +95,9 @@ const DosenForm = () => {
         }
       );
     } else {
-      postDosen(dosenFormData, {
+      postUser(userFormData, {
         onSuccess: () => {
-          navigate('/dosen');
+          navigate('/user');
         },
         onError: (err) => {
           setErrorMessage(err.message);
@@ -108,34 +110,35 @@ const DosenForm = () => {
   };
 
   return (
-    <section id="dosen-form" className="section-container">
-      <p className="text-lg font-semibold">{id ? 'Edit' : 'Buat'} Dosen</p>
+    <section id="user-form" className="section-container">
+      <p className="text-lg font-semibold">{id ? 'Edit' : 'Buat'} User</p>
       <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4">
         <CRUInput
           register={register}
           name="Nama Lengkap"
           required
           errors={errors}
-          registeredName="name"
+          registeredName="fullname"
         />
         <CRUInput
           register={register}
-          name="Inisial"
+          name="Nomor Telepon"
           required
           errors={errors}
-          registeredName="inisial"
+          registeredName="phone"
         />
         <CRUInput
           register={register}
-          name="Fulltime"
-          type="checkbox"
+          name="Email"
+          required
           errors={errors}
-          registeredName="is_fulltime"
+          registeredName="email"
         />
         <CRUDropdownInput
           control={control}
-          name="User"
-          registeredName="user"
+          required
+          name="Role"
+          registeredName="role"
           defaultValue={
             state?.user_detail
               ? {
@@ -144,33 +147,53 @@ const DosenForm = () => {
                 }
               : null
           }
-          options={userDataSuccess ? dataUser : []}
+          options={[
+            { value: 'Superadmin', label: 'Superadmin' },
+            { value: 'Admin', label: 'Admin' },
+            { value: 'Faculty Member', label: 'Faculty Member' },
+            { value: 'Student', label: 'Student' },
+          ]}
         />
         <CRUDropdownInput
           control={control}
-          name="Program Studi"
-          registeredName="prodi"
+          name="Jabatan"
+          required
+          registeredName="jabatan"
           defaultValue={
-            state?.prodi_detail
+            state?.user_detail
               ? {
-                  value: state.prodi_detail?.id,
-                  label: state.prodi_detail?.name,
+                  value: state.user_detail?.id,
+                  label: state.user_detail?.fullname,
                 }
               : null
           }
-          options={programStudiDataSuccess ? dataProgramStudi : []}
+          options={[
+            { value: 'Tidak ada', label: 'Tidak ada' },
+            { value: 'Kaprodi', label: 'Kaprodi' },
+            { value: 'Direktur/Kepala Unit', label: 'Direktur/Kepala Unit' },
+            { value: 'Dekan', label: 'Dekan' },
+          ]}
         />
+        {!id ? (
+          <CRUInput
+            register={register}
+            name="Password"
+            required
+            errors={errors}
+            registeredName="password"
+          />
+        ) : null}
         {errorMessage ? (
           <AlertError className="inline-block">{errorMessage}</AlertError>
         ) : null}
         {id ? (
           <EditButton
             className={`!mt-8 !text-base`}
-            isLoading={patchDosenLoading}
+            isLoading={patchUserLoading}
             type="submit"
           />
         ) : (
-          <PrimaryButton className={`!mt-8`} isLoading={postDosenLoading}>
+          <PrimaryButton className={`!mt-8`} isLoading={postUserLoading}>
             Buat
           </PrimaryButton>
         )}
@@ -179,4 +202,4 @@ const DosenForm = () => {
   );
 };
 
-export default DosenForm;
+export default UserForm;

@@ -7,7 +7,7 @@ import {
   usePostSuratPenugasan,
   usePatchSuratPenugasan,
 } from '../../hooks/useSuratPenugasan';
-import Alert from '../../components/Alert';
+import { AlertError } from '../../components/Alert';
 import CRUFileInput from '../../components/CRUFileInput';
 import EditButton from '../../components/EditButton';
 
@@ -102,7 +102,7 @@ const SuratPenugasanForm = () => {
           type="file"
         />
         {errorMessage ? (
-          <Alert className="inline-block">{errorMessage}</Alert>
+          <AlertError className="inline-block">{errorMessage}</AlertError>
         ) : null}
         {id ? (
           <EditButton

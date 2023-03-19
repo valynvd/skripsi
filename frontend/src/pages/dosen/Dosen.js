@@ -3,14 +3,14 @@ import PrimaryButton from '../../components/PrimaryButton';
 import { BiPlusCircle } from 'react-icons/bi';
 import DosenTable from './components/DosenTable';
 import { useDeleteDosen, useDosenData } from '../../hooks/useDosen';
-import Modal from '../../components/Modal';
+import ModalDelete from '../../components/ModalDelete';
 import { useQueryClient } from 'react-query';
 import { useCheckRole } from '../../hooks/useCheckRole';
 
 const Dosen = () => {
   const { data: response, isLoading } = useDosenData();
   const { mutate: deleteDosen } = useDeleteDosen();
-  const [openModal, setOpenModal] = useState(false);
+  const [openModalDelete, setOpenModalDelete] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const userRole = useCheckRole();
   const queryClient = useQueryClient();
@@ -21,15 +21,15 @@ const Dosen = () => {
 
   return (
     <section id="dosen" className="section-container">
-      <Modal
+      <ModalDelete
         title="Dosen"
-        isOpen={openModal}
-        setIsOpen={setOpenModal}
+        isOpen={openModalDelete}
+        setIsOpen={setOpenModalDelete}
         deleteFunc={() =>
           deleteDosen(selectedItem, {
             onSuccess: () => {
               queryClient.invalidateQueries('dosen');
-              setOpenModal(false);
+              setOpenModalDelete(false);
             },
           })
         }
@@ -45,7 +45,7 @@ const Dosen = () => {
       <div className="mt-8 w-full rounded-t-lg">
         <DosenTable
           setSelectedItem={setSelectedItem}
-          setOpenModal={setOpenModal}
+          setOpenModalDelete={setOpenModalDelete}
           loading={isLoading}
           data={response?.data ?? []}
         />

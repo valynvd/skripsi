@@ -7,7 +7,7 @@ import {
   usePostPenugasanPengajaran,
   usePatchPenugasanPengajaran,
 } from '../../hooks/usePenugasanPengajaran';
-import Alert from '../../components/Alert';
+import { AlertError } from '../../components/Alert';
 import EditButton from '../../components/EditButton';
 import CRUDropdownInput from '../../components/CRUDropdownInput';
 import { useSuratPenugasanData } from '../../hooks/useSuratPenugasan';
@@ -196,7 +196,7 @@ const PenugasanPengajaranForm = () => {
           options={mataKuliahDataSuccess ? dataMataKuliah : []}
         />
         {errorMessage ? (
-          <Alert className="inline-block">{errorMessage}</Alert>
+          <AlertError className="inline-block">{errorMessage}</AlertError>
         ) : null}
         {id ? (
           <EditButton

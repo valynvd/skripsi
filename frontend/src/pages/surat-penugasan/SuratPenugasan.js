@@ -6,13 +6,13 @@ import {
   useDeleteSuratPenugasan,
   useSuratPenugasanData,
 } from '../../hooks/useSuratPenugasan';
-import Modal from '../../components/Modal';
+import ModalDelete from '../../components/ModalDelete';
 import { useQueryClient } from 'react-query';
 
 const SuratPenugasan = () => {
   const { data: response, isLoading } = useSuratPenugasanData();
   const { mutate: deleteSuratPenugasan } = useDeleteSuratPenugasan();
-  const [openModal, setOpenModal] = useState(false);
+  const [openModalDelete, setOpenModalDelete] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const queryClient = useQueryClient();
 
@@ -22,15 +22,15 @@ const SuratPenugasan = () => {
 
   return (
     <section id="surat-penugasan" className="section-container">
-      <Modal
+      <ModalDelete
         title="Surat Penugasan"
-        isOpen={openModal}
-        setIsOpen={setOpenModal}
+        isOpen={openModalDelete}
+        setIsOpen={setOpenModalDelete}
         deleteFunc={() =>
           deleteSuratPenugasan(selectedItem, {
             onSuccess: () => {
               queryClient.invalidateQueries('surat-penugasan');
-              setOpenModal(false);
+              setOpenModalDelete(false);
             },
           })
         }
@@ -47,7 +47,7 @@ const SuratPenugasan = () => {
       <div className="mt-8 w-full rounded-t-lg">
         <SuratPenugasanTable
           setSelectedItem={setSelectedItem}
-          setOpenModal={setOpenModal}
+          setOpenModalDelete={setOpenModalDelete}
           loading={isLoading}
           data={response?.data ?? []}
         />

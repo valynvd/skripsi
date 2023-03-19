@@ -8,7 +8,7 @@ import {
 import { EditIcon } from '../../../components/IconButton';
 
 const EvaluasiPerkuliahanTableDosen = ({
-  setOpenModal,
+  setOpenModalDelete,
   setSelectedItem,
   ...options
 }) => {

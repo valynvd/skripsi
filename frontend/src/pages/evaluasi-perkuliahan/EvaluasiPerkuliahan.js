@@ -9,12 +9,12 @@ import {
 } from '../../hooks/useEvaluasiPerkuliahan';
 import EvaluasiPerkuliahanTableDosen from './components/EvaluasiPerkuliahanTableDosen';
 import { useCheckRole } from '../../hooks/useCheckRole';
-import Modal from '../../components/Modal';
+import ModalDelete from '../../components/ModalDelete';
 import { useQueryClient } from 'react-query';
 
 const EvaluasiPerkuliahan = () => {
   const userRole = useCheckRole();
-  const [openModal, setOpenModal] = useState(false);
+  const [openModalDelete, setOpenModalDelete] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const queryClient = useQueryClient();
 
@@ -34,10 +34,10 @@ const EvaluasiPerkuliahan = () => {
 
   return (
     <section id="evaluasi-perkuliahan" className="section-container">
-      <Modal
+      <ModalDelete
         title="Evaluasi Perkuliahan"
-        isOpen={openModal}
-        setIsOpen={setOpenModal}
+        isOpen={openModalDelete}
+        setIsOpen={setOpenModalDelete}
         deleteFunc={() =>
           deleteEvaluasiPerkuliahan(selectedItem, {
             onSuccess: () => {
@@ -47,7 +47,7 @@ const EvaluasiPerkuliahan = () => {
               if (userRole.facultyMember) {
                 queryClient.invalidateQueries('evaluasi-perkuliahan-dosen');
               }
-              setOpenModal(false);
+              setOpenModalDelete(false);
             },
           })
         }
@@ -69,7 +69,7 @@ const EvaluasiPerkuliahan = () => {
             loading={isLoadingData}
             data={responseData?.data ?? []}
             setSelectedItem={setSelectedItem}
-            setOpenModal={setOpenModal}
+            setOpenModalDelete={setOpenModalDelete}
           />
         )}
         {userRole.facultyMember && (
@@ -77,7 +77,7 @@ const EvaluasiPerkuliahan = () => {
             loading={isLoadingDosen}
             data={responseDosen?.data ?? []}
             setSelectedItem={setSelectedItem}
-            setOpenModal={setOpenModal}
+            setOpenModalDelete={setOpenModalDelete}
           />
         )}
       </div>

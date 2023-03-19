@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { EditIcon, DeleteIcon } from '../../../components/IconButton';
 
 const PenugasanPengajaranTable = ({
-  setOpenModal,
+  setOpenModalDelete,
   setSelectedItem,
   ...options
 }) => {
@@ -40,7 +40,7 @@ const PenugasanPengajaranTable = ({
             <DeleteIcon
               onClick={() => {
                 setSelectedItem(value.id);
-                setOpenModal(true);
+                setOpenModalDelete(true);
               }}
             />
           </div>

@@ -8,7 +8,7 @@ import {
   usePostEvaluasiPerkuliahan,
   usePatchEvaluasiPerkuliahan,
 } from '../../hooks/useEvaluasiPerkuliahan';
-import Alert from '../../components/Alert';
+import { AlertError } from '../../components/Alert';
 import EditButton from '../../components/EditButton';
 import CRUDropdownInput from '../../components/CRUDropdownInput';
 import { usePenugasanPengajaranData } from '../../hooks/usePenugasanPengajaran';
@@ -162,7 +162,7 @@ const EvaluasiPerkuliahanForm = () => {
           </>
         )}
         {errorMessage ? (
-          <Alert className="inline-block">{errorMessage}</Alert>
+          <AlertError className="inline-block">{errorMessage}</AlertError>
         ) : null}
         {id ? (
           <EditButton

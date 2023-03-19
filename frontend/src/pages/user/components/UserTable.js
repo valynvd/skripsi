@@ -4,26 +4,22 @@ import { useNavigate } from 'react-router-dom';
 import { EditIcon, DeleteIcon } from '../../../components/IconButton';
 import { useCheckRole } from '../../../hooks/useCheckRole';
 
-const Dosen = ({ setOpenModalDelete, setSelectedItem, ...options }) => {
+const User = ({ setOpenModalDelete, setSelectedItem, ...options }) => {
   const navigate = useNavigate();
   const userRole = useCheckRole();
 
   const columns = [
     {
       Header: 'Nama',
-      accessor: 'name',
+      accessor: 'fullname',
     },
     {
-      Header: 'Inisial',
-      accessor: 'inisial',
+      Header: 'Role',
+      accessor: 'role',
     },
     {
       Header: 'Jabatan',
-      accessor: 'user_detail.jabatan',
-    },
-    {
-      Header: 'Prodi',
-      accessor: 'prodi_detail.name',
+      accessor: 'jabatan',
     },
     {
       Header: 'Aksi',
@@ -36,7 +32,7 @@ const Dosen = ({ setOpenModalDelete, setSelectedItem, ...options }) => {
           <div className="flex flex-row space-x-2">
             <EditIcon
               onClick={() => {
-                navigate(`/dosen/${value.id}`, { state: value });
+                navigate(`/user/${value.id}`, { state: value });
               }}
             />
             {userRole.admin && (
@@ -56,4 +52,4 @@ const Dosen = ({ setOpenModalDelete, setSelectedItem, ...options }) => {
   return <Table {...options} userRole={userRole} columns={columns} />;
 };
 
-export default Dosen;
+export default User;

@@ -1,8 +1,8 @@
 import React, { Fragment, useRef } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import PrimaryButton from './PrimaryButton';
+import DeleteButton from './DeleteButton';
 
-const Modal = ({ isOpen, setIsOpen, link, title, description }) => {
+const ModalDelete = ({ isOpen, setIsOpen, deleteFunc, title }) => {
   let completeButtonRef = useRef(null);
 
   return (
@@ -38,12 +38,15 @@ const Modal = ({ isOpen, setIsOpen, link, title, description }) => {
             <div className="flex min-h-full items-center justify-center p-4">
               <Dialog.Panel className="bg-white p-5 rounded-xl shadow-lg flex flex-col items-center justify-center text-center">
                 <Dialog.Title className="text-xl font-bold text-black-800">
-                  {title}
+                  Hapus {title}
                 </Dialog.Title>
-                <p className="text-gray-600 mt-2 max-w-md">{description}</p>
-                <PrimaryButton link={link} className="mt-4">
-                  Back to login
-                </PrimaryButton>
+                <p className="text-gray-600 mt-2 max-w-md">
+                  Apakah anda yakin ingin menghapus data ini ?
+                </p>
+                <DeleteButton
+                  className="mt-4 !text-base"
+                  onClick={deleteFunc}
+                />
               </Dialog.Panel>
             </div>
           </div>
@@ -53,4 +56,4 @@ const Modal = ({ isOpen, setIsOpen, link, title, description }) => {
   );
 };
 
-export default Modal;
+export default ModalDelete;

@@ -11,7 +11,7 @@ import {
 import { DeleteIcon, EditIcon } from '../../../components/IconButton';
 
 const EvaluasiPerkuliahanTable = ({
-  setOpenModal,
+  setOpenModalDelete,
   setSelectedItem,
   ...options
 }) => {
@@ -79,7 +79,7 @@ const EvaluasiPerkuliahanTable = ({
             <DeleteIcon
               onClick={() => {
                 setSelectedItem(value.id);
-                setOpenModal(true);
+                setOpenModalDelete(true);
               }}
             />
           </div>

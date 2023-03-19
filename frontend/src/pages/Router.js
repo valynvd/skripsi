@@ -15,6 +15,10 @@ import EvaluasiPerkuliahanForm from './evaluasi-perkuliahan/EvaluasiPerkuliahanF
 import RequireAuthWithPosition from '../components/RequireAuthWithPosition';
 import Dosen from './dosen/Dosen';
 import DosenForm from './dosen/DosenForm';
+import User from './user/User';
+import UserForm from './user/UserForm';
+import ForgotPassword from './ForgotPassword';
+import ResetPassword from './ResetPassword';
 
 const Router = () => {
   return (
@@ -54,6 +58,11 @@ const Router = () => {
               <RequireAuthWithRoles allowedRoles={['Admin', 'Superadmin']} />
             }
           >
+            <Route path="/user">
+              <Route index element={<User />} />
+              <Route path="form" element={<UserForm />} />
+              <Route path=":id" element={<UserForm />} />
+            </Route>
             <Route path="/surat-penugasan">
               <Route index element={<SuratPenugasan />} />
               <Route path="form" element={<SuratPenugasanForm />} />
@@ -68,6 +77,8 @@ const Router = () => {
         </Route>
       </Route>
       <Route path="/login" element={<Login />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password/:token" element={<ResetPassword />} />
       <Route path="/unauthorized" element={<Unauthorized />} />
     </Routes>
   );

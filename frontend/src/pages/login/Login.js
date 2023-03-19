@@ -3,8 +3,8 @@ import { useForm } from 'react-hook-form';
 import PrimaryButton from '../../components/PrimaryButton';
 import LoginInput from './components/LoginInput';
 import { useLogin } from '../../hooks/useLogin';
-import Alert from '../../components/Alert';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { AlertError } from '../../components/Alert';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import useAuth from '../../hooks/useAuth';
 import { BounceLoader } from 'react-spinners';
 
@@ -80,7 +80,7 @@ const Login = () => {
           onSubmit={handleSubmit(onSubmit)}
           className="mt-16 space-y-6 w-full max-w-md"
         >
-          {isError && <Alert>Email atau password anda salah</Alert>}
+          {isError && <AlertError>Email atau password anda salah</AlertError>}
           <LoginInput register={register} name="email" type="email" />
           <LoginInput register={register} name="password" type="password" />
           <PrimaryButton
@@ -89,6 +89,12 @@ const Login = () => {
           >
             Login
           </PrimaryButton>
+          <Link
+            to="/forgot-password"
+            className="text-center block !mt-2 text-primary-400 font-medium"
+          >
+            Lupa password ?
+          </Link>
         </form>
       </div>
     </div>

@@ -3,7 +3,11 @@ import Table from '../../../components/Table';
 import { useNavigate } from 'react-router-dom';
 import { EditIcon, DeleteIcon } from '../../../components/IconButton';
 
-const SuratPenugasanTable = ({ setOpenModal, setSelectedItem, ...options }) => {
+const SuratPenugasanTable = ({
+  setOpenModalDelete,
+  setSelectedItem,
+  ...options
+}) => {
   const navigate = useNavigate();
 
   const columns = [
@@ -28,7 +32,7 @@ const SuratPenugasanTable = ({ setOpenModal, setSelectedItem, ...options }) => {
             <DeleteIcon
               onClick={() => {
                 setSelectedItem(value.id);
-                setOpenModal(true);
+                setOpenModalDelete(true);
               }}
             />
           </div>
