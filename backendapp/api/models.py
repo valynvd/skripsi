@@ -1,7 +1,29 @@
 from django.db import models
 from django.utils import timezone
 from account.models import CustomUser
+from django_rest_passwordreset.signals import reset_password_token_created
+from django.dispatch import receiver
+from django.template.loader import render_to_string
+from django.core.mail import send_mail
+from backendapp import settings
 
+@receiver(reset_password_token_created)
+def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
+
+    email = reset_password_token.user.email
+    subject = "Password Reset Requested"
+    email_template_name = "registration/resetpasswordapi.txt"
+    c = {
+        'site_name' : 'master.d3anppu24t60so.amplifyapp.com',
+        'domain' : 'master.d3anppu24t60so.amplifyapp.com/reset-password',
+        'user' : reset_password_token.user.email,
+        'token' : reset_password_token.key,
+        'protocol' : 'http',
+    }
+
+    email_description = render_to_string(email_template_name, c)
+
+    send_mail(subject, email_description, settings.EMAIL_HOST_USER, [email], fail_silently=False)
 
 class Kurikulum(models.Model):
     name = models.CharField(max_length=100)

@@ -44,4 +44,5 @@ urlpatterns = [
   #  documentation
   path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
   path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+  path('password_reset/', include('django_rest_passwordreset.urls', namespace='password_reset')),
 ]
