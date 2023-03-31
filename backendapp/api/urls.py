@@ -41,6 +41,8 @@ urlpatterns = [
   path('folderbykriteria/<kriteria_id>', views_akreditasi.FolderFileByKriteria.as_view({'get': 'list'})),
   # evaluasi perkuliahan
   path('evaluasiperkuliahanbydosen/<userId>/', views.EvaluasiPerkuliahanByDosenViewSet.as_view()),
+  # penugasan pengajaran
+  path('penugasanpengajaranbysuratpenugasan/<suratPenugasanId>/', views.PenugasanPengajaranBySuratPenugasan.as_view()),
   #  documentation
   path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
   path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
