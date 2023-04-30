@@ -91,6 +91,7 @@ class SuratPenugasan(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)
 	judul = models.CharField(max_length=100)
 	files = models.FileField(upload_to='suratpenugasan/', blank=True, null=True)
+	approved = models.BooleanField(default=False)
 
 	def delete(self, *args, **kwargs):
 		self.files.delete()
