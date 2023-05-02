@@ -27,6 +27,7 @@ router.register('dosen', views.DosenViewSet)
 router.register('suratpenugasan', views.SuratPenugasanViewSet)
 router.register('penugasanpengajaran', views.PenugasanPengajaranViewSet)
 router.register('dokumenpembelajaran', views.DokumenPembelajaranViewSet)
+router.register('riwayatdokumenpembelajaran', views.RiwayatDokumenPembelajaranViewSet)
 router.register('portofolioperkuliahan', views.PortofolioPerkuliahanViewSet)
 #Akreditasi
 router.register('poinpenilaian', views_akreditasi.PoinPenilaianViewSet)
@@ -39,8 +40,9 @@ urlpatterns = [
   path('folderbymatrix/<matrix_id>', views_akreditasi.FolderFileByPoinPenilaian.as_view({'get': 'list'})),
   path('folderbyfolder/<folder_id>', views_akreditasi.FolderFileByFolder.as_view({'get': 'list'})),
   path('folderbykriteria/<kriteria_id>', views_akreditasi.FolderFileByKriteria.as_view({'get': 'list'})),
-  # evaluasi perkuliahan
+  # dokumen pembelajarn
   path('dokumenpembelajaranbydosen/<userId>/', views.DokumenPembelajaranByDosenViewSet.as_view()),
+  path('riwayatdokumenpembelajaranbydokumenpembelajaran/<dokumenPembelajaranId>/', views.RiwayatDokumenPembelajaranByDokumenPembelajaranViewSet.as_view()),
   # penugasan pengajaran
   path('penugasanpengajaranbysuratpenugasan/<suratPenugasanId>/', views.PenugasanPengajaranBySuratPenugasan.as_view()),
   #  documentation

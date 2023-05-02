@@ -54,6 +54,11 @@ class DokumenPembelajaranSerializers(serializers.ModelSerializer):
   class Meta:
       model = models.DokumenPembelajaran
       fields = '__all__'
+      
+class RiwayatDokumenPembelajaranSerializers(serializers.ModelSerializer):
+  class Meta:
+      model = models.RiwayatDokumenPembelajaran
+      fields = '__all__'
 
 class PortofolioPerkuliahanSerializers(serializers.ModelSerializer):
   class Meta:

@@ -145,7 +145,7 @@ class DokumenPembelajaran(models.Model):
 		super().delete(*args, **kwargs)
 
 	def __str__(self) -> str:
-		return '[{} {}]-{}-{}'.format(self.penugasan.tahun, self.penugasan.periode, self.penugasan.dosen_pengampu.name, self.penugasan.mata_kuliah.name)
+		return '[{} {}]-{}-{}'.format(self.penugasanPengajaranId.tahun, self.penugasanPengajaranId.periode, self.penugasanPengajaranId.dosen_pengampu.name, self.penugasanPengajaranId.mata_kuliah.name)
 
 class RiwayatDokumenPembelajaran(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)

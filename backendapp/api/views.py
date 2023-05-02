@@ -105,6 +105,34 @@ class DokumenPembelajaranByDosenViewSet(generics.ListAPIView):
             self.permission_classes = [IsAuthenticated]
         return super(self.__class__, self).get_permissions()
 
+class RiwayatDokumenPembelajaranViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.RiwayatDokumenPembelajaranSerializers
+    queryset = models.RiwayatDokumenPembelajaran.objects.all()
+
+    def get_permissions(self):
+        if self.action in ['list','retrieve']:
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+
+class RiwayatDokumenPembelajaranByDokumenPembelajaranViewSet(generics.ListAPIView):
+    serializer_class = serializers.RiwayatDokumenPembelajaranSerializers
+    queryset = models.RiwayatDokumenPembelajaran.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        dokumenPembelajaranByDosen = models.RiwayatDokumenPembelajaran.objects.filter(dokumenPembelajaranId=self.kwargs['dokumenPembelajaranId'])
+        serializer = self.get_serializer(dokumenPembelajaranByDosen, many=True)
+
+        return Response(serializer.data)
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+
 class PenugasanPengajaranBySuratPenugasan(generics.ListAPIView):
     serializer_class = serializers.PenugasanPengajaranSerializers
     queryset = models.PenugasanPengajaran.objects.all()
