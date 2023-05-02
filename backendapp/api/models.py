@@ -129,14 +129,12 @@ class PenugasanPengajaran(models.Model):
 	def __str__(self) -> str:
 		return '[{} {}]-{}-{}'.format(self.tahun, self.periode, self.dosen_pengampu.inisial, self.mata_kuliah.name)
 
-class EvaluasiPerkuliahan(models.Model):
+class DokumenPembelajaran(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)
-	penugasan = models.ForeignKey(
+	penugasanPengajaranId = models.ForeignKey(
 			PenugasanPengajaran,
 			on_delete=models.CASCADE,
 	)
-	rps = models.FileField(upload_to='evaluasi/rps/', blank=True, null=True)
-	evaluation_report = models.FileField(upload_to='evaluasi/survey/', blank=True, null=True)
 	rubrik = models.FileField(upload_to='evaluasi/rubrik/', blank=True, null=True)
 	notes  = models.TextField(blank=True, null=True)
 
@@ -148,6 +146,25 @@ class EvaluasiPerkuliahan(models.Model):
 
 	def __str__(self) -> str:
 		return '[{} {}]-{}-{}'.format(self.penugasan.tahun, self.penugasan.periode, self.penugasan.dosen_pengampu.name, self.penugasan.mata_kuliah.name)
+
+class RiwayatDokumenPembelajaran(models.Model):
+	created_at = models.DateTimeField(default=timezone.now)
+	updated_at = models.DateTimeField(auto_now=True)
+	dokumenPembelajaranId = models.ForeignKey(
+			DokumenPembelajaran,
+			on_delete=models.CASCADE,
+	)
+	rps = models.FileField(upload_to='evaluasi/rps/', blank=True, null=True)
+	evaluation_report = models.FileField(upload_to='evaluasi/survey/', blank=True, null=True)
+
+	def delete(self, *args, **kwargs):
+		self.rps.delete()
+		self.evaluation_report.delete()
+		self.rubrik.delete()
+		super().delete(*args, **kwargs)
+
+	def __str__(self) -> str:
+			return '[{} {}]-{}-{}'.format(self.created_at, self.updated_at, self.rps, self.evaluation_report)
 
 class PortofolioPerkuliahan(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)

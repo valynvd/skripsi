@@ -49,10 +49,10 @@ class PenugasanPengajaranSerializers(serializers.ModelSerializer):
       model = models.PenugasanPengajaran
       fields = '__all__'
 
-class EvaluasiPerkuliahanSerializers(serializers.ModelSerializer):
+class DokumenPembelajaranSerializers(serializers.ModelSerializer):
   penugasan_detail = PenugasanPengajaranSerializers(source='penugasan', many=False, read_only=True)
   class Meta:
-      model = models.EvaluasiPerkuliahan
+      model = models.DokumenPembelajaran
       fields = '__all__'
 
 class PortofolioPerkuliahanSerializers(serializers.ModelSerializer):

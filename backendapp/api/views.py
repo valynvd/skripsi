@@ -76,9 +76,9 @@ class PenugasanPengajaranViewSet(viewsets.ModelViewSet):
             self.permission_classes = [IsAuthenticated]
         return super(self.__class__, self).get_permissions()
 
-class EvaluasiPerkuliahanViewSet(viewsets.ModelViewSet):
-    serializer_class = serializers.EvaluasiPerkuliahanSerializers
-    queryset = models.EvaluasiPerkuliahan.objects.all()
+class DokumenPembelajaranViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.DokumenPembelajaranSerializers
+    queryset = models.DokumenPembelajaran.objects.all()
 
     def get_permissions(self):
         if self.action in ['list','retrieve']:
@@ -87,13 +87,13 @@ class EvaluasiPerkuliahanViewSet(viewsets.ModelViewSet):
             self.permission_classes = [IsAuthenticated]
         return super(self.__class__, self).get_permissions()
 
-class EvaluasiPerkuliahanByDosenViewSet(generics.ListAPIView):
-    serializer_class = serializers.EvaluasiPerkuliahanSerializers
-    queryset = models.EvaluasiPerkuliahan.objects.all()
+class DokumenPembelajaranByDosenViewSet(generics.ListAPIView):
+    serializer_class = serializers.DokumenPembelajaranSerializers
+    queryset = models.DokumenPembelajaran.objects.all()
 
     def get(self, request, *args, **kwargs):
-        evaluasiPerkuliahanByDosen = models.EvaluasiPerkuliahan.objects.filter(penugasan__dosen_pengampu__user__id=self.kwargs['userId'])
-        serializer = self.get_serializer(evaluasiPerkuliahanByDosen, many=True)
+        dokumenPembelajaranByDosen = models.DokumenPembelajaran.objects.filter(penugasan__dosen_pengampu__user__id=self.kwargs['userId'])
+        serializer = self.get_serializer(dokumenPembelajaranByDosen, many=True)
 
         return Response(serializer.data)
 
@@ -110,8 +110,8 @@ class PenugasanPengajaranBySuratPenugasan(generics.ListAPIView):
     queryset = models.PenugasanPengajaran.objects.all()
 
     def get(self, request, *args, **kwargs):
-        evaluasiPerkuliahanByDosen = models.PenugasanPengajaran.objects.filter(surat_penugasan__id=self.kwargs['suratPenugasanId'])
-        serializer = self.get_serializer(evaluasiPerkuliahanByDosen, many=True)
+        dokumenPembelajaranByDosen = models.PenugasanPengajaran.objects.filter(surat_penugasan__id=self.kwargs['suratPenugasanId'])
+        serializer = self.get_serializer(dokumenPembelajaranByDosen, many=True)
 
         return Response(serializer.data)
 
