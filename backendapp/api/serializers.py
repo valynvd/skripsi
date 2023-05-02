@@ -50,7 +50,7 @@ class PenugasanPengajaranSerializers(serializers.ModelSerializer):
       fields = '__all__'
 
 class DokumenPembelajaranSerializers(serializers.ModelSerializer):
-  penugasan_detail = PenugasanPengajaranSerializers(source='penugasan', many=False, read_only=True)
+  penugasan_pengajaran_detail = PenugasanPengajaranSerializers(source='penugasanPengajaranId', many=False, read_only=True)
   class Meta:
       model = models.DokumenPembelajaran
       fields = '__all__'
