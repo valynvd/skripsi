@@ -139,8 +139,6 @@ class DokumenPembelajaran(models.Model):
 	notes  = models.TextField(blank=True, null=True)
 
 	def delete(self, *args, **kwargs):
-		self.rps.delete()
-		self.evaluation_report.delete()
 		self.rubrik.delete()
 		super().delete(*args, **kwargs)
 
