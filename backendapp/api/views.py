@@ -92,7 +92,7 @@ class DokumenPembelajaranByDosenViewSet(generics.ListAPIView):
     queryset = models.DokumenPembelajaran.objects.all()
 
     def get(self, request, *args, **kwargs):
-        dokumenPembelajaranByDosen = models.DokumenPembelajaran.objects.filter(penugasan__dosen_pengampu__user__id=self.kwargs['userId'])
+        dokumenPembelajaranByDosen = models.DokumenPembelajaran.objects.filter(penugasanPengajaranId__dosen_pengampu__user__id=self.kwargs['userId'])
         serializer = self.get_serializer(dokumenPembelajaranByDosen, many=True)
 
         return Response(serializer.data)
