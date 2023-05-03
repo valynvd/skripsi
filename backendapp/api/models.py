@@ -160,7 +160,6 @@ class RiwayatDokumenPembelajaran(models.Model):
 	def delete(self, *args, **kwargs):
 		self.rps.delete()
 		self.evaluation_report.delete()
-		self.rubrik.delete()
 		super().delete(*args, **kwargs)
 
 	def __str__(self) -> str:
