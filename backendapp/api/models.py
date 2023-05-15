@@ -108,6 +108,14 @@ class PenugasanPengajaran(models.Model):
 			on_delete=models.CASCADE,
 	)
 	tahun = models.CharField(max_length=30)
+	programStudiId = models.ForeignKey(
+			ProgramStudi,
+			on_delete=models.SET_NULL,
+			null=True,
+			blank=True,
+	)
+	class_code = models.CharField(max_length=50, blank=True, null=True)
+	students_amount = models.IntegerField(null=True, blank=True)
 	LIST_PERIODE = (
 			('ganjil', 'ganjil'),
 			('genap', 'genap'),
