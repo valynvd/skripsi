@@ -9,6 +9,10 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from . import models
 from . import serializers
 from collections import namedtuple
+from rest_framework import status
+from django.template.loader import render_to_string
+from django.core.mail import send_mail
+from backendapp import settings
 
 class KurikulumViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.KurikulumSerializers
@@ -108,6 +112,31 @@ class DokumenPembelajaranByDosenViewSet(generics.ListAPIView):
 class RiwayatDokumenPembelajaranViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.RiwayatDokumenPembelajaranSerializers
     queryset = models.RiwayatDokumenPembelajaran.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+
+        email = "vlukmansyah20900@gmail.com"
+        subject = "Upload RPS"
+        email_template_name = "notification/uploadRPS.txt"
+        c = {
+            'site_name' : 'master.d3anppu24t60so.amplifyapp.com',
+            'domain' : 'master.d3anppu24t60so.amplifyapp.com/pelaksanaan-pendidikan/dokumen-pembelajaran',
+            'dokumenPembelajaranId' : request.data['dokumenPembelajaranId'],
+            'protocol' : 'http',
+        }
+
+        email_description = render_to_string(email_template_name, c)
+
+        send_mail(subject, email_description, settings.EMAIL_HOST_USER, [email], fail_silently=False)
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def perform_create(self, serializer):
+        serializer.save()
 
     def get_permissions(self):
         if self.action in ['list','retrieve']:
