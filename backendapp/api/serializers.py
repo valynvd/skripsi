@@ -51,9 +51,27 @@ class PenugasanPengajaranSerializers(serializers.ModelSerializer):
 
 class DokumenPembelajaranSerializers(serializers.ModelSerializer):
   penugasan_pengajaran_detail = PenugasanPengajaranSerializers(source='penugasanPengajaranId', many=False, read_only=True)
+  accepted_rps = serializers.SerializerMethodField(read_only=True)
+  accepted_rubrik = serializers.SerializerMethodField(read_only=True)
   class Meta:
       model = models.DokumenPembelajaran
       fields = '__all__'
+
+  def get_accepted_rps(self, obj):
+    riwayatDokumenPembelajaranByDokumenPembelajaran = models.RiwayatDokumenPembelajaran.objects.filter(dokumenPembelajaranId = obj.id, status="accepted", type="rps")
+    
+    if riwayatDokumenPembelajaranByDokumenPembelajaran:
+      return "https://stem-management.s3.amazonaws.com/" + str(riwayatDokumenPembelajaranByDokumenPembelajaran[0].initial_document)
+      
+    return None
+
+  def get_accepted_rubrik(self, obj):
+    riwayatDokumenPembelajaranByDokumenPembelajaran = models.RiwayatDokumenPembelajaran.objects.filter(dokumenPembelajaranId = obj.id, status="accepted", type="rubrik")
+    
+    if riwayatDokumenPembelajaranByDokumenPembelajaran:
+      return "https://stem-management.s3.amazonaws.com/" + str(riwayatDokumenPembelajaranByDokumenPembelajaran[0].initial_document)
+      
+    return None
       
 class RiwayatDokumenPembelajaranSerializers(serializers.ModelSerializer):
   class Meta:
