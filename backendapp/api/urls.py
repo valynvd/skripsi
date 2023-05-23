@@ -42,7 +42,7 @@ urlpatterns = [
   path('folderbykriteria/<kriteria_id>', views_akreditasi.FolderFileByKriteria.as_view({'get': 'list'})),
   # dokumen pembelajarn
   path('dokumenpembelajaranbydosen/<userId>/', views.DokumenPembelajaranByDosenViewSet.as_view()),
-  path('dokumenpembelajaranbymatakuliah/<mataKuliahId>/', views.DokumenPembelajaranByMataKuliahViewSet.as_view()),
+  path('dokumenpembelajaranbyprodi/<prodiId>/', views.DokumenPembelajaranByProdiViewSet.as_view()),
   path('riwayatdokumenpembelajaranbydokumenpembelajaran/<dokumenPembelajaranId>/', views.RiwayatDokumenPembelajaranByDokumenPembelajaranViewSet.as_view()),
   # penugasan pengajaran
   path('penugasanpengajaranbysuratpenugasan/<suratPenugasanId>/', views.PenugasanPengajaranBySuratPenugasan.as_view()),

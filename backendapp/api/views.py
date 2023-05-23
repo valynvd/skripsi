@@ -109,13 +109,13 @@ class DokumenPembelajaranByDosenViewSet(generics.ListAPIView):
             self.permission_classes = [IsAuthenticated]
         return super(self.__class__, self).get_permissions()
         
-class DokumenPembelajaranByMataKuliahViewSet(generics.ListAPIView):
+class DokumenPembelajaranByProdiViewSet(generics.ListAPIView):
     serializer_class = serializers.DokumenPembelajaranSerializers
     queryset = models.DokumenPembelajaran.objects.all()
 
     def get(self, request, *args, **kwargs):
-        dokumenPembelajaranByMataKuliah = models.DokumenPembelajaran.objects.filter(penugasanPengajaranId__mata_kuliah__id=self.kwargs['mataKuliahId'])
-        serializer = self.get_serializer(dokumenPembelajaranByMataKuliah, many=True)
+        dokumenPembelajaranByProdi = models.DokumenPembelajaran.objects.filter(penugasanPengajaranId__dosen_pengampu__prodi__id=self.kwargs['prodiId'])
+        serializer = self.get_serializer(dokumenPembelajaranByProdi, many=True)
 
         return Response(serializer.data)
 
