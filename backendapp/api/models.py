@@ -92,6 +92,12 @@ class SuratPenugasan(models.Model):
 	judul = models.CharField(max_length=100)
 	files = models.FileField(upload_to='suratpenugasan/', blank=True, null=True)
 	approved = models.BooleanField(default=False)
+	LIST_CATEGORY = (
+			('pengabdian', 'pengabdian'),
+			('pengajaran', 'pengajaran'),
+			('penelitian', 'penelitian'),
+	)
+	category = models.CharField(max_length=40, choices=LIST_CATEGORY, blank=True, null=True)
 
 	def delete(self, *args, **kwargs):
 		self.files.delete()
@@ -115,7 +121,7 @@ class PenugasanPengajaran(models.Model):
 			('genap', 'genap'),
 			('semester pendek', 'semester pendek'),
 	)
-	periode = models.CharField(max_length=100, choices=LIST_PERIODE, default='1')
+	periode = models.CharField(max_length=100, choices=LIST_PERIODE, blank=True, null=True)
 	dosen_pengampu = models.ForeignKey(
 			Dosen,
 			on_delete=models.CASCADE,
@@ -135,7 +141,9 @@ class DokumenPembelajaran(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)
 	penugasanPengajaranId = models.ForeignKey(
 			PenugasanPengajaran,
-			on_delete=models.CASCADE,
+			on_delete=models.SET_NULL,
+			blank=True,
+			null=True,
 	)
 	rubrik = models.FileField(upload_to='evaluasi/rubrik/', blank=True, null=True)
 	notes  = models.TextField(blank=True, null=True)
@@ -154,8 +162,18 @@ class RiwayatDokumenPembelajaran(models.Model):
 			DokumenPembelajaran,
 			on_delete=models.CASCADE,
 	)
-	rps = models.FileField(upload_to='evaluasi/rps/', blank=True, null=True)
-	evaluation_report = models.FileField(upload_to='evaluasi/survey/', blank=True, null=True)
+	initial_document = models.FileField(upload_to='evaluasi/initial_document/', blank=True, null=True)
+	revised_document = models.FileField(upload_to='evaluasi/revised_document/', blank=True, null=True)
+	LIST_STATUS = (
+			('revision', 'revision'),
+			('accepted', 'accepted'),
+	)
+	status = models.CharField(max_length=40, choices=LIST_STATUS, default='revision')
+	LIST_TYPE = (
+			('rps', 'rps'),
+			('rubrik', 'rubrik'),
+	)
+	type = models.CharField(max_length=20, choices=LIST_TYPE, blank=True, null=True)
 
 	def delete(self, *args, **kwargs):
 		self.rps.delete()
@@ -171,6 +189,11 @@ class PortofolioPerkuliahan(models.Model):
 			PenugasanPengajaran,
 			on_delete=models.CASCADE,
 	)
+	LIST_TYPE = (
+			('UTS', 'UTS'),
+			('UAS', 'UAS'),
+	)
+	type = models.CharField(max_length=20, choices=LIST_TYPE, blank=True, null=True)
 	outcomes_mata_kuliah  = models.TextField(blank=True, null=True)
 	metode_mata_kuliah  = models.TextField(blank=True, null=True)
 	sistem_penilaian  = models.TextField(blank=True, null=True)

@@ -1,5 +1,5 @@
 {% load i18n %}{% autoescape off %}
-{% blocktrans %}Anda menerima email ini karena dosen telah mengupload RPS {{ site_name }}.{% endblocktrans %}
+{% blocktrans %}Anda menerima email ini karena dosen telah mengupload RPS di {{ site_name }}.{% endblocktrans %}
 
 {% trans "Silakan buka halaman berikut untuk mengecek" %}
 {% block reset_link %}
