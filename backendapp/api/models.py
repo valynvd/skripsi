@@ -176,12 +176,12 @@ class RiwayatDokumenPembelajaran(models.Model):
 	type = models.CharField(max_length=20, choices=LIST_TYPE, blank=True, null=True)
 
 	def delete(self, *args, **kwargs):
-		self.rps.delete()
-		self.evaluation_report.delete()
+		self.initial_document.delete()
+		self.revised_document.delete()
 		super().delete(*args, **kwargs)
 
 	def __str__(self) -> str:
-			return '[{} {}]-{}-{}'.format(self.created_at, self.updated_at, self.rps, self.evaluation_report)
+			return '[{} {}]-{}-{}'.format(self.created_at, self.updated_at, self.initial_document, self.revised_document)
 
 class PortofolioPerkuliahan(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)
