@@ -174,6 +174,7 @@ class RiwayatDokumenPembelajaran(models.Model):
 			('rubrik', 'rubrik'),
 	)
 	type = models.CharField(max_length=20, choices=LIST_TYPE, blank=True, null=True)
+	notes  = models.TextField(blank=True, null=True)
 
 	def delete(self, *args, **kwargs):
 		self.initial_document.delete()
