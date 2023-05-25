@@ -165,10 +165,11 @@ class RiwayatDokumenPembelajaran(models.Model):
 	initial_document = models.FileField(upload_to='evaluasi/initial_document/', blank=True, null=True)
 	revised_document = models.FileField(upload_to='evaluasi/revised_document/', blank=True, null=True)
 	LIST_STATUS = (
+			('waiting review', 'waiting review'),
 			('revision', 'revision'),
 			('accepted', 'accepted'),
 	)
-	status = models.CharField(max_length=40, choices=LIST_STATUS, default='revision')
+	status = models.CharField(max_length=40, choices=LIST_STATUS, default='waiting review')
 	LIST_TYPE = (
 			('rps', 'rps'),
 			('rubrik', 'rubrik'),
