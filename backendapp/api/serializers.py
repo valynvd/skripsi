@@ -49,10 +49,16 @@ class PenugasanPengajaranSerializers(serializers.ModelSerializer):
       model = models.PenugasanPengajaran
       fields = '__all__'
 
+class PortofolioPerkuliahanSerializers(serializers.ModelSerializer):
+  class Meta:
+    model = models.PortofolioPerkuliahan
+    fields = '__all__'
+
 class DokumenPembelajaranSerializers(serializers.ModelSerializer):
   penugasan_pengajaran_detail = PenugasanPengajaranSerializers(source='penugasanPengajaranId', many=False, read_only=True)
   accepted_rps = serializers.SerializerMethodField(read_only=True)
   accepted_rubrik = serializers.SerializerMethodField(read_only=True)
+  portofolio_perkuliahan = serializers.SerializerMethodField(read_only=True) 
   class Meta:
       model = models.DokumenPembelajaran
       fields = '__all__'
@@ -71,6 +77,14 @@ class DokumenPembelajaranSerializers(serializers.ModelSerializer):
     if riwayatDokumenPembelajaranByDokumenPembelajaran:
       return "https://stem-management.s3.amazonaws.com/" + str(riwayatDokumenPembelajaranByDokumenPembelajaran[0].initial_document)
       
+    return None
+  
+  def get_portofolio_perkuliahan(self, obj):
+    portofolioPerkuliahanByPenugasanPengajaran = models.PortofolioPerkuliahan.objects.filter(penugasan=obj.penugasanPengajaranId)
+
+    if portofolioPerkuliahanByPenugasanPengajaran:
+      return PortofolioPerkuliahanSerializers(portofolioPerkuliahanByPenugasanPengajaran[0]).data
+
     return None
       
 class RiwayatDokumenPembelajaranSerializers(serializers.ModelSerializer):
