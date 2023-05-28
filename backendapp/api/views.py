@@ -145,10 +145,10 @@ class RiwayatDokumenPembelajaranViewSet(viewsets.ModelViewSet):
                 subject = ""
                 email_template_name = ""
 
-                if(request.data == 'rps'):
+                if(request.data['type'] == 'rps'):
                     subject = "upload RPS"
                     email_template_name = "notification/uploadRPS.txt"
-                elif(request.data == 'rubrik'):
+                elif(request.data['type'] == 'rubrik'):
                     subject = "upload Rubrik"
                     email_template_name = "notification/uploadRubrik.txt"
 
