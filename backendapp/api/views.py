@@ -142,6 +142,9 @@ class RiwayatDokumenPembelajaranViewSet(viewsets.ModelViewSet):
         if mataKuliahDosen:
             kaprodiByMataKuliah = models.Dosen.objects.filter(prodi__name=mataKuliahDosen, user__jabatan='Kaprodi')
             if kaprodiByMataKuliah:
+                subject = ""
+                email_template_name = ""
+
                 if(request.data == 'rps'):
                     subject = "upload RPS"
                     email_template_name = "notification/uploadRPS.txt"
