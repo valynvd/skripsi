@@ -137,21 +137,35 @@ class RiwayatDokumenPembelajaranViewSet(viewsets.ModelViewSet):
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
 
-        email = "vlukmansyah20900@gmail.com"
-        subject = "Upload RPS"
-        email_template_name = "notification/uploadRPS.txt"
-        c = {
-            'site_name' : 'master.d3anppu24t60so.amplifyapp.com',
-            'domain' : 'master.d3anppu24t60so.amplifyapp.com/pelaksanaan-pendidikan/dokumen-pembelajaran',
-            'dokumenPembelajaranId' : request.data['dokumenPembelajaranId'],
-            'protocol' : 'http',
-        }
+        mataKuliahDosen = models.DokumenPembelajaran.objects.get(id=serializer.data['dokumenPembelajaranId']).penugasanPengajaranId.dosen_pengampu.prodi.name
 
-        email_description = render_to_string(email_template_name, c)
+        if mataKuliahDosen:
+            kaprodiByMataKuliah = models.Dosen.objects.filter(prodi__name=mataKuliahDosen, user__jabatan='Kaprodi')
+            if kaprodiByMataKuliah:
+                if(request.data == 'rps'):
+                    subject = "upload RPS"
+                    email_template_name = "notification/uploadRPS.txt"
+                elif(request.data == 'rubrik'):
+                    subject = "upload Rubrik"
+                    email_template_name = "notification/uploadRubrik.txt"
 
-        send_mail(subject, email_description, settings.EMAIL_HOST_USER, [email], fail_silently=False)
+                email = kaprodiByMataKuliah[0].user.email
+                c = {
+                    'site_name' : 'master.d3anppu24t60so.amplifyapp.com',
+                    'domain' : 'master.d3anppu24t60so.amplifyapp.com/pelaksanaan-pendidikan/dokumen-pembelajaran',
+                    'dokumenPembelajaranId' : request.data['dokumenPembelajaranId'],
+                    'protocol' : 'http',
+                }
 
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+                email_description = render_to_string(email_template_name, c)
+
+                send_mail(subject, email_description, settings.EMAIL_HOST_USER, [email], fail_silently=False)
+                return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+            else:
+                return Response('Kaprodi tidak ditemukan', status=status.HTTP_406_NOT_ACCEPTABLE)
+        else:
+            return Response('Mata Kuliah Dosen tidak ditemukan', status=status.HTTP_406_NOT_ACCEPTABLE)
+            
 
     def perform_create(self, serializer):
         serializer.save()
