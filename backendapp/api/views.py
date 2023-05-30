@@ -141,7 +141,8 @@ class RiwayatDokumenPembelajaranViewSet(viewsets.ModelViewSet):
 
         if mataKuliahDosen:
             kaprodiByMataKuliah = models.Dosen.objects.filter(prodi__name=mataKuliahDosen, user__jabatan='Kaprodi')
-            if kaprodiByMataKuliah:
+
+            if len(kaprodiByMataKuliah):
                 subject = ""
                 email_template_name = ""
 

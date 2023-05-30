@@ -7,7 +7,7 @@ class UserAdmin(BaseUserAdmin):
         (None, {
             'fields': (
                 'email', 'fullname', 'phone', 'photo', 
-                'role', 'password'
+                'role', 'jabatan', 'password'
             )
         }),
         ('Permissions', {
