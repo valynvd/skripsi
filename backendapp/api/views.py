@@ -133,16 +133,13 @@ class RiwayatDokumenPembelajaranViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
+        
+        prodiDosen = models.DokumenPembelajaran.objects.get(id=serializer.data['dokumenPembelajaranId']).penugasanPengajaranId.dosen_pengampu.prodi.name
 
-        mataKuliahDosen = models.DokumenPembelajaran.objects.get(id=serializer.data['dokumenPembelajaranId']).penugasanPengajaranId.dosen_pengampu.prodi.name
+        if prodiDosen:
+            kaprodiByProdi = models.Dosen.objects.filter(prodi__name=prodiDosen, user__jabatan='Kaprodi')
 
-        if mataKuliahDosen:
-            kaprodiByMataKuliah = models.Dosen.objects.filter(prodi__name=mataKuliahDosen, user__jabatan='Kaprodi')
-
-            if len(kaprodiByMataKuliah):
+            if len(kaprodiByProdi):
                 subject = ""
                 email_template_name = ""
 
@@ -153,7 +150,7 @@ class RiwayatDokumenPembelajaranViewSet(viewsets.ModelViewSet):
                     subject = "upload Rubrik"
                     email_template_name = "notification/uploadRubrik.txt"
 
-                email = kaprodiByMataKuliah[0].user.email
+                email = kaprodiByProdi[0].user.email
                 c = {
                     'site_name' : 'master.d3anppu24t60so.amplifyapp.com',
                     'domain' : 'master.d3anppu24t60so.amplifyapp.com/pelaksanaan-pendidikan/dokumen-pembelajaran',
@@ -164,6 +161,11 @@ class RiwayatDokumenPembelajaranViewSet(viewsets.ModelViewSet):
                 email_description = render_to_string(email_template_name, c)
 
                 send_mail(subject, email_description, settings.EMAIL_HOST_USER, [email], fail_silently=False)
+
+                serializer.is_valid(raise_exception=True)
+                self.perform_create(serializer)
+                headers = self.get_success_headers(serializer.data)
+
                 return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
             else:
                 return Response('Kaprodi tidak ditemukan', status=status.HTTP_406_NOT_ACCEPTABLE)
@@ -209,7 +211,6 @@ class PenugasanPengajaranBySuratPenugasan(generics.ListAPIView):
         return Response(serializer.data)
 
     def get_permissions(self):
-        print(self)
         if self.request.method == 'GET':
             self.permission_classes = [AllowAny]
         else:
@@ -222,6 +223,23 @@ class PortofolioPerkuliahanViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action in ['list','retrieve']:
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+
+class PortofolioPerkuliahanByDosenViewSet(generics.ListAPIView):
+    serializer_class = serializers.PortofolioPerkuliahanSerializers
+    queryset = models.PortofolioPerkuliahan.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        portofolioPerkuliahanByDosen = models.PortofolioPerkuliahan.objects.filter(penugasan__dosen_pengampu__id=self.kwargs['dosenId'])
+        serializer = self.get_serializer(portofolioPerkuliahanByDosen, many=True)
+
+        return Response(serializer.data)
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
             self.permission_classes = [AllowAny]
         else:
             self.permission_classes = [IsAuthenticated]

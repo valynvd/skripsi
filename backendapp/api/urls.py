@@ -46,6 +46,8 @@ urlpatterns = [
   path('riwayatdokumenpembelajaranbydokumenpembelajaran/<dokumenPembelajaranId>/', views.RiwayatDokumenPembelajaranByDokumenPembelajaranViewSet.as_view()),
   # penugasan pengajaran
   path('penugasanpengajaranbysuratpenugasan/<suratPenugasanId>/', views.PenugasanPengajaranBySuratPenugasan.as_view()),
+  # portofolio perkuliahan
+  path('portofolioperkuliahanbydosen/<dosenId>/', views.PortofolioPerkuliahanByDosenViewSet.as_view()),
   #  documentation
   path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
   path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
