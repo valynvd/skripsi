@@ -134,6 +134,8 @@ class RiwayatDokumenPembelajaranViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
         
         prodiDosen = models.DokumenPembelajaran.objects.get(id=serializer.data['dokumenPembelajaranId']).penugasanPengajaranId.dosen_pengampu.prodi.name
 
@@ -162,9 +164,6 @@ class RiwayatDokumenPembelajaranViewSet(viewsets.ModelViewSet):
                 email_description = render_to_string(email_template_name, c)
 
                 send_mail(subject, email_description, settings.EMAIL_HOST_USER, [email], fail_silently=False)
-
-                self.perform_create(serializer)
-                headers = self.get_success_headers(serializer.data)
 
                 return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
             else:
