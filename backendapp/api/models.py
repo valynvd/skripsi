@@ -6,6 +6,13 @@ from django.dispatch import receiver
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from backendapp import settings
+import os, uuid
+
+class UniqueNameFileField(models.FileField):
+    def generate_filename(self, instance, filename):
+        _, ext = os.path.splitext(filename) 
+        name = f'{uuid.uuid4().hex}{ext}'
+        return super().generate_filename(instance, name)
 
 @receiver(reset_password_token_created)
 def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
@@ -90,7 +97,7 @@ class Dosen(models.Model):
 class SuratPenugasan(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)
 	judul = models.CharField(max_length=100)
-	files = models.FileField(upload_to='suratpenugasan/', blank=True, null=True)
+	files = UniqueNameFileField(upload_to='suratpenugasan/', blank=True, null=True)
 	approved = models.BooleanField(default=False)
 	LIST_CATEGORY = (
 			('pengabdian', 'pengabdian'),
@@ -145,7 +152,7 @@ class DokumenPembelajaran(models.Model):
 			blank=True,
 			null=True,
 	)
-	rubrik = models.FileField(upload_to='evaluasi/rubrik/', blank=True, null=True)
+	rubrik = UniqueNameFileField(upload_to='evaluasi/rubrik/', blank=True, null=True)
 	notes  = models.TextField(blank=True, null=True)
 
 	def delete(self, *args, **kwargs):
@@ -162,8 +169,8 @@ class RiwayatDokumenPembelajaran(models.Model):
 			DokumenPembelajaran,
 			on_delete=models.CASCADE,
 	)
-	initial_document = models.FileField(upload_to='evaluasi/initial_document/', blank=True, null=True)
-	revised_document = models.FileField(upload_to='evaluasi/revised_document/', blank=True, null=True)
+	initial_document = UniqueNameFileField(upload_to='evaluasi/initial_document/', blank=True, null=True)
+	revised_document = UniqueNameFileField(upload_to='evaluasi/revised_document/', blank=True, null=True)
 	LIST_STATUS = (
 			('waiting review', 'waiting review'),
 			('revision', 'revision'),
