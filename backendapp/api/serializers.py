@@ -82,10 +82,23 @@ class DokumenPembelajaranSerializers(serializers.ModelSerializer):
   def get_portofolio_perkuliahan(self, obj):
     portofolioPerkuliahanByPenugasanPengajaran = models.PortofolioPerkuliahan.objects.filter(penugasan=obj.penugasanPengajaranId)
 
-    if portofolioPerkuliahanByPenugasanPengajaran:
-      return PortofolioPerkuliahanSerializers(portofolioPerkuliahanByPenugasanPengajaran[0]).data
+    if len(portofolioPerkuliahanByPenugasanPengajaran):
+      checkUTS = False
+      checkUAS = False
+      
 
-    return None
+      for portofolioPerkuliahan in portofolioPerkuliahanByPenugasanPengajaran:
+        if(portofolioPerkuliahan.type == 'UTS'):
+          checkUTS = True
+        if(portofolioPerkuliahan.type == 'UAS'):
+          checkUAS = True
+
+      if(checkUTS & checkUAS):
+        return True
+      
+      return False
+
+    return False
       
 class RiwayatDokumenPembelajaranSerializers(serializers.ModelSerializer):
   class Meta:
