@@ -137,15 +137,15 @@ class PenugasanPengajaran(models.Model):
 			SuratPenugasan,
 			on_delete=models.CASCADE,
 	)
-	tahun = models.CharField(max_length=30)
+	# tahun = models.CharField(max_length=30)
 	class_code = models.CharField(max_length=50, blank=True, null=True)
 	students_amount = models.IntegerField(null=True, blank=True)
-	LIST_PERIODE = (
-			('ganjil', 'ganjil'),
-			('genap', 'genap'),
-			('semester pendek', 'semester pendek'),
-	)
-	periode = models.CharField(max_length=100, choices=LIST_PERIODE, blank=True, null=True)
+	# LIST_PERIODE = (
+	# 		('ganjil', 'ganjil'),
+	# 		('genap', 'genap'),
+	# 		('semester pendek', 'semester pendek'),
+	# )
+	# periode = models.CharField(max_length=100, choices=LIST_PERIODE, blank=True, null=True)
 	dosen_pengampu = models.ForeignKey(
 			Dosen,
 			on_delete=models.CASCADE,
@@ -159,7 +159,7 @@ class PenugasanPengajaran(models.Model):
 			null=True,
 	)
 	def __str__(self) -> str:
-		return '[{} {}]-{}-{}'.format(self.tahun, self.periode, self.dosen_pengampu.inisial, self.mata_kuliah.name)
+		return '{}-{}'.format(self.dosen_pengampu.inisial, self.mata_kuliah.name)
 
 class DokumenPembelajaran(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)
