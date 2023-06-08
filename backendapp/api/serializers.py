@@ -17,6 +17,11 @@ class MataKuliahSerializers(serializers.ModelSerializer):
   class Meta:
       model = models.MataKuliah
       fields = '__all__'
+      
+class CycleSerializers(serializers.ModelSerializer):
+  class Meta:
+      model = models.Cycle
+      fields = '__all__'
 
 class ProgramStudiSerializers(serializers.ModelSerializer):
   class Meta:
