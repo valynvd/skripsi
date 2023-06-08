@@ -13,6 +13,7 @@ class PenugasanPengajaranAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 class DosenAdmin(ImportExportModelAdmin, admin.ModelAdmin):
   pass
 
+
 # Register your models here.
 admin.site.register(models.Kurikulum)
 admin.site.register(models.MataKuliah, MataKuliahAdmin)
@@ -23,3 +24,4 @@ admin.site.register(models.SuratPenugasan)
 admin.site.register(models.DokumenPembelajaran)
 admin.site.register(models.RiwayatDokumenPembelajaran)
 admin.site.register(models.PortofolioPerkuliahan)
+admin.site.register(models.Cycle)
