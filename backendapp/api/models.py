@@ -96,8 +96,8 @@ class Dosen(models.Model):
 
 class Cycle(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)
-	startYear = models.IntegerField()
-	endYear = models.IntegerField()
+	start_year = models.IntegerField()
+	end_year = models.IntegerField()
 	LIST_SEMESTER = (
 			('Odd', 'Odd'),
 			('Odd Short', 'Odd Short'),
