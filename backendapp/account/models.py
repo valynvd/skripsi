@@ -47,11 +47,24 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     role = models.CharField(max_length=100, choices=ROLES, default='Student')
     LIST_JABATAN = (
         ('Tidak ada', 'Tidak ada'),
+        ('Dosen Pengajar', 'Dosen Pengajar'),
         ('Kaprodi', 'Kaprodi'),
         ('Direktur/Kepala Unit', 'Direktur/Kepala Unit'),
         ('Dekan', 'Dekan'),
     )
     jabatan = models.CharField(max_length=100, choices=LIST_JABATAN, default='Tidak ada')
+    LIST_JABATAN_FUNGSIONAL = (
+        ('Belum ada', 'Belum ada'),
+        ('Asisten Ahli 150', 'Asisten Ahli 150'),
+        ('Lektor 200', 'Lektor 200'),
+        ('Lektor 300', 'Lektor 300'),
+        ('Lektor Kepala 400', 'Lektor Kepala 400'),
+        ('Lektor Kepala 550', 'Lektor Kepala 550'),
+        ('Lektor Kepala 700', 'Lektor Kepala 700'),
+        ('Profesor 850', 'Profesor 850'),
+        ('Profesor 1050', 'Profesor 1050'),
+    )
+    jabatan_fungsional = models.CharField(max_length=100, choices=LIST_JABATAN_FUNGSIONAL, default='Belum ada')
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 
