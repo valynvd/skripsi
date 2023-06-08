@@ -5,7 +5,7 @@ from . import models
 class CustomUserSerializers(serializers.ModelSerializer):
   class Meta:
       model = CustomUser
-      fields = ['email', 'fullname', 'role', 'phone', 'jabatan']
+      fields = ['email', 'fullname', 'role', 'phone', 'jabatan', 'jabatan_fungsional']
 
 class KurikulumSerializers(serializers.ModelSerializer):
   class Meta:
