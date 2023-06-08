@@ -94,11 +94,28 @@ class Dosen(models.Model):
 	def __str__(self) -> str:
 		return '{} ({})'.format(self.name, self.inisial)
 
+class Cycle(models.Model):
+	created_at = models.DateTimeField(default=timezone.now)
+	startYear = models.IntegerField()
+	endYear = models.IntegerField()
+	LIST_SEMESTER = (
+			('Odd', 'Odd'),
+			('Odd Short', 'Odd Short'),
+			('Even', 'Even'),
+			('Even Short', 'Even Short'),
+	)
+	semester = models.CharField(max_length=40, choices=LIST_SEMESTER, blank=True, null=True)
+
 class SuratPenugasan(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)
 	judul = models.CharField(max_length=100)
 	files = UniqueNameFileField(upload_to='suratpenugasan/', blank=True, null=True)
 	approved = models.BooleanField(default=False)
+	cycle = models.ForeignKey(
+			Cycle,
+			on_delete=models.SET_NULL,
+			blank=True, null=True
+	)
 	LIST_CATEGORY = (
 			('pengabdian', 'pengabdian'),
 			('pengajaran', 'pengajaran'),

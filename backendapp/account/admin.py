@@ -1,13 +1,14 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import CustomUser
+from import_export.admin import ImportExportModelAdmin
 
-class UserAdmin(BaseUserAdmin):
+class UserAdmin(BaseUserAdmin, ImportExportModelAdmin, admin.ModelAdmin):
     fieldsets = (
         (None, {
             'fields': (
                 'email', 'fullname', 'phone', 'photo', 
-                'role', 'jabatan', 'password'
+                'role', 'jabatan', 'jabatan_fungsional', 'password'
             )
         }),
         ('Permissions', {
@@ -20,7 +21,7 @@ class UserAdmin(BaseUserAdmin):
             'classes': ('wide',),
             'fields':(
                 'email', 'fullname', 'phone', 'photo', 
-                'role', 'password1', 'password2'
+                'role', 'jabatan', 'jabatan_fungsional', 'password1', 'password2'
             )
         }),
     )
