@@ -55,13 +55,21 @@ class MataKuliah(models.Model):
 	is_elective = models.BooleanField(default=False)
 	LIST_SEMESTER = (
 			('1', '1'),
+			('SP1', 'SP1'),
 			('2', '2'),
+			('SP2', 'SP2'),
 			('3', '3'),
+			('SP3', 'SP3'),
 			('4', '4'),
+			('SP4', 'SP4'),
 			('5', '5'),
+			('SP5', 'SP5'),
 			('6', '6'),
+			('SP6', 'SP6'),
 			('7', '7'),
+			('SP7', 'SP7'),
 			('8', '8'),
+			('SP8', 'SP8'),
 	)
 	semester = models.CharField(max_length=100, choices=LIST_SEMESTER, default='1')
 	def __str__(self) -> str:
