@@ -51,6 +51,12 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         ('Kaprodi', 'Kaprodi'),
         ('Direktur/Kepala Unit', 'Direktur/Kepala Unit'),
         ('Dekan', 'Dekan'),
+        ('Rektor', 'Rektor'),
+        ('Kajur', 'Kajur'),
+        ('Kadep', 'Kadep'),
+        ('Guru Besar', 'Guru Besar'),
+        ('Kahim', 'Kahim'),
+        ('Kabem', 'Kabem'),
     )
     jabatan = models.CharField(max_length=100, choices=LIST_JABATAN, default='Tidak ada')
     LIST_JABATAN_FUNGSIONAL = (
