@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from account.models import CustomUser
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from django.db.models.functions import Length
 from . import models
 from . import serializers
 from collections import namedtuple
@@ -39,6 +40,28 @@ class MataKuliahViewSet(viewsets.ModelViewSet):
 class CycleViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.CycleSerializers
     queryset = models.Cycle.objects.all()
+
+    def list(self, request, *args, **kwargs):
+        queryset = list(self.filter_queryset(self.get_queryset()).order_by('start_year', '-semester'))
+        queryset_length = len(queryset)
+
+        for index, item in enumerate(queryset):
+            if(queryset_length - 1 == index):
+                pass
+            elif(item.semester == 'Odd Short' and queryset[index + 1].semester == 'Odd'):
+                queryset[index] = queryset[index + 1]
+                queryset[index + 1] = item
+            elif(item.semester == 'Even Short' and queryset[index + 1].semester == 'Even'):
+                queryset[index] = queryset[index + 1]
+                queryset[index + 1] = item
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     def get_permissions(self):
         if self.action in ['list','retrieve']:

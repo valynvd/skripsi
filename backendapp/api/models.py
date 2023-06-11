@@ -114,6 +114,9 @@ class Cycle(models.Model):
 	)
 	semester = models.CharField(max_length=40, choices=LIST_SEMESTER, blank=True, null=True)
 
+	def __str__(self) -> str:
+		return '{}/{}-{}'.format(self.start_year, self.end_year, self.semester)
+
 class SuratPenugasan(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)
 	judul = models.CharField(max_length=100)
