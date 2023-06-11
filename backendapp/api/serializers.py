@@ -42,6 +42,7 @@ class DosenSerializersAuthMe(serializers.ModelSerializer):
       fields = '__all__'
 
 class SuratPenugasanSerializers(serializers.ModelSerializer):
+  cycle_detail = CycleSerializers(source='cycle', many=False, read_only=True)
   class Meta:
       model = models.SuratPenugasan
       fields = '__all__'

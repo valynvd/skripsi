@@ -58,6 +58,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         ('Kahim', 'Kahim'),
         ('Kabem', 'Kabem'),
     )
+
     jabatan = models.CharField(max_length=100, choices=LIST_JABATAN, default='Tidak ada')
     LIST_JABATAN_FUNGSIONAL = (
         ('Belum ada', 'Belum ada'),
