@@ -29,10 +29,27 @@ const patchSuratPenugasan = ({ data, id }) => {
   });
 };
 
+const getSuratPenugasanById = (id) => {
+  return request({
+    url: `/api-stem/suratpenugasan/${id}/`,
+  });
+};
+
 const getSuratPenugasan = () => {
   return request({
     url: url,
   });
+};
+
+export const useSuratPenugasanById = (id, options) => {
+  return useQuery(
+    ['surat-penugasan-by-id', id],
+    () => getSuratPenugasanById(id),
+    {
+      refetchOnWindowFocus: false,
+      ...options,
+    }
+  );
 };
 
 export const useSuratPenugasanData = (options) => {

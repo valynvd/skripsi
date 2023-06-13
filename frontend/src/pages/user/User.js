@@ -37,7 +37,10 @@ const User = () => {
       <div className="flex flex-col items-start lg:justify-between lg:items-center lg:flex-row space-y-2 lg:space-y-0">
         <p className="font-semibold text-lg">Daftar User</p>
         {userRole.admin && (
-          <PrimaryButton icon={<BiPlusCircle size={22} />} link="/user/form">
+          <PrimaryButton
+            icon={<BiPlusCircle size={22} />}
+            link="/data-master/user/form"
+          >
             Buat User
           </PrimaryButton>
         )}

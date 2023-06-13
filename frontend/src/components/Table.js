@@ -10,7 +10,7 @@ import { RxTriangleUp, RxTriangleDown } from 'react-icons/rx';
 import { AiOutlineSearch } from 'react-icons/ai';
 import Pagination from './Pagination';
 
-const Table = ({ loading, data, columns, userRole }) => {
+const Table = ({ loading, data, columns, userRole, hiddenColumns = [] }) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const memoColumns = useMemo(() => columns, [userRole]);
   const memoData = useMemo(() => data, [data]);
@@ -30,7 +30,11 @@ const Table = ({ loading, data, columns, userRole }) => {
     pageOptions,
     state,
   } = useTable(
-    { columns: memoColumns, data: memoData },
+    {
+      columns: memoColumns,
+      data: memoData,
+      initialState: { hiddenColumns: hiddenColumns },
+    },
     useGlobalFilter,
     useSortBy,
     usePagination
@@ -41,16 +45,16 @@ const Table = ({ loading, data, columns, userRole }) => {
   return (
     <>
       <div>
-        <label htmlFor="simple-search" className="sr-only">
+        {/* <label htmlFor="simple-search" className="sr-only">
           Search
-        </label>
+        </label> */}
         <div className="relative max-w-md">
           <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
             <AiOutlineSearch size={20} color="gray" />
           </div>
           <input
             type="text"
-            id="search"
+            // id="search"
             className="border mb-4 border-gray-300 focus:border-primary-400 text-gray-900 text-sm rounded-lg focus:ring-turquoise-normal focus:border-turquoise-normal focus-visible:outline-none block w-full pl-10 p-2.5"
             placeholder="Cari..."
             value={globalFilter || ''}
@@ -112,6 +116,16 @@ const Table = ({ loading, data, columns, userRole }) => {
                   </tr>
                 );
               })}
+              {memoData.length === 0 && (
+                <tr>
+                  <td
+                    colSpan={`${memoColumns.length}`}
+                    className="w-full text-center p-3.5 border border-gray-200 text-gray-400"
+                  >
+                    Data tidak ditemukan...
+                  </td>
+                </tr>
+              )}
             </tbody>
           )}
         </table>

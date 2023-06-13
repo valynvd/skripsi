@@ -5,6 +5,11 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        grayDisabled: {
+          600: 'hsl(0, 0%, 58%)',
+          500: 'hsl(0, 0%, 90%)',
+          400: 'hsl(0, 0%, 95%)',
+        },
         primary: {
           500: 'hsla(357, 85%, 44%, 1)',
           400: 'hsla(357, 85%, 52%, 1)',

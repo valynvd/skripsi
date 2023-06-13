@@ -32,7 +32,7 @@ const User = ({ setOpenModalDelete, setSelectedItem, ...options }) => {
           <div className="flex flex-row space-x-2">
             <EditIcon
               onClick={() => {
-                navigate(`/user/${value.id}`, { state: value });
+                navigate(`/data-master/user/${value.id}`, { state: value });
               }}
             />
             {userRole.admin && (

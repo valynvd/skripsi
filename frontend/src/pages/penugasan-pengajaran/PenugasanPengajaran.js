@@ -38,7 +38,7 @@ const PenugasanPengajaran = () => {
         <p className="font-semibold text-lg">Daftar Penugasan Pengajaran</p>
         <PrimaryButton
           icon={<BiPlusCircle size={22} />}
-          link="/penugasan-pengajaran/form"
+          link="/data-master/penugasan-pengajaran/form"
         >
           Buat Penugasan Pengajaran
         </PrimaryButton>

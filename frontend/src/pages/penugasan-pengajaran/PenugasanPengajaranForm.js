@@ -6,6 +6,7 @@ import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import {
   usePostPenugasanPengajaran,
   usePatchPenugasanPengajaran,
+  usePenugasanPengajaranById,
 } from '../../hooks/usePenugasanPengajaran';
 import { AlertError } from '../../components/Alert';
 import EditButton from '../../components/EditButton';
@@ -13,11 +14,15 @@ import CRUDropdownInput from '../../components/CRUDropdownInput';
 import { useSuratPenugasanData } from '../../hooks/useSuratPenugasan';
 import { useDosenData } from '../../hooks/useDosen';
 import { useMataKuliahData } from '../../hooks/useMataKuliah';
+import CancelButton from '../../components/CancelButton';
+import BreadCrumbs from '../../components/BreadCrumbs';
 
 const PenugasanPengajaranForm = () => {
   const [errorMessage, setErrorMessage] = useState();
   const { id } = useParams();
   const { state } = useLocation();
+  const [penugasanPengajaranData, setPenugasanPengajaranData] = useState(state);
+  const [editable, setEditable] = useState(true);
   const {
     register,
     handleSubmit,
@@ -27,8 +32,6 @@ const PenugasanPengajaranForm = () => {
   } = useForm({
     defaultValues: {
       sks_realisasi: null,
-      tahun: null,
-      periode: null,
       surat_penugasan: null,
       dosen_pengampu: null,
       mata_kuliah: null,
@@ -80,6 +83,28 @@ const PenugasanPengajaranForm = () => {
       },
     });
 
+  const { data: updatedPenugasanPengajaranData } = usePenugasanPengajaranById(
+    id,
+    {
+      enabled: !!id && !penugasanPengajaranData,
+    }
+  );
+
+  useEffect(() => {
+    if (id) {
+      if (state) {
+        reset({ ...state, semester: parseInt(state.semester) });
+      } else if (updatedPenugasanPengajaranData) {
+        setPenugasanPengajaranData(updatedPenugasanPengajaranData.data);
+        reset({
+          ...updatedPenugasanPengajaranData.data,
+          semester: parseInt(updatedPenugasanPengajaranData.data.semester),
+        });
+      }
+      setEditable(false);
+    }
+  }, [updatedPenugasanPengajaranData, state, reset, id]);
+
   const onSubmit = (data) => {
     const penugasanPengajaranFormData = new FormData();
 
@@ -94,7 +119,7 @@ const PenugasanPengajaranForm = () => {
         { data: penugasanPengajaranFormData, id: id },
         {
           onSuccess: () => {
-            navigate('/penugasan-pengajaran');
+            setEditable(false);
           },
           onError: (err) => {
             setErrorMessage(err.message);
@@ -107,7 +132,7 @@ const PenugasanPengajaranForm = () => {
     } else {
       postPenugasanPengajaran(penugasanPengajaranFormData, {
         onSuccess: () => {
-          navigate('/penugasan-pengajaran');
+          navigate('/data-master/penugasan-pengajaran');
         },
         onError: (err) => {
           setErrorMessage(err.message);
@@ -121,6 +146,15 @@ const PenugasanPengajaranForm = () => {
 
   return (
     <section id="penugasan-pengajaran-form" className="section-container">
+      <BreadCrumbs
+        links={[
+          {
+            name: 'Daftar Penugasan Pengajaran',
+            link: '/data-master/penugasan-pengajaran',
+          },
+          { name: id ? 'Detail' : 'Buat' },
+        ]}
+      />
       <p className="text-lg font-semibold">
         {id ? 'Edit' : 'Buat'} Penugasan Pengajaran
       </p>
@@ -132,26 +166,22 @@ const PenugasanPengajaranForm = () => {
           type="number"
           required
           errors={errors}
+          isDisabled={!editable}
         />
         <CRUInput
           register={register}
-          name="tahun"
-          registeredName="tahun"
+          name="jumlah mahasiswa"
+          registeredName="students_amount"
           type="number"
-          required
           errors={errors}
+          isDisabled={!editable}
         />
-        <CRUDropdownInput
-          control={control}
-          name="Periode"
-          registeredName="periode"
-          defaultValue={
-            state ? { value: state.periode, label: state.periode } : null
-          }
-          options={[
-            { value: 'ganjil', label: 'ganjil' },
-            { value: 'genap', label: 'genap' },
-          ]}
+        <CRUInput
+          register={register}
+          name="kode kelas"
+          registeredName="class_code"
+          errors={errors}
+          isDisabled={!editable}
         />
         <CRUDropdownInput
           control={control}
@@ -166,6 +196,7 @@ const PenugasanPengajaranForm = () => {
               : null
           }
           options={suratPenugasanDataSuccess ? dataSuratPenugasan : []}
+          isDisabled={!editable}
         />
         <CRUDropdownInput
           control={control}
@@ -180,6 +211,7 @@ const PenugasanPengajaranForm = () => {
               : null
           }
           options={dosenDataSuccess ? dataDosen : []}
+          isDisabled={!editable}
         />
         <CRUDropdownInput
           control={control}
@@ -194,16 +226,30 @@ const PenugasanPengajaranForm = () => {
               : null
           }
           options={mataKuliahDataSuccess ? dataMataKuliah : []}
+          isDisabled={!editable}
         />
         {errorMessage ? (
           <AlertError className="inline-block">{errorMessage}</AlertError>
         ) : null}
         {id ? (
-          <EditButton
-            className={`!mt-8 !text-base`}
-            type="submit"
-            isLoading={patchPenugasanPengajaranLoading}
-          />
+          <div className="flex flex-row !mt-8 space-x-3">
+            {!editable && (
+              <EditButton
+                className={`!text-base`}
+                type="button"
+                onClick={() => setEditable(true)}
+              />
+            )}
+            {editable && (
+              <EditButton
+                className={`!text-base`}
+                type="submit"
+                isLoading={patchPenugasanPengajaranLoading}
+                name="Update"
+              />
+            )}
+            {editable && <CancelButton onClick={() => setEditable(false)} />}
+          </div>
         ) : (
           <PrimaryButton
             className={`!mt-8`}

@@ -33,6 +33,12 @@ export const useCheckRole = () => {
       tempRole = { ...tempRole, kaprodi: false };
     }
 
+    if (auth?.userData?.jabatan === 'Dosen Pengajar') {
+      tempRole = { ...tempRole, dosen: true };
+    } else {
+      tempRole = { ...tempRole, dosen: false };
+    }
+
     setRole(tempRole);
   }, [auth]);
 

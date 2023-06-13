@@ -10,6 +10,7 @@
   html {
     height: 100%;
     font-family: 'Poppins', sans-serif;
+    overflow-y: hidden;
   }
 
   body {
@@ -23,3 +24,30 @@
 #root {
   height: 100%;
 }
+
+.wrapper-class {
+  margin-top: 0px !important;
+}
+
+.editor-class {
+  border: 1px solid #f1f1f1;
+  border-top-width: 0px;
+  padding: 0.75rem;
+  min-height: 6rem;
+}
+
+.border-1-red {
+  border: 1px solid red;
+}
+
+.toolbar-class {
+  margin-bottom: 0px !important;
+}
+
+.public-DraftStyleDefault-block {
+  margin: 0 !important;
+}
+
+/* * {
+  background: rgba(0, 100, 0, 0.2) !important;
+} */

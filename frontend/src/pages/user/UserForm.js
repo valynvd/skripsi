@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import CRUInput from '../../components/CRUInput';
 import PrimaryButton from '../../components/PrimaryButton';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import { usePostUser, usePatchUser } from '../../hooks/useUser';
+import { usePostUser, usePatchUser, useUserById } from '../../hooks/useUser';
 import { AlertError } from '../../components/Alert';
 import EditButton from '../../components/EditButton';
 import CRUDropdownInput from '../../components/CRUDropdownInput';
@@ -12,6 +12,8 @@ import { useUserData } from '../../hooks/useUser';
 import { useProgramStudiData } from '../../hooks/useProdi';
 import useAuth from '../../hooks/useAuth';
 import { useCheckRole } from '../../hooks/useCheckRole';
+import BreadCrumbs from '../../components/BreadCrumbs';
+import CancelButton from '../../components/CancelButton';
 
 const UserForm = () => {
   const [errorMessage, setErrorMessage] = useState();
@@ -19,6 +21,8 @@ const UserForm = () => {
   const { state } = useLocation();
   const userRole = useCheckRole();
   const { auth } = useAuth();
+  const [userData, setUserData] = useState(state);
+  const [editable, setEditable] = useState(true);
 
   const {
     register,
@@ -43,30 +47,46 @@ const UserForm = () => {
   const { mutate: patchUser, isLoading: patchUserLoading } = usePatchUser();
   const navigate = useNavigate();
 
-  const { data: dataUser, isSuccess: userDataSuccess } = useUserData({
-    select: (response) => {
-      const formatUserData = response.data.map(({ id, fullname }) => {
-        return { value: id, label: fullname };
-      });
-
-      return formatUserData;
-    },
+  const { data: updatedUserData } = useUserById(id, {
+    enabled: !!id && !userData,
   });
-  const { data: dataProgramStudi, isSuccess: programStudiDataSuccess } =
-    useProgramStudiData({
-      select: (response) => {
-        if (userRole.kaprodi) {
-          const prodi_detail = auth?.userData?.user_detail?.prodi_detail;
 
-          return [{ value: prodi_detail?.id, label: prodi_detail?.name }];
-        }
-        const formatUserData = response.data.map(({ id, name }) => {
-          return { value: id, label: name };
-        });
+  useEffect(() => {
+    if (id) {
+      if (state) {
+        reset(state);
+      } else if (updatedUserData) {
+        setUserData(updatedUserData.data);
+        reset(updatedUserData.data);
+      }
+      setEditable(false);
+    }
+  }, [updatedUserData, state, reset, id]);
 
-        return formatUserData;
-      },
-    });
+  // const { data: dataUser, isSuccess: userDataSuccess } = useUserData({
+  //   select: (response) => {
+  //     const formatUserData = response.data.map(({ id, fullname }) => {
+  //       return { value: id, label: fullname };
+  //     });
+
+  //     return formatUserData;
+  //   },
+  // });
+  // const { data: dataProgramStudi, isSuccess: programStudiDataSuccess } =
+  //   useProgramStudiData({
+  //     select: (response) => {
+  //       if (userRole.kaprodi) {
+  //         const prodi_detail = auth?.userData?.user_detail?.prodi_detail;
+
+  //         return [{ value: prodi_detail?.id, label: prodi_detail?.name }];
+  //       }
+  //       const formatUserData = response.data.map(({ id, name }) => {
+  //         return { value: id, label: name };
+  //       });
+
+  //       return formatUserData;
+  //     },
+  //   });
 
   const onSubmit = (data) => {
     const userFormData = new FormData();
@@ -84,7 +104,7 @@ const UserForm = () => {
         { data: userFormData, id: id },
         {
           onSuccess: () => {
-            navigate('/user');
+            setEditable(false);
           },
           onError: (err) => {
             setErrorMessage(err.message);
@@ -97,7 +117,7 @@ const UserForm = () => {
     } else {
       postUser(userFormData, {
         onSuccess: () => {
-          navigate('/user');
+          navigate('/data-master/user');
         },
         onError: (err) => {
           setErrorMessage(err.message);
@@ -111,6 +131,12 @@ const UserForm = () => {
 
   return (
     <section id="user-form" className="section-container">
+      <BreadCrumbs
+        links={[
+          { name: 'Daftar User', link: '/data-master/user' },
+          { name: id ? 'Detail' : 'Buat' },
+        ]}
+      />
       <p className="text-lg font-semibold">{id ? 'Edit' : 'Buat'} User</p>
       <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4">
         <CRUInput
@@ -119,6 +145,7 @@ const UserForm = () => {
           required
           errors={errors}
           registeredName="fullname"
+          isDisabled={!editable}
         />
         <CRUInput
           register={register}
@@ -126,6 +153,7 @@ const UserForm = () => {
           required
           errors={errors}
           registeredName="phone"
+          isDisabled={!editable}
         />
         <CRUInput
           register={register}
@@ -133,6 +161,7 @@ const UserForm = () => {
           required
           errors={errors}
           registeredName="email"
+          isDisabled={!editable}
         />
         <CRUDropdownInput
           control={control}
@@ -153,6 +182,7 @@ const UserForm = () => {
             { value: 'Faculty Member', label: 'Faculty Member' },
             { value: 'Student', label: 'Student' },
           ]}
+          isDisabled={!editable}
         />
         <CRUDropdownInput
           control={control}
@@ -169,10 +199,18 @@ const UserForm = () => {
           }
           options={[
             { value: 'Tidak ada', label: 'Tidak ada' },
+            { value: 'Dosen Pengajar', label: 'Dosen Pengajar' },
             { value: 'Kaprodi', label: 'Kaprodi' },
             { value: 'Direktur/Kepala Unit', label: 'Direktur/Kepala Unit' },
             { value: 'Dekan', label: 'Dekan' },
+            { value: 'Rektor', label: 'Rektor' },
+            { value: 'Kajur', label: 'Kajur' },
+            { value: 'Kadep', label: 'Kadep' },
+            { value: 'Guru Besar', label: 'Guru Besar' },
+            { value: 'Kahim', label: 'Kahim' },
+            { value: 'Kabem', label: 'Kabem' },
           ]}
+          isDisabled={!editable}
         />
         {!id ? (
           <CRUInput
@@ -187,11 +225,24 @@ const UserForm = () => {
           <AlertError className="inline-block">{errorMessage}</AlertError>
         ) : null}
         {id ? (
-          <EditButton
-            className={`!mt-8 !text-base`}
-            isLoading={patchUserLoading}
-            type="submit"
-          />
+          <div className="flex flex-row !mt-8 space-x-3">
+            {!editable && (
+              <EditButton
+                className={`!text-base`}
+                type="button"
+                onClick={() => setEditable(true)}
+              />
+            )}
+            {editable && (
+              <EditButton
+                className={`!text-base`}
+                type="submit"
+                isLoading={patchUserLoading}
+                name="Update"
+              />
+            )}
+            {editable && <CancelButton onClick={() => setEditable(false)} />}
+          </div>
         ) : (
           <PrimaryButton className={`!mt-8`} isLoading={postUserLoading}>
             Buat

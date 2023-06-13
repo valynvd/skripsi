@@ -17,7 +17,6 @@ const deleteUser = (data) => {
   return request({
     url: url + data + '/',
     method: 'delete',
-    data: data,
   });
 };
 
@@ -35,8 +34,21 @@ const getUser = () => {
   });
 };
 
+const getUserById = (id) => {
+  return request({
+    url: `/auth-stem/users/${id}/`,
+  });
+};
+
 export const useUserData = (options) => {
   return useQuery('user', getUser, {
+    refetchOnWindowFocus: false,
+    ...options,
+  });
+};
+
+export const useUserById = (id, options) => {
+  return useQuery(['user-by-id', id], () => getUserById(id), {
     refetchOnWindowFocus: false,
     ...options,
   });

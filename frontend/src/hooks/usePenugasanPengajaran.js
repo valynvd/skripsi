@@ -35,11 +35,45 @@ const getPenugasanPengajaran = () => {
   });
 };
 
+const getPenugasanPengajaranBySuratPenugasan = (id) => {
+  return request({
+    url: `/api-stem/penugasanpengajaranbysuratpenugasan/${id}/`,
+  });
+};
+
+const getPenugasanPengajaranById = (id) => {
+  return request({
+    url: `/api-stem/penugasanpengajaran/${id}/`,
+  });
+};
+
 export const usePenugasanPengajaranData = (options) => {
   return useQuery('penugasan-pengajaran', getPenugasanPengajaran, {
     refetchOnWindowFocus: false,
     ...options,
   });
+};
+
+export const usePenugasanPengajaranById = (id, options) => {
+  return useQuery(
+    ['penugasan-pengajaran-by-id', id],
+    () => getPenugasanPengajaranById(id),
+    {
+      refetchOnWindowFocus: false,
+      ...options,
+    }
+  );
+};
+
+export const usePenugasanPengajaranBySuratPenugasan = (id, options) => {
+  return useQuery(
+    ['penugasan-pengajaran-by-surat-penugasan', id],
+    () => getPenugasanPengajaranBySuratPenugasan(id),
+    {
+      refetchOnWindowFocus: false,
+      ...options,
+    }
+  );
 };
 
 export const usePatchPenugasanPengajaran = () => {

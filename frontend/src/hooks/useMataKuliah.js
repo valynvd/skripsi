@@ -35,8 +35,21 @@ const getMataKuliah = () => {
   });
 };
 
+const getMataKuliahById = (id) => {
+  return request({
+    url: `/api-stem/matakuliah/${id}/`,
+  });
+};
+
 export const useMataKuliahData = (options) => {
   return useQuery('mata-kuliah', getMataKuliah, {
+    refetchOnWindowFocus: false,
+    ...options,
+  });
+};
+
+export const useMataKuliahById = (id, options) => {
+  return useQuery(['mata-kuliah-by-id', id], () => getMataKuliahById(id), {
     refetchOnWindowFocus: false,
     ...options,
   });

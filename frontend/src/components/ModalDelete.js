@@ -12,7 +12,7 @@ const ModalDelete = ({ isOpen, setIsOpen, deleteFunc, title }) => {
         onClose={() => {
           setIsOpen(false);
         }}
-        className={`relative z-20`}
+        className={`relative z-50`}
       >
         <Transition.Child
           as={Fragment}

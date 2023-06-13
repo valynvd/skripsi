@@ -26,7 +26,10 @@ const SuratPenugasanTable = ({
           <div className="flex flex-row space-x-2">
             <EditIcon
               onClick={() => {
-                navigate(`/surat-penugasan/${value.id}`, { state: value });
+                navigate(
+                  `/pelaksanaan-pendidikan/surat-penugasan/${value.id}`,
+                  { state: value }
+                );
               }}
             />
             <DeleteIcon

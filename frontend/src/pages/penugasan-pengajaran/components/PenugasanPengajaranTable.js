@@ -34,7 +34,9 @@ const PenugasanPengajaranTable = ({
           <div className="flex flex-row space-x-2">
             <EditIcon
               onClick={() => {
-                navigate(`/penugasan-pengajaran/${value.id}`, { state: value });
+                navigate(`/data-master/penugasan-pengajaran/${value.id}`, {
+                  state: value,
+                });
               }}
             />
             <DeleteIcon

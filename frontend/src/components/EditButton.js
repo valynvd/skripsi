@@ -2,6 +2,7 @@ import React from 'react';
 import ClipLoader from 'react-spinners/ClipLoader';
 
 const EditButton = ({
+  name = 'Edit',
   className,
   icon,
   type = 'button',
@@ -20,7 +21,7 @@ const EditButton = ({
       }`}
       onClick={onClick}
     >
-      <p>Edit</p>
+      <p>{name}</p>
       {icon}
       <ClipLoader
         color={'#facc15'}

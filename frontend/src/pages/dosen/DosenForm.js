@@ -4,14 +4,20 @@ import { useForm } from 'react-hook-form';
 import CRUInput from '../../components/CRUInput';
 import PrimaryButton from '../../components/PrimaryButton';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
-import { usePostDosen, usePatchDosen } from '../../hooks/useDosen';
+import {
+  usePostDosen,
+  usePatchDosen,
+  useDosenById,
+} from '../../hooks/useDosen';
 import { AlertError } from '../../components/Alert';
 import EditButton from '../../components/EditButton';
 import CRUDropdownInput from '../../components/CRUDropdownInput';
-import { useUserData } from '../../hooks/useUser';
+import { usePatchUser, usePostUser } from '../../hooks/useUser';
 import { useProgramStudiData } from '../../hooks/useProdi';
 import useAuth from '../../hooks/useAuth';
 import { useCheckRole } from '../../hooks/useCheckRole';
+import CancelButton from '../../components/CancelButton';
+import BreadCrumbs from '../../components/BreadCrumbs';
 
 const DosenForm = () => {
   const [errorMessage, setErrorMessage] = useState();
@@ -19,6 +25,8 @@ const DosenForm = () => {
   const { state } = useLocation();
   const userRole = useCheckRole();
   const { auth } = useAuth();
+  const [editable, setEditable] = useState(true);
+  const [dosenData, setDosenData] = useState(state);
 
   const {
     register,
@@ -28,30 +36,59 @@ const DosenForm = () => {
     formState: { errors, dirtyFields },
   } = useForm({
     defaultValues: {
-      judul: null,
-      files: null,
+      name: null,
+      phone: null,
+      email: null,
+      inisial: null,
+      role: null,
+      password: null,
+      jabatan: null,
+      jabatan_fungsional: null,
+      user: null,
+      prodi: null,
+      is_fulltime: null,
     },
+  });
+
+  const { mutate: postDosen, isLoading: postDosenLoading } = usePostDosen();
+  const { mutate: postUser, isLoading: postUserLoading } = usePostUser();
+  const { mutateAsync: patchDosen, isLoading: patchDosenLoading } =
+    usePatchDosen();
+  const { mutateAsync: patchUser, isLoading: patchUserLoading } =
+    usePatchUser();
+  const navigate = useNavigate();
+
+  const { data: updatedDosenData } = useDosenById(id, {
+    enabled: !!id && !dosenData,
   });
 
   useEffect(() => {
     if (id) {
-      reset(state);
+      if (state) {
+        reset({
+          ...state,
+          role: state.user_detail?.role,
+          jabatan: state.user_detail?.jabatan,
+          phone: state.user_detail?.phone,
+          email: state.user_detail?.email,
+          jabatan_fungsional: state.user_detail?.jabatan_fungsional,
+        });
+      } else if (updatedDosenData) {
+        setDosenData(updatedDosenData.data);
+        reset({
+          ...updatedDosenData.data,
+          role: updatedDosenData.data.user_detail?.role,
+          jabatan: updatedDosenData.data.user_detail?.jabatan,
+          phone: updatedDosenData.data.user_detail?.phone,
+          email: updatedDosenData.data.user_detail?.email,
+          jabatan_fungsional:
+            updatedDosenData.data.user_detail?.jabatan_fungsional,
+        });
+      }
+      setEditable(false);
     }
-  }, [state, id, reset]);
+  }, [updatedDosenData, state, reset, id]);
 
-  const { mutate: postDosen, isLoading: postDosenLoading } = usePostDosen();
-  const { mutate: patchDosen, isLoading: patchDosenLoading } = usePatchDosen();
-  const navigate = useNavigate();
-
-  const { data: dataUser, isSuccess: userDataSuccess } = useUserData({
-    select: (response) => {
-      const formatUserData = response.data.map(({ id, fullname }) => {
-        return { value: id, label: fullname };
-      });
-
-      return formatUserData;
-    },
-  });
   const { data: dataProgramStudi, isSuccess: programStudiDataSuccess } =
     useProgramStudiData({
       select: (response) => {
@@ -70,32 +107,103 @@ const DosenForm = () => {
 
   const onSubmit = (data) => {
     const dosenFormData = new FormData();
+    const userFormData = new FormData();
 
-    Object.keys(dirtyFields).forEach((key) => {
-      if (dirtyFields[key]) {
-        dosenFormData.append(key, data[key]);
-      }
-    });
+    if (dirtyFields.name) {
+      userFormData.append('fullname', data.name);
+      dosenFormData.append('name', data.name);
+    }
+    if (dirtyFields.phone) {
+      userFormData.append('phone', data.phone);
+    }
+    if (dirtyFields.email) {
+      userFormData.append('email', data.email);
+    }
+    if (dirtyFields.role) {
+      userFormData.append('role', data.role);
+    }
+    if (dirtyFields.jabatan) {
+      userFormData.append('jabatan', data.jabatan);
+    }
+    if (dirtyFields.password) {
+      userFormData.append('password', data.password);
+    }
+    if (dirtyFields.jabatan_fungsional) {
+      userFormData.append('jabatan_fungsional', data.jabatan_fungsional);
+    }
+    if (dirtyFields.is_fulltime) {
+      dosenFormData.append('is_fulltime', data.is_fulltime);
+    }
+    if (dirtyFields.inisial) {
+      dosenFormData.append('inisial', data.inisial);
+    }
+    if (dirtyFields.prodi) {
+      dosenFormData.append('prodi', data.prodi);
+    }
 
     if (id) {
-      patchDosen(
-        { data: dosenFormData, id: id },
-        {
-          onSuccess: () => {
-            navigate('/dosen');
-          },
-          onError: (err) => {
-            setErrorMessage(err.message);
-            setTimeout(() => {
-              setErrorMessage();
-            }, 5000);
-          },
+      const patchUserOrPatchDosen = async () => {
+        if (
+          dirtyFields.name ||
+          dirtyFields.is_fulltime ||
+          dirtyFields.inisial ||
+          dirtyFields.prodi
+        ) {
+          await patchDosen(
+            { data: dosenFormData, id: id },
+            {
+              onSuccess: () => {},
+              onError: (err) => {
+                setErrorMessage(err.message);
+                setTimeout(() => {
+                  setErrorMessage();
+                }, 5000);
+              },
+            }
+          );
         }
-      );
+
+        if (
+          dirtyFields.name ||
+          dirtyFields.phone ||
+          dirtyFields.email ||
+          dirtyFields.role ||
+          dirtyFields.jabatan ||
+          dirtyFields.jabatan_fungsional
+        ) {
+          await patchUser(
+            { data: userFormData, id: dosenData.user },
+            {
+              onSuccess: () => {},
+              onError: (err) => {
+                setErrorMessage(err.message);
+                setTimeout(() => {
+                  setErrorMessage();
+                }, 5000);
+              },
+            }
+          );
+        }
+
+        setEditable(false);
+      };
+
+      patchUserOrPatchDosen();
     } else {
-      postDosen(dosenFormData, {
-        onSuccess: () => {
-          navigate('/dosen');
+      postUser(userFormData, {
+        onSuccess: (data) => {
+          dosenFormData.append('user', data.data.id);
+          postDosen(dosenFormData, {
+            onSuccess: () => {
+              navigate('/data-master/dosen');
+            },
+            onError: (err) => {
+              setErrorMessage(err.message);
+              setTimeout(() => {
+                setErrorMessage();
+              }, 5000);
+            },
+          });
         },
         onError: (err) => {
           setErrorMessage(err.message);
@@ -109,7 +217,13 @@ const DosenForm = () => {
 
   return (
     <section id="dosen-form" className="section-container">
-      <p className="text-lg font-semibold">{id ? 'Edit' : 'Buat'} Dosen</p>
+      <BreadCrumbs
+        links={[
+          { name: 'Daftar Dosen', link: '/data-master/dosen' },
+          { name: id ? 'Detail' : 'Buat' },
+        ]}
+      />
+      <p className="text-lg font-semibold">{id ? 'Detail' : 'Buat'} Dosen</p>
       <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4">
         <CRUInput
           register={register}
@@ -117,6 +231,23 @@ const DosenForm = () => {
           required
           errors={errors}
           registeredName="name"
+          isDisabled={!editable}
+        />
+        <CRUInput
+          register={register}
+          name="Nomor Telepon"
+          required
+          errors={errors}
+          registeredName="phone"
+          isDisabled={!editable}
+        />
+        <CRUInput
+          register={register}
+          name="Email"
+          required
+          errors={errors}
+          registeredName="email"
+          isDisabled={!editable}
         />
         <CRUInput
           register={register}
@@ -124,6 +255,7 @@ const DosenForm = () => {
           required
           errors={errors}
           registeredName="inisial"
+          isDisabled={!editable}
         />
         <CRUInput
           register={register}
@@ -131,46 +263,102 @@ const DosenForm = () => {
           type="checkbox"
           errors={errors}
           registeredName="is_fulltime"
+          isDisabled={!editable}
         />
         <CRUDropdownInput
           control={control}
-          name="User"
-          registeredName="user"
-          defaultValue={
-            state?.user_detail
-              ? {
-                  value: state.user_detail?.id,
-                  label: state.user_detail?.fullname,
-                }
-              : null
-          }
-          options={userDataSuccess ? dataUser : []}
+          required
+          name="Role"
+          registeredName="role"
+          options={[
+            { value: 'Superadmin', label: 'Superadmin' },
+            { value: 'Admin', label: 'Admin' },
+            { value: 'Faculty Member', label: 'Faculty Member' },
+            { value: 'Student', label: 'Student' },
+          ]}
+          isDisabled={!editable}
+        />
+        <CRUDropdownInput
+          control={control}
+          name="Jabatan Kampus"
+          required
+          registeredName="jabatan"
+          options={[
+            { value: 'Tidak ada', label: 'Tidak ada' },
+            { value: 'Dosen Pengajar', label: 'Dosen Pengajar' },
+            { value: 'Kaprodi', label: 'Kaprodi' },
+            { value: 'Direktur/Kepala Unit', label: 'Direktur/Kepala Unit' },
+            { value: 'Dekan', label: 'Dekan' },
+            { value: 'Rektor', label: 'Rektor' },
+            { value: 'Kajur', label: 'Kajur' },
+            { value: 'Kadep', label: 'Kadep' },
+            { value: 'Guru Besar', label: 'Guru Besar' },
+            { value: 'Kahim', label: 'Kahim' },
+            { value: 'Kabem', label: 'Kabem' },
+          ]}
+          isDisabled={!editable}
+        />
+        <CRUDropdownInput
+          control={control}
+          name="Jabatan Fungsional"
+          required
+          registeredName="jabatan_fungsional"
+          options={[
+            { value: 'Belum ada', label: 'Belum ada' },
+            { value: 'Asisten Ahli 150', label: 'Asisten Ahli (150)' },
+            { value: 'Lektor 200', label: 'Lektor (200)' },
+            { value: 'Lektor 300', label: 'Lektor (300)' },
+            { value: 'Lektor Kepala 400', label: 'Lektor Kepala (400)' },
+            { value: 'Lektor Kepala 550', label: 'Lektor Kepala (550)' },
+            { value: 'Lektor Kepala 700', label: 'Lektor Kepala (700)' },
+            { value: 'Profesor 850', label: 'Profesor (850)' },
+            { value: 'Profesor 1050', label: 'Profesor (1050)' },
+          ]}
+          isDisabled={!editable}
         />
         <CRUDropdownInput
           control={control}
           name="Program Studi"
           registeredName="prodi"
-          defaultValue={
-            state?.prodi_detail
-              ? {
-                  value: state.prodi_detail?.id,
-                  label: state.prodi_detail?.name,
-                }
-              : null
-          }
           options={programStudiDataSuccess ? dataProgramStudi : []}
+          isDisabled={!editable}
         />
+        {!id ? (
+          <CRUInput
+            register={register}
+            name="Password"
+            required
+            errors={errors}
+            registeredName="password"
+          />
+        ) : null}
         {errorMessage ? (
           <AlertError className="inline-block">{errorMessage}</AlertError>
         ) : null}
         {id ? (
-          <EditButton
-            className={`!mt-8 !text-base`}
-            isLoading={patchDosenLoading}
-            type="submit"
-          />
+          <div className="flex flex-row !mt-8 space-x-3">
+            {!editable && (
+              <EditButton
+                className={`!text-base`}
+                type="button"
+                onClick={() => setEditable(true)}
+              />
+            )}
+            {editable && (
+              <EditButton
+                className={`!text-base`}
+                type="submit"
+                isLoading={patchDosenLoading}
+                name="Update"
+              />
+            )}
+            {editable && <CancelButton onClick={() => setEditable(false)} />}
+          </div>
         ) : (
-          <PrimaryButton className={`!mt-8`} isLoading={postDosenLoading}>
+          <PrimaryButton
+            className={`!mt-8`}
+            isLoading={postDosenLoading || postUserLoading}
+          >
             Buat
           </PrimaryButton>
         )}

@@ -35,8 +35,21 @@ const getDosen = () => {
   });
 };
 
+const getDosenById = (id) => {
+  return request({
+    url: `/api-stem/dosen/${id}/`,
+  });
+};
+
 export const useDosenData = (options) => {
   return useQuery('dosen', getDosen, {
+    refetchOnWindowFocus: false,
+    ...options,
+  });
+};
+
+export const useDosenById = (id, options) => {
+  return useQuery(['dosen-by-id', id], () => getDosenById(id), {
     refetchOnWindowFocus: false,
     ...options,
   });

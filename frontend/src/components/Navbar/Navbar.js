@@ -1,20 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import NavigationLink from './NavigationLink';
 import { BiHome } from 'react-icons/bi';
+import { AiOutlineBook } from 'react-icons/ai';
 import {
-  AiOutlineMail,
-  AiOutlineFileText,
-  AiOutlineUser,
-} from 'react-icons/ai';
-import { MdOutlineAssignment, MdKeyboardArrowLeft } from 'react-icons/md';
-import { RiUser2Line } from 'react-icons/ri';
+  MdKeyboardArrowLeft,
+  MdWorkspacePremium,
+  MdWorkspacesOutline,
+} from 'react-icons/md';
+import { BsClipboardData } from 'react-icons/bs';
 import { primary400 } from '../../utils/colors';
 import useOther from '../../hooks/useOther';
 import { useCheckRole } from '../../hooks/useCheckRole';
+import NavigationDropdownLink from './NavigationDropdownLink';
+import { GoBeaker } from 'react-icons/go';
 
 const Navbar = () => {
   const userRole = useCheckRole();
   const { navbarMinimize, setNavbarMinimize } = useOther();
+  const [dropdownActive, setDropdownActive] = useState();
 
   return (
     <div
@@ -46,36 +49,142 @@ const Navbar = () => {
           <NavigationLink url="/" icon={<BiHome size={22} />}>
             Dashboard
           </NavigationLink>
-          {userRole.admin && (
-            <NavigationLink url="/user" icon={<AiOutlineUser size={22} />}>
-              User
-            </NavigationLink>
+          {(userRole.admin || userRole.facultyMember) && (
+            <NavigationDropdownLink
+              title="Pelaks. Pendidikan"
+              url="/pelaksanaan-pendidikan"
+              setDropdownActive={setDropdownActive}
+              dropdownActive={dropdownActive}
+              childrenUrl={[
+                {
+                  title: 'Surat Penugasan',
+                  url: '/surat-penugasan',
+                  allowedRoles: userRole.admin,
+                },
+                {
+                  title: 'Dokumen Pembelajaran',
+                  url: '/dokumen-pembelajaran',
+                  allowedRoles: userRole.facultyMember || userRole.admin,
+                },
+                {
+                  title: 'RPS',
+                  url: '/rps',
+                  allowedRoles: userRole.admin,
+                },
+              ]}
+              icon={<AiOutlineBook size={22} />}
+            />
           )}
-          {(userRole.admin || (userRole.facultyMember && userRole.kaprodi)) && (
-            <NavigationLink url="/dosen" icon={<RiUser2Line size={22} />}>
-              Dosen
-            </NavigationLink>
-          )}
-          <NavigationLink
-            url="/evaluasi-perkuliahan"
-            icon={<AiOutlineFileText size={22} />}
-          >
-            Evaluasi Perkuliahan
-          </NavigationLink>
           {userRole.admin && (
             <>
-              <NavigationLink
-                url="/surat-penugasan"
-                icon={<AiOutlineMail size={22} />}
-              >
-                Surat Penugasan
-              </NavigationLink>
-              <NavigationLink
-                url="/penugasan-pengajaran"
-                icon={<MdOutlineAssignment size={22} />}
-              >
-                Penugasan Pengajaran
-              </NavigationLink>
+              <NavigationDropdownLink
+                title="Pelaks. Penelitian"
+                url="/pelaksanaan-penelitian"
+                setDropdownActive={setDropdownActive}
+                dropdownActive={dropdownActive}
+                childrenUrl={[
+                  {
+                    title: 'Penelitian',
+                    url: '/penelitian',
+                    allowedRoles: userRole.admin,
+                  },
+                  {
+                    title: 'Publikasi Karya',
+                    url: '/publikasi-karya',
+                    allowedRoles: userRole.admin,
+                  },
+                  {
+                    title: 'Paten/HKI',
+                    url: '/paten-hki',
+                    allowedRoles: userRole.admin,
+                  },
+                ]}
+                icon={<GoBeaker size={22} />}
+              />
+              <NavigationDropdownLink
+                title="Pelaks. Pengabdian"
+                url="/pelaksanaan-pengabdian"
+                setDropdownActive={setDropdownActive}
+                dropdownActive={dropdownActive}
+                childrenUrl={[
+                  {
+                    title: 'Pengabdian',
+                    url: '/pengabdian',
+                    allowedRoles: userRole.admin,
+                  },
+                  {
+                    title: 'Pengelola Jurnal',
+                    url: '/pengelola-jurnal',
+                    allowedRoles: userRole.admin,
+                  },
+                  {
+                    title: 'Pembicara',
+                    url: '/pembicara',
+                    allowedRoles: userRole.admin,
+                  },
+                  {
+                    title: 'Jabatan Struktural',
+                    url: '/jabatan-struktural',
+                    allowedRoles: userRole.admin,
+                  },
+                ]}
+                icon={<MdWorkspacesOutline size={22} />}
+              />
+              <NavigationDropdownLink
+                title="Akreditasi"
+                url="/akreditasi"
+                setDropdownActive={setDropdownActive}
+                dropdownActive={dropdownActive}
+                childrenUrl={[
+                  {
+                    title: 'Matriks Penilaian',
+                    url: '/matriks-penilaian',
+                    allowedRoles: userRole.admin,
+                  },
+                ]}
+                icon={<MdWorkspacePremium size={22} />}
+              />
+              <NavigationDropdownLink
+                title="Data Master"
+                url="/data-master"
+                setDropdownActive={setDropdownActive}
+                dropdownActive={dropdownActive}
+                childrenUrl={[
+                  {
+                    title: 'User',
+                    url: '/user',
+                    allowedRoles: userRole.admin,
+                  },
+                  {
+                    title: 'Dosen',
+                    url: '/dosen',
+                    allowedRoles:
+                      userRole.admin ||
+                      (userRole.facultyMember && userRole.kaprodi),
+                  },
+                  {
+                    title: 'Mata Kuliah',
+                    url: '/mata-kuliah',
+                    allowedRoles: userRole.admin,
+                  },
+                  {
+                    title: 'Kurikulum',
+                    url: '/kurikulum',
+                    allowedRoles: userRole.admin,
+                  },
+                  {
+                    title: 'Penugasan Pengajaran',
+                    url: '/penugasan-pengajaran',
+                    allowedRoles: userRole.admin,
+                  },
+                  {
+                    title: 'Siklus',
+                    url: '/cycle',
+                    allowedRoles: userRole.admin,
+                  },
+                ]}
+                icon={<BsClipboardData size={22} />}
+              />
             </>
           )}
         </div>

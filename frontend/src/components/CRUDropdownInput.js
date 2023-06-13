@@ -10,6 +10,10 @@ const CRUDropdownInput = ({
   name,
   defaultValue,
   required = false,
+  isDisabled = false,
+  className,
+  isClearable = false,
+  clearFunc,
 }) => {
   return (
     <div>
@@ -21,6 +25,8 @@ const CRUDropdownInput = ({
         render={({ field, fieldState: { error } }) => (
           <>
             <Select
+              isClearable={isClearable}
+              isDisabled={isDisabled}
               placeholder="pilih..."
               theme={(theme) => ({
                 ...theme,
@@ -44,16 +50,22 @@ const CRUDropdownInput = ({
                     error ? '!border-primary-400' : ''
                   } ${
                     state.isFocused ? '!border-primary-400' : '!border-gray-200'
-                  }`,
+                  } ${isDisabled && '!bg-grayDisabled-400'} ${className}`,
               }}
               inputRef={field.ref}
               options={options}
               defaultValue={defaultValue}
               value={options.find((c) => c.value === field.value)}
-              onChange={(val) => field.onChange(val.value)}
+              onChange={(val, triggeredAction) => {
+                if (triggeredAction.action === 'clear') {
+                  clearFunc();
+                } else {
+                  field.onChange(val.value);
+                }
+              }}
             />
             {error && (
-              <p className="mt-2 text-sm text-primary-400">{error.message}</p>
+              <p className="mt-1 text-sm text-primary-400">{error.message}</p>
             )}
           </>
         )}

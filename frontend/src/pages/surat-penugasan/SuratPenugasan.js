@@ -39,7 +39,7 @@ const SuratPenugasan = () => {
         <p className="font-semibold text-lg">Daftar Surat Penugasan</p>
         <PrimaryButton
           icon={<BiPlusCircle size={22} />}
-          link="/surat-penugasan/form"
+          link="/pelaksanaan-pendidikan/surat-penugasan/form"
         >
           Buat Surat Penugasan
         </PrimaryButton>
