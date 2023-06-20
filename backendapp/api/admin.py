@@ -13,7 +13,6 @@ class PenugasanPengajaranAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 class DosenAdmin(ImportExportModelAdmin, admin.ModelAdmin):
   pass
 
-
 # Register your models here.
 admin.site.register(models.Kurikulum)
 admin.site.register(models.MataKuliah, MataKuliahAdmin)
