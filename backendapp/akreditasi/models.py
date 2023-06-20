@@ -16,11 +16,11 @@ class PoinPenilaian(models.Model):
         blank=True,
         null=True
 	)
-    type = models.CharField(max_length=10)
+    type = models.CharField(max_length=10, blank=True, null=True)
     order_number = models.IntegerField(blank=True, null=True)
-    item_number = models.CharField(max_length=20)
+    item_number = models.CharField(max_length=20, blank=True, null=True)
     max_score = models.FloatField(blank=True, null=True)
-    element = models.CharField(max_length=100)
+    element = models.CharField(max_length=100, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     description_grade_1 = models.TextField(blank=True, null=True)
     description_grade_2 = models.TextField(blank=True, null=True)
