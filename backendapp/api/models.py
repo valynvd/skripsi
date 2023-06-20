@@ -242,4 +242,4 @@ class PortofolioPerkuliahan(models.Model):
 	rekomendasi_perbaikan_univ  = models.TextField(blank=True, null=True)
 
 	def __str__(self) -> str:
-		return '[{} {}]-{}-{}'.format(self.penugasan.tahun, self.penugasan.periode, self.penugasan.dosen_pengampu.name, self.penugasan.mata_kuliah.name)
+		return '{}-{}'.format(self.penugasan.dosen_pengampu.name, self.penugasan.mata_kuliah.name)

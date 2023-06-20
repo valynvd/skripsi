@@ -13,14 +13,32 @@ class PenugasanPengajaranAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 class DosenAdmin(ImportExportModelAdmin, admin.ModelAdmin):
   pass
 
+class KurikulumAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+  pass
+
+class CycleAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+  pass
+
+class DokumenPembelajaranAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+  pass
+
+class KurikulumAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+  pass
+
+class ProgramStudiAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+  pass
+
+class SuratPenugasanAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+  pass
+
 # Register your models here.
-admin.site.register(models.Kurikulum)
+admin.site.register(models.Kurikulum, KurikulumAdmin)
 admin.site.register(models.MataKuliah, MataKuliahAdmin)
 admin.site.register(models.Dosen, DosenAdmin)
-admin.site.register(models.ProgramStudi)
+admin.site.register(models.ProgramStudi, ProgramStudiAdmin)
 admin.site.register(models.PenugasanPengajaran, PenugasanPengajaranAdmin)
-admin.site.register(models.SuratPenugasan)
-admin.site.register(models.DokumenPembelajaran)
+admin.site.register(models.SuratPenugasan, SuratPenugasanAdmin)
+admin.site.register(models.DokumenPembelajaran, DokumenPembelajaranAdmin)
 admin.site.register(models.RiwayatDokumenPembelajaran)
 admin.site.register(models.PortofolioPerkuliahan)
-admin.site.register(models.Cycle)
+admin.site.register(models.Cycle, CycleAdmin)

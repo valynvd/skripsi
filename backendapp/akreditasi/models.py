@@ -3,19 +3,30 @@ from django.db import models
 from api.models import Dosen, ProgramStudi
 
 # Create your models here.
-class PoinPenilaian(models.Model):
-    kode = models.CharField(max_length=100)
-    element = models.CharField(max_length=100)
-    indikator = models.TextField(blank=True, null=True)
-    skor_maksimal = models.TextField(blank=True, null=True)
-    def __str__(self) -> str:
-        return '{}. {}'.format(self.kode, self.element)
-
 class Kriteria(models.Model):
     nama = models.CharField(max_length=100)
     deskripsi = models.TextField(blank=True, null=True)
     def __str__(self) -> str:
         return '{} - {}'.format(self.nama, self.deskripsi)
+
+class PoinPenilaian(models.Model):
+    kriteriaId = models.ForeignKey(
+        Kriteria,
+        on_delete=models.SET_NULL,
+	)
+    type = models.CharField(max_length=10)
+    order_number = models.IntegerField(blank=True, null=True)
+    item_number = models.CharField(max_length=20)
+    max_score = models.FloatField(blank=True, null=True)
+    element = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
+    description_grade_1 = models.TextField(blank=True, null=True)
+    description_grade_2 = models.TextField(blank=True, null=True)
+    description_grade_3 = models.TextField(blank=True, null=True)
+    description_grade_4 = models.TextField(blank=True, null=True)
+
+    def __str__(self) -> str:
+        return '{}. {}'.format(self.code, self.element)
 
 class FileFolder(models.Model):
     matrix = models.ForeignKey(
