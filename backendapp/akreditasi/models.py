@@ -13,6 +13,8 @@ class PoinPenilaian(models.Model):
     kriteriaId = models.ForeignKey(
         Kriteria,
         on_delete=models.SET_NULL,
+        blank=True,
+        null=True
 	)
     type = models.CharField(max_length=10)
     order_number = models.IntegerField(blank=True, null=True)
