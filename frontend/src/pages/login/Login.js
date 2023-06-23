@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import PrimaryButton from '../../components/PrimaryButton';
+import { PrimaryButton } from '../../components/PrimaryButton';
 import LoginInput from './components/LoginInput';
 import { useLogin } from '../../hooks/useLogin';
 import { AlertError } from '../../components/Alert';
@@ -56,7 +56,7 @@ const Login = () => {
   return (
     <div className="w-full h-full flex flex-col md:flex-row">
       <div className="hidden md:flex items-center justify-center h-full md:w-1/2 bg-gradient-to-b from-[#ED1B24] to-[#222222] md:to-[#222222_80.100%]">
-        <div className="px-10 py-6 md:p-10 w-full max-w-xl flex flex-col h-full max-h-[42rem] lg:max-h-[50rem] justify-between">
+        <div className="px-10 py-6 md:p-10 w-full max-w-2xl flex flex-col h-full max-h-[42rem] lg:max-h-[50rem] justify-between space-y-6">
           <img
             className="flex w-[10rem]"
             src={require('../../assets/logo/prasmul-logo-white.png')}

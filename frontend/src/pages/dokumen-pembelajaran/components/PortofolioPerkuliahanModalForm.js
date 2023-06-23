@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import PrimaryButton from '../../../components/PrimaryButton';
+import { PrimaryButton } from '../../../components/PrimaryButton';
 import { AlertError } from '../../../components/Alert';
 import ModalCreateForm from '../../../components/ModalCreateForm';
 import { useEffect } from 'react';

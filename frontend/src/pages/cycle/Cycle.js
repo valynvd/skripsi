@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from 'react';
-import PrimaryButton from '../../components/PrimaryButton';
+import { PrimaryButton } from '../../components/PrimaryButton';
 import { BiPlusCircle } from 'react-icons/bi';
 import CycleTable from './components/CycleTable';
 import { useCycleData, useDeleteCycle } from '../../hooks/useCycle';

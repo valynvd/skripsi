@@ -16,10 +16,12 @@ import {
 import { RxTriangleUp, RxTriangleDown } from 'react-icons/rx';
 import { AiOutlineSearch } from 'react-icons/ai';
 import Pagination from '../../../components/Pagination';
-import CRUDropdownInput from '../../../components/CRUDropdownInput';
 import { useCycleData } from '../../../hooks/useCycle';
 import { useForm } from 'react-hook-form';
 import { useProgramStudiData } from '../../../hooks/useProdi';
+import FilterInput from '../../../components/FitlerInput';
+import { ExportPrimaryButton } from '../../../components/PrimaryButton';
+import { utils, writeFile } from 'xlsx';
 // import CRUDropdownInput from '../../../components/CRUDropdownInput';
 
 const DokumenPembelajaranTable = ({
@@ -260,9 +262,6 @@ const DokumenPembelajaranTable = ({
   const memoColumns = useMemo(() => columns, [userRole]);
   const memoData = useMemo(() => {
     let filteredData = [...data];
-
-    console.log(data);
-
     if (cycleWatch) {
       filteredData = filteredData.filter(
         (item) =>
@@ -296,6 +295,7 @@ const DokumenPembelajaranTable = ({
     gotoPage,
     pageOptions,
     state,
+    rows,
   } = useTable(
     { columns: memoColumns, data: memoData },
     useGlobalFilter,
@@ -303,13 +303,68 @@ const DokumenPembelajaranTable = ({
     usePagination
   );
 
+  const handleExport = () => {
+    let filterToExcel = [];
+
+    rows.forEach(({ values }) => {
+      let filteredItem = {
+        siklus: null,
+        dosen: null,
+        'mata kuliah': null,
+        prodi: null,
+      };
+
+      filteredItem['siklus'] =
+        values[
+          'penugasan_pengajaran_detail.surat_penugasan_detail.cycle_detail'
+        ].start_year +
+        '-' +
+        semesterName2[
+          values[
+            'penugasan_pengajaran_detail.surat_penugasan_detail.cycle_detail'
+          ].semester
+        ];
+
+      filteredItem['dosen'] =
+        values['penugasan_pengajaran_detail.dosen_pengampu_detail.name'];
+      filteredItem['mata kuliah'] =
+        values['penugasan_pengajaran_detail.mata_kuliah_detail.name'];
+      filteredItem['prodi'] =
+        values[
+          'penugasan_pengajaran_detail.dosen_pengampu_detail.prodi_detail.name'
+        ];
+
+      filterToExcel.push(filteredItem);
+    });
+
+    let wb = utils.book_new();
+    let ws = utils.json_to_sheet(filterToExcel);
+
+    utils.book_append_sheet(wb, ws, 'testing');
+
+    writeFile(wb, 'testing.xlsx');
+  };
+
   const { pageIndex, globalFilter } = state;
 
   return (
     <>
       <div>
-        <form className="mb-4 flex space-x-4">
-          <CRUDropdownInput
+        <form className="flex gap-4 flex-wrap items-center mb-4">
+          <div className="relative w-[20rem]">
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <AiOutlineSearch size={20} color="gray" />
+            </div>
+            <input
+              type="text"
+              id="simple-search"
+              className="border border-gray-300 focus:border-primary-400 text-gray-900 text-sm rounded-lg focus:ring-turquoise-normal focus:border-turquoise-normal focus-visible:outline-none block w-full pl-10 p-2.5"
+              placeholder="Cari..."
+              value={globalFilter || ''}
+              onChange={(e) => setGlobalFilter(e.target.value)}
+            />
+          </div>
+          <FilterInput
             clearFunc={() => {
               setValue('cycle', null);
             }}
@@ -318,9 +373,10 @@ const DokumenPembelajaranTable = ({
             control={control}
             name="Siklus"
             registeredName="cycle"
+            placeholder="Semua Siklus"
             options={dataCycleSuccess ? dataCycle : []}
           />
-          <CRUDropdownInput
+          <FilterInput
             clearFunc={() => {
               setValue('prodi', null);
             }}
@@ -329,25 +385,11 @@ const DokumenPembelajaranTable = ({
             control={control}
             name="Prodi"
             registeredName="prodi"
+            placeholder="Semua Prodi"
             options={dataProgramStudiSuccess ? dataProgramStudi : []}
           />
+          <ExportPrimaryButton onClick={handleExport} />
         </form>
-        <label htmlFor="simple-search" className="sr-only">
-          Search
-        </label>
-        <div className="relative max-w-md">
-          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-            <AiOutlineSearch size={20} color="gray" />
-          </div>
-          <input
-            type="text"
-            id="simple-search"
-            className="border mb-4 border-gray-300 focus:border-primary-400 text-gray-900 text-sm rounded-lg focus:ring-turquoise-normal focus:border-turquoise-normal focus-visible:outline-none block w-full pl-10 p-2.5"
-            placeholder="Cari..."
-            value={globalFilter || ''}
-            onChange={(e) => setGlobalFilter(e.target.value)}
-          />
-        </div>
       </div>
       <div className="overflow-x-auto">
         <table {...getTableProps()} className="w-full">

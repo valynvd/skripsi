@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import PrimaryButton from '../../components/PrimaryButton';
+import { PrimaryButton } from '../../components/PrimaryButton';
 import { BiPlusCircle } from 'react-icons/bi';
 import KurikulumTable from './components/KurikulumTable';
 import { useKurikulumData, useDeleteKurikulum } from '../../hooks/useKurikulum';

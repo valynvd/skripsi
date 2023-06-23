@@ -6,7 +6,6 @@ import {
   LinkIconRejected,
   LinkIconWarning,
 } from '../../../components/LinkIcon';
-// import { EditIcon } from '../../../components/IconButton';
 
 import {
   useTable,
@@ -17,9 +16,9 @@ import {
 import { RxTriangleUp, RxTriangleDown } from 'react-icons/rx';
 import { AiOutlineSearch } from 'react-icons/ai';
 import Pagination from '../../../components/Pagination';
-import CRUDropdownInput from '../../../components/CRUDropdownInput';
 import { useCycleData } from '../../../hooks/useCycle';
 import { useForm } from 'react-hook-form';
+import FilterInput from '../../../components/FitlerInput';
 
 const DokumenPembelajaranTableKaprodi = ({ loading, data, userRole }) => {
   const navigate = useNavigate();
@@ -215,8 +214,6 @@ const DokumenPembelajaranTableKaprodi = ({ loading, data, userRole }) => {
   const memoData = useMemo(() => {
     let filteredData = [...data];
 
-    console.log(data);
-
     if (cycleWatch) {
       filteredData = filteredData.filter(
         (item) =>
@@ -262,8 +259,21 @@ const DokumenPembelajaranTableKaprodi = ({ loading, data, userRole }) => {
   return (
     <>
       <div>
-        <form className="mb-4 flex space-x-4">
-          <CRUDropdownInput
+        <form className="flex gap-4 flex-wrap mb-4">
+          <div className="relative w-[20rem]">
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <AiOutlineSearch size={20} color="gray" />
+            </div>
+            <input
+              type="text"
+              id="simple-search"
+              className="border border-gray-300 focus:border-primary-400 text-gray-900 text-sm rounded-lg focus:ring-turquoise-normal focus:border-turquoise-normal focus-visible:outline-none block w-full pl-10 p-2.5"
+              placeholder="Cari..."
+              value={globalFilter || ''}
+              onChange={(e) => setGlobalFilter(e.target.value)}
+            />
+          </div>
+          <FilterInput
             clearFunc={() => {
               setValue('cycle', null);
             }}
@@ -272,25 +282,10 @@ const DokumenPembelajaranTableKaprodi = ({ loading, data, userRole }) => {
             control={control}
             name="Siklus"
             registeredName="cycle"
+            placeholder="Semua Siklus"
             options={dataCycleSuccess ? dataCycle : []}
           />
         </form>
-        <label htmlFor="simple-search" className="sr-only">
-          Search
-        </label>
-        <div className="relative max-w-md">
-          <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-            <AiOutlineSearch size={20} color="gray" />
-          </div>
-          <input
-            type="text"
-            id="simple-search"
-            className="border mb-4 border-gray-300 focus:border-primary-400 text-gray-900 text-sm rounded-lg focus:ring-turquoise-normal focus:border-turquoise-normal focus-visible:outline-none block w-full pl-10 p-2.5"
-            placeholder="Cari..."
-            value={globalFilter || ''}
-            onChange={(e) => setGlobalFilter(e.target.value)}
-          />
-        </div>
       </div>
       <div className="overflow-x-auto">
         <table {...getTableProps()} className="w-full">

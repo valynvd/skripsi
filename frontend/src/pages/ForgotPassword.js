@@ -2,7 +2,7 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import LoginInput from './login/components/LoginInput';
-import PrimaryButton from '../components/PrimaryButton';
+import { PrimaryButton } from '../components/PrimaryButton';
 import { AlertError, AlertSuccess } from '../components/Alert';
 import { usePostResetPassword } from '../hooks/useResetPassword';
 

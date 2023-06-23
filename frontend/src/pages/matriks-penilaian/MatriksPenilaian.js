@@ -1,5 +1,5 @@
 import React from 'react';
-import PrimaryButton from '../../components/PrimaryButton';
+import { PrimaryButton } from '../../components/PrimaryButton';
 
 const MatriksPenilaian = () => {
   const TableTh = ({ children }) => {
@@ -67,6 +67,11 @@ const MatriksPenilaian = () => {
             <TableTd>
               <input type="file" className="focus:outline-none"></input>
             </TableTd>
+          </tr>
+          <tr>
+            <td colSpan="8" className="text-center">
+              testing
+            </td>
           </tr>
         </tbody>
       </table>

@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
-import PrimaryButton from '../../components/PrimaryButton';
+import { PrimaryButton } from '../../components/PrimaryButton';
 import { BiPlusCircle } from 'react-icons/bi';
 import SuratPenugasanTable from './components/SuratPenugasanTable';
 import {

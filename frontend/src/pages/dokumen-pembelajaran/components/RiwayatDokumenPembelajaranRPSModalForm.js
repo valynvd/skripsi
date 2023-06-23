@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import PrimaryButton from '../../../components/PrimaryButton';
+import { PrimaryButton } from '../../../components/PrimaryButton';
 import { useLocation } from 'react-router-dom';
 import { AlertError } from '../../../components/Alert';
 import EditButton from '../../../components/EditButton';

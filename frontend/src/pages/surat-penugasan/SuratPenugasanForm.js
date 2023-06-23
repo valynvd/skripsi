@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { BiPlusCircle } from 'react-icons/bi';
 import CRUInput from '../../components/CRUInput';
-import PrimaryButton from '../../components/PrimaryButton';
+import { PrimaryButton } from '../../components/PrimaryButton';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import {
   usePostSuratPenugasan,

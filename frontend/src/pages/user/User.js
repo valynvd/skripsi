@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import PrimaryButton from '../../components/PrimaryButton';
+import { PrimaryButton } from '../../components/PrimaryButton';
 import { BiPlusCircle } from 'react-icons/bi';
 import UserTable from './components/UserTable';
 import { useDeleteUser, useUserData } from '../../hooks/useUser';

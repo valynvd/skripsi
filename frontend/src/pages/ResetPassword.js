@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import LoginInput from './login/components/LoginInput';
-import PrimaryButton from '../components/PrimaryButton';
+import { PrimaryButton } from '../components/PrimaryButton';
 import { AlertError } from '../components/Alert';
 import { usePostResetPasswordConfirm } from '../hooks/useResetPassword';
 import { useParams } from 'react-router-dom';

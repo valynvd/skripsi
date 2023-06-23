@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import PrimaryButton from '../../components/PrimaryButton';
+import { PrimaryButton } from '../../components/PrimaryButton';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { BiPlusCircle } from 'react-icons/bi';
 import {

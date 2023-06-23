@@ -1,8 +1,9 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import ClipLoader from 'react-spinners/ClipLoader';
+import { BiExport } from 'react-icons/bi';
 
-const PrimaryButton = ({
+export const PrimaryButton = ({
   children,
   className,
   isLoading = false,
@@ -48,4 +49,15 @@ const PrimaryButton = ({
   );
 };
 
-export default PrimaryButton;
+export const ExportPrimaryButton = (options) => {
+  return (
+    <PrimaryButton
+      type="button"
+      {...options}
+      className="bg-green-500 border-green-500 hover:bg-green-600"
+      icon={<BiExport size={20} />}
+    >
+      Export
+    </PrimaryButton>
+  );
+};

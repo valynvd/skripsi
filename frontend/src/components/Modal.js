@@ -1,6 +1,6 @@
 import React, { Fragment, useRef } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import PrimaryButton from './PrimaryButton';
+import { PrimaryButton } from './PrimaryButton';
 
 const Modal = ({ isOpen, setIsOpen, link, title, description }) => {
   let completeButtonRef = useRef(null);
