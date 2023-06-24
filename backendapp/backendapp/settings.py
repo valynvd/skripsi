@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -151,17 +152,14 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'static'
+STATIC_URL = '/static/'
+# STATIC_ROOT = BASE_DIR / 'static'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR, 'media/'
+# MEDIA_ROOT = BASE_DIR, 'media/'
 
-DJOSER = {
-    'SERIALIZERS': {
-        'current_user': 'account.serializers.UserSerializerMeDAB',
-    }
-}
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -170,15 +168,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # # djongo store to AWS S3
 # To upload your media files to S3 set:
-AWS_DEFAULT_ACL =  'public-read'
-AWS_ACCESS_KEY_ID = 'AKIAQVOHGEF2HBULXUVE'
-AWS_SECRET_ACCESS_KEY = 'rikoNGLyNMADts2X8SzBQ0DkPKXjZ8r+S6hJ0N6b'
-AWS_STORAGE_BUCKET_NAME = 'stem-management'
-AWS_S3_REGION_NAME = 'ap-southeast-1'
-AWS_S3_FILE_OVERWRITE = False
-AWS_DEFAULT_ACL = None
-AWS_S3_VERIFY = True
-DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+# AWS_DEFAULT_ACL =  'public-read'
+# AWS_ACCESS_KEY_ID = 'AKIAQVOHGEF2HBULXUVE'
+# AWS_SECRET_ACCESS_KEY = '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'
+# AWS_STORAGE_BUCKET_NAME = 'stem-management'
+# AWS_S3_REGION_NAME = 'ap-southeast-1'
+# AWS_S3_FILE_OVERWRITE = False
+# AWS_DEFAULT_ACL = None
+# AWS_S3_VERIFY = True
+# DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 REST_FRAMEWORK = {
     'DATETIME_FORMAT': "%Y-%m-%d | %H:%M:%S",
