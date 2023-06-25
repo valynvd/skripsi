@@ -9,9 +9,16 @@ class PoinPenilaianSerializers(serializers.ModelSerializer):
       fields = '__all__'
 
 class KriteriaSerializers(serializers.ModelSerializer):
+  poin_penilaian_detail = serializers.SerializerMethodField(read_only=True)
+
   class Meta:
       model = models.Kriteria
       fields = '__all__'
+  
+  def get_poin_penilaian_detail(self, obj):
+    poinPenilaianByKriteria = models.PoinPenilaian.objects.filter(kriteriaId=obj)
+
+    return PoinPenilaianSerializers(poinPenilaianByKriteria, many=True).data
 
 class FileFolderSerializers(serializers.ModelSerializer):
   kriteria_detail = KriteriaSerializers(source='kriteria', many=False, read_only=True)

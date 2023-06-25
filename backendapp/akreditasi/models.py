@@ -28,7 +28,7 @@ class PoinPenilaian(models.Model):
     description_grade_4 = models.TextField(blank=True, null=True)
 
     def __str__(self) -> str:
-        return '{}. {}'.format(self.code, self.element)
+        return '{}'.format(self.element)
 
 class FileFolder(models.Model):
     matrix = models.ForeignKey(
