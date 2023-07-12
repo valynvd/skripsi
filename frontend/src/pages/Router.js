@@ -6,6 +6,8 @@ import Home from './Home';
 import Login from './login/Login';
 import DokumenPembelajaran from './dokumen-pembelajaran/DokumenPembelajaran';
 import SuratPenugasan from './surat-penugasan/SuratPenugasan';
+import BroadCastPesan from './broadcast-pesan/BroadCastPesan';
+import KonsolChatbot from './konsol-chatbot/KonsolChatbot';
 import SuratPenugasanForm from './surat-penugasan/SuratPenugasanForm';
 import PenugasanPengajaran from './penugasan-pengajaran/PenugasanPengajaran';
 import PenugasanPengajaranForm from './penugasan-pengajaran/PenugasanPengajaranForm';
@@ -153,6 +155,25 @@ const Router = () => {
               </Route>
             </Route>
           </Route>
+
+          <Route path="stem-chatbot" element={<Outlet />}>
+            <Route
+              element={
+                <RequireAuthWithRoles allowedRoles={['Admin', 'Superadmin']} />
+              }
+            >
+              <Route path="broadcast-pesan">
+                <Route index element={<BroadCastPesan />} />
+              </Route>
+              <Route path="pengaturan-grup">
+                <Route index element={<KonsolChatbot />} />
+              </Route>
+              <Route path="konsol-chatbot">
+                <Route index element={<KonsolChatbot />} />
+              </Route>
+            </Route>
+          </Route>
+          
         </Route>
       </Route>
       <Route path="/login" element={<Login />} />

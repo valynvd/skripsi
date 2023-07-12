@@ -31,6 +31,15 @@ class ProgramStudiAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 class SuratPenugasanAdmin(ImportExportModelAdmin, admin.ModelAdmin):
   pass
 
+class DataMahasiswaAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+  pass
+
+class GrupMahasiswaAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+  pass
+
+class BroadCastPesanAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+  pass
+
 # Register your models here.
 admin.site.register(models.Kurikulum, KurikulumAdmin)
 admin.site.register(models.MataKuliah, MataKuliahAdmin)
@@ -42,3 +51,6 @@ admin.site.register(models.DokumenPembelajaran, DokumenPembelajaranAdmin)
 admin.site.register(models.RiwayatDokumenPembelajaran)
 admin.site.register(models.PortofolioPerkuliahan)
 admin.site.register(models.Cycle, CycleAdmin)
+admin.site.register(models.DataMahasiswa, DataMahasiswaAdmin)
+admin.site.register(models.GrupMahasiswa, GrupMahasiswaAdmin)
+admin.site.register(models.BroadcastPesan, BroadCastPesanAdmin)

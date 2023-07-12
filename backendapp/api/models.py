@@ -243,3 +243,30 @@ class PortofolioPerkuliahan(models.Model):
 
 	def __str__(self) -> str:
 		return '{}-{}'.format(self.penugasan.dosen_pengampu.name, self.penugasan.mata_kuliah.name)
+	
+class GrupMahasiswa(models.Model):
+	created_at = models.DateTimeField(default=timezone.now)
+	namagrup = models.CharField(blank=True, null=True, max_length=100)
+
+	def __str__(self) -> str:
+		return '{}'.format(self.namagrup) 
+	
+class DataMahasiswa(models.Model):
+	nim = models.CharField(blank=True, null=True, max_length=50)
+	nama = models.CharField(blank=True, null=True, max_length=100)
+	prodi = models.ForeignKey(ProgramStudi, on_delete=models.CASCADE)
+	telephone = models.CharField(blank=True, null=True, max_length=20)
+	email = models.CharField(blank=True, null=True, max_length=100)
+	grup = models.ForeignKey(GrupMahasiswa, on_delete=models.CASCADE)
+
+	def __str__(self) -> str:
+		return '{}-{}'.format(self.nama, self.prodi)
+	
+class BroadcastPesan(models.Model):
+	created_at = models.DateTimeField(default=timezone.now)
+	pesan = models.TextField(blank=True, null=True)
+	title = models.CharField(blank=True, null=True, max_length=100)
+
+	def __str__(self) -> str:
+		return '{}-{}'.format(self.nama, self.prodi)
+	

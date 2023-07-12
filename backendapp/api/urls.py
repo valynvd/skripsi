@@ -30,10 +30,14 @@ router.register('penugasanpengajaran', views.PenugasanPengajaranViewSet)
 router.register('dokumenpembelajaran', views.DokumenPembelajaranViewSet)
 router.register('riwayatdokumenpembelajaran', views.RiwayatDokumenPembelajaranViewSet)
 router.register('portofolioperkuliahan', views.PortofolioPerkuliahanViewSet)
+router.register('datamahasiswa', views.DataMahasiswaViewSet)
+router.register('grupmahasiswa', views.GrupMahasiswaViewSet)
+router.register('grupmahasiswa', views.BroadCastPesanViewSet)
 #Akreditasi
 router.register('poinpenilaian', views_akreditasi.PoinPenilaianViewSet)
 router.register('filefolder', views_akreditasi.ListFileFolderViewSet)
 router.register('kriteria', views_akreditasi.KriteriaViewSet)
+
 
 urlpatterns = [
   path('', include(router.urls)),

@@ -277,3 +277,36 @@ class PortofolioPerkuliahanByDosenViewSet(generics.ListAPIView):
         else:
             self.permission_classes = [IsAuthenticated]
         return super(self.__class__, self).get_permissions()
+    
+class DataMahasiswaViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.DataMahasiswaSerializers
+    queryset = models.DataMahasiswa.objects.all()
+
+    def get_permissions(self):
+        if self.action in ['list','retrieve']:
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+    
+class GrupMahasiswaViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.GrupMahasiswaSerializers
+    queryset = models.GrupMahasiswa.objects.all()
+
+    def get_permissions(self):
+        if self.action in ['list','retrieve']:
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+    
+class BroadCastPesanViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.BroadcastPesanSerializers
+    queryset = models.BroadcastPesan.objects.all()
+
+    def get_permissions(self):
+        if self.action in ['list','retrieve']:
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()

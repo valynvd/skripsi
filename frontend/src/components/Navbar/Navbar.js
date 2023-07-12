@@ -3,6 +3,8 @@ import NavigationLink from './NavigationLink';
 import { BiHome } from 'react-icons/bi';
 import { AiOutlineBook } from 'react-icons/ai';
 import {
+  MdChatBubble,
+  MdCheckCircle,
   MdKeyboardArrowLeft,
   MdWorkspacePremium,
   MdWorkspacesOutline,
@@ -184,6 +186,49 @@ const Navbar = () => {
                   },
                 ]}
                 icon={<BsClipboardData size={22} />}
+              />
+              <NavigationDropdownLink
+                title="STEM ChatBot"
+                url="/stem-chatbot"
+                setDropdownActive={setDropdownActive}
+                dropdownActive={dropdownActive}
+                childrenUrl={[
+                  {
+                    title: 'BroadCast Pesan',
+                    url: '/broadcast-pesan',
+                    allowedRoles: userRole.admin,
+                  },
+                  {
+                    title: 'Pengaturan Grup',
+                    url: '/pengaturan-grup',
+                    allowedRoles: userRole.admin,
+                  },
+                  {
+                    title: 'Konsol ChatBot',
+                    url: '/konsol-chatbot',
+                    allowedRoles: userRole.admin,
+                  },
+                ]}
+                icon={<MdChatBubble size={22} />}
+              />
+              <NavigationDropdownLink
+                title="Degree Audit"
+                url="/degreeaudit"
+                setDropdownActive={setDropdownActive}
+                dropdownActive={dropdownActive}
+                childrenUrl={[
+                  {
+                    title: 'Validasi Kelulusan',
+                    url: '/validasi-kelulusan',
+                    allowedRoles: userRole.admin,
+                  },
+                  {
+                    title: 'Monitoring Akademik',
+                    url: '/monitoring-akademik',
+                    allowedRoles: userRole.admin,
+                  },
+                ]}
+                icon={<MdCheckCircle size={22} />}
               />
             </>
           )}
