@@ -115,3 +115,18 @@ class PortofolioPerkuliahanSerializers(serializers.ModelSerializer):
   class Meta:
       model = models.PortofolioPerkuliahan
       fields = '__all__'
+
+class GrupMahasiswaSerializers(serializers.ModelSerializer):
+  class Meta:
+      model = models.GrupMahasiswa
+      fields = '__all__'
+
+class DataMahasiswaSerializers(serializers.ModelSerializer):
+  class Meta:
+      model = models.DataMahasiswa
+      fields = '__all__'
+      
+class BroadcastPesanSerializers(serializers.ModelSerializer):
+  class Meta:
+      model = models.BroadcastPesan
+      fields = '__all__'
