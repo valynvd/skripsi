@@ -130,3 +130,8 @@ class BroadcastPesanSerializers(serializers.ModelSerializer):
   class Meta:
       model = models.BroadcastPesan
       fields = '__all__'
+
+class KonsolChatbotSerializers(serializers.ModelSerializer):
+  class Meta:
+      model = models.KonsolChatbot
+      fields = '__all__'

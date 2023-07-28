@@ -268,5 +268,16 @@ class BroadcastPesan(models.Model):
 	title = models.CharField(blank=True, null=True, max_length=100)
 
 	def __str__(self) -> str:
-		return '{}-{}'.format(self.nama, self.prodi)
+		return '{}-{}'.format(self.created_at, self.title)
 	
+class KonsolChatbot(models.Model):
+	LIST_CATEGORY = (
+			('periode pembayaran', 'periodepembayaran'),
+			('pertanyaan umum', 'pertanyaanumum'),
+			('seputar lms', 'seputarlms'),
+			('seputar sap', 'seputarsap'),
+			('timeline akademik', 'timelineakademik'),
+	)
+	pertanyaan  = models.TextField(blank=True, null=True)
+	jawaban  = models.TextField(blank=True, null=True)
+	kategory = models.CharField(max_length=20, choices=LIST_CATEGORY, blank=True, null=True)

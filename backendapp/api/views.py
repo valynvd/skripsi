@@ -310,3 +310,14 @@ class BroadCastPesanViewSet(viewsets.ModelViewSet):
         else:
             self.permission_classes = [IsAuthenticated]
         return super(self.__class__, self).get_permissions()
+    
+class KonsolChatbotViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.KonsolChatbotSerializers
+    queryset = models.KonsolChatbot.objects.all()
+
+    def get_permissions(self):
+        if self.action in ['list','retrieve']:
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()

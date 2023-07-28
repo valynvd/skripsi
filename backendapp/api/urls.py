@@ -32,7 +32,8 @@ router.register('riwayatdokumenpembelajaran', views.RiwayatDokumenPembelajaranVi
 router.register('portofolioperkuliahan', views.PortofolioPerkuliahanViewSet)
 router.register('datamahasiswa', views.DataMahasiswaViewSet)
 router.register('grupmahasiswa', views.GrupMahasiswaViewSet)
-router.register('grupmahasiswa', views.BroadCastPesanViewSet)
+router.register('broadcastpesan', views.BroadCastPesanViewSet)
+router.register('konsolchatbot', views.KonsolChatbotViewSet)
 #Akreditasi
 router.register('poinpenilaian', views_akreditasi.PoinPenilaianViewSet)
 router.register('filefolder', views_akreditasi.ListFileFolderViewSet)
