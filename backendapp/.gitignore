@@ -92,6 +92,8 @@ db.sqlite3
 
 account/migrations/*
 !account/migrations/__init__.py
+akreditasi/migrations/*
+!akreditasi/migrations/__init__.py
 api/migrations/*
 !api/migrations/__init__.py
 media/
