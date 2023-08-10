@@ -289,6 +289,23 @@ class DataMahasiswaViewSet(viewsets.ModelViewSet):
             self.permission_classes = [IsAuthenticated]
         return super(self.__class__, self).get_permissions()
     
+class DataMahasiswaByProdiViewSet(generics.ListAPIView):
+    serializer_class = serializers.DataMahasiswaSerializers
+    queryset = models.DataMahasiswa.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        dataMahasiswaByProdi = models.DataMahasiswa.objects.filter(prodi__id=self.kwargs['prodiId'])
+        serializer = self.get_serializer(dataMahasiswaByProdi, many=True)
+
+        return Response(serializer.data)
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+    
 class GrupMahasiswaViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.GrupMahasiswaSerializers
     queryset = models.GrupMahasiswa.objects.all()
@@ -314,6 +331,45 @@ class BroadCastPesanViewSet(viewsets.ModelViewSet):
 class KonsolChatbotViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.KonsolChatbotSerializers
     queryset = models.KonsolChatbot.objects.all()
+
+    def get_permissions(self):
+        if self.action in ['list','retrieve']:
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+    
+class AssignMahasiswatoGrupViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.AssignMahasiswatoGrupSerializers
+    queryset = models.AssignMahasiswatoGrup.objects.all()
+
+    def get_permissions(self):
+        if self.action in ['list','retrieve']:
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+    
+class AssignMahasiswatoGrupByNamaGrupViewSet(generics.ListAPIView):
+    serializer_class = serializers.AssignMahasiswatoGrupSerializers
+    queryset = models.AssignMahasiswatoGrup.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        asiignMahasiswatoGrupByNamaGrup = models.AssignMahasiswatoGrup.objects.filter(nama_grup__namagrup=self.kwargs['assignMahasiswaGrupName'])
+        serializer = self.get_serializer(asiignMahasiswatoGrupByNamaGrup, many=True)
+
+        return Response(serializer.data)
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+    
+class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.MonitoringMahasiswaSerializers
+    queryset = models.MonitoringMahasiswa.objects.all()
 
     def get_permissions(self):
         if self.action in ['list','retrieve']:

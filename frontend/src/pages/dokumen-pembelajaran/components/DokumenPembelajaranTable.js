@@ -196,14 +196,6 @@ const DokumenPembelajaranTable = ({
       }) => {
         return (
           <div className="flex flex-row space-x-2">
-            {/* <EditIcon
-              onClick={() => {
-                navigate(
-                  `/pelaksanaan-pendidikan/dokumen-pembelajaran/${value.id}`,
-                  { state: value }
-                );
-              }}
-            /> */}
             <DeleteIcon
               onClick={() => {
                 setSelectedItem(value.id);

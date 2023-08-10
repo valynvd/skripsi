@@ -158,6 +158,11 @@ const Navbar = () => {
                     allowedRoles: userRole.admin,
                   },
                   {
+                    title: 'Mahasiswa',
+                    url: '/data-mahasiswa',
+                    allowedRoles: userRole.admin,
+                  },
+                  {
                     title: 'Dosen',
                     url: '/dosen',
                     allowedRoles:

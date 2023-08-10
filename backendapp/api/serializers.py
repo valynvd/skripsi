@@ -122,6 +122,7 @@ class GrupMahasiswaSerializers(serializers.ModelSerializer):
       fields = '__all__'
 
 class DataMahasiswaSerializers(serializers.ModelSerializer):
+  prodi_detail = ProgramStudiSerializers(source='prodi', read_only=True)
   class Meta:
       model = models.DataMahasiswa
       fields = '__all__'
@@ -134,4 +135,17 @@ class BroadcastPesanSerializers(serializers.ModelSerializer):
 class KonsolChatbotSerializers(serializers.ModelSerializer):
   class Meta:
       model = models.KonsolChatbot
+      fields = '__all__'
+
+class AssignMahasiswatoGrupSerializers(serializers.ModelSerializer):
+  nama_grup = GrupMahasiswaSerializers(read_only=True)
+  nama_mahasiswa = DataMahasiswaSerializers(read_only=True)
+
+  class Meta:
+      model = models.AssignMahasiswatoGrup
+      fields = '__all__'
+
+class MonitoringMahasiswaSerializers(serializers.ModelSerializer):
+  class Meta:
+      model = models.MonitoringMahasiswa
       fields = '__all__'

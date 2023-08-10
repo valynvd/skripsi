@@ -34,6 +34,8 @@ router.register('datamahasiswa', views.DataMahasiswaViewSet)
 router.register('grupmahasiswa', views.GrupMahasiswaViewSet)
 router.register('broadcastpesan', views.BroadCastPesanViewSet)
 router.register('konsolchatbot', views.KonsolChatbotViewSet)
+router.register('assignmahasiswatogrup', views.AssignMahasiswatoGrupViewSet)
+router.register('monitoringmahasiswa', views.MonitoringMahasiswaViewSet)
 #Akreditasi
 router.register('poinpenilaian', views_akreditasi.PoinPenilaianViewSet)
 router.register('filefolder', views_akreditasi.ListFileFolderViewSet)
@@ -57,4 +59,8 @@ urlpatterns = [
   path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
   path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
   path('password_reset/', include('django_rest_passwordreset.urls', namespace='password_reset')),
+  # grupmahasiswa
+  path('assignmahasiswatogrupbynamagrup/<assignMahasiswaGrupName>/', views.AssignMahasiswatoGrupByNamaGrupViewSet.as_view()),
+  # data mahasiswa
+  path('datamahasiswabyprodi/<prodiId>/', views.DataMahasiswaByProdiViewSet.as_view()),
 ]

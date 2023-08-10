@@ -43,6 +43,12 @@ class BroadCastPesanAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 class KonsolChatbotAdmin(ImportExportModelAdmin, admin.ModelAdmin):
   pass
 
+class AssignMahasiswatoGrupAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+  pass
+
+class MonitoringMahasiswaAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+  pass
+
 # Register your models here.
 admin.site.register(models.Kurikulum, KurikulumAdmin)
 admin.site.register(models.MataKuliah, MataKuliahAdmin)
@@ -58,3 +64,5 @@ admin.site.register(models.DataMahasiswa, DataMahasiswaAdmin)
 admin.site.register(models.GrupMahasiswa, GrupMahasiswaAdmin)
 admin.site.register(models.BroadcastPesan, BroadCastPesanAdmin)
 admin.site.register(models.KonsolChatbot, KonsolChatbotAdmin)
+admin.site.register(models.AssignMahasiswatoGrup, AssignMahasiswatoGrupAdmin)
+admin.site.register(models.MonitoringMahasiswa, MonitoringMahasiswaAdmin)

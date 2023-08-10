@@ -251,21 +251,31 @@ class GrupMahasiswa(models.Model):
 	def __str__(self) -> str:
 		return '{}'.format(self.namagrup) 
 	
+	
 class DataMahasiswa(models.Model):
 	nim = models.CharField(blank=True, null=True, max_length=50)
 	nama = models.CharField(blank=True, null=True, max_length=100)
+	angkatan = models.CharField(blank=True, null=True, max_length=100)
 	prodi = models.ForeignKey(ProgramStudi, on_delete=models.CASCADE)
 	telephone = models.CharField(blank=True, null=True, max_length=20)
 	email = models.CharField(blank=True, null=True, max_length=100)
-	grup = models.ForeignKey(GrupMahasiswa, on_delete=models.CASCADE)
+	email_universitas = models.CharField(blank=True, null=True, max_length=100)
 
 	def __str__(self) -> str:
 		return '{}-{}'.format(self.nama, self.prodi)
+	
+class AssignMahasiswatoGrup(models.Model):
+	nama_mahasiswa = models.ForeignKey(DataMahasiswa, on_delete=models.CASCADE)
+	nama_grup = models.ForeignKey(GrupMahasiswa, on_delete=models.CASCADE)
+
+	def __str__(self) -> str:
+		return '{} - {}'.format(self.nama_mahasiswa, self.nama_grup) 
 	
 class BroadcastPesan(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)
 	pesan = models.TextField(blank=True, null=True)
 	title = models.CharField(blank=True, null=True, max_length=100)
+	received = models.CharField(blank=True, null=True, max_length=100)
 
 	def __str__(self) -> str:
 		return '{}-{}'.format(self.created_at, self.title)
@@ -281,3 +291,36 @@ class KonsolChatbot(models.Model):
 	pertanyaan  = models.TextField(blank=True, null=True)
 	jawaban  = models.TextField(blank=True, null=True)
 	kategory = models.CharField(max_length=20, choices=LIST_CATEGORY, blank=True, null=True)
+
+class MonitoringMahasiswa(models.Model):
+	st_object_type = models.CharField(blank=True, null=True, max_length=100)
+	st_objid = models.CharField(blank=True, null=True, max_length=100)
+	nim_mahasiswa = models.CharField(blank=True, null=True, max_length=100)
+	student_id = models.CharField(blank=True, null=True, max_length=100)
+	nama_mahasiswa = models.CharField(blank=True, null=True, max_length=100)
+	appraisal_type = models.CharField(blank=True, null=True, max_length=100)
+	sm_object_type = models.CharField(blank=True, null=True, max_length=100)
+	sm_objid = models.CharField(blank=True, null=True, max_length=100)
+	subject_short = models.CharField(blank=True, null=True, max_length=100)
+	subject = models.CharField(blank=True, null=True, max_length=100)
+	event_package_objid = models.CharField(blank=True, null=True, max_length=100)
+	event_package_short = models.CharField(blank=True, null=True, max_length=100)
+	event_package_text = models.CharField(blank=True, null=True, max_length=100)
+	nik_dosen = models.CharField(blank=True, null=True, max_length=100)
+	initial_dosen = models.CharField(blank=True, null=True, max_length=100)
+	nama_dosen = models.CharField(blank=True, null=True, max_length=100)
+	nidn_dosen = models.CharField(blank=True, null=True, max_length=100)
+	academic_year = models.CharField(blank=True, null=True, max_length=100)
+	academic_session = models.CharField(blank=True, null=True, max_length=100)
+	grade_symbol = models.CharField(blank=True, null=True, max_length=100)
+	earned_credits = models.CharField(blank=True, null=True, max_length=100)
+	graded_credits = models.CharField(blank=True, null=True, max_length=100)
+	credit_type = models.CharField(blank=True, null=True, max_length=100)
+	program_study = models.CharField(blank=True, null=True, max_length=100)
+	name_prody = models.CharField(blank=True, null=True, max_length=100)
+	angkatan = models.CharField(blank=True, null=True, max_length=100)
+	mentor = models.CharField(blank=True, null=True, max_length=100)
+
+
+	def __str__(self) -> str:
+		return '{} - {}'.format(self.nama_mahasiswa, self.subject)
