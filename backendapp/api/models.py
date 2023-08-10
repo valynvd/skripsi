@@ -281,3 +281,6 @@ class KonsolChatbot(models.Model):
 	pertanyaan  = models.TextField(blank=True, null=True)
 	jawaban  = models.TextField(blank=True, null=True)
 	kategory = models.CharField(max_length=20, choices=LIST_CATEGORY, blank=True, null=True)
+
+class Testing(models.Model):
+	testing = models.CharField(max_length=255)

@@ -16,6 +16,12 @@ class PoinPenilaian(models.Model):
         blank=True,
         null=True
 	)
+    prodiId = models.ForeignKey(
+        ProgramStudi,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True
+	)
     type = models.CharField(max_length=10, blank=True, null=True)
     order_number = models.IntegerField(blank=True, null=True)
     item_number = models.CharField(max_length=20, blank=True, null=True)
@@ -26,6 +32,8 @@ class PoinPenilaian(models.Model):
     description_grade_2 = models.TextField(blank=True, null=True)
     description_grade_3 = models.TextField(blank=True, null=True)
     description_grade_4 = models.TextField(blank=True, null=True)
+    score = models.FloatField()
+    dokumenPendukung = models.ManyToManyField(SuratPenugasan, blank=True)
 
     def __str__(self) -> str:
         return '{}'.format(self.element)
@@ -70,21 +78,3 @@ class FileFolder(models.Model):
     files = models.FileField(upload_to='akreditasi/files/', blank=True, null=True)
     def __str__(self) -> str:
         return '{}-{}'.format(self.matrix, self.nama)
-
-class MatriksPenilaian(models.Model):
-    dosenId = models.ForeignKey(
-        Dosen,
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True
-	)
-
-class HasilPoinPenilaian(models.Model):
-    matriksPenilaianId = models.ForeignKey(
-        MatriksPenilaian,
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True
-	)
-    dokumenPendukung = models.ManyToManyField(SuratPenugasan, blank=True, null=True)
-    score = models.FloatField()
