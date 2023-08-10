@@ -36,13 +36,3 @@ class ListFileFolderSerializers(serializers.ModelSerializer):
   class Meta:
       model = models.FileFolder
       fields = '__all__'
-
-class MatriksPenilaianSerializers(serializers.ModelSerializer):
-  class Meta:
-      model = models.MatriksPenilaian
-      fields = '__all__'
-
-class HasilPoinPenilaianSerializers(serializers.ModelSerializer):
-  class Meta:
-      model = models.HasilPoinPenilaian
-      fields = '__all__'
