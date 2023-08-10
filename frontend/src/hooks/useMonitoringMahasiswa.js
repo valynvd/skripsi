@@ -1,0 +1,82 @@
+import { request } from '../utils/axios-utils';
+import { useQuery, useMutation } from 'react-query';
+
+const url = '/api-stem/monitoringmahasiswa/';
+
+const getMonitoringMahasiswa = () => {
+    return request({
+        url: url,
+    });
+};
+
+// const getMonitoringMahasiswaById = (id) => {
+//     return request({
+//         url: `/api-stem/datamahasiswa/${id}/`,
+//     });
+// };
+
+// const getMonitoringMahasiswaByProdi = (id) => {
+//     return request({
+//       url: `/api-stem/datamahasiswabyprodi/${id}/`,
+//     });
+//   };
+
+const postMonitoringMahasiswa = (data) => {
+    return request({
+      url: url,
+      method: 'post',
+      data: data,
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+};
+
+const deleteMonitoringMahasiswa = (data) => {
+    return request({
+      url: url + data + '/',
+      method: 'delete',
+    });
+};
+
+const patchMonitoringMahasiswa = ({ data, id }) => {
+    return request({
+      url: url + id + '/',
+      method: 'patch',
+      data: data,
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+}; 
+
+export const useMonitoringMahasiswaData = (options) => {
+    return useQuery('data-master', getMonitoringMahasiswa, {
+      refetchOnWindowFocus: false,
+      ...options,
+    });
+};
+
+// export const useMonitoringMahasiswaById = (id, options) => {
+//     return useQuery(['data-mahasiswa-by-id', id], () => getMonitoringMahasiswaById(id), {
+//       refetchOnWindowFocus: false,
+//       ...options,
+//     });
+//   };
+
+// export const useMonitoringMahasiswaByProdi = (options) => {
+//     const prodi = useAuth().auth.userData?.dosen_detail?.prodi;
+
+//     return useQuery(['data-mahasiswa-by-prodi', prodi], () => getMonitoringMahasiswaByProdi(prodi), {
+//         refetchOnWindowFocus: false,
+//         ...options,
+//     });
+// };
+
+export const usePostMonitoringMahasiswa = () => {
+    return useMutation(postMonitoringMahasiswa);
+};
+
+export const useDeleteMonitoringMahasiswa = () => {
+    return useMutation(deleteMonitoringMahasiswa);
+};
+
+export const usePatchMonitoringMahasiswa = () => {
+    return useMutation(patchMonitoringMahasiswa);
+};
