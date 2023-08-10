@@ -14,5 +14,3 @@ class PoinPenilaianAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 admin.site.register(models.PoinPenilaian, PoinPenilaianAdmin)
 admin.site.register(models.FileFolder)
 admin.site.register(models.Kriteria, KriteriaAdmin)
-admin.site.register(models.MatriksPenilaian)
-admin.site.register(models.HasilPoinPenilaian)

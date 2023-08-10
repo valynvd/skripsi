@@ -76,5 +76,6 @@ class FileFolder(models.Model):
     )
     jenis = models.CharField(max_length=100, choices=JENIS, default='file')
     files = models.FileField(upload_to='akreditasi/files/', blank=True, null=True)
+    
     def __str__(self) -> str:
         return '{}-{}'.format(self.matrix, self.nama)
