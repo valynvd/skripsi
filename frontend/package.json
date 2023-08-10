@@ -3,8 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@coreui/coreui": "^5.0.0-alpha.1",
-    "@coreui/react": "^5.0.0-alpha.0",
     "@headlessui/react": "^1.7.13",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
