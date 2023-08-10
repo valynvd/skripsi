@@ -18,7 +18,7 @@ import { GoBeaker } from 'react-icons/go';
 
 const Navbar = () => {
   const userRole = useCheckRole();
-  const { navbarMinimize, setNavbarMinimize } = useOther();
+  const { navbarMinimize, setNavAndUpdStr } = useOther();
   const [dropdownActive, setDropdownActive] = useState();
 
   return (
@@ -40,7 +40,7 @@ const Navbar = () => {
             navbarMinimize && 'rotate-180'
           }`}
           onClick={() => {
-            setNavbarMinimize(!navbarMinimize);
+            setNavAndUpdStr(!navbarMinimize);
           }}
         >
           <MdKeyboardArrowLeft size={'100%'} color={primary400} />

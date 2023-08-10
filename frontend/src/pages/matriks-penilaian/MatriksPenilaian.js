@@ -1,82 +1,110 @@
-import React from 'react';
+/* eslint-disable no-unused-vars */
+import React, { useEffect } from 'react';
 import { PrimaryButton } from '../../components/PrimaryButton';
+import { useForm } from 'react-hook-form';
+import { useState } from 'react';
+import TableSimulate from './TableSimulate';
+import TableForm from './TableForm';
 
 const MatriksPenilaian = () => {
-  const TableTh = ({ children }) => {
-    return (
-      <th className="font-semibold border border-black p-3">{children}</th>
-    );
-  };
-  const TableTd = ({ children, className }) => {
-    return (
-      <td className={`border border-black p-3 ${className}`}>{children}</td>
-    );
+  const {
+    handleSubmit,
+    reset,
+    control,
+    formState: { errors, dirtyFields },
+  } = useForm({});
+
+  const [simulateData, setSimulateData] = useState([]);
+  const onSubmit = (values) => {
+    console.log(values);
+    let filteredValues = [];
+
+    const formattedObject = {
+      number: 0,
+      name: '',
+      total: 0,
+      mark: 0,
+      max_score: 0,
+      mark_counted: 0,
+      weight_percent: 0,
+    };
+    const totalSimulation = {
+      name: 'total',
+      total: 0,
+      mark_counted: 0,
+      max_score: 400,
+      weight_percent: 0,
+    };
+
+    // const formattedSubTotal = {
+    //   subTotalElement: 0,
+    //   subTotalMark: 0,
+    //   subTotalCountedMark: 0,
+    // };
+    // let itemNumber = 'A';
+
+    for (const id in values) {
+      const item = values[id];
+      totalSimulation.total += 1;
+      totalSimulation.mark_counted += (item.value / 4) * item.max_score;
+      totalSimulation.weight_percent += (item.max_score / 400) * 100;
+
+      if (item.description === formattedObject.name) {
+        formattedObject['mark'] += item.value;
+        formattedObject['mark_counted'] += (item.value / 4) * item.max_score;
+        formattedObject['max_score'] += item.max_score;
+        formattedObject['weight_percent'] += (item.max_score / 400) * 100;
+        formattedObject['total'] += 1;
+      } else {
+        formattedObject['number'] = item.item_number;
+        formattedObject['name'] = item.description;
+        formattedObject['total'] = 1;
+        formattedObject['mark'] = item.value;
+        formattedObject['mark_counted'] = (item.value / 4) * item.max_score;
+        formattedObject['max_score'] = item.max_score;
+        formattedObject['weight_percent'] = (item.max_score / 400) * 100;
+      }
+
+      if (formattedObject.name !== values[Number(id) + 1]?.description) {
+        // filteredValues.push({ description: 'Sub Total' });
+        filteredValues.push({ ...formattedObject });
+      }
+
+      // if (itemNumber !== values[Number(id) + 1]?.item_number) {
+      //   formattedSubTotal.subTotalElement += 1;
+      //   formattedSubTotal.subTotalMark += item.value;
+      //   formattedSubTotal.subTotalCountedMark +=
+      //     (item.value / 4) * item.max_score;
+      // } else {
+      //   filteredValues.push({ ...formattedSubTotal });
+      //   formattedSubTotal.subTotalElement = 0;
+      //   formattedSubTotal.subTotalMark = 0;
+      //   formattedSubTotal.subTotalCountedMark = 0;
+      // }
+      // if(item.item_number.includes('.')){
+      //   formattedSubTotal.subTotalElement += 1;
+      //   formattedSubTotal.subTotalMark += item.value;
+      //   formattedSubTotal.subTotalCountedMark +=
+      //     (item.value / 4) * item.max_score;
+      // }else{
+
+      // }
+    }
+    filteredValues.push(totalSimulation);
+    setSimulateData(filteredValues);
   };
 
   return (
-    <section className="section-container">
-      <p className="font-semibold text-lg">Matriks Penilaian</p>
-      <table className="w-full mt-5">
-        <thead>
-          <tr>
-            <TableTh>Jenis</TableTh>
-            <TableTh>No. Urut</TableTh>
-            <TableTh>No. Butir</TableTh>
-            <TableTh>Bobot dari 400</TableTh>
-            <TableTh>Elemen Penilaian LAM</TableTh>
-            <TableTh>Deskriptor</TableTh>
-            <TableTh>Nilai</TableTh>
-            <TableTh>Dokumen Pendukung</TableTh>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <TableTd className="text-center">i</TableTd>
-            <TableTd className="text-center">1</TableTd>
-            <TableTd className="text-center">A</TableTd>
-            <TableTd className="text-center">6</TableTd>
-            <TableTd>Kondisi Eksternal</TableTd>
-            <TableTd>
-              Kemampuan UPPS dalam menganalisis aspek- aspek dalam lingkungan
-              makro dan lingkungan mikro yang relevan dan dapat mempengaruhi
-              eksistensi dan pengembangan PS maupun UPPS.
-            </TableTd>
-            <TableTd>
-              <input className="focus:outline-none border border-black p-2"></input>
-            </TableTd>
-            <TableTd>
-              <input type="file" className="focus:outline-none"></input>
-            </TableTd>
-          </tr>
-          <tr>
-            <TableTd className="text-center">i</TableTd>
-            <TableTd className="text-center">2</TableTd>
-            <TableTd className="text-center">B</TableTd>
-            <TableTd className="text-center">6</TableTd>
-            <TableTd>
-              Profil Unit Pengelola Program Studi / Analisis Internal
-            </TableTd>
-            <TableTd>
-              Kemampuan UPPS dan PS dalam menyajikan seluruh informasi secara
-              ringkas, komprehensif, serta konsisten terhadap data dan informasi
-              yang disampaikan pada masingmasing kriteria.
-            </TableTd>
-            <TableTd>
-              <input className="focus:outline-none border border-black p-2"></input>
-            </TableTd>
-            <TableTd>
-              <input type="file" className="focus:outline-none"></input>
-            </TableTd>
-          </tr>
-          <tr>
-            <td colSpan="8" className="text-center">
-              testing
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <PrimaryButton className="mt-4 ml-auto">Simulasi</PrimaryButton>
-    </section>
+    <>
+      <TableSimulate simulateData={simulateData} />
+      <TableForm
+        handleSubmit={handleSubmit}
+        onSubmit={onSubmit}
+        control={control}
+        errors={errors}
+        reset={reset}
+      />
+    </>
   );
 };
 

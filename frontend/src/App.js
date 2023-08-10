@@ -8,7 +8,6 @@ const queryClient = new QueryClient();
 
 function App() {
   return (
-    
     <QueryClientProvider client={queryClient}>
       <Router />
       <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
