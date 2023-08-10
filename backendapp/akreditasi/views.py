@@ -68,3 +68,11 @@ class FolderFileByKriteria(viewsets.ModelViewSet):
     #     else:
     #         self.permission_classes = [IsAuthenticated]
     #     return super(self.__class__, self).get_permissions()
+
+class MatriksPenilaianViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.KriteriaSerializers
+    queryset = models.MatriksPenilaian.objects.all()
+
+class HasilPoinPenilaianViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.HasilPoinPenilaianSerializers
+    queryset = models.HasilPoinPenilaian.objects.all()

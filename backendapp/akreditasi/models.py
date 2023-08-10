@@ -1,6 +1,6 @@
 from django.db import models
 
-from api.models import Dosen, ProgramStudi
+from api.models import Dosen, ProgramStudi, SuratPenugasan
 
 # Create your models here.
 class Kriteria(models.Model):
@@ -70,3 +70,21 @@ class FileFolder(models.Model):
     files = models.FileField(upload_to='akreditasi/files/', blank=True, null=True)
     def __str__(self) -> str:
         return '{}-{}'.format(self.matrix, self.nama)
+
+class MatriksPenilaian(models.Model):
+    dosenId = models.ForeignKey(
+        Dosen,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True
+	)
+
+class HasilPoinPenilaian(models.Model):
+    matriksPenilaianId = models.ForeignKey(
+        MatriksPenilaian,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True
+	)
+    dokumenPendukung = models.ManyToManyField(SuratPenugasan, blank=True, null=True)
+    score = models.FloatField()
