@@ -32,7 +32,7 @@ class PoinPenilaian(models.Model):
     description_grade_2 = models.TextField(blank=True, null=True)
     description_grade_3 = models.TextField(blank=True, null=True)
     description_grade_4 = models.TextField(blank=True, null=True)
-    score = models.FloatField()
+    score = models.FloatField(default=0)
     dokumenPendukung = models.ManyToManyField(SuratPenugasan, blank=True)
 
     def __str__(self) -> str:
@@ -76,6 +76,6 @@ class FileFolder(models.Model):
     )
     jenis = models.CharField(max_length=100, choices=JENIS, default='file')
     files = models.FileField(upload_to='akreditasi/files/', blank=True, null=True)
-    
+
     def __str__(self) -> str:
         return '{}-{}'.format(self.matrix, self.nama)
