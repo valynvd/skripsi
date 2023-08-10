@@ -38,8 +38,6 @@ router.register('konsolchatbot', views.KonsolChatbotViewSet)
 router.register('poinpenilaian', views_akreditasi.PoinPenilaianViewSet)
 router.register('filefolder', views_akreditasi.ListFileFolderViewSet)
 router.register('kriteria', views_akreditasi.KriteriaViewSet)
-router.register('matrikspenilaian', views_akreditasi.MatriksPenilaianViewSet)
-router.register('hasilpoinpenilaian', views_akreditasi.HasilPoinPenilaianViewSet)
 
 urlpatterns = [
   path('', include(router.urls)),
