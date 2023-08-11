@@ -1,9 +1,11 @@
 from rest_framework import serializers
 from rest_framework_recursive.fields import RecursiveField
-from api.serializers import DosenSerializers, ProgramStudiSerializers
+from api.serializers import DosenSerializers, ProgramStudiSerializers, SuratPenugasanSerializers
 from . import models
 
 class PoinPenilaianSerializers(serializers.ModelSerializer):
+  dokumen_pendukung_detail = SuratPenugasanSerializers(source="dokumenPendukung", many=True, read_only=True)
+
   class Meta:
       model = models.PoinPenilaian
       fields = '__all__'
