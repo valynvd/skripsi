@@ -377,3 +377,26 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
         else:
             self.permission_classes = [IsAuthenticated]
         return super(self.__class__, self).get_permissions()
+
+class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.MonitoringMahasiswaSerializers
+    queryset = models.MonitoringMahasiswa.objects.all()
+
+    def get_permissions(self):
+        if self.action in ['list','retrieve']:
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+
+class CapaianPembelajarViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.CapaianPembelajarSerializers
+    queryset = models.CapaianPembelajar.objects.all()
+
+    def get_permissions(self):
+        if self.action in ['list','retrieve']:
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+
