@@ -374,12 +374,139 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         validated_data = self.get_serializer(data=request.data)
         validated_data.is_valid(raise_exception=True)
-        programstudi = models.ProgramStudi.objects.create(name=validated_data.data.get('name_prody'), kode=validated_data.data.get('program_study'))
-        matakuliah = models.MataKuliah.objects.create(name=validated_data.data.get('subject'), kode=validated_data.data.get('sm_objid'), sks_total=validated_data.data.get('graded_credits'))
 
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
+        # Check if ProgramStudi already exists
+        name_prody = validated_data.data.get('name_prody')
+        program_study = validated_data.data.get('program_study')
+        programstudi, created = models.ProgramStudi.objects.get_or_create(name=name_prody, kode_sap=program_study)
+
+        # programstudi = models.ProgramStudi.objects.create(name=validated_data.data.get('name_prody'), kode_sap=validated_data.data.get('program_study'))
+        # Check if DataMahasiswa already exists
+        nama_mahasiswa = validated_data.data.get('nama_mahasiswa')
+        nim_mahasiswa = validated_data.data.get('nim_mahasiswa')
+        angkatan = validated_data.data.get('angkatan')
+        datamahasiswa, created= models.DataMahasiswa.objects.get_or_create(nama=nama_mahasiswa, nim=nim_mahasiswa, angkatan=angkatan, prodi=programstudi)
+
+        # Check if Dosen already exists
+        nama_dosen = validated_data.data.get('nama_dosen')
+        inisial = validated_data.data.get('inisial')
+        nik_dosen = validated_data.data.get('nik_dosen')
+        nidn_dosen = validated_data.data.get('nidn_dosen')
+        dosen, created = models.Dosen.objects.get_or_create(name=nama_dosen, inisial=inisial, nik=nik_dosen, nidn=nidn_dosen)
+
+        # Check if MataKuliah already exists
+        subject = validated_data.data.get('subject')
+        subject_short = validated_data.data.get('subject_short')
+        graded_credits = validated_data.data.get('graded_credits')
+        academic_year = validated_data.data.get('academic_year')
+        academic_session = validated_data.data.get('academic_session')
+    
+        if (academic_year == angkatan) :
+            if (academic_session == '10') :
+                session = '1'
+            elif (academic_session == '20') :
+                session = 'SP1'
+            elif (academic_session == '30') :
+                session = '2'
+            elif (academic_session == '40') :
+                session = 'SP2'
+        elif (int(academic_year) - int(angkatan) == 1 ) :
+            if (academic_session == '10') :
+                session = '3'
+            elif (academic_session == '20') :
+                session = 'SP3'
+            elif (academic_session == '30') :
+                session = '4'
+            elif (academic_session == '40') :
+                session = 'SP4'
+        elif (int(academic_year) - int(angkatan) == 2 ) :
+            if (academic_session == '10') :
+                session = '5'
+            elif (academic_session == '20') :
+                session = 'SP5'
+            elif (academic_session == '30') :
+                session = '6'
+            elif (academic_session == '40') :
+                session = 'SP6'
+        elif (int(academic_year) - int(angkatan) == 3 ) :
+            if (academic_session == '10') :
+                session = '7'
+            elif (academic_session == '20') :
+                session = 'SP7'
+            elif (academic_session == '30') :
+                session = '8'
+            elif (academic_session == '40') :
+                session = 'SP8'
+
+        matakuliah, created = models.MataKuliah.objects.get_or_create(
+            name = subject,
+            kode = subject_short,
+            sks_total = graded_credits,
+            semester = session
+        )
+
+        st_object_type = validated_data.data.get('st_object_type')
+        st_objid = validated_data.data.get('st_objid')
+        nim_mahasiswa = validated_data.data.get('nim_mahasiswa')
+        student_id = validated_data.data.get('student_id')
+        nama_mahasiswa = validated_data.data.get('nama_mahasiswa')
+        appraisal_type = validated_data.data.get('appraisal_type')
+        sm_object_type = validated_data.data.get('sm_object_type')
+        sm_objid = validated_data.data.get('sm_objid')
+        subject_short = validated_data.data.get('subject_short')
+        subject = validated_data.data.get('subject')
+        event_package_objid = validated_data.data.get('event_package_objid')
+        event_package_short = validated_data.data.get('event_package_short')
+        event_package_text = validated_data.data.get('event_package_text')
+        nik_dosen = validated_data.data.get('nik_dosen')
+        initial_dosen = validated_data.data.get('initial_dosen')
+        nama_dosen = validated_data.data.get('nama_dosen')
+        nidn_dosen = validated_data.data.get('nidn_dosen')
+        academic_year = validated_data.data.get('academic_year')
+        academic_session = validated_data.data.get('academic_session')
+        grade_symbol = validated_data.data.get('grade_symbol')
+        earned_credits = validated_data.data.get('earned_credits')
+        graded_credits = validated_data.data.get('graded_credits')
+        credit_type = validated_data.data.get('credit_type')
+        program_study = validated_data.data.get('program_study')
+        name_prody = validated_data.data.get('name_prody')
+        angkatan = validated_data.data.get('angkatan')
+        mentor = validated_data.data.get('mentor')
+
+        # matakuliah = models.MataKuliah.objects.create(name=validated_data.data.get('subject'), kode=validated_data.data.get('sm_objid'), sks_total=validated_data.data.get('graded_credits'))
+
+        monitoring_mahasiswa, created = models.MonitoringMahasiswa.objects.get_or_create(
+            st_object_type=st_object_type,
+            st_objid=st_objid,
+            nim_mahasiswa=nim_mahasiswa,
+            student_id=student_id,
+            nama_mahasiswa=nama_mahasiswa,
+            appraisal_type=appraisal_type,
+            sm_object_type=sm_object_type,
+            sm_objid=sm_objid,
+            subject_short=subject_short,
+            subject=subject,
+            event_package_objid=event_package_objid,
+            event_package_short=event_package_short,
+            event_package_text=event_package_text,
+            nik_dosen=nik_dosen,
+            initial_dosen=initial_dosen,
+            nama_dosen=nama_dosen,
+            nidn_dosen=nidn_dosen,
+            academic_year=academic_year,
+            academic_session=academic_session,
+            grade_symbol=grade_symbol,
+            earned_credits=earned_credits,
+            graded_credits=graded_credits,
+            credit_type=credit_type,
+            program_study=program_study,
+            name_prody=name_prody,
+            angkatan=angkatan,
+            mentor=mentor
+        )
+
+        # serializer = self.get_serializer(instance=monitoring_mahasiswa)
+        serializer = self.get_serializer(instance=monitoring_mahasiswa)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
@@ -389,6 +516,7 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
         else:
             self.permission_classes = [IsAuthenticated]
         return super(self.__class__, self).get_permissions()
+
     
 class MonitoringMahasiswaByNIMViewSet(generics.ListAPIView):
     serializer_class = serializers.MonitoringMahasiswaSerializers

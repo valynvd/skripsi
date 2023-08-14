@@ -63,8 +63,8 @@ class MataKuliah(models.Model):
 			null=True,
 	)
 	capaianPembelajar = models.ManyToManyField(CapaianPembelajar ,blank=True)
-	name = models.CharField(max_length=100)
-	kode = models.CharField(max_length=8)
+	name = models.CharField(max_length=100, blank=True, null=True)
+	kode = models.CharField(max_length=8, blank=True, null=True)
 	sks_total = models.IntegerField(default=0, blank=True, null=True)
 	sks_praktikum = models.IntegerField(default=0, blank=True, null=True)
 	is_elective = models.BooleanField(default=False, blank=True, null=True)
@@ -92,8 +92,8 @@ class MataKuliah(models.Model):
 
 class ProgramStudi(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)
-	name = models.CharField(max_length=100)
-	kode = models.CharField(max_length=8)
+	name = models.CharField(max_length=100, blank=True, null=True)
+	kode = models.CharField(max_length=8, blank=True, null=True)
 	kode_sap = models.CharField(max_length=100, blank=True, null=True)
 	def __str__(self) -> str:
 		return '{}({})'.format(self.name, self.kode)
@@ -106,9 +106,11 @@ class Dosen(models.Model):
 			blank=True,
 			null=True,
 	)
-	name = models.CharField(max_length=30)
-	inisial = models.CharField(max_length=8)
+	name = models.CharField(max_length=30, blank=True, null=True)
+	inisial = models.CharField(max_length=8, blank=True, null=True)
 	is_fulltime = models.BooleanField(default=True)
+	nidn = models.CharField(max_length=100, blank=True, null=True)
+	nik = models.CharField(max_length=20, blank=True, null=True)
 	prodi = models.ForeignKey(
 			ProgramStudi,
 			on_delete=models.CASCADE,
@@ -272,7 +274,7 @@ class DataMahasiswa(models.Model):
 	nim = models.CharField(blank=True, null=True, max_length=50)
 	nama = models.CharField(blank=True, null=True, max_length=100)
 	angkatan = models.CharField(blank=True, null=True, max_length=100)
-	prodi = models.ForeignKey(ProgramStudi, on_delete=models.CASCADE)
+	prodi = models.ForeignKey(ProgramStudi, on_delete=models.CASCADE, blank=True, null=True)
 	telephone = models.CharField(blank=True, null=True, max_length=20)
 	email = models.CharField(blank=True, null=True, max_length=100)
 	email_universitas = models.CharField(blank=True, null=True, max_length=100)
