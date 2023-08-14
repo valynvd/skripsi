@@ -20,7 +20,7 @@ export const PrimaryButton = ({
     <button
       type={type}
       disabled={isLoading || isDisabled}
-      className={`bg-primary-400 whitespace-nowrap hover:bg-primary-500 duration-200 transition-all flex items-center justify-center px-6 py-1 border border-primary-400 font-medium rounded-full text-white space-x-2 ${className} ${
+      className={`bg-primary-400 whitespace-nowrap hover:bg-primary-500 duration-200 transition-all flex items-center justify-center px-5 py-1 border border-primary-400 font-medium rounded-full text-white space-x-2 ${className} ${
         (isLoading || isDisabled) &&
         '!bg-gray-200 !border-gray-400 !text-gray-500 cursor-not-allowed'
       }`}

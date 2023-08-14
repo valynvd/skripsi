@@ -8,6 +8,7 @@ const CRUInput = ({
   required = false,
   errors = false,
   isDisabled = false,
+  className = '',
 }) => {
   return (
     <div>
@@ -19,7 +20,7 @@ const CRUInput = ({
           errors[registeredName] && '!border-primary-400'
         } ${isDisabled && 'bg-grayDisabled-400'} ${
           type === 'checkbox' && 'scale-125 !w-auto mt-2 ml-1'
-        }`}
+        } ${className}`}
         placeholder={`${name}...`}
         {...register(registeredName, {
           required: required ? name + ' harus diisi' : false,

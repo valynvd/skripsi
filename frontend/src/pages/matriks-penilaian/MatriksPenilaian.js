@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 import TableSimulate from './TableSimulate';
 import TableForm from './TableForm';
+import { usePatchPoinPenilaian } from '../../hooks/usePoinPenilaian';
 
 const MatriksPenilaian = () => {
   const {
@@ -15,6 +16,10 @@ const MatriksPenilaian = () => {
   } = useForm({});
 
   const [simulateData, setSimulateData] = useState([]);
+
+  const { mutate: patchPoinPenilaian, isLoading: patchPoinPenilaianLoading } =
+    usePatchPoinPenilaian();
+
   const onSubmit = (values) => {
     console.log(values);
     let filteredValues = [];
@@ -36,15 +41,24 @@ const MatriksPenilaian = () => {
       weight_percent: 0,
     };
 
-    // const formattedSubTotal = {
-    //   subTotalElement: 0,
-    //   subTotalMark: 0,
-    //   subTotalCountedMark: 0,
-    // };
-    // let itemNumber = 'A';
-
     for (const id in values) {
       const item = values[id];
+
+      const poinPenilaianFormData = new FormData();
+
+      // poinPenilaianFormData.append('score', parseFloat(item.value));
+
+      // item.dokumen_pendukung.forEach((item) => {
+      //   poinPenilaianFormData.append('dokumenPendukung', item.value);
+      // });
+
+      // patchPoinPenilaian(
+      //   { data: poinPenilaianFormData, id: item.id },
+      //   {
+      //     onSuccess: (e) => {},
+      //   }
+      // );
+
       totalSimulation.total += 1;
       totalSimulation.mark_counted += (item.value / 4) * item.max_score;
       totalSimulation.weight_percent += (item.max_score / 400) * 100;
@@ -66,29 +80,8 @@ const MatriksPenilaian = () => {
       }
 
       if (formattedObject.name !== values[Number(id) + 1]?.description) {
-        // filteredValues.push({ description: 'Sub Total' });
         filteredValues.push({ ...formattedObject });
       }
-
-      // if (itemNumber !== values[Number(id) + 1]?.item_number) {
-      //   formattedSubTotal.subTotalElement += 1;
-      //   formattedSubTotal.subTotalMark += item.value;
-      //   formattedSubTotal.subTotalCountedMark +=
-      //     (item.value / 4) * item.max_score;
-      // } else {
-      //   filteredValues.push({ ...formattedSubTotal });
-      //   formattedSubTotal.subTotalElement = 0;
-      //   formattedSubTotal.subTotalMark = 0;
-      //   formattedSubTotal.subTotalCountedMark = 0;
-      // }
-      // if(item.item_number.includes('.')){
-      //   formattedSubTotal.subTotalElement += 1;
-      //   formattedSubTotal.subTotalMark += item.value;
-      //   formattedSubTotal.subTotalCountedMark +=
-      //     (item.value / 4) * item.max_score;
-      // }else{
-
-      // }
     }
     filteredValues.push(totalSimulation);
     setSimulateData(filteredValues);

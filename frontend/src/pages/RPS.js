@@ -10,10 +10,21 @@ import {
 import { fontCalibri, fontCalibriBold } from '../jspdf-fonts/Calibri';
 import jsPDF from 'jspdf';
 import { fontArial, fontArialBold } from '../jspdf-fonts/Arial';
+import { useMataKuliahData } from '../hooks/useMataKuliah';
+import { useDokumenPembelajaranByDosen } from '../hooks/useDokumenPembelajaran';
+import { useForm } from 'react-hook-form';
 
 const RPS = () => {
   const [link, setLink] = useState();
   const firstRender = useRef(true);
+  const { data: mataKuliahData } = useMataKuliahData();
+  const { data: dokumenPembelajaranData } = useDokumenPembelajaranByDosen();
+
+  const { control } = useForm();
+
+  useEffect(() => {
+    console.log(dokumenPembelajaranData?.data);
+  }, [dokumenPembelajaranData]);
 
   useEffect(() => {
     // if (firstRender.current) {
@@ -76,8 +87,6 @@ const RPS = () => {
     };
 
     doc.addImage(require('../assets/rps1.png'), 'PNG', 0, 0, pageWidth, 0);
-
-    console.log(doc.getFontList());
 
     console.error = () => {};
     autoTable(doc, {
@@ -203,6 +212,56 @@ const RPS = () => {
       'CAPAIAN PEMBELAJARAN LULUSAN (CPL)',
       135 + courseDescriptionTextDimensions.h
     );
+
+    autoTable(doc, {
+      head: [
+        [
+          {
+            content: 'CPL Code',
+            styles: {
+              valign: 'middle',
+              halign: 'center',
+              fontStyle: 'bold',
+              fillColor: '#bfbfbf',
+            },
+          },
+          {
+            content: 'CPL Statements',
+            styles: {
+              valign: 'middle',
+              halign: 'center',
+              fontStyle: 'bold',
+              fillColor: '#bfbfbf',
+            },
+          },
+        ],
+      ],
+      showHead: 'firstPage',
+      styles: {
+        lineColor: 'black',
+        lineWidth: 0.2,
+        overflow: 'linebreak',
+        font: 'Arial',
+      },
+      theme: 'plain',
+      body: [
+        ['testing', 'testing'],
+        ['testing', 'testing'],
+        ['testing', 'testing'],
+        ['testing', 'testing'],
+        ['testing', 'testing'],
+        ['testing', 'testing'],
+        ['testing', 'testing'],
+        ['testing', 'testing'],
+        ['testing', 'testing'],
+        ['testing', 'testing'],
+      ],
+      startY: 142 + courseDescriptionTextDimensions.h,
+      margin: { horizontal: 62 },
+    });
+
+    doc.setTextColor(0, 0, 0);
+    doc.text('zvxcxczvzxcv', 20, 210);
 
     // return doc.save('test');
     return doc.output('blob');

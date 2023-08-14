@@ -71,7 +71,7 @@ const Navbar = () => {
                 {
                   title: 'RPS',
                   url: '/rps',
-                  allowedRoles: userRole.admin,
+                  allowedRoles: true,
                 },
               ]}
               icon={<AiOutlineBook size={22} />}
@@ -131,20 +131,6 @@ const Navbar = () => {
                   },
                 ]}
                 icon={<MdWorkspacesOutline size={22} />}
-              />
-              <NavigationDropdownLink
-                title="Akreditasi"
-                url="/akreditasi"
-                setDropdownActive={setDropdownActive}
-                dropdownActive={dropdownActive}
-                childrenUrl={[
-                  {
-                    title: 'Matriks Penilaian',
-                    url: '/matriks-penilaian',
-                    allowedRoles: userRole.admin,
-                  },
-                ]}
-                icon={<MdWorkspacePremium size={22} />}
               />
               <NavigationDropdownLink
                 title="Data Master"
@@ -237,6 +223,20 @@ const Navbar = () => {
               />
             </>
           )}
+          <NavigationDropdownLink
+            title="Akreditasi"
+            url="/akreditasi"
+            setDropdownActive={setDropdownActive}
+            dropdownActive={dropdownActive}
+            childrenUrl={[
+              {
+                title: 'Matriks Penilaian',
+                url: '/matriks-penilaian',
+                allowedRoles: true,
+              },
+            ]}
+            icon={<MdWorkspacePremium size={22} />}
+          />
         </div>
       </nav>
     </div>

@@ -173,14 +173,8 @@ const Router = () => {
           </Route>
 
           <Route path="akreditasi" element={<Outlet />}>
-            <Route
-              element={
-                <RequireAuthWithRoles allowedRoles={['Admin', 'Superadmin']} />
-              }
-            >
-              <Route path="matriks-penilaian">
-                <Route index element={<MatriksPenilaian />} />
-              </Route>
+            <Route path="matriks-penilaian">
+              <Route index element={<MatriksPenilaian />} />
             </Route>
           </Route>
 
@@ -196,35 +190,68 @@ const Router = () => {
               </Route>
               <Route path="pengaturan-grup">
                 <Route index element={<GrupMahasiswa />} />
-                <Route path="mahasiswa-member" element={<MahasiswaMember/>} />
+                <Route path="mahasiswa-member" element={<MahasiswaMember />} />
               </Route>
               <Route path="konsol-chatbot">
                 <Route index element={<KonsolChatbot />} />
-                <Route path="login" element={<KonsolChatbotLogin/>} />
-                <Route path="timelineakademik" element={<KonsolChatbotTimelineAkademik/>} />
-                <Route path="periodepembayaran" element={<KonsolChatbotPeriodePembayaran/>} />
-                <Route path="seputarsap" element={<KonsolChatbotSeputarSAP/>} />
-                <Route path="seputarlms" element={<KonsolChatbotSeputarLMS/>} />
-                <Route path="timelineakademik/form" element={<KonsolChatbotTimelineAkademikForm/>} />
-                <Route path="timelineakademik/:id" element={<KonsolChatbotTimelineAkademikForm/>} />
-                <Route path="periodepembayaran/form" element={<KonsolChatbotPeriodePembayaranForm/>}/>
-                <Route path="periodepembayaran/:id" element={<KonsolChatbotPeriodePembayaranForm/>}/>
-                <Route path="seputarlms/form" element={<KonsolChatbotSeputarLMSForm/>}/>
-                <Route path="seputarlms/:id" element={<KonsolChatbotSeputarLMSForm/>}/>
-                <Route path="seputarsap/form" element={<KonsolChatbotSeputarSAPForm/>}/>
-                <Route path="seputarsap/:id" element={<KonsolChatbotSeputarSAPForm/>}/>
+                <Route path="login" element={<KonsolChatbotLogin />} />
+                <Route
+                  path="timelineakademik"
+                  element={<KonsolChatbotTimelineAkademik />}
+                />
+                <Route
+                  path="periodepembayaran"
+                  element={<KonsolChatbotPeriodePembayaran />}
+                />
+                <Route
+                  path="seputarsap"
+                  element={<KonsolChatbotSeputarSAP />}
+                />
+                <Route
+                  path="seputarlms"
+                  element={<KonsolChatbotSeputarLMS />}
+                />
+                <Route
+                  path="timelineakademik/form"
+                  element={<KonsolChatbotTimelineAkademikForm />}
+                />
+                <Route
+                  path="timelineakademik/:id"
+                  element={<KonsolChatbotTimelineAkademikForm />}
+                />
+                <Route
+                  path="periodepembayaran/form"
+                  element={<KonsolChatbotPeriodePembayaranForm />}
+                />
+                <Route
+                  path="periodepembayaran/:id"
+                  element={<KonsolChatbotPeriodePembayaranForm />}
+                />
+                <Route
+                  path="seputarlms/form"
+                  element={<KonsolChatbotSeputarLMSForm />}
+                />
+                <Route
+                  path="seputarlms/:id"
+                  element={<KonsolChatbotSeputarLMSForm />}
+                />
+                <Route
+                  path="seputarsap/form"
+                  element={<KonsolChatbotSeputarSAPForm />}
+                />
+                <Route
+                  path="seputarsap/:id"
+                  element={<KonsolChatbotSeputarSAPForm />}
+                />
               </Route>
             </Route>
           </Route>
 
           <Route path="degreeaudit" element={<Outlet />}>
-              <Route path="monitoring-akademik">
-                <Route index element={<MonitoringMahasiswa />} />
-              </Route>
-
+            <Route path="monitoring-akademik">
+              <Route index element={<MonitoringMahasiswa />} />
+            </Route>
           </Route>
-
-          
         </Route>
       </Route>
       <Route path="/login" element={<Login />} />

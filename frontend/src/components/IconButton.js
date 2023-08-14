@@ -4,6 +4,7 @@ import { MdEdit, MdDelete, MdViewList } from 'react-icons/md';
 export const EditIcon = ({ onClick }) => {
   return (
     <button
+      type="button"
       onClick={onClick}
       className="bg-yellow-400 rounded-full w-8 h-8 p-1.5 text-white hover:bg-yellow-500 duration-200"
     >
@@ -12,11 +13,12 @@ export const EditIcon = ({ onClick }) => {
   );
 };
 
-export const DeleteIcon = ({ onClick }) => {
+export const DeleteIcon = ({ onClick, className }) => {
   return (
     <button
+      type="button"
       onClick={onClick}
-      className="bg-primary-400 rounded-full w-8 h-8 p-1.5 text-white hover:bg-primary-500 duration-200"
+      className={`bg-primary-400 ${className} rounded-full w-8 h-8 p-1.5 text-white hover:bg-primary-500 duration-200`}
     >
       <MdDelete size="100%" />
     </button>
@@ -26,6 +28,7 @@ export const DeleteIcon = ({ onClick }) => {
 export const ViewIcon = ({ onClick }) => {
   return (
     <button
+      type="button"
       onClick={onClick}
       className="bg-blue-800 rounded-full w-8 h-8 p-1.5 text-white hover:bg-blue-500 duration-200"
     >

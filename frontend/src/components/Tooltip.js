@@ -4,7 +4,7 @@ import {
   RiCheckboxCircleFill,
   RiInformationFill,
 } from 'react-icons/ri';
-import { green400, primary400, yellow400 } from '../utils/colors';
+import { green400, yellow400 } from '../utils/colors';
 
 export const TooltipAccept = ({ children }) => {
   return (
@@ -34,7 +34,7 @@ export const TooltipInfo = ({ children, status }) => {
       <div className="hidden w-[40rem] bg-red-50 border border-primary-400 absolute px-5 py-3 rounded-lg group-hover:block right-10 top-1/2 -translate-y-1/2">
         <p>{children}</p>
       </div>
-      <RiInformationFill size={28} color={primary400} />
+      <RiInformationFill size={28} color={'#4a4a4a'} />
     </div>
   );
 };
