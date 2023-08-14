@@ -79,7 +79,7 @@ class ProgramStudi(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)
 	name = models.CharField(max_length=100)
 	kode = models.CharField(max_length=8)
-	# kode_sap = models.CharField(max_length=100, blank=True, null=True)
+	kode_sap = models.CharField(max_length=100, blank=True, null=True)
 	def __str__(self) -> str:
 		return '{}({})'.format(self.name, self.kode)
 
