@@ -15,11 +15,11 @@ const getMonitoringMahasiswa = () => {
 //     });
 // };
 
-// const getMonitoringMahasiswaByProdi = (id) => {
-//     return request({
-//       url: `/api-stem/datamahasiswabyprodi/${id}/`,
-//     });
-//   };
+const getMonitoringMahasiswaByNIM = (nim) => {
+    return request({
+      url: `/api-stem/monitoringmahasiswabynim/${nim}/`,
+    });
+  };
 
 const postMonitoringMahasiswa = (data) => {
     return request({
@@ -53,12 +53,12 @@ export const useMonitoringMahasiswaData = (options) => {
     });
 };
 
-// export const useMonitoringMahasiswaById = (id, options) => {
-//     return useQuery(['data-mahasiswa-by-id', id], () => getMonitoringMahasiswaById(id), {
-//       refetchOnWindowFocus: false,
-//       ...options,
-//     });
-//   };
+export const useMonitoringMahasiswaDataByNIM = (nim, options) => {
+    return useQuery(['monitoring-mahasiswa-by-nim', nim], () => getMonitoringMahasiswaByNIM(nim), {
+      refetchOnWindowFocus: false,
+      ...options,
+    });
+  };
 
 // export const useMonitoringMahasiswaByProdi = (options) => {
 //     const prodi = useAuth().auth.userData?.dosen_detail?.prodi;

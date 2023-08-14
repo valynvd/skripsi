@@ -48,9 +48,9 @@ const MonitoringMahasiswa = () => {
         
         <PrimaryButton
           icon={<BiPlusCircle size={22} />}
-          link="/data-master/data-mahasiswa/form"
+          link="/degreeaudit/monitoring-akademik/import"
         >
-          Input Data Baru
+          Import Excel
         </PrimaryButton>
         
       </div>
