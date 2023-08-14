@@ -40,6 +40,20 @@ class Kurikulum(models.Model):
     def __str__(self) -> str:
       return '{}'.format(self.name)
 
+class CapaianPembelajar(models.Model):
+	LIST_ASPECT = (
+		('sikap', 'sikap'),
+		('pengetahuan', 'pengetahuan'),
+		('keterampilan umum', 'keterampilan umum'),
+		('keterampilan khusus', 'keterampilan khusus'),
+	)
+	aspect = models.CharField(max_length=100, choices=LIST_ASPECT)
+	number = models.IntegerField()	
+	description = models.TextField(null=True, blank=True)
+
+	def __str__(self) -> str:
+		return '{}-{}'.format(self.aspect, self.number)
+
 class MataKuliah(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)
 	kurikulum = models.ForeignKey(
@@ -48,6 +62,7 @@ class MataKuliah(models.Model):
 			blank=True,
 			null=True,
 	)
+	capaianPembelajar = models.ManyToManyField(CapaianPembelajar ,blank=True)
 	name = models.CharField(max_length=100)
 	kode = models.CharField(max_length=8)
 	sks_total = models.IntegerField(default=0, blank=True, null=True)

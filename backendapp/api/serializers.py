@@ -12,8 +12,15 @@ class KurikulumSerializers(serializers.ModelSerializer):
       model = models.Kurikulum
       fields = '__all__'
 
+class CapaianPembelajarSerializers(serializers.ModelSerializer):
+  class Meta:
+      model = models.CapaianPembelajar
+      fields = '__all__'
+
 class MataKuliahSerializers(serializers.ModelSerializer):
   kurikulum_detail = KurikulumSerializers(source='kurikulum', many=False, read_only=True)
+  capaian_pembelajar_detail = CapaianPembelajarSerializers(source='capaianPembelajar', many=True, read_only=True)
+
   class Meta:
       model = models.MataKuliah
       fields = '__all__'
