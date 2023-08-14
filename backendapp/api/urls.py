@@ -63,4 +63,6 @@ urlpatterns = [
   path('assignmahasiswatogrupbynamagrup/<assignMahasiswaGrupName>/', views.AssignMahasiswatoGrupByNamaGrupViewSet.as_view()),
   # data mahasiswa
   path('datamahasiswabyprodi/<prodiId>/', views.DataMahasiswaByProdiViewSet.as_view()),
+  # monitoringmahasiswa
+  path('monitoringmahasiswabynim/<monitoringMahasiswaNIM>/', views.MonitoringMahasiswaByNIMViewSet.as_view()),
 ]

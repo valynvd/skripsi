@@ -50,9 +50,9 @@ class MataKuliah(models.Model):
 	)
 	name = models.CharField(max_length=100)
 	kode = models.CharField(max_length=8)
-	sks_total = models.IntegerField(default=0)
-	sks_praktikum = models.IntegerField(default=0)
-	is_elective = models.BooleanField(default=False)
+	sks_total = models.IntegerField(default=0, blank=True, null=True)
+	sks_praktikum = models.IntegerField(default=0, blank=True, null=True)
+	is_elective = models.BooleanField(default=False, blank=True, null=True)
 	LIST_SEMESTER = (
 			('1', '1'),
 			('SP1', 'SP1'),
@@ -79,6 +79,7 @@ class ProgramStudi(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)
 	name = models.CharField(max_length=100)
 	kode = models.CharField(max_length=8)
+	# kode_sap = models.CharField(max_length=100, blank=True, null=True)
 	def __str__(self) -> str:
 		return '{}({})'.format(self.name, self.kode)
 
@@ -312,7 +313,16 @@ class MonitoringMahasiswa(models.Model):
 	nidn_dosen = models.CharField(blank=True, null=True, max_length=100)
 	academic_year = models.CharField(blank=True, null=True, max_length=100)
 	academic_session = models.CharField(blank=True, null=True, max_length=100)
-	grade_symbol = models.CharField(blank=True, null=True, max_length=100)
+	LIST_GRADE = (
+			('A', 'A'),
+			('AB', 'AB'),
+			('B', 'B'),
+			('BC', 'BC'),
+			('C', 'C'),
+			('D', 'D'),
+			('E', 'E'),
+	)
+	grade_symbol = models.CharField(max_length=20, choices=LIST_GRADE, blank=True, null=True)
 	earned_credits = models.CharField(blank=True, null=True, max_length=100)
 	graded_credits = models.CharField(blank=True, null=True, max_length=100)
 	credit_type = models.CharField(blank=True, null=True, max_length=100)
@@ -320,7 +330,6 @@ class MonitoringMahasiswa(models.Model):
 	name_prody = models.CharField(blank=True, null=True, max_length=100)
 	angkatan = models.CharField(blank=True, null=True, max_length=100)
 	mentor = models.CharField(blank=True, null=True, max_length=100)
-
 
 	def __str__(self) -> str:
 		return '{} - {}'.format(self.nama_mahasiswa, self.subject)

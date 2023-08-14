@@ -371,8 +371,37 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.MonitoringMahasiswaSerializers
     queryset = models.MonitoringMahasiswa.objects.all()
 
+    def create(self, request, *args, **kwargs):
+        validated_data = self.get_serializer(data=request.data)
+        validated_data.is_valid(raise_exception=True)
+        programstudi = models.ProgramStudi.objects.create(name=validated_data.data.get('name_prody'), kode=validated_data.data.get('program_study'))
+        matakuliah = models.MataKuliah.objects.create(name=validated_data.data.get('subject'), kode=validated_data.data.get('sm_objid'), sks_total=validated_data.data.get('graded_credits'))
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
     def get_permissions(self):
         if self.action in ['list','retrieve']:
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+    
+class MonitoringMahasiswaByNIMViewSet(generics.ListAPIView):
+    serializer_class = serializers.MonitoringMahasiswaSerializers
+    queryset = models.MonitoringMahasiswa.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        MonitoringMahasiswaByNIM = models.MonitoringMahasiswa.objects.filter(nim_mahasiswa=self.kwargs['monitoringMahasiswaNIM'])
+        serializer = self.get_serializer(MonitoringMahasiswaByNIM, many=True)
+
+        return Response(serializer.data)
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
             self.permission_classes = [AllowAny]
         else:
             self.permission_classes = [IsAuthenticated]
