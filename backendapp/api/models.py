@@ -65,6 +65,10 @@ class Kurikulum(models.Model):
 
 class MataKuliah(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)
+	kurikulum = models.ManyToManyField(
+			Kurikulum,
+			blank=True,
+	)
 	capaianPembelajar = models.ManyToManyField(CapaianPembelajar ,blank=True)
 	name = models.CharField(max_length=100, blank=True, null=True)
 	kode = models.CharField(max_length=8, blank=True, null=True)
