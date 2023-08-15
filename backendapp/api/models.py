@@ -32,14 +32,6 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
 
     send_mail(subject, email_description, settings.EMAIL_HOST_USER, [email], fail_silently=False)
 
-class Kurikulum(models.Model):
-    name = models.CharField(max_length=100)
-    file_panduan_kurikulum = models.FileField(upload_to='kurikulum/', blank=True, null=True)
-    file_pendukung = models.FileField(upload_to='kurikulum_pendukung/', blank=True, null=True)
-    created_at = models.DateTimeField(default=timezone.now)
-    def __str__(self) -> str:
-      return '{}'.format(self.name)
-
 class CapaianPembelajar(models.Model):
 	LIST_ASPECT = (
 		('sikap', 'sikap'),
@@ -54,42 +46,6 @@ class CapaianPembelajar(models.Model):
 	def __str__(self) -> str:
 		return '{}-{}'.format(self.aspect, self.number)
 
-class MataKuliah(models.Model):
-	created_at = models.DateTimeField(default=timezone.now)
-	kurikulum = models.ForeignKey(
-			Kurikulum,
-			on_delete=models.CASCADE,
-			blank=True,
-			null=True,
-	)
-	capaianPembelajar = models.ManyToManyField(CapaianPembelajar ,blank=True)
-	name = models.CharField(max_length=100, blank=True, null=True)
-	kode = models.CharField(max_length=8, blank=True, null=True)
-	sks_total = models.IntegerField(default=0, blank=True, null=True)
-	sks_praktikum = models.IntegerField(default=0, blank=True, null=True)
-	is_elective = models.BooleanField(default=False, blank=True, null=True)
-	LIST_SEMESTER = (
-			('1', '1'),
-			('SP1', 'SP1'),
-			('2', '2'),
-			('SP2', 'SP2'),
-			('3', '3'),
-			('SP3', 'SP3'),
-			('4', '4'),
-			('SP4', 'SP4'),
-			('5', '5'),
-			('SP5', 'SP5'),
-			('6', '6'),
-			('SP6', 'SP6'),
-			('7', '7'),
-			('SP7', 'SP7'),
-			('8', '8'),
-			('SP8', 'SP8'),
-	)
-	semester = models.CharField(max_length=100, choices=LIST_SEMESTER, default='1')
-	def __str__(self) -> str:
-		return '{} ({})'.format(self.name, self.kode)
-
 class ProgramStudi(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)
 	name = models.CharField(max_length=100, blank=True, null=True)
@@ -97,6 +53,27 @@ class ProgramStudi(models.Model):
 	kode_sap = models.CharField(max_length=100, blank=True, null=True)
 	def __str__(self) -> str:
 		return '{}({})'.format(self.name, self.kode)
+
+class Kurikulum(models.Model):
+	programStudiId = models.ForeignKey(ProgramStudi, on_delete=models.SET_NULL, blank=True, null=True)
+	name = models.CharField(max_length=100)
+	file_panduan_kurikulum = models.FileField(upload_to='kurikulum/', blank=True, null=True)
+	file_pendukung = models.FileField(upload_to='kurikulum_pendukung/', blank=True, null=True)
+	created_at = models.DateTimeField(default=timezone.now)
+	def __str__(self) -> str:
+		return '{}'.format(self.name)
+
+class MataKuliah(models.Model):
+	created_at = models.DateTimeField(default=timezone.now)
+	capaianPembelajar = models.ManyToManyField(CapaianPembelajar ,blank=True)
+	name = models.CharField(max_length=100, blank=True, null=True)
+	kode = models.CharField(max_length=8, blank=True, null=True)
+	sks_total = models.IntegerField(default=0, blank=True, null=True)
+	sks_praktikum = models.IntegerField(default=0, blank=True, null=True)
+	is_elective = models.BooleanField(default=False, blank=True, null=True)
+
+	def __str__(self) -> str:
+		return '{} ({})'.format(self.name, self.kode)
 
 class Dosen(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)
@@ -119,6 +96,39 @@ class Dosen(models.Model):
 	)
 	def __str__(self) -> str:
 		return '{} ({})'.format(self.name, self.inisial)
+
+class AssignMataKuliah(models.Model):
+	mataKuliahId = models.ForeignKey(
+			MataKuliah,
+			on_delete=models.SET_NULL,
+			blank=True,
+			null=True,
+	)
+	programStudiId = models.ForeignKey(
+			ProgramStudi,
+			on_delete=models.SET_NULL,
+			blank=True,
+			null=True,
+	)
+	LIST_SEMESTER = (
+			('1', '1'),
+			('SP1', 'SP1'),
+			('2', '2'),
+			('SP2', 'SP2'),
+			('3', '3'),
+			('SP3', 'SP3'),
+			('4', '4'),
+			('SP4', 'SP4'),
+			('5', '5'),
+			('SP5', 'SP5'),
+			('6', '6'),
+			('SP6', 'SP6'),
+			('7', '7'),
+			('SP7', 'SP7'),
+			('8', '8'),
+			('SP8', 'SP8'),
+	)
+	semester = models.CharField(max_length=100, choices=LIST_SEMESTER, default='1')
 
 class Cycle(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)
