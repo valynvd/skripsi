@@ -374,10 +374,11 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         validated_data = self.get_serializer(data=request.data)
         validated_data.is_valid(raise_exception=True)
+        # print(validated_data)
 
         # Check if ProgramStudi already exists
-        name_prody = validated_data.data.get('name_prody')
-        program_study = validated_data.data.get('program_study')
+        name_prody = request.data.get('name_prody')
+        program_study = request.data.get('program_study')
         if name_prody == "Computer System Engineering" :
             kode = "CSE"
         elif name_prody == "Software Engineering" :
@@ -392,23 +393,25 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
             kode = "FBT"
         programstudi, created = models.ProgramStudi.objects.get_or_create(name=name_prody, kode_sap=program_study, kode=kode)
 
-        # Check if DataMahasiswa already exists
-        nama_mahasiswa = validated_data.data.get('nama_mahasiswa')
-        nim_mahasiswa = validated_data.data.get('nim_mahasiswa')
-        angkatan = validated_data.data.get('angkatan')
-        datamahasiswa, created= models.DataMahasiswa.objects.get_or_create(nama=nama_mahasiswa, nim=nim_mahasiswa, angkatan=angkatan, prodi=programstudi)
 
+        # Check if DataMahasiswa already exists
+        nama_mahasiswa = request.data.get('nama_mahasiswa')
+        nim_mahasiswa = request.data.get('nim_mahasiswa')
+        angkatan = request.data.get('angkatan')
+        datamahasiswa, created= models.DataMahasiswa.objects.get_or_create(nama=nama_mahasiswa, nim=nim_mahasiswa, angkatan=angkatan, prodi=programstudi)
+        
         # Check if Dosen already exists
-        nama_dosen = validated_data.data.get('nama_dosen')
-        # print(nama_dosen)
+        nama_dosen = request.data.get('nama_dosen')
         nama_dosen_split = str(nama_dosen).split("/")
-        # print(nama_dosen_split)
-        inisial = validated_data.data.get('initial_dosen')
+        inisial = request.data.get('initial_dosen')
         inisial_split = str(inisial).split("/")
-        nik_dosen = validated_data.data.get('nik_dosen')
+        nik_dosen = request.data.get('nik_dosen')
         nik_dosen_split = str(nik_dosen).split("/")
-        nidn_dosen = validated_data.data.get('nidn_dosen')
-        nidn_dosen_split = str(nidn_dosen).split("/")
+        # if (request.data.get('nidn_dosen') == '') :
+        #     nidn_dosen = 'null'
+        # else :
+        #     nidn_dosen = request.data.get('nidn_dosen')
+        # nidn_dosen_split = str(nidn_dosen).split("/")
 
         if (len(inisial_split) >= 1) :
             for i in range(len(nama_dosen_split)):
@@ -416,20 +419,20 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
                     name=nama_dosen_split[i],
                     inisial=inisial_split[i],
                     nik=nik_dosen_split[i],
-                    nidn=nidn_dosen_split[i]
+                    # nidn=nidn_dosen_split[i]
                 )
         else :
             dosen, created = models.Dosen.objects.get_or_create(
                     name=nama_dosen,
                     inisial=inisial,
                     nik=nik_dosen,
-                    nidn=nidn_dosen
+                    # nidn=nidn_dosen
                 )
 
         # Check if MataKuliah already exists
-        subject = validated_data.data.get('subject')
-        subject_short = validated_data.data.get('subject_short')
-        graded_credits = validated_data.data.get('graded_credits')
+        subject = request.data.get('subject')
+        subject_short = request.data.get('subject_short')
+        graded_credits = request.data.get('graded_credits')
         academic_year = validated_data.data.get('academic_year')
         academic_session = validated_data.data.get('academic_session')
     
@@ -479,62 +482,38 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
 
         st_object_type = validated_data.data.get('st_object_type')
         st_objid = validated_data.data.get('st_objid')
-        nim_mahasiswa = validated_data.data.get('nim_mahasiswa')
         student_id = validated_data.data.get('student_id')
-        nama_mahasiswa = validated_data.data.get('nama_mahasiswa')
         appraisal_type = validated_data.data.get('appraisal_type')
         sm_object_type = validated_data.data.get('sm_object_type')
         sm_objid = validated_data.data.get('sm_objid')
-        subject_short = validated_data.data.get('subject_short')
-        subject = validated_data.data.get('subject')
         event_package_objid = validated_data.data.get('event_package_objid')
         event_package_short = validated_data.data.get('event_package_short')
         event_package_text = validated_data.data.get('event_package_text')
-        nik_dosen = validated_data.data.get('nik_dosen')
-        initial_dosen = validated_data.data.get('initial_dosen')
-        nama_dosen = validated_data.data.get('nama_dosen')
-        nidn_dosen = validated_data.data.get('nidn_dosen')
-        academic_year = validated_data.data.get('academic_year')
-        academic_session = validated_data.data.get('academic_session')
         grade_symbol = validated_data.data.get('grade_symbol')
         earned_credits = validated_data.data.get('earned_credits')
-        graded_credits = validated_data.data.get('graded_credits')
         credit_type = validated_data.data.get('credit_type')
-        program_study = validated_data.data.get('program_study')
-        name_prody = validated_data.data.get('name_prody')
-        angkatan = validated_data.data.get('angkatan')
         mentor = validated_data.data.get('mentor')
 
-        # matakuliah = models.MataKuliah.objects.create(name=validated_data.data.get('subject'), kode=validated_data.data.get('sm_objid'), sks_total=validated_data.data.get('graded_credits'))
-
         monitoring_mahasiswa, created = models.MonitoringMahasiswa.objects.get_or_create(
-            st_object_type=st_object_type,
-            st_objid=st_objid,
-            nim_mahasiswa=nim_mahasiswa,
-            student_id=student_id,
-            nama_mahasiswa=nama_mahasiswa,
-            appraisal_type=appraisal_type,
-            sm_object_type=sm_object_type,
-            sm_objid=sm_objid,
-            subject_short=subject_short,
-            subject=subject,
-            event_package_objid=event_package_objid,
-            event_package_short=event_package_short,
-            event_package_text=event_package_text,
-            nik_dosen=nik_dosen,
-            initial_dosen=initial_dosen,
-            nama_dosen=nama_dosen,
-            nidn_dosen=nidn_dosen,
-            academic_year=academic_year,
-            academic_session=academic_session,
-            grade_symbol=grade_symbol,
-            earned_credits=earned_credits,
-            graded_credits=graded_credits,
-            credit_type=credit_type,
-            program_study=program_study,
-            name_prody=name_prody,
-            angkatan=angkatan,
-            mentor=mentor
+            st_object_type = st_object_type,
+            st_objid = st_objid,
+            mahasiswa = datamahasiswa,
+            student_id = student_id,
+            appraisal_type = appraisal_type,
+            sm_object_type = sm_object_type,
+            sm_objid = sm_objid,
+            mata_kuliah = matakuliah,
+            event_package_objid = event_package_objid,
+            event_package_short = event_package_short,
+            event_package_text = event_package_text,
+            dosen = dosen,
+            grade_symbol = grade_symbol,
+            earned_credits = earned_credits,
+            credit_type = credit_type,
+            prodi = programstudi,
+            mentor = mentor,
+            academic_session = academic_session,
+            academic_year = academic_year,
         )
 
         # serializer = self.get_serializer(instance=monitoring_mahasiswa)
@@ -555,7 +534,7 @@ class MonitoringMahasiswaByNIMViewSet(generics.ListAPIView):
     queryset = models.MonitoringMahasiswa.objects.all()
 
     def get(self, request, *args, **kwargs):
-        MonitoringMahasiswaByNIM = models.MonitoringMahasiswa.objects.filter(nim_mahasiswa=self.kwargs['monitoringMahasiswaNIM'])
+        MonitoringMahasiswaByNIM = models.MonitoringMahasiswa.objects.filter(mahasiswa__nim=self.kwargs['monitoringMahasiswaNIM'])
         serializer = self.get_serializer(MonitoringMahasiswaByNIM, many=True)
 
         return Response(serializer.data)

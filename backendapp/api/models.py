@@ -327,23 +327,16 @@ class KonsolChatbot(models.Model):
 class MonitoringMahasiswa(models.Model):
 	st_object_type = models.CharField(blank=True, null=True, max_length=100)
 	st_objid = models.CharField(blank=True, null=True, max_length=100)
-	nim_mahasiswa = models.CharField(blank=True, null=True, max_length=100)
+	mahasiswa = models.ForeignKey(DataMahasiswa, on_delete=models.CASCADE, blank=True, null=True)
 	student_id = models.CharField(blank=True, null=True, max_length=100)
-	nama_mahasiswa = models.CharField(blank=True, null=True, max_length=100)
 	appraisal_type = models.CharField(blank=True, null=True, max_length=100)
 	sm_object_type = models.CharField(blank=True, null=True, max_length=100)
 	sm_objid = models.CharField(blank=True, null=True, max_length=100)
-	subject_short = models.CharField(blank=True, null=True, max_length=100)
-	subject = models.CharField(blank=True, null=True, max_length=100)
+	mata_kuliah = models.ForeignKey(MataKuliah, on_delete=models.CASCADE, null=True, blank=True)
 	event_package_objid = models.CharField(blank=True, null=True, max_length=100)
 	event_package_short = models.CharField(blank=True, null=True, max_length=100)
 	event_package_text = models.CharField(blank=True, null=True, max_length=100)
-	nik_dosen = models.CharField(blank=True, null=True, max_length=100)
-	initial_dosen = models.CharField(blank=True, null=True, max_length=100)
-	nama_dosen = models.CharField(blank=True, null=True, max_length=100)
-	nidn_dosen = models.CharField(blank=True, null=True, max_length=100)
-	academic_year = models.CharField(blank=True, null=True, max_length=100)
-	academic_session = models.CharField(blank=True, null=True, max_length=100)
+	dosen = models.ForeignKey(Dosen, on_delete=models.CASCADE, blank=True, null=True)
 	LIST_GRADE = (
 			('A', 'A'),
 			('AB', 'AB'),
@@ -355,19 +348,20 @@ class MonitoringMahasiswa(models.Model):
 	)
 	grade_symbol = models.CharField(max_length=20, choices=LIST_GRADE, blank=True, null=True)
 	earned_credits = models.CharField(blank=True, null=True, max_length=100)
-	graded_credits = models.CharField(blank=True, null=True, max_length=100)
 	credit_type = models.CharField(blank=True, null=True, max_length=100)
-	program_study = models.CharField(blank=True, null=True, max_length=100)
-	name_prody = models.CharField(blank=True, null=True, max_length=100)
-	angkatan = models.CharField(blank=True, null=True, max_length=100)
+	prodi= models.ForeignKey(ProgramStudi, on_delete=models.CASCADE, blank=True, null=True)
+	academic_year = models.CharField(blank=True, null=True, max_length=100)
+	academic_session = models.CharField(blank=True, null=True, max_length=100)
+	
 	mentor = models.CharField(blank=True, null=True, max_length=100)
 
 	def __str__(self) -> str:
-		return '{} - {}'.format(self.nama_mahasiswa, self.subject)
+		return '{} - {}'.format(self.mahasiswa.nama, self.mata_kuliah.name)
 	
 
 class ValidasiMahasiswa(models.Model):
 	mahasiswa = models.ForeignKey(DataMahasiswa, on_delete=models.CASCADE, blank=True, null=True)
+	nim_mahasiswa = models.CharField(max_length=100, null=True, blank=True)
 	jumlah_sks = models.IntegerField(default=0, blank=True, null=True)
 	nilaie = models.IntegerField(default=0, blank=True, null=True)
 	nilaid = models.IntegerField(default=0, blank=True, null=True)
