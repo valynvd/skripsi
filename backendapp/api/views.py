@@ -378,9 +378,20 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
         # Check if ProgramStudi already exists
         name_prody = validated_data.data.get('name_prody')
         program_study = validated_data.data.get('program_study')
-        programstudi, created = models.ProgramStudi.objects.get_or_create(name=name_prody, kode_sap=program_study)
+        if name_prody == "Computer System Engineering" :
+            kode = "CSE"
+        elif name_prody == "Software Engineering" :
+            kode = "SE"
+        elif name_prody == "Mathematics" :
+            kode = "BM"
+        elif name_prody == "Product Design Engineering" :
+            kode = "PDE"
+        elif name_prody == "Renewable Energy Engineering" :
+            kode = "REE"
+        elif name_prody == "Food Technology" :
+            kode = "FBT"
+        programstudi, created = models.ProgramStudi.objects.get_or_create(name=name_prody, kode_sap=program_study, kode=kode)
 
-        # programstudi = models.ProgramStudi.objects.create(name=validated_data.data.get('name_prody'), kode_sap=validated_data.data.get('program_study'))
         # Check if DataMahasiswa already exists
         nama_mahasiswa = validated_data.data.get('nama_mahasiswa')
         nim_mahasiswa = validated_data.data.get('nim_mahasiswa')
@@ -389,10 +400,31 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
 
         # Check if Dosen already exists
         nama_dosen = validated_data.data.get('nama_dosen')
-        inisial = validated_data.data.get('inisial')
+        # print(nama_dosen)
+        nama_dosen_split = str(nama_dosen).split("/")
+        # print(nama_dosen_split)
+        inisial = validated_data.data.get('initial_dosen')
+        inisial_split = str(inisial).split("/")
         nik_dosen = validated_data.data.get('nik_dosen')
+        nik_dosen_split = str(nik_dosen).split("/")
         nidn_dosen = validated_data.data.get('nidn_dosen')
-        dosen, created = models.Dosen.objects.get_or_create(name=nama_dosen, inisial=inisial, nik=nik_dosen, nidn=nidn_dosen)
+        nidn_dosen_split = str(nidn_dosen).split("/")
+
+        if (len(inisial_split) >= 1) :
+            for i in range(len(nama_dosen_split)):
+                dosen, created = models.Dosen.objects.get_or_create(
+                    name=nama_dosen_split[i],
+                    inisial=inisial_split[i],
+                    nik=nik_dosen_split[i],
+                    nidn=nidn_dosen_split[i]
+                )
+        else :
+            dosen, created = models.Dosen.objects.get_or_create(
+                    name=nama_dosen,
+                    inisial=inisial,
+                    nik=nik_dosen,
+                    nidn=nidn_dosen
+                )
 
         # Check if MataKuliah already exists
         subject = validated_data.data.get('subject')
@@ -538,6 +570,28 @@ class MonitoringMahasiswaByNIMViewSet(generics.ListAPIView):
 class CapaianPembelajarViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.CapaianPembelajarSerializers
     queryset = models.CapaianPembelajar.objects.all()
+
+    def get_permissions(self):
+        if self.action in ['list','retrieve']:
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+    
+class ValidasiMahasiswaViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.ValidasiMahasiswaSerializers
+    queryset = models.ValidasiMahasiswa.objects.all()
+
+    def get_permissions(self):
+        if self.action in ['list','retrieve']:
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+    
+class TranskripNilaiViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.TranskripNilaiSerializers
+    queryset = models.TranskripNilai.objects.all()
 
     def get_permissions(self):
         if self.action in ['list','retrieve']:

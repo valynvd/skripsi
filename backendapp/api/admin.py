@@ -49,6 +49,12 @@ class AssignMahasiswatoGrupAdmin(ImportExportModelAdmin, admin.ModelAdmin):
 class MonitoringMahasiswaAdmin(ImportExportModelAdmin, admin.ModelAdmin):
   pass
 
+class ValidasiMahasiswaAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+  pass
+
+class TranskripNilaiAdmin(ImportExportModelAdmin, admin.ModelAdmin):
+  pass
+
 # Register your models here.
 admin.site.register(models.Kurikulum, KurikulumAdmin)
 admin.site.register(models.MataKuliah, MataKuliahAdmin)
@@ -66,4 +72,6 @@ admin.site.register(models.BroadcastPesan, BroadCastPesanAdmin)
 admin.site.register(models.KonsolChatbot, KonsolChatbotAdmin)
 admin.site.register(models.AssignMahasiswatoGrup, AssignMahasiswatoGrupAdmin)
 admin.site.register(models.MonitoringMahasiswa, MonitoringMahasiswaAdmin)
+admin.site.register(models.ValidasiMahasiswa, ValidasiMahasiswaAdmin)
+admin.site.register(models.TranskripNilai, TranskripNilaiAdmin)
 admin.site.register(models.CapaianPembelajar)

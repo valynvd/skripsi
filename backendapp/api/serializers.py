@@ -156,3 +156,17 @@ class MonitoringMahasiswaSerializers(serializers.ModelSerializer):
   class Meta:
       model = models.MonitoringMahasiswa
       fields = '__all__'
+
+class ValidasiMahasiswaSerializers(serializers.ModelSerializer):
+  mahasiswa_detail = DataMahasiswaSerializers(source='mahasiswa', read_only=True)
+  
+  class Meta:
+      model = models.ValidasiMahasiswa
+      fields = '__all__'
+
+class TranskripNilaiSerializers(serializers.ModelSerializer):
+  validasi_detail = ValidasiMahasiswaSerializers(source='validasi', read_only=True)
+  mata_kuliah_detail = MataKuliahSerializers(source='mata_kuliah', read_only=True)
+  class Meta:
+      model = models.TranskripNilai
+      fields = '__all__'

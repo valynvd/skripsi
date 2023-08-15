@@ -350,3 +350,40 @@ class MonitoringMahasiswa(models.Model):
 
 	def __str__(self) -> str:
 		return '{} - {}'.format(self.nama_mahasiswa, self.subject)
+	
+
+class ValidasiMahasiswa(models.Model):
+	mahasiswa = models.ForeignKey(DataMahasiswa, on_delete=models.CASCADE, blank=True, null=True)
+	jumlah_sks = models.IntegerField(default=0, blank=True, null=True)
+	nilaie = models.IntegerField(default=0, blank=True, null=True)
+	nilaid = models.IntegerField(default=0, blank=True, null=True)
+	LIST_STATUS = (
+		('Cum Laude', 'Cum Laude'),
+		('Sangat Memuaskan', 'Sangat Memuaskan' ),
+		('Memuaskan', 'Memuaskan'),
+		('Cukup', 'Cukup'),
+		('Tidak Lulus', 'Tidak Lulus'),
+	)
+	status_kelulusan = models.CharField(max_length=100, choices=LIST_STATUS, blank=True, null=True)
+	
+	def __str__(self) -> str:
+		return '{} - {}'.format(self.mahasiswa.nama, self.status_kelulusan)
+
+class TranskripNilai(models.Model):
+	validasi = models.ForeignKey(ValidasiMahasiswa, on_delete=models.CASCADE, blank=True, null=True)
+	mata_kuliah = models.ForeignKey(MataKuliah, on_delete=models.CASCADE, blank=True, null=True)
+	academic_year = models.CharField(max_length=20, null=True, blank=True)
+	academic_session = models.CharField(max_length=20, null=True, blank=True)
+	LIST_GRADE = (
+			('A', 'A'),
+			('AB', 'AB'),
+			('B', 'B'),
+			('BC', 'BC'),
+			('C', 'C'),
+			('D', 'D'),
+			('E', 'E'),
+	)
+	grade_symbol = models.CharField(max_length=20, choices=LIST_GRADE, blank=True, null=True)
+
+	def __str__(self) -> str:
+		return '{} - {}'.format(self.validasi.mahasiswa.nama, self.mata_kuliah.name)
