@@ -8,7 +8,7 @@ class KriteriaAdmin(ImportExportModelAdmin, admin.ModelAdmin):
   pass
 
 class PoinPenilaianAdmin(ImportExportModelAdmin, admin.ModelAdmin):
-  pass
+  search_fields = ['element', 'item_number']
 
 # Register your models here.
 admin.site.register(models.PoinPenilaian, PoinPenilaianAdmin)

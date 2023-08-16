@@ -36,7 +36,7 @@ class PoinPenilaian(models.Model):
     dokumenPendukung = models.ManyToManyField(SuratPenugasan, blank=True)
 
     def __str__(self) -> str:
-        return '{}'.format(self.element)
+        return '{}-{}'.format(self.element, self.item_number)
 
 class FileFolder(models.Model):
     matrix = models.ForeignKey(
