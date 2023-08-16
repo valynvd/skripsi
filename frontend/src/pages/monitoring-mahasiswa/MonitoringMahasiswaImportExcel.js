@@ -3,13 +3,16 @@ import React, {useState, useMemo} from 'react';
 import { PrimaryButton } from '../../components/PrimaryButton';
 import BreadCrumbs from '../../components/BreadCrumbs';
 import { usePostMonitoringMahasiswa } from '../../hooks/useMonitoringMahasiswa';
+// import { usePostTranskripNilai } from '../../hooks/useTranskripNilai';
 import *as xlsx from 'xlsx'
+import { AlertError } from '../../components/Alert';
 import { useNavigate } from 'react-router-dom';
 import { AiOutlineSearch } from 'react-icons/ai';
 import ProgressBar from "@ramonak/react-progress-bar";
 
 
 const MonitoringMahasiswaImportExcel = () => {
+  const [errorMessage, setErrorMessage] = useState();
   const [namamahasiswa, setNamaMahasiswa] = useState('')
   const [nim, setNim] = useState('')
   const [prodi, setProdi] = useState('')
@@ -40,6 +43,9 @@ const MonitoringMahasiswaImportExcel = () => {
   const {mutate: postMonitoringMahasiswa, isLoading: postMonitoringMahasiswaLoading} = 
     usePostMonitoringMahasiswa();
 
+  // const {mutate: postTranskripNilai, isLoading: postTranskripNilaiLoading} = 
+  //   usePostTranskripNilai();
+
   const onSubmit = async() => {
     if (excelData.length === 0) {
       console.log('No data to submit');
@@ -49,9 +55,11 @@ const MonitoringMahasiswaImportExcel = () => {
     for (let index = 0; index < excelData.length; index++) {
       const data = excelData[index];
       const monitoringMahasiswaFormData = new FormData();
+      const transkripNilaiFormData = new FormData();
       
       for (const key in data) {
         monitoringMahasiswaFormData.append(key, data[key]);
+        transkripNilaiFormData.append(key, data[key]);
       }
       
       try {
@@ -65,98 +73,106 @@ const MonitoringMahasiswaImportExcel = () => {
             console.error('Error submitting data for index:', index, error);
           },
         });
+        // postTranskripNilai(transkripNilaiFormData, {
+        //   onSuccess: () => {
+        //     console.log('Data submitted successfully for index:', index);
+        //   },
+        //   onError: (error) => {
+        //     console.error('Error submitting data for index:', index, error);
+        //   },
+        // });
   
-        await delay(5);
+        await delay(100);
       } catch (error) {
         console.error('Error while processing data:', error);
       }
     }
   }
 
-  const handleSubmit = () => {
-    const filteredData = excelData.filter((getdata) => {
-      const lowerCaseNama = getdata.nama_mahasiswa.toLowerCase();
-      return lowerCaseNama.includes(namamahasiswa.toLowerCase());
-    });
+  // const handleSubmit = () => {
+  //   const filteredData = excelData.filter((getdata) => {
+  //     const lowerCaseNama = getdata.nama_mahasiswa.toLowerCase();
+  //     return lowerCaseNama.includes(namamahasiswa.toLowerCase());
+  //   });
   
-    setDataFilter(filteredData);
+  //   setDataFilter(filteredData);
   
-    const calculateTotalCredits = (filteredData, gradeSymbol) => {
-      return filteredData.reduce((totalCredits, getdata) => {
-        if (getdata.grade_symbol.includes(gradeSymbol)) {
-          return totalCredits + parseInt(getdata.earned_credits);
-        }
-        return totalCredits;
-      }, 0);
-    };
+  //   const calculateTotalCredits = (filteredData, gradeSymbol) => {
+  //     return filteredData.reduce((totalCredits, getdata) => {
+  //       if (getdata.grade_symbol.includes(gradeSymbol)) {
+  //         return totalCredits + parseInt(getdata.earned_credits);
+  //       }
+  //       return totalCredits;
+  //     }, 0);
+  //   };
   
-    const totalSKSNilaiD = calculateTotalCredits(filteredData, 'D').toString();
-    setNilaiD(totalSKSNilaiD);
+  //   const totalSKSNilaiD = calculateTotalCredits(filteredData, 'D').toString();
+  //   setNilaiD(totalSKSNilaiD);
   
-    const totalSKSNilaiE = calculateTotalCredits(filteredData, 'E').toString();
-    setNilaiE(totalSKSNilaiE);
+  //   const totalSKSNilaiE = calculateTotalCredits(filteredData, 'E').toString();
+  //   setNilaiE(totalSKSNilaiE);
   
-    const totalSKS = filteredData.reduce((totalCredits, getdata) => {
-      if (!['D', 'E'].includes(getdata.grade_symbol)) {
-        return totalCredits + parseInt(getdata.earned_credits);
-      }
-      return totalCredits;
-    }, 0);
-    const totalEarnedCredits = totalSKS.toString();
-    setJumlahSks(totalEarnedCredits);
+  //   const totalSKS = filteredData.reduce((totalCredits, getdata) => {
+  //     if (!['D', 'E'].includes(getdata.grade_symbol)) {
+  //       return totalCredits + parseInt(getdata.earned_credits);
+  //     }
+  //     return totalCredits;
+  //   }, 0);
+  //   const totalEarnedCredits = totalSKS.toString();
+  //   setJumlahSks(totalEarnedCredits);
   
-    const uniqueTahunAkademik = Array.from(
-      new Set(
-        filteredData.map((getdata) => JSON.stringify({
-          academicYear: getdata.academic_year,
-          academicSession: getdata.academic_session,
-        }))
-      )
-    ).map(JSON.parse);
-    setTahunAcademic(uniqueTahunAkademik);
+  //   const uniqueTahunAkademik = Array.from(
+  //     new Set(
+  //       filteredData.map((getdata) => JSON.stringify({
+  //         academicYear: getdata.academic_year,
+  //         academicSession: getdata.academic_session,
+  //       }))
+  //     )
+  //   ).map(JSON.parse);
+  //   setTahunAcademic(uniqueTahunAkademik);
   
-    const calculateIPS = (gradesData) => {
-      const ipsResults = [];
+  //   const calculateIPS = (gradesData) => {
+  //     const ipsResults = [];
   
-      uniqueTahunAkademik.forEach((academicData) => {
-        let ips = 0.0;
-        let sks = 0;
+  //     uniqueTahunAkademik.forEach((academicData) => {
+  //       let ips = 0.0;
+  //       let sks = 0;
   
-        const filteredGrades = gradesData.filter((dataGet) =>
-          dataGet.academic_year === academicData.academicYear &&
-          dataGet.academic_session === academicData.academicSession
-        );
+  //       const filteredGrades = gradesData.filter((dataGet) =>
+  //         dataGet.academic_year === academicData.academicYear &&
+  //         dataGet.academic_session === academicData.academicSession
+  //       );
   
-        filteredGrades.forEach((filteredData) => {
-          const gradeValues = {
-            A: 4.0, AB: 3.5, B: 3.0, BC: 2.5, C: 2.0, D: 1.0, E: 0.0
-          };
-          ips += gradeValues[filteredData.grade_symbol] * parseInt(filteredData.earned_credits);
-          sks += parseInt(filteredData.earned_credits);
-        });
+  //       filteredGrades.forEach((filteredData) => {
+  //         const gradeValues = {
+  //           A: 4.0, AB: 3.5, B: 3.0, BC: 2.5, C: 2.0, D: 1.0, E: 0.0
+  //         };
+  //         ips += gradeValues[filteredData.grade_symbol] * parseInt(filteredData.earned_credits);
+  //         sks += parseInt(filteredData.earned_credits);
+  //       });
   
-        ipsResults.push({
-          academicYear: academicData.academicYear,
-          academicSession: academicData.academicSession,
-          ips: (ips / sks).toFixed(2),
-        });
-      });
+  //       ipsResults.push({
+  //         academicYear: academicData.academicYear,
+  //         academicSession: academicData.academicSession,
+  //         ips: (ips / sks).toFixed(2),
+  //       });
+  //     });
   
-      return ipsResults;
-    };
+  //     return ipsResults;
+  //   };
   
-    const ipsData = calculateIPS(filteredData);
-    setIpsSemester(ipsData);
+  //   const ipsData = calculateIPS(filteredData);
+  //   setIpsSemester(ipsData);
   
-    const calculateIPK = (ipsData) => {
-      const totalIPS = ipsData.reduce((sum, data) => sum + parseFloat(data.ips), 0);
-      return (totalIPS / ipsData.length).toFixed(2);
-    };
-    const ipkData = calculateIPK(ipsData);
-    console.log(ipkData);
-    console.log(ipsData);
-    setNilaiIpk(ipkData);
-  };
+  //   const calculateIPK = (ipsData) => {
+  //     const totalIPS = ipsData.reduce((sum, data) => sum + parseFloat(data.ips), 0);
+  //     return (totalIPS / ipsData.length).toFixed(2);
+  //   };
+  //   const ipkData = calculateIPK(ipsData);
+  //   console.log(ipkData);
+  //   console.log(ipsData);
+  //   setNilaiIpk(ipkData);
+  // };
   
 
   return (
@@ -180,9 +196,15 @@ const MonitoringMahasiswaImportExcel = () => {
       </div>
       
       <div>
-        <PrimaryButton className={`!mt-8 !mb-5`} onClick={onSubmit} disabled={postMonitoringMahasiswaLoading}>
-          Simpan Data
-        </PrimaryButton>
+      {errorMessage ? (
+          <AlertError className="inline-block">{errorMessage}</AlertError>
+        ) : (
+          <PrimaryButton className={`!mt-8 !mb-5`} onClick={onSubmit} disabled={postMonitoringMahasiswaLoading }>
+            Simpan Data
+          </PrimaryButton>
+        )
+      }
+        
         {progress ? (<ProgressBar completed={progress}/>) : null}
         
         <form  className="flex gap-4 flex-wrap items-center mb-4 mt-10">

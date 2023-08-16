@@ -5,8 +5,8 @@ import { PrimaryButton } from '../../components/PrimaryButton';
 import { AiOutlineSearch } from 'react-icons/ai';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
-import { useMonitoringMahasiswaDataByNIM } from '../../hooks/useMonitoringMahasiswa';
-
+// import { useMonitoringMahasiswaDataByNIM } from '../../hooks/useMonitoringMahasiswa';
+import { useTranskripNilaiDataByNIM } from '../../hooks/useTranskripNilai';
 
 const ValidasiMahasiswaByNIM = () => {
   const userRole = useCheckRole();
@@ -14,12 +14,13 @@ const ValidasiMahasiswaByNIM = () => {
   const [namamahasiswa, setNamaMahasiswa] = useState('')
   const [nim1, setNim] = useState('')
   const { state } = useLocation();
-  const { data: responseData, isLoading} = useMonitoringMahasiswaDataByNIM(nim)
+  const { data: responseData, isLoading} = useTranskripNilaiDataByNIM(nim)
   const [nilaiD, setNilaiD] = useState('')
   const [nilaiE, setNilaiE] = useState('')
   const [jumlahSks, setJumlahSks] = useState('')
-  const [dataFilter, setDataFilter] = useState([])
-  const [excelData, setExcelData] = useState([])
+  // const [dataFilter, setDataFilter] = useState([])
+  // const [excelData, setExcelData] = useState([])
+  const [transkripData, setTranskripData] = useState([])
   const [tahunAcademic, setTahunAcademic] = useState([])
   const [ipsSemester, setIpsSemester] = useState([])
   const [nilaiIpk, setNilaiIpk] = useState('')
@@ -27,23 +28,17 @@ const ValidasiMahasiswaByNIM = () => {
   const navigate = useNavigate();
   
   useEffect(()=> {
-    if(isLoading === false) {
-      console.log(responseData)
-      setExcelData(responseData.data);
-      console.log(excelData);
+    if(isLoading == false) {
+      console.log(responseData.data)
+      setTranskripData(responseData.data);
+      console.log(transkripData);
     }
   }, [isLoading])
 
   useEffect(() => {
-    const filteredData = excelData.filter((getdata) => {
-      const lowerCaseNama = getdata.nama_mahasiswa.toLowerCase();
-      return lowerCaseNama.includes(namamahasiswa.toLowerCase());
-    });
   
-    setDataFilter(filteredData);
-  
-    const calculateTotalCredits = (filteredData, gradeSymbol) => {
-      return filteredData.reduce((totalCredits, getdata) => {
+    const calculateTotalCredits = (transkripData, gradeSymbol) => {
+      return transkripData.reduce((totalCredits, getdata) => {
         if (getdata.grade_symbol.includes(gradeSymbol)) {
           return totalCredits + parseInt(getdata.earned_credits);
         }
@@ -51,13 +46,13 @@ const ValidasiMahasiswaByNIM = () => {
       }, 0);
     };
   
-    const totalSKSNilaiD = calculateTotalCredits(filteredData, 'D').toString();
+    const totalSKSNilaiD = calculateTotalCredits(transkripData, 'D').toString();
     setNilaiD(totalSKSNilaiD);
   
-    const totalSKSNilaiE = calculateTotalCredits(filteredData, 'E').toString();
+    const totalSKSNilaiE = calculateTotalCredits(transkripData, 'E').toString();
     setNilaiE(totalSKSNilaiE);
   
-    const totalSKS = filteredData.reduce((totalCredits, getdata) => {
+    const totalSKS = transkripData.reduce((totalCredits, getdata) => {
       if (!['D', 'E'].includes(getdata.grade_symbol)) {
         return totalCredits + parseInt(getdata.earned_credits);
       }
@@ -68,7 +63,7 @@ const ValidasiMahasiswaByNIM = () => {
   
     const uniqueTahunAkademik = Array.from(
       new Set(
-        filteredData.map((getdata) => JSON.stringify({
+        transkripData.map((getdata) => JSON.stringify({
           academicYear: getdata.academic_year,
           academicSession: getdata.academic_session,
         }))
@@ -88,12 +83,12 @@ const ValidasiMahasiswaByNIM = () => {
           dataGet.academic_session === academicData.academicSession
         );
   
-        filteredGrades.forEach((filteredData) => {
+        filteredGrades.forEach((transkripData) => {
           const gradeValues = {
             A: 4.0, AB: 3.5, B: 3.0, BC: 2.5, C: 2.0, D: 1.0, E: 0.0
           };
-          ips += gradeValues[filteredData.grade_symbol] * parseInt(filteredData.earned_credits);
-          sks += parseInt(filteredData.earned_credits);
+          ips += gradeValues[transkripData.grade_symbol] * parseInt(transkripData.earned_credits);
+          sks += parseInt(transkripData.earned_credits);
         });
   
         ipsResults.push({
@@ -106,7 +101,7 @@ const ValidasiMahasiswaByNIM = () => {
       return ipsResults;
     };
   
-    const ipsData = calculateIPS(filteredData);
+    const ipsData = calculateIPS(transkripData);
     setIpsSemester(ipsData);
   
     const calculateIPK = (ipsData) => {
@@ -114,14 +109,9 @@ const ValidasiMahasiswaByNIM = () => {
       return (totalIPS / ipsData.length).toFixed(2);
     };
     const ipkData = calculateIPK(ipsData);
-    console.log(ipkData);
-    console.log(ipsData);
     setNilaiIpk(ipkData);
-  }, [excelData])
-
-  const handleSubmit = () => {
-    
-  };
+  }, [transkripData])
+  
 
 
   return (
@@ -188,7 +178,7 @@ const ValidasiMahasiswaByNIM = () => {
                   <p className="flex flex-row items-center">Angkatan</p> 
                 </th>
                 <th className="px-4 py-3 font-semibold">
-                  <p className="flex flex-row items-center">Jumlah Lulus SKS</p> 
+                  <p className="flex flex-row items-center">Jumlah SKS Lulus</p> 
                 </th>
                 <th className="px-4 py-3 font-semibold">
                   <p className="flex flex-row items-center">Nilai D</p> 
@@ -202,14 +192,14 @@ const ValidasiMahasiswaByNIM = () => {
               </tr>
             </thead>
             
-            {excelData.length > 0 ? (
+            {transkripData.length > 0 ? (
               <tbody>
               <tr className="bg-white border-b text-gray-600">
               <td className="px-4 py-3">1</td>
-              <td className="px-4 py-3">{excelData[0].nama_mahasiswa}</td>
-              <td className="px-4 py-3">{excelData[0].nim_mahasiswa}</td>
-              <td className="px-4 py-3">{excelData[0].name_prody}</td>
-              <td className="px-4 py-3">{excelData[0].angkatan}</td>
+              <td className="px-4 py-3">{transkripData[0].mahasiswa_detail.nama}</td>
+              <td className="px-4 py-3">{transkripData[0].mahasiswa_detail.nim}</td>
+              <td className="px-4 py-3">{transkripData[0].mahasiswa_detail.prodi_detail.name}</td>
+              <td className="px-4 py-3">{transkripData[0].mahasiswa_detail.angkatan}</td>
               <td className="px-4 py-3">{jumlahSks}</td>
               <td className="px-4 py-3">{nilaiD} sks</td>
               <td className="px-4 py-3">{nilaiE} sks</td>
@@ -251,13 +241,13 @@ const ValidasiMahasiswaByNIM = () => {
                 </tr>
               </thead>
               <tbody>
-                {dataFilter
+                {transkripData
                   .filter((getdata) => getdata.academic_year === getData.academicYear &&
                   getdata.academic_session === getData.academicSession) // Use === for comparison
                   .map((filteredData, index) => (
                     <tr key={index} className="bg-white border-b text-gray-600">
-                      <td className="px-4 py-3">{filteredData.subject}</td>
-                      <td className="px-4 py-3">{filteredData.graded_credits}</td>
+                      <td className="px-4 py-3">{filteredData.mata_kuliah_detail.name}</td>
+                      <td className="px-4 py-3">{filteredData.mata_kuliah_detail.sks_total}</td>
                       <td className="px-4 py-3">{filteredData.grade_symbol}</td>
                     </tr>
                   ))}

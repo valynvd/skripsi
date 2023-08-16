@@ -6,14 +6,13 @@ import { AiOutlineSearch } from 'react-icons/ai';
 import { useNavigate } from 'react-router-dom';
 
 
+
 const ValidasiMahasiswa = () => {
   const userRole = useCheckRole();
 //   const [namamahasiswa, setNamaMahasiswa] = useState('')
   const [nim, setNim] = useState('')
 
   const navigate = useNavigate();
-
-
 
   return (
     <section id="monitoring-mahasiswa" className="section-container">
@@ -38,7 +37,7 @@ const ValidasiMahasiswa = () => {
                 />
             </div>
             <PrimaryButton 
-            onClick={() => {
+            onClick={async() => {
                 navigate(`/degreeaudit/validasi-kelulusan/${nim}`,{
                     state: nim,
                 });

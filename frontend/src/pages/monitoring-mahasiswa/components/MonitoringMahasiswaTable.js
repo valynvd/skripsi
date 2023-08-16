@@ -27,27 +27,39 @@ const MonitoringMahasiswaTable = ({
     const columns = [
         {
             Header:'Nama Mahasiswa',
-            accessor:'nama_mahasiswa',
+            accessor:'mahasiswa_detail.nama',
         },
         {
             Header:'NIM',
-            accessor:'nim_mahasiswa',
+            accessor:'mahasiswa_detail.nim',
         },
         {
             Header:'Jurusan',
-            accessor:'name_prody'
+            accessor:'mahasiswa_detail.prodi_detail.name'
         },
         {
             Header:'Angkatan',
-            accessor:'angkatan'
+            accessor:'mahasiswa_detail.angkatan'
+        },
+        {
+            Header:'Faculty Member',
+            accessor:'dosen_detail.name'
         },
         {
             Header:'Mata Kuliah',
-            accessor:'subject'
+            accessor:'mata_kuliah_detail.name'
         },
         {
             Header:'SKS',
-            accessor:'graded_credits'
+            accessor:'earned_credits'
+        },
+        {
+            Header:'Academic Session',
+            Cell: ({ row }) => (
+                <div>
+                  {row.original.academic_year} - {renderAcademicSession(row.original.academic_session)}
+                </div>
+              ),
         },
         {
             Header:'Nilai',
@@ -80,6 +92,20 @@ const MonitoringMahasiswaTable = ({
               },
         }
     ];
+    const renderAcademicSession = academicSession => {
+        // Perform your conditional rendering based on the academic_session value
+        if (academicSession === '10') {
+          return 'Odd';
+        } else if (academicSession === '20') {
+          return 'Odd Short';
+        } else if (academicSession === '30') {
+          return 'Even';
+        } else if (academicSession === '40') {
+          return 'Even Short';
+        } else {
+          return 'Unknown Session Type';
+        }
+      };
     const { control, watch, setValue } = useForm({
         defaultValues: {},
     })

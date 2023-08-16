@@ -1,0 +1,77 @@
+import { request } from '../utils/axios-utils';
+import { useQuery, useMutation } from 'react-query';
+
+const url = '/api-stem/transkripnilai/';
+
+const getTranskripNilai = () => {
+    return request({
+        url: url,
+    });
+};
+
+
+const getTranskripNilaiByNIM = (nim) => {
+    return request({
+      url: `/api-stem/transkripnilaibynim/${nim}/`,
+    });
+  };
+
+const postTranskripNilai = (data) => {
+    return request({
+      url: url,
+      method: 'post',
+      data: data,
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+};
+
+const deleteTranskripNilai = (data) => {
+    return request({
+      url: url + data + '/',
+      method: 'delete',
+    });
+};
+
+const patchTranskripNilai = ({ data, id }) => {
+    return request({
+      url: url + id + '/',
+      method: 'patch',
+      data: data,
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+}; 
+
+export const useTranskripNilaiData = (options) => {
+    return useQuery('data-master', getTranskripNilai, {
+      refetchOnWindowFocus: false,
+      ...options,
+    });
+};
+
+export const useTranskripNilaiDataByNIM = (nim, options) => {
+    return useQuery(['transkrip-nilai-by-nim', nim], () => getTranskripNilaiByNIM(nim), {
+      refetchOnWindowFocus: false,
+      ...options,
+    });
+  };
+
+// export const useTranskripNilaiByProdi = (options) => {
+//     const prodi = useAuth().auth.userData?.dosen_detail?.prodi;
+
+//     return useQuery(['data-mahasiswa-by-prodi', prodi], () => getTranskripNilaiByProdi(prodi), {
+//         refetchOnWindowFocus: false,
+//         ...options,
+//     });
+// };
+
+export const usePostTranskripNilai = () => {
+    return useMutation(postTranskripNilai);
+};
+
+export const useDeleteTranskripNilai = () => {
+    return useMutation(deleteTranskripNilai);
+};
+
+export const usePatchTranskripNilai = () => {
+    return useMutation(patchTranskripNilai);
+};
