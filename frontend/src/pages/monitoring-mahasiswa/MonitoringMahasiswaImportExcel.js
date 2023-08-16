@@ -14,10 +14,11 @@ import ProgressBar from "@ramonak/react-progress-bar";
 
 const MonitoringMahasiswaImportExcel = () => {
   const [errorMessage, setErrorMessage] = useState();
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const [namamahasiswa, setNamaMahasiswa] = useState('')
   const [nim, setNim] = useState('')
   const [prodi, setProdi] = useState('')
+  const [dataError, setDataError] = useState([])
 
   const [progress, setProgress] = useState(0);
 
