@@ -1,7 +1,8 @@
 /* eslint-disable no-unused-vars */
-import React, {useState, useMemo} from 'react';
-import { PrimaryButton } from '../../components/PrimaryButton';
+import React, {useState, useMemo, Fragment} from 'react';
 import BreadCrumbs from '../../components/BreadCrumbs';
+import { Dialog, Transition } from '@headlessui/react';
+import { PrimaryButton } from '../../components/PrimaryButton';
 import { usePostMonitoringMahasiswa } from '../../hooks/useMonitoringMahasiswa';
 // import { usePostTranskripNilai } from '../../hooks/useTranskripNilai';
 import *as xlsx from 'xlsx'
@@ -13,6 +14,7 @@ import ProgressBar from "@ramonak/react-progress-bar";
 
 const MonitoringMahasiswaImportExcel = () => {
   const [errorMessage, setErrorMessage] = useState();
+  const [open, setOpen] = useState(true);
   const [namamahasiswa, setNamaMahasiswa] = useState('')
   const [nim, setNim] = useState('')
   const [prodi, setProdi] = useState('')
@@ -67,6 +69,9 @@ const MonitoringMahasiswaImportExcel = () => {
           onSuccess: () => {
             console.log('Data submitted successfully for index:', index);
             const newProgress = ((index + 1) / excelData.length) * 100;
+            if (newProgress == 100.00){
+              setOpen(true);
+            }
             setProgress(newProgress.toFixed(2));
           },
           onError: (error) => {
@@ -89,94 +94,14 @@ const MonitoringMahasiswaImportExcel = () => {
     }
   }
 
-  // const handleSubmit = () => {
-  //   const filteredData = excelData.filter((getdata) => {
-  //     const lowerCaseNama = getdata.nama_mahasiswa.toLowerCase();
-  //     return lowerCaseNama.includes(namamahasiswa.toLowerCase());
-  //   });
-  
-  //   setDataFilter(filteredData);
-  
-  //   const calculateTotalCredits = (filteredData, gradeSymbol) => {
-  //     return filteredData.reduce((totalCredits, getdata) => {
-  //       if (getdata.grade_symbol.includes(gradeSymbol)) {
-  //         return totalCredits + parseInt(getdata.earned_credits);
-  //       }
-  //       return totalCredits;
-  //     }, 0);
-  //   };
-  
-  //   const totalSKSNilaiD = calculateTotalCredits(filteredData, 'D').toString();
-  //   setNilaiD(totalSKSNilaiD);
-  
-  //   const totalSKSNilaiE = calculateTotalCredits(filteredData, 'E').toString();
-  //   setNilaiE(totalSKSNilaiE);
-  
-  //   const totalSKS = filteredData.reduce((totalCredits, getdata) => {
-  //     if (!['D', 'E'].includes(getdata.grade_symbol)) {
-  //       return totalCredits + parseInt(getdata.earned_credits);
-  //     }
-  //     return totalCredits;
-  //   }, 0);
-  //   const totalEarnedCredits = totalSKS.toString();
-  //   setJumlahSks(totalEarnedCredits);
-  
-  //   const uniqueTahunAkademik = Array.from(
-  //     new Set(
-  //       filteredData.map((getdata) => JSON.stringify({
-  //         academicYear: getdata.academic_year,
-  //         academicSession: getdata.academic_session,
-  //       }))
-  //     )
-  //   ).map(JSON.parse);
-  //   setTahunAcademic(uniqueTahunAkademik);
-  
-  //   const calculateIPS = (gradesData) => {
-  //     const ipsResults = [];
-  
-  //     uniqueTahunAkademik.forEach((academicData) => {
-  //       let ips = 0.0;
-  //       let sks = 0;
-  
-  //       const filteredGrades = gradesData.filter((dataGet) =>
-  //         dataGet.academic_year === academicData.academicYear &&
-  //         dataGet.academic_session === academicData.academicSession
-  //       );
-  
-  //       filteredGrades.forEach((filteredData) => {
-  //         const gradeValues = {
-  //           A: 4.0, AB: 3.5, B: 3.0, BC: 2.5, C: 2.0, D: 1.0, E: 0.0
-  //         };
-  //         ips += gradeValues[filteredData.grade_symbol] * parseInt(filteredData.earned_credits);
-  //         sks += parseInt(filteredData.earned_credits);
-  //       });
-  
-  //       ipsResults.push({
-  //         academicYear: academicData.academicYear,
-  //         academicSession: academicData.academicSession,
-  //         ips: (ips / sks).toFixed(2),
-  //       });
-  //     });
-  
-  //     return ipsResults;
-  //   };
-  
-  //   const ipsData = calculateIPS(filteredData);
-  //   setIpsSemester(ipsData);
-  
-  //   const calculateIPK = (ipsData) => {
-  //     const totalIPS = ipsData.reduce((sum, data) => sum + parseFloat(data.ips), 0);
-  //     return (totalIPS / ipsData.length).toFixed(2);
-  //   };
-  //   const ipkData = calculateIPK(ipsData);
-  //   console.log(ipkData);
-  //   console.log(ipsData);
-  //   setNilaiIpk(ipkData);
-  // };
-  
+  const handleToClose = () => {
+    setOpen(false);
+  };
 
   return (
+    
     <section id="datamahasiswa-form" className="section-container">
+      
       <p className="text-lg font-semibold">
         <BreadCrumbs
           links={[
@@ -374,7 +299,57 @@ const MonitoringMahasiswaImportExcel = () => {
             </tbody>
           </table>
       </div>
+        <Transition
+          show={open}
+          enter="transition duration-100 ease-out"
+          enterFrom="transform scale-95 opacity-0"
+          enterTo="transform scale-100 opacity-100"
+          leave="transition duration-75 ease-out"
+          leaveFrom="transform scale-100 opacity-100"
+          leaveTo="transform scale-95 opacity-0"
+          as={Fragment}
+        >
+          <Dialog onClose={() => setOpen(false)} className={`relative z-50`}>
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <div className="fixed inset-0 bg-black/30" />
+            </Transition.Child>
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0 scale-95"
+              enterTo="opacity-100 scale-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100 scale-100"
+              leaveTo="opacity-0 scale-95"
+            >
+              <div className="fixed inset-0">
+                <div className="flex min-h-full items-center justify-center p-4">
+                  <Dialog.Panel className="bg-white p-5 rounded-xl shadow-lg flex flex-col items-center justify-center text-center">
+                    <Dialog.Title className="text-xl font-bold text-black-800">
+                      Sukses
+                    </Dialog.Title>
+                    <p className="text-gray-600 mt-2 max-w-md">
+                      Unggah Akademik Mahasiswa Berhasil
+                    </p>
+                    <PrimaryButton className={`!mt-8 !mb-5`} onClick={handleToClose}>
+                      Tutup
+                    </PrimaryButton>
+                  </Dialog.Panel>
+                </div>
+              </div>
+            </Transition.Child>
+          </Dialog>
+        </Transition>
     </section>
+    
   );
 };
 

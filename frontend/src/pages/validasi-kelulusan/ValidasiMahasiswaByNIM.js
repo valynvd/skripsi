@@ -24,6 +24,7 @@ const ValidasiMahasiswaByNIM = () => {
   const [tahunAcademic, setTahunAcademic] = useState([])
   const [ipsSemester, setIpsSemester] = useState([])
   const [nilaiIpk, setNilaiIpk] = useState('')
+  const [statusKelulusan, setStatusKelulusan] = useState('')
   
   const navigate = useNavigate();
   
@@ -110,6 +111,24 @@ const ValidasiMahasiswaByNIM = () => {
     };
     const ipkData = calculateIPK(ipsData);
     setNilaiIpk(ipkData);
+
+    if (nilaiIpk > 3.50 && jumlahSks == "144") {
+      const status = "Cum Laude";
+      setStatusKelulusan(status);
+    } else if (nilaiIpk > 3.01 && nilaiD <= 7 && nilaiE == 0 && jumlahSks == "144"){
+      const status = "Sangat Memuaskan";
+      setStatusKelulusan(status);
+    } else if (nilaiIpk > 2.76 && nilaiD <= 7 && nilaiE == 0 && jumlahSks == "144"){
+      const status = "Memuaskan";
+      setStatusKelulusan(status);
+    } else if (nilaiIpk > 2.00 && nilaiD <= 7 && nilaiE == 0 && jumlahSks == "144"){
+      const status = "Cukup";
+      setStatusKelulusan(status);
+    } else {
+      const status = "Tidak Lulus";
+      setStatusKelulusan(status);
+    }
+      
   }, [transkripData])
   
 
@@ -189,6 +208,9 @@ const ValidasiMahasiswaByNIM = () => {
                 <th className="px-4 py-3 font-semibold">
                   <p className="flex flex-row items-center">IPK</p> 
                 </th>
+                <th className="px-4 py-3 font-semibold">
+                  <p className="flex flex-row items-center">Status Lulus</p> 
+                </th>
               </tr>
             </thead>
             
@@ -200,10 +222,11 @@ const ValidasiMahasiswaByNIM = () => {
               <td className="px-4 py-3">{transkripData[0].mahasiswa_detail.nim}</td>
               <td className="px-4 py-3">{transkripData[0].mahasiswa_detail.prodi_detail.name}</td>
               <td className="px-4 py-3">{transkripData[0].mahasiswa_detail.angkatan}</td>
-              <td className="px-4 py-3">{jumlahSks}</td>
+              <td className="px-4 py-3">{jumlahSks} / 144</td>
               <td className="px-4 py-3">{nilaiD} sks</td>
               <td className="px-4 py-3">{nilaiE} sks</td>
               <td className="px-4 py-3">{nilaiIpk}</td>
+              <td className="px-4 py-3">{statusKelulusan}</td>
             </tr>
           </tbody>
             ) : <div/>}
