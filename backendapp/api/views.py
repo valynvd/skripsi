@@ -376,10 +376,6 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
 
         convert_to = json.dumps(request.data, indent=4)
         data_dict = json.loads(convert_to)
-        
-        # validated_data = self.get_serializer(data=request.data)
-        # validated_data.is_valid(raise_exception=True)
-        # print(validated_data)
 
         # Check if ProgramStudi already exists
         name_prody = data_dict.get('name_prody')
@@ -396,8 +392,8 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
             kode = "REE"
         elif name_prody == "Food Technology" :
             kode = "FBT"
-        programstudi, created = models.ProgramStudi.objects.get_or_create(name=name_prody, kode_sap=program_study, kode=kode)
-
+        # programstudi, created = models.ProgramStudi.objects.get_or_create(name=name_prody, kode_sap=program_study, kode=kode)
+        programstudi, created = models.ProgramStudi.objects.get(name=name_prody, kode_sap=program_study, kode=kode)
 
         # Check if DataMahasiswa already exists
         nama_mahasiswa = data_dict.get('nama_mahasiswa')
@@ -415,16 +411,25 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
         nidn_dosen = data_dict.get('nidn_dosen')
         nidn_dosen_split = str(nidn_dosen).split("/")
 
+        # subject
+        subject_short = data_dict.get('subject_short')
+
+        cekPenugasanPengajaran = models.PenugasanPengajaran.objects.filter(dosen_pengampu__nik=nik_dosen, mata_kuliah__kode=subject_short)
+
+        if(len(cekPenugasanPengajaran) == 0):
+            return Response({nama: 'bebek'}, status=status.HTTP_404_NOT_FOUND)
+
+
         if (len(inisial_split) >= 1) :
             for i in range(len(nama_dosen_split)):
-                dosen, created = models.Dosen.objects.get_or_create(
+                dosen, created = models.Dosen.objects.get(
                     name=nama_dosen_split[i],
                     inisial=inisial_split[i],
                     nik=nik_dosen_split[i],
                     nidn=nidn_dosen_split[i]
                 )
         else :
-            dosen, created = models.Dosen.objects.get_or_create(
+            dosen, created = models.Dosen.objects.get(
                     name=nama_dosen,
                     inisial=inisial,
                     nik=nik_dosen,
@@ -433,7 +438,7 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
 
         # Check if MataKuliah already exists
         subject = data_dict.get('subject')
-        subject_short = data_dict.get('subject_short')
+        
         graded_credits = data_dict.get('graded_credits')
         academic_year = data_dict.get('academic_year')
         academic_session = data_dict.get('academic_session')
