@@ -153,20 +153,20 @@ class AssignMahasiswatoGrupSerializers(serializers.ModelSerializer):
       fields = '__all__'
 
 class MonitoringMahasiswaSerializers(serializers.ModelSerializer):
-  nama_mahasiswa = serializers.CharField(write_only=True)
-  nim_mahasiswa = serializers.CharField(write_only=True)
-  angkatan = serializers.CharField(write_only=True)
+  # nama_mahasiswa = serializers.CharField(write_only=True)
+  # nim_mahasiswa = serializers.CharField(write_only=True)
+  # angkatan = serializers.CharField(write_only=True)
 
-  subject_short = serializers.CharField(write_only=True)
-  subject = serializers.CharField(write_only=True)
-  graded_credits = serializers.CharField(write_only=True)
+  # subject_short = serializers.CharField(write_only=True)
+  # subject = serializers.CharField(write_only=True)
+  # graded_credits = serializers.CharField(write_only=True)
 
-  program_study = serializers.CharField(write_only=True)
-  name_prody = serializers.CharField(write_only=True)
+  # program_study = serializers.CharField(write_only=True)
+  # name_prody = serializers.CharField(write_only=True)
 
-  nik_dosen = serializers.CharField(write_only=True)
-  initial_dosen = serializers.CharField(write_only=True),
-  nama_dosen = serializers.CharField(write_only=True)
+  # nik_dosen = serializers.CharField(write_only=True)
+  # initial_dosen = serializers.CharField(write_only=True),
+  # nama_dosen = serializers.CharField(write_only=True)
 
   mahasiswa_detail = DataMahasiswaSerializers(source='mahasiswa', read_only=True)
   mata_kuliah_detail = MataKuliahSerializers(source='mata_kuliah', read_only=True)
@@ -185,7 +185,7 @@ class ValidasiMahasiswaSerializers(serializers.ModelSerializer):
       fields = '__all__'
 
 class TranskripNilaiSerializers(serializers.ModelSerializer):
-  validasi_detail = ValidasiMahasiswaSerializers(source='validasi', read_only=True)
+  mahasiswa_detail = DataMahasiswaSerializers(source='mahasiswa', read_only=True)
   mata_kuliah_detail = MataKuliahSerializers(source='mata_kuliah', read_only=True)
   class Meta:
       model = models.TranskripNilai

@@ -345,6 +345,7 @@ class MonitoringMahasiswa(models.Model):
 			('C', 'C'),
 			('D', 'D'),
 			('E', 'E'),
+			('T', 'T'),
 	)
 	grade_symbol = models.CharField(max_length=20, choices=LIST_GRADE, blank=True, null=True)
 	earned_credits = models.CharField(blank=True, null=True, max_length=100)
@@ -361,7 +362,6 @@ class MonitoringMahasiswa(models.Model):
 
 class ValidasiMahasiswa(models.Model):
 	mahasiswa = models.ForeignKey(DataMahasiswa, on_delete=models.CASCADE, blank=True, null=True)
-	nim_mahasiswa = models.CharField(max_length=100, null=True, blank=True)
 	jumlah_sks = models.IntegerField(default=0, blank=True, null=True)
 	nilaie = models.IntegerField(default=0, blank=True, null=True)
 	nilaid = models.IntegerField(default=0, blank=True, null=True)
@@ -373,13 +373,15 @@ class ValidasiMahasiswa(models.Model):
 		('Tidak Lulus', 'Tidak Lulus'),
 	)
 	status_kelulusan = models.CharField(max_length=100, choices=LIST_STATUS, blank=True, null=True)
+	nilai_ipk = models.CharField(max_length=100, blank=True, null=True)
 	
 	def __str__(self) -> str:
 		return '{} - {}'.format(self.mahasiswa.nama, self.status_kelulusan)
 
 class TranskripNilai(models.Model):
-	validasi = models.ForeignKey(ValidasiMahasiswa, on_delete=models.CASCADE, blank=True, null=True)
+	mahasiswa = models.ForeignKey(DataMahasiswa, on_delete=models.CASCADE, blank=True, null=True)
 	mata_kuliah = models.ForeignKey(MataKuliah, on_delete=models.CASCADE, blank=True, null=True)
+	earned_credits = models.CharField(blank=True, null=True, max_length=100)
 	academic_year = models.CharField(max_length=20, null=True, blank=True)
 	academic_session = models.CharField(max_length=20, null=True, blank=True)
 	LIST_GRADE = (
@@ -390,8 +392,9 @@ class TranskripNilai(models.Model):
 			('C', 'C'),
 			('D', 'D'),
 			('E', 'E'),
+			('T', 'T')
 	)
 	grade_symbol = models.CharField(max_length=20, choices=LIST_GRADE, blank=True, null=True)
 
 	def __str__(self) -> str:
-		return '{} - {}'.format(self.validasi.mahasiswa.nama, self.mata_kuliah.name)
+		return '{} - {}'.format(self.mahasiswa.nama, self.mata_kuliah.name)

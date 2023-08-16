@@ -14,6 +14,7 @@ from rest_framework import status
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from backendapp import settings
+import json
 
 class KurikulumViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.KurikulumSerializers
@@ -372,14 +373,18 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
     queryset = models.MonitoringMahasiswa.objects.all()
 
     def create(self, request, *args, **kwargs):
-        validated_data = self.get_serializer(data=request.data)
-        validated_data.is_valid(raise_exception=True)
+
+        convert_to = json.dumps(request.data, indent=4)
+        data_dict = json.loads(convert_to)
+        
+        # validated_data = self.get_serializer(data=request.data)
+        # validated_data.is_valid(raise_exception=True)
         # print(validated_data)
 
         # Check if ProgramStudi already exists
-        name_prody = request.data.get('name_prody')
-        program_study = request.data.get('program_study')
-        if name_prody == "Computer System Engineering" :
+        name_prody = data_dict.get('name_prody')
+        program_study = data_dict.get('program_study')
+        if name_prody == "Computer Systems Engineering" :
             kode = "CSE"
         elif name_prody == "Software Engineering" :
             kode = "SE"
@@ -395,23 +400,20 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
 
 
         # Check if DataMahasiswa already exists
-        nama_mahasiswa = request.data.get('nama_mahasiswa')
-        nim_mahasiswa = request.data.get('nim_mahasiswa')
-        angkatan = request.data.get('angkatan')
+        nama_mahasiswa = data_dict.get('nama_mahasiswa')
+        nim_mahasiswa = data_dict.get('nim_mahasiswa')
+        angkatan = data_dict.get('angkatan')
         datamahasiswa, created= models.DataMahasiswa.objects.get_or_create(nama=nama_mahasiswa, nim=nim_mahasiswa, angkatan=angkatan, prodi=programstudi)
         
         # Check if Dosen already exists
-        nama_dosen = request.data.get('nama_dosen')
+        nama_dosen = data_dict.get('nama_dosen')
         nama_dosen_split = str(nama_dosen).split("/")
-        inisial = request.data.get('initial_dosen')
+        inisial = data_dict.get('initial_dosen')
         inisial_split = str(inisial).split("/")
-        nik_dosen = request.data.get('nik_dosen')
+        nik_dosen = data_dict.get('nik_dosen')
         nik_dosen_split = str(nik_dosen).split("/")
-        # if (request.data.get('nidn_dosen') == '') :
-        #     nidn_dosen = 'null'
-        # else :
-        #     nidn_dosen = request.data.get('nidn_dosen')
-        # nidn_dosen_split = str(nidn_dosen).split("/")
+        nidn_dosen = data_dict.get('nidn_dosen')
+        nidn_dosen_split = str(nidn_dosen).split("/")
 
         if (len(inisial_split) >= 1) :
             for i in range(len(nama_dosen_split)):
@@ -419,80 +421,83 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
                     name=nama_dosen_split[i],
                     inisial=inisial_split[i],
                     nik=nik_dosen_split[i],
-                    # nidn=nidn_dosen_split[i]
+                    nidn=nidn_dosen_split[i]
                 )
         else :
             dosen, created = models.Dosen.objects.get_or_create(
                     name=nama_dosen,
                     inisial=inisial,
                     nik=nik_dosen,
-                    # nidn=nidn_dosen
+                    nidn=nidn_dosen
                 )
 
         # Check if MataKuliah already exists
-        subject = request.data.get('subject')
-        subject_short = request.data.get('subject_short')
-        graded_credits = request.data.get('graded_credits')
-        academic_year = validated_data.data.get('academic_year')
-        academic_session = validated_data.data.get('academic_session')
+        subject = data_dict.get('subject')
+        subject_short = data_dict.get('subject_short')
+        graded_credits = data_dict.get('graded_credits')
+        academic_year = data_dict.get('academic_year')
+        academic_session = data_dict.get('academic_session')
     
-        if (academic_year == angkatan) :
-            if (academic_session == '10') :
-                session = '1'
-            elif (academic_session == '20') :
-                session = 'SP1'
-            elif (academic_session == '30') :
-                session = '2'
-            elif (academic_session == '40') :
-                session = 'SP2'
-        elif (int(academic_year) - int(angkatan) == 1 ) :
-            if (academic_session == '10') :
-                session = '3'
-            elif (academic_session == '20') :
-                session = 'SP3'
-            elif (academic_session == '30') :
-                session = '4'
-            elif (academic_session == '40') :
-                session = 'SP4'
-        elif (int(academic_year) - int(angkatan) == 2 ) :
-            if (academic_session == '10') :
-                session = '5'
-            elif (academic_session == '20') :
-                session = 'SP5'
-            elif (academic_session == '30') :
-                session = '6'
-            elif (academic_session == '40') :
-                session = 'SP6'
-        elif (int(academic_year) - int(angkatan) == 3 ) :
-            if (academic_session == '10') :
-                session = '7'
-            elif (academic_session == '20') :
-                session = 'SP7'
-            elif (academic_session == '30') :
-                session = '8'
-            elif (academic_session == '40') :
-                session = 'SP8'
+        # if (academic_year == angkatan) :
+        #     if (academic_session == '10') :
+        #         session = '1'
+        #     elif (academic_session == '20') :
+        #         session = 'SP1'
+        #     elif (academic_session == '30') :
+        #         session = '2'
+        #     elif (academic_session == '40') :
+        #         session = 'SP2'
+        # elif (int(academic_year) - int(angkatan) == 1 ) :
+        #     if (academic_session == '10') :
+        #         session = '3'
+        #     elif (academic_session == '20') :
+        #         session = 'SP3'
+        #     elif (academic_session == '30') :
+        #         session = '4'
+        #     elif (academic_session == '40') :
+        #         session = 'SP4'
+        # elif (int(academic_year) - int(angkatan) == 2 ) :
+        #     if (academic_session == '10') :
+        #         session = '5'
+        #     elif (academic_session == '20') :
+        #         session = 'SP5'
+        #     elif (academic_session == '30') :
+        #         session = '6'
+        #     elif (academic_session == '40') :
+        #         session = 'SP6'
+        # elif (int(academic_year) - int(angkatan) == 3 ) :
+        #     if (academic_session == '10') :
+        #         session = '7'
+        #     elif (academic_session == '20') :
+        #         session = 'SP7'
+        #     elif (academic_session == '30') :
+        #         session = '8'
+        #     elif (academic_session == '40') :
+        #         session = 'SP8'
 
         matakuliah, created = models.MataKuliah.objects.get_or_create(
             name = subject,
             kode = subject_short,
             sks_total = graded_credits,
-            semester = session
+            # semester = session
         )
 
-        st_object_type = validated_data.data.get('st_object_type')
-        st_objid = validated_data.data.get('st_objid')
-        student_id = validated_data.data.get('student_id')
-        appraisal_type = validated_data.data.get('appraisal_type')
-        sm_object_type = validated_data.data.get('sm_object_type')
-        sm_objid = validated_data.data.get('sm_objid')
-        event_package_objid = validated_data.data.get('event_package_objid')
-        event_package_short = validated_data.data.get('event_package_short')
-        event_package_text = validated_data.data.get('event_package_text')
-        grade_symbol = validated_data.data.get('grade_symbol')
-        earned_credits = validated_data.data.get('earned_credits')
-        credit_type = validated_data.data.get('credit_type')
-        mentor = validated_data.data.get('mentor')
+        st_object_type = data_dict.get('st_object_type')
+        st_objid = data_dict.get('st_objid')
+        student_id = data_dict.get('student_id')
+        appraisal_type = data_dict.get('appraisal_type')
+        sm_object_type = data_dict.get('sm_object_type')
+        sm_objid = data_dict.get('sm_objid')
+        event_package_objid = data_dict.get('event_package_objid')
+        event_package_short = data_dict.get('event_package_short')
+        event_package_text = data_dict.get('event_package_text')
+        if (data_dict.get('grade_symbol') == None):
+            grade_symbol = "T"
+        else :
+            grade_symbol = data_dict.get('grade_symbol')
+        earned_credits = data_dict.get('earned_credits')
+        credit_type = data_dict.get('credit_type')
+        mentor = data_dict.get('mentor')
 
         monitoring_mahasiswa, created = models.MonitoringMahasiswa.objects.get_or_create(
             st_object_type = st_object_type,
@@ -515,6 +520,59 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
             academic_session = academic_session,
             academic_year = academic_year,
         )
+
+        try :
+            get_transkrip_nilai = models.TranskripNilai.objects.get(
+                mahasiswa = datamahasiswa,
+                mata_kuliah = matakuliah,
+            )
+            print(get_transkrip_nilai.grade_symbol)
+            print("ada data om")
+            
+            if (get_transkrip_nilai.grade_symbol == "AB" and grade_symbol == "A"):
+                get_transkrip_nilai.grade_symbol = grade_symbol
+                get_transkrip_nilai.save()
+
+            elif (get_transkrip_nilai.grade_symbol == "B" and (grade_symbol == "A" or grade_symbol == "AB")) :
+                get_transkrip_nilai.grade_symbol = grade_symbol
+                get_transkrip_nilai.save()
+
+            elif (get_transkrip_nilai.grade_symbol == "BC" and (grade_symbol == "A" or grade_symbol == "AB" or grade_symbol == "B")):
+                get_transkrip_nilai.grade_symbol = grade_symbol
+                get_transkrip_nilai.save()
+
+            elif (get_transkrip_nilai.grade_symbol == "C" and (grade_symbol == "A" or grade_symbol == "AB" or grade_symbol == "B" or grade_symbol == "BC")):
+                get_transkrip_nilai.grade_symbol = grade_symbol
+                get_transkrip_nilai.save()
+
+            elif (get_transkrip_nilai.grade_symbol == "D" and (grade_symbol == "A" or grade_symbol == "AB" or grade_symbol == "B" or grade_symbol == "BC" or grade_symbol == "C")):
+                get_transkrip_nilai.grade_symbol = grade_symbol
+                get_transkrip_nilai.save()
+
+            elif (get_transkrip_nilai.grade_symbol == "E" and (grade_symbol == "A" or grade_symbol == "AB" or grade_symbol == "B" or grade_symbol == "BC" or grade_symbol == "C" or grade_symbol == "D")):
+                get_transkrip_nilai.grade_symbol = grade_symbol
+                get_transkrip_nilai.save()
+
+            elif (get_transkrip_nilai.grade_symbol == "T" and (grade_symbol == "A" or grade_symbol == "AB" or grade_symbol == "B" or grade_symbol == "BC" or grade_symbol == "C" or grade_symbol == "D" or grade_symbol == "E")):
+                get_transkrip_nilai.grade_symbol = grade_symbol
+                get_transkrip_nilai.save()
+
+            serializer = self.get_serializer(instance=get_transkrip_nilai)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except models.TranskripNilai.DoesNotExist:
+            print("gada data om")
+            transkrip_nilai, created = models.TranskripNilai.objects.get_or_create(
+                academic_year = academic_year,
+                academic_session = academic_session,
+                grade_symbol = grade_symbol,
+                mahasiswa = datamahasiswa,
+                mata_kuliah = matakuliah,
+                earned_credits = earned_credits
+            )
+            # serializer = self.get_serializer(instance=transkrip_nilai)
+            # headers = self.get_success_headers(serializer.data)
+            # return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
         # serializer = self.get_serializer(instance=monitoring_mahasiswa)
         serializer = self.get_serializer(instance=monitoring_mahasiswa)
@@ -567,13 +625,111 @@ class ValidasiMahasiswaViewSet(viewsets.ModelViewSet):
         else:
             self.permission_classes = [IsAuthenticated]
         return super(self.__class__, self).get_permissions()
+
+class ValidasiMahasiswaByNIMViewSet(generics.ListAPIView):
+    serializer_class = serializers.ValidasiMahasiswaSerializers
+    queryset = models.ValidasiMahasiswa.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        ValidasiMahasiswaByNIM = models.ValidasiMahasiswa.objects.filter(mahasiswa__nim=self.kwargs['validasiMahasiswaNIM'])
+        serializer = self.get_serializer(ValidasiMahasiswaByNIM, many=True)
+
+        return Response(serializer.data)
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
     
 class TranskripNilaiViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.TranskripNilaiSerializers
     queryset = models.TranskripNilai.objects.all()
 
+    def create(self, request, *args, **kwargs):
+        convert_to = json.dumps(request.data, indent=4)
+        data_dict = json.loads(convert_to)
+        # print(data_dict.get("mata_kuliah"))
+
+        academic_year = data_dict.get("academic_year")
+        academic_session =data_dict.get('academic_session')
+        grade_symbol = data_dict.get('grade_symbol')
+        mahasiswa = data_dict.get('mahasiswa')
+        mata_kuliah = data_dict.get('mata_kuliah')
+        earned_credits = data_dict.get('earned_credits')
+
+        mahasiswa_id = models.DataMahasiswa.objects.get(id = mahasiswa)
+        mata_kuliah_id = models.MataKuliah.objects.get(id = mata_kuliah)
+
+        try :
+            get_transkrip_nilai = models.TranskripNilai.objects.get(
+                mahasiswa = mahasiswa_id,
+                mata_kuliah = mata_kuliah_id,
+            )
+            print(get_transkrip_nilai.grade_symbol)
+            print("ada data om")
+            
+            if (get_transkrip_nilai.grade_symbol == "AB" and grade_symbol == "A"):
+                get_transkrip_nilai.grade_symbol = grade_symbol
+                get_transkrip_nilai.save()
+
+            elif (get_transkrip_nilai.grade_symbol == "B" and (grade_symbol == "A" or grade_symbol == "AB")) :
+                get_transkrip_nilai.grade_symbol = grade_symbol
+                get_transkrip_nilai.save()
+
+            elif (get_transkrip_nilai.grade_symbol == "BC" and (grade_symbol == "A" or grade_symbol == "AB" or grade_symbol == "B")):
+                get_transkrip_nilai.grade_symbol = grade_symbol
+                get_transkrip_nilai.save()
+
+            elif (get_transkrip_nilai.grade_symbol == "C" and (grade_symbol == "A" or grade_symbol == "AB" or grade_symbol == "B" or grade_symbol == "BC")):
+                get_transkrip_nilai.grade_symbol = grade_symbol
+                get_transkrip_nilai.save()
+
+            elif (get_transkrip_nilai.grade_symbol == "D" and (grade_symbol == "A" or grade_symbol == "AB" or grade_symbol == "B" or grade_symbol == "BC" or grade_symbol == "C")):
+                get_transkrip_nilai.grade_symbol = grade_symbol
+                get_transkrip_nilai.save()
+
+            elif (get_transkrip_nilai.grade_symbol == "E" and (grade_symbol == "A" or grade_symbol == "AB" or grade_symbol == "B" or grade_symbol == "BC" or grade_symbol == "C" or grade_symbol == "D")):
+                get_transkrip_nilai.grade_symbol = grade_symbol
+                get_transkrip_nilai.save()
+
+            serializer = self.get_serializer(instance=get_transkrip_nilai)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except models.TranskripNilai.DoesNotExist:
+            print("gada data om")
+            transkrip_nilai, created = models.TranskripNilai.objects.get_or_create(
+                academic_year = academic_year,
+                academic_session = academic_session,
+                grade_symbol = grade_symbol,
+                mahasiswa = mahasiswa_id,
+                mata_kuliah = mata_kuliah_id,
+                earned_credits = earned_credits
+            )
+            serializer = self.get_serializer(instance=transkrip_nilai)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
     def get_permissions(self):
         if self.action in ['list','retrieve']:
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+    
+class TranskripNilaiaByNIMViewSet(generics.ListAPIView):
+    serializer_class = serializers.TranskripNilaiSerializers
+    queryset = models.TranskripNilai.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        TranskripNilaiByNIM = models.TranskripNilai.objects.filter(mahasiswa__nim=self.kwargs['transkripNilaiNIM'])
+        serializer = self.get_serializer(TranskripNilaiByNIM, many=True)
+
+        return Response(serializer.data)
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
             self.permission_classes = [AllowAny]
         else:
             self.permission_classes = [IsAuthenticated]
