@@ -50,6 +50,7 @@ import MonitoringMahasiswa from './monitoring-mahasiswa/MonitoringMahasiswa';
 import MonitoringMahasiswaImportExcel from './monitoring-mahasiswa/MonitoringMahasiswaImportExcel';
 import ValidasiMahasiswa from './validasi-kelulusan/ValidasiMahasiswa';
 import ValidasiMahasiswaByNIM from './validasi-kelulusan/ValidasiMahasiswaByNIM';
+import DegreeAuditKelulusan from './degreeaudit-kelulusan/DegreeAuditKelulusan';
 
 const Router = () => {
   return (
@@ -257,6 +258,9 @@ const Router = () => {
                   path="import"
                   element={<MonitoringMahasiswaImportExcel />}
                 />
+            </Route>
+            <Route path="degreeaudit-kelulusan">
+              <Route index element={<DegreeAuditKelulusan />} />
             </Route>
             <Route path="validasi-kelulusan">
               <Route index element={<ValidasiMahasiswa />} />

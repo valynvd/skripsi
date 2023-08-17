@@ -102,7 +102,49 @@ const MonitoringMahasiswaImportExcel = () => {
   return (
     
     <section id="datamahasiswa-form" className="section-container">
-      
+      <Transition
+          show={open}
+          as={Fragment}
+        >
+          <Dialog onClose={() => setOpen(false)} className={`relative z-20`}>
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100"
+              leaveTo="opacity-0"
+            >
+              <div className="fixed inset-0 bg-black/30" />
+            </Transition.Child>
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0 scale-95"
+              enterTo="opacity-100 scale-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100 scale-100"
+              leaveTo="opacity-0 scale-95"
+            >
+              <div className="fixed inset-0">
+                <div className="flex min-h-full items-center justify-center p-4">
+                  <Dialog.Panel className="bg-white p-5 rounded-xl shadow-lg flex flex-col items-center justify-center text-center">
+                    <Dialog.Title className="text-xl font-bold text-black-800">
+                      Sukses
+                    </Dialog.Title>
+                    <p className="text-gray-600 mt-2 max-w-md">
+                      Unggah Akademik Mahasiswa Berhasil
+                    </p>
+                    <PrimaryButton className={`!mt-8 !mb-5`} onClick={handleToClose}>
+                      Tutup
+                    </PrimaryButton>
+                  </Dialog.Panel>
+                </div>
+              </div>
+            </Transition.Child>
+          </Dialog>
+        </Transition>
       <p className="text-lg font-semibold">
         <BreadCrumbs
           links={[
@@ -300,55 +342,7 @@ const MonitoringMahasiswaImportExcel = () => {
             </tbody>
           </table>
       </div>
-        <Transition
-          show={open}
-          enter="transition duration-100 ease-out"
-          enterFrom="transform scale-95 opacity-0"
-          enterTo="transform scale-100 opacity-100"
-          leave="transition duration-75 ease-out"
-          leaveFrom="transform scale-100 opacity-100"
-          leaveTo="transform scale-95 opacity-0"
-          as={Fragment}
-        >
-          <Dialog onClose={() => setOpen(false)} className={`relative z-50`}>
-            <Transition.Child
-              as={Fragment}
-              enter="ease-out duration-300"
-              enterFrom="opacity-0"
-              enterTo="opacity-100"
-              leave="ease-in duration-200"
-              leaveFrom="opacity-100"
-              leaveTo="opacity-0"
-            >
-              <div className="fixed inset-0 bg-black/30" />
-            </Transition.Child>
-            <Transition.Child
-              as={Fragment}
-              enter="ease-out duration-300"
-              enterFrom="opacity-0 scale-95"
-              enterTo="opacity-100 scale-100"
-              leave="ease-in duration-200"
-              leaveFrom="opacity-100 scale-100"
-              leaveTo="opacity-0 scale-95"
-            >
-              <div className="fixed inset-0">
-                <div className="flex min-h-full items-center justify-center p-4">
-                  <Dialog.Panel className="bg-white p-5 rounded-xl shadow-lg flex flex-col items-center justify-center text-center">
-                    <Dialog.Title className="text-xl font-bold text-black-800">
-                      Sukses
-                    </Dialog.Title>
-                    <p className="text-gray-600 mt-2 max-w-md">
-                      Unggah Akademik Mahasiswa Berhasil
-                    </p>
-                    <PrimaryButton className={`!mt-8 !mb-5`} onClick={handleToClose}>
-                      Tutup
-                    </PrimaryButton>
-                  </Dialog.Panel>
-                </div>
-              </div>
-            </Transition.Child>
-          </Dialog>
-        </Transition>
+        
     </section>
     
   );

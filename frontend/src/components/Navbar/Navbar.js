@@ -214,6 +214,11 @@ const Navbar = () => {
                     allowedRoles: userRole.admin,
                   },
                   {
+                    title: 'DegreeAudit Kelulusan',
+                    url: '/degreeaudit-kelulusan',
+                    allowedRoles: userRole.admin,
+                  },
+                  {
                     title: 'Monitoring Akademik',
                     url: '/monitoring-akademik',
                     allowedRoles: userRole.admin,

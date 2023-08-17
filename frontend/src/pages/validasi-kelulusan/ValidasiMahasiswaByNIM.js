@@ -7,6 +7,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 // import { useMonitoringMahasiswaDataByNIM } from '../../hooks/useMonitoringMahasiswa';
 import { useTranskripNilaiDataByNIM } from '../../hooks/useTranskripNilai';
+import { usePostValidasiMahasiswa } from '../../hooks/useValidasiMahasiswa';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 const ValidasiMahasiswaByNIM = () => {
   const userRole = useCheckRole();
@@ -25,8 +28,13 @@ const ValidasiMahasiswaByNIM = () => {
   const [ipsSemester, setIpsSemester] = useState([])
   const [nilaiIpk, setNilaiIpk] = useState('')
   const [statusKelulusan, setStatusKelulusan] = useState('')
+  const [validasi, setValidasi] = useState([])
+  const [readyAudit, setReadyAudit] = useState(false);
   
   const navigate = useNavigate();
+
+  const {mutate: postValidasiMahasiswa, isLoading: postValidasiMahasiswaLoading} = 
+    usePostValidasiMahasiswa();
   
   useEffect(()=> {
     if(isLoading == false) {
@@ -96,6 +104,7 @@ const ValidasiMahasiswaByNIM = () => {
           academicYear: academicData.academicYear,
           academicSession: academicData.academicSession,
           ips: (ips / sks).toFixed(2),
+          sks: sks,
         });
       });
   
@@ -128,10 +137,71 @@ const ValidasiMahasiswaByNIM = () => {
       const status = "Tidak Lulus";
       setStatusKelulusan(status);
     }
+
+    const dataValidasi = []
+
+    dataValidasi.push({
+      nim_mahasiswa: nim,
+      jumlah_sks: totalEarnedCredits,
+      nilaie: totalSKSNilaiE,
+      nilaid: totalSKSNilaiD,
+      status_kelulusan: statusKelulusan,
+      nilai_ipk: ipkData,
+    })
+
+    setReadyAudit(true)
+    setValidasi(dataValidasi);
+
       
   }, [transkripData])
-  
 
+  useEffect(() => {
+
+    for (let index = 0; index < validasi.length; index++) {
+      const data = validasi[index];
+      const validasiFormData = new FormData();
+      
+      for (const key in data) {
+        validasiFormData.append(key, data[key]);
+      }
+      
+      try {
+        postValidasiMahasiswa(validasiFormData, {
+          onSuccess: () => {
+            console.log('Data submitted successfully for index:', index);
+          },
+          onError: (error) => {
+            console.error('Error submitting data for index:', index, error);
+          },
+        });
+      } catch (error) {
+        console.error('Error while processing data:', error);
+      }
+    }
+  }, [validasi])
+
+  const handleExport = () => {
+    const doc = new jsPDF();
+
+    const mainTable = document.getElementById('id-table');
+    if (mainTable) {
+      doc.autoTable({ html: mainTable });
+    }
+
+    ipsSemester.forEach((getData, tableIndex) => {
+      const ipsTable = document.getElementById(`ips-table${tableIndex}`);
+      if (ipsTable) {
+        doc.autoTable({
+          html: ipsTable,
+          theme: 'striped',
+          startY: tableIndex === 0 ? 50 : doc.autoTable.previous.finalY + 10,
+          styles: { fontSize: 10 },
+        });
+      }
+    });
+
+    doc.save(`${transkripData[0].mahasiswa_detail.nama} Degree Audit.pdf`);
+  }
 
   return (
     <section id="monitoring-mahasiswa" className="section-container">
@@ -140,6 +210,13 @@ const ValidasiMahasiswaByNIM = () => {
           Validasi Mahasiswa
           {!userRole.admin}
         </p>
+        <PrimaryButton
+          onClick={() => {
+            handleExport()
+          }}
+        >
+          Export to PDF
+        </PrimaryButton>
       </div>
 
       <form  className="flex gap-4 flex-wrap items-center mb-4 mt-10">
@@ -178,12 +255,9 @@ const ValidasiMahasiswaByNIM = () => {
        
 
       <div className="overflow-x-auto">
-          <table className="w-full mt-6">
+          <table id="id-table" className="w-full mt-6">
             <thead className="bg-primary-400/[0.03] whitespace-nowrap rounded-xl">
               <tr>
-                <th className="px-4 py-3 font-semibold">
-                 <p className="flex flex-row items-center">No</p> 
-                </th>
                 <th className="px-4 py-3 font-semibold">
                   <p className="flex flex-row items-center">Nama Mahasiswa</p> 
                 </th>
@@ -217,27 +291,27 @@ const ValidasiMahasiswaByNIM = () => {
             {transkripData.length > 0 ? (
               <tbody>
               <tr className="bg-white border-b text-gray-600">
-              <td className="px-4 py-3">1</td>
-              <td className="px-4 py-3">{transkripData[0].mahasiswa_detail.nama}</td>
-              <td className="px-4 py-3">{transkripData[0].mahasiswa_detail.nim}</td>
-              <td className="px-4 py-3">{transkripData[0].mahasiswa_detail.prodi_detail.name}</td>
-              <td className="px-4 py-3">{transkripData[0].mahasiswa_detail.angkatan}</td>
-              <td className="px-4 py-3">{jumlahSks} / 144</td>
-              <td className="px-4 py-3">{nilaiD} sks</td>
-              <td className="px-4 py-3">{nilaiE} sks</td>
-              <td className="px-4 py-3">{nilaiIpk}</td>
-              <td className="px-4 py-3">{statusKelulusan}</td>
+                <td className="px-4 py-3">{transkripData[0].mahasiswa_detail.nama}</td>
+                <td className="px-4 py-3">{transkripData[0].mahasiswa_detail.nim}</td>
+                <td className="px-4 py-3">{transkripData[0].mahasiswa_detail.prodi_detail.name}</td>
+                <td className="px-4 py-3">{transkripData[0].mahasiswa_detail.angkatan}</td>
+                <td className="px-4 py-3">{jumlahSks} / 144</td>
+                <td className="px-4 py-3">{nilaiD} sks</td>
+                <td className="px-4 py-3">{nilaiE} sks</td>
+                <td className="px-4 py-3">{nilaiIpk}</td>
+                <td className="px-4 py-3">{statusKelulusan}</td>
             </tr>
           </tbody>
             ) : <div/>}
             
           </table>
+          
       </div>
 
       {ipsSemester ? (
           <div className="overflow-x-auto">
           {ipsSemester.map((getData, tableIndex) => (
-            <table key={tableIndex} className="w-full mt-10">
+            <table id={`ips-table${tableIndex}`} key={tableIndex} className="w-full mt-10">
               <thead className="bg-primary-400/[0.03] whitespace-nowrap rounded-xl">
                 <tr>
                   <th className="px-4 py-3 font-semibold">
@@ -251,6 +325,9 @@ const ValidasiMahasiswaByNIM = () => {
                       : getData.academicSession === '40'
                       ? " Even Short"
                       : " Unknown Session Type"}</th>
+                  <th className="px-4 py-3 font-semibold">
+                    Total SKS : {getData.sks}
+                  </th>
                   <th className="px-4 py-3 font-semibold">
                     IPS : {getData.ips}
                   </th>
@@ -269,9 +346,21 @@ const ValidasiMahasiswaByNIM = () => {
                   getdata.academic_session === getData.academicSession) // Use === for comparison
                   .map((filteredData, index) => (
                     <tr key={index} className="bg-white border-b text-gray-600">
-                      <td className="px-4 py-3">{filteredData.mata_kuliah_detail.name}</td>
-                      <td className="px-4 py-3">{filteredData.mata_kuliah_detail.sks_total}</td>
-                      <td className="px-4 py-3">{filteredData.grade_symbol}</td>
+                      <td className="px-4 py-3">
+                        <p className="flex flex-row items-center">
+                          {filteredData.mata_kuliah_detail.name}
+                        </p>
+                      </td>
+                      <td className="px-4 py-3">
+                        <p className="flex flex-row items-center">
+                          {filteredData.mata_kuliah_detail.sks_total}
+                        </p>
+                      </td>
+                      <td className="px-4 py-3">
+                        <p className="flex flex-row items-center">
+                          {filteredData.grade_symbol}
+                        </p>
+                      </td>
                     </tr>
                   ))}
               </tbody>
