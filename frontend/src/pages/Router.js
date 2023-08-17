@@ -92,10 +92,10 @@ const Router = () => {
                   path="portofolio-perkuliahan"
                   element={<PortofolioPerkuliahanForm />}
                 /> */}
+                <Route path="rps">
+                  <Route index element={<RPS />} />
+                </Route>
               </Route>
-            </Route>
-            <Route path="rps">
-              <Route index element={<RPS />} />
             </Route>
           </Route>
 
@@ -255,19 +255,16 @@ const Router = () => {
             <Route path="monitoring-akademik">
               <Route index element={<MonitoringMahasiswa />} />
               <Route
-                  path="import"
-                  element={<MonitoringMahasiswaImportExcel />}
-                />
+                path="import"
+                element={<MonitoringMahasiswaImportExcel />}
+              />
             </Route>
             <Route path="degreeaudit-kelulusan">
               <Route index element={<DegreeAuditKelulusan />} />
             </Route>
             <Route path="validasi-kelulusan">
               <Route index element={<ValidasiMahasiswa />} />
-              <Route
-                  path=":nim"
-                  element={<ValidasiMahasiswaByNIM/>}
-                />
+              <Route path=":nim" element={<ValidasiMahasiswaByNIM />} />
             </Route>
           </Route>
         </Route>

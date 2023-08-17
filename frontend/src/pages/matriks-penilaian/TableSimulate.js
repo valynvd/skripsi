@@ -40,7 +40,9 @@ const TableSimulate = ({ simulateData }) => {
                   <TableTd className="text-center">{item.total}</TableTd>
                   <TableTd>{item.mark_counted}</TableTd>
                   <TableTd>{item.max_score}</TableTd>
-                  <TableTd>{item.weight_percent} %</TableTd>
+                  <TableTd>
+                    {Math.round(item.weight_percent * 100) / 100} %
+                  </TableTd>
                 </tr>
               );
             } else {
@@ -51,7 +53,9 @@ const TableSimulate = ({ simulateData }) => {
                   <TableTd className="text-center">{item.total}</TableTd>
                   <TableTd>{item.mark_counted}</TableTd>
                   <TableTd>{item.max_score}</TableTd>
-                  <TableTd>{item.weight_percent} %</TableTd>
+                  <TableTd>
+                    {Math.round(item.weight_percent * 100) / 100} %
+                  </TableTd>
                 </tr>
               );
             }

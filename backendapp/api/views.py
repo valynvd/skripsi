@@ -377,9 +377,28 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
         convert_to = json.dumps(request.data, indent=4)
         data_dict = json.loads(convert_to)
 
-        # Check if ProgramStudi already exists
         name_prody = data_dict.get('name_prody')
         program_study = data_dict.get('program_study')
+
+        # get mahasiswa
+        nama_mahasiswa = data_dict.get('nama_mahasiswa')
+        nim_mahasiswa = data_dict.get('nim_mahasiswa')
+        angkatan = data_dict.get('angkatan')
+
+        # get subject
+        subject = data_dict.get('subject')
+        subject_short = data_dict.get('subject_short')
+        graded_credits = data_dict.get('graded_credits')
+        academic_year = data_dict.get('academic_year')
+        academic_session = data_dict.get('academic_session')
+
+        # get credit
+        earned_credits = data_dict.get('earned_credits')
+
+        # get grade
+        grade_symbol = data_dict.get('grade_symbol')
+
+        # Check if ProgramStudi already exists
         if name_prody == "Computer Systems Engineering" :
             kode = "CSE"
         elif name_prody == "Software Engineering" :
@@ -392,16 +411,18 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
             kode = "REE"
         elif name_prody == "Food Technology" :
             kode = "FBT"
-        programstudi, created = models.ProgramStudi.objects.get_or_create(name=name_prody, kode_sap=program_study, kode=kode)
+
+        # programstudi, created = models.ProgramStudi.objects.get_or_create(name=name_prody, kode_sap=program_study, kode=kode)
+        programstudi = models.ProgramStudi.objects.filter(name=name_prody, kode_sap=program_study)
+
+        if(len(programstudi) == 0):
+            return Response({'nama_mahasiswa': nama_mahasiswa, 'nim_mahasiswa': nim_mahasiswa, 'name_prody': name_prody, 'angkatan': angkatan, 'subject': subject, 'earned_credits': earned_credits, 'grade_symbol': grade_symbol, 'error': True, 'error_message': 'Jurusan tidak ditemukan' }, status=status.HTTP_404_NOT_FOUND)
 
 
-        # Check if DataMahasiswa already exists
-        nama_mahasiswa = data_dict.get('nama_mahasiswa')
-        nim_mahasiswa = data_dict.get('nim_mahasiswa')
-        angkatan = data_dict.get('angkatan')
-        datamahasiswa, created= models.DataMahasiswa.objects.get_or_create(nama=nama_mahasiswa, nim=nim_mahasiswa, angkatan=angkatan, prodi=programstudi)
+        # # Check if DataMahasiswa already exists
+        datamahasiswa, created= models.DataMahasiswa.objects.get_or_create(nama=nama_mahasiswa, nim=nim_mahasiswa, angkatan=angkatan, prodi=programstudi[0])
         
-        # Check if Dosen already exists
+        # # Check if Dosen already exists
         nama_dosen = data_dict.get('nama_dosen')
         nama_dosen_split = str(nama_dosen).split("/")
         inisial = data_dict.get('initial_dosen')
@@ -411,28 +432,33 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
         nidn_dosen = data_dict.get('nidn_dosen')
         nidn_dosen_split = str(nidn_dosen).split("/")
 
-        if (len(inisial_split) >= 1) :
-            for i in range(len(nama_dosen_split)):
-                dosen, created = models.Dosen.objects.get_or_create(
-                    name=nama_dosen_split[i],
-                    inisial=inisial_split[i],
-                    nik=nik_dosen_split[i],
-                    nidn=nidn_dosen_split[i]
-                )
-        else :
-            dosen, created = models.Dosen.objects.get_or_create(
-                    name=nama_dosen,
-                    inisial=inisial,
-                    nik=nik_dosen,
-                    nidn=nidn_dosen
-                )
+        # subject
+
+
+        print(nik_dosen_split)
+        cekPenugasanPengajaran = models.PenugasanPengajaran.objects.filter(dosen_pengampu__nik__in=nik_dosen_split, mata_kuliah__kode=subject_short)
+        print(cekPenugasanPengajaran)
+
+        if(len(cekPenugasanPengajaran) == 0):
+            return Response({'nama_mahasiswa': nama_mahasiswa, 'nim_mahasiswa': nim_mahasiswa, 'name_prody': name_prody, 'angkatan': angkatan, 'subject': subject, 'earned_credits': earned_credits, 'grade_symbol': grade_symbol, 'error': True, 'error_message': 'Penugasan Pengajaran tidak ditemukan' }, status=status.HTTP_404_NOT_FOUND)
+
+        # if (len(inisial_split) >= 1) :
+        #     for i in range(len(nama_dosen_split)):
+        #         dosen, created = models.Dosen.objects.get(
+        #             name=nama_dosen_split[i],
+        #             inisial=inisial_split[i],
+        #             nik=nik_dosen_split[i],
+        #             nidn=nidn_dosen_split[i]
+        #         )
+        # else :
+        #     dosen, created = models.Dosen.objects.get(
+        #             name=nama_dosen,
+        #             inisial=inisial,
+        #             nik=nik_dosen,
+        #             nidn=nidn_dosen
+        #         )
 
         # Check if MataKuliah already exists
-        subject = data_dict.get('subject')
-        subject_short = data_dict.get('subject_short')
-        graded_credits = data_dict.get('graded_credits')
-        academic_year = data_dict.get('academic_year')
-        academic_session = data_dict.get('academic_session')
     
         # if (academic_year == angkatan) :
         #     if (academic_session == '10') :
@@ -471,11 +497,15 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
         #     elif (academic_session == '40') :
         #         session = 'SP8'
 
-        matakuliah, created = models.MataKuliah.objects.get_or_create(
+        # matakuliah, created = models.MataKuliah.objects.get_or_create(
+        #     name = subject,
+        #     kode = subject_short,
+        #     sks_total = graded_credits,
+        #     # semester = session
+        # )
+        matakuliah = models.MataKuliah.objects.get(
             name = subject,
             kode = subject_short,
-            sks_total = graded_credits,
-            # semester = session
         )
 
         st_object_type = data_dict.get('st_object_type')
@@ -491,7 +521,6 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
             grade_symbol = "T"
         else :
             grade_symbol = data_dict.get('grade_symbol')
-        earned_credits = data_dict.get('earned_credits')
         credit_type = data_dict.get('credit_type')
         mentor = data_dict.get('mentor')
 
@@ -503,19 +532,21 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
             appraisal_type = appraisal_type,
             sm_object_type = sm_object_type,
             sm_objid = sm_objid,
-            mata_kuliah = matakuliah,
+            # mata_kuliah = matakuliah,
             event_package_objid = event_package_objid,
             event_package_short = event_package_short,
             event_package_text = event_package_text,
-            dosen = dosen,
+            # dosen = dosen,
             grade_symbol = grade_symbol,
             earned_credits = earned_credits,
             credit_type = credit_type,
-            prodi = programstudi,
+            prodi = programstudi[0],
             mentor = mentor,
             academic_session = academic_session,
             academic_year = academic_year,
         )
+
+        monitoring_mahasiswa.penugasan_pengajaran.set(cekPenugasanPengajaran)
 
         try :
             get_transkrip_nilai = models.TranskripNilai.objects.get(
@@ -573,7 +604,7 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
         # serializer = self.get_serializer(instance=monitoring_mahasiswa)
         serializer = self.get_serializer(instance=monitoring_mahasiswa)
         headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response({'nama_mahasiswa': nama_mahasiswa, 'nim_mahasiswa': nim_mahasiswa, 'name_prody': name_prody, 'angkatan': angkatan, 'subject': subject, 'earned_credits': earned_credits, 'grade_symbol': grade_symbol, 'error': False }, status=status.HTTP_201_CREATED, headers=headers)
 
     def get_permissions(self):
         if self.action in ['list','retrieve']:

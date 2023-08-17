@@ -8,25 +8,18 @@ import {
   usePostDokumenPembelajaran,
   usePatchDokumenPembelajaran,
   useRiwayatDokumenPembelajaranByDokumenPembelajaran,
-  useDeleteDokumenPembelajaran,
   useDeleteRiwayatDokumenPembelajaran,
   useDokumenPembelajaranById,
 } from '../../hooks/useDokumenPembelajaran';
 import { AlertError } from '../../components/Alert';
 import EditButton from '../../components/EditButton';
-import CRUDropdownInput from '../../components/CRUDropdownInput';
-import { usePenugasanPengajaranData } from '../../hooks/usePenugasanPengajaran';
-import CRUFileInput from '../../components/CRUFileInput';
 import CRUTextAreaInput from '../../components/CRUTextAreaInput';
 import { useCheckRole } from '../../hooks/useCheckRole';
 import RiwayatDokumenPembelajaranTable from './components/RiwayatDokumenPembelajaranTable';
-import RiwayatDokumenPembelajaranModalForm from './components/RiwayatDokumenPembelajaranRPSModalForm';
 import ModalDelete from '../../components/ModalDelete';
 import RiwayatDokumenPembelajaranEvaluasiModalForm from './components/RiwayatDokumenPembelajaranEvaluasiModalForm';
 import RiwayatDokumenPembelajaranUploadModalForm from './components/RiwayatDokumenPembelajaranUploadModalForm';
-import RiwayatDokumenPembelajaranInitialDocumentModalForm from './components/RiwayatDokumenPembelajaranInitialDocumentModalForm';
 import PageButton from './components/PageButton';
-import PortofolioPerkuliahanForm from './PortofolioPerkuliahanForm';
 import BreadCrumbs from '../../components/BreadCrumbs';
 import PortofolioPerkuliahanModalForm from './components/PortofolioPerkuliahanModalForm';
 import {
@@ -70,19 +63,12 @@ const DokumenPembelajaranForm = () => {
       evaluation_report: null,
       rubrik: null,
       notes: null,
-      // penugasan: null,
     },
   });
 
   useEffect(() => {
     setPage(selectedPage);
   }, [selectedPage]);
-
-  // useEffect(() => {
-  //   if (id) {
-  //     reset(dokumenPembelajaranData);
-  //   }
-  // }, [dokumenPembelajaranData, id, reset]);
 
   const {
     data: dataRiwayatDokumenPembelajaran,
@@ -135,21 +121,6 @@ const DokumenPembelajaranForm = () => {
       setDokumenPembelajaranData(updatedDokumenPembelajaranData?.data);
     }
   }, [dokumenPembelajaranData, updatedDokumenPembelajaranData]);
-  // const {
-  //   data: dataPenugasanPengajaran,
-  //   isSuccess: penugasanPengajaranDataSuccess,
-  // } = usePenugasanPengajaranData({
-  //   select: (response) => {
-  //     const formatPenugasanPengajaranData = response.data.map((data) => {
-  //       return {
-  //         value: data.id,
-  //         label: `[${data.periode} ${data.tahun}]-${data.dosen_pengampu_detail?.inisial}-${data.mata_kuliah_detail.name}`,
-  //       };
-  //     });
-
-  //     return formatPenugasanPengajaranData;
-  //   },
-  // });
 
   const onSubmit = (data) => {
     const dokumenPembelajaranFormData = new FormData();
@@ -448,16 +419,28 @@ const DokumenPembelajaranForm = () => {
             >
               <div className="flex flex-col items-start lg:justify-between lg:items-center lg:flex-row space-y-2 lg:space-y-0">
                 <p className="font-semibold text-lg">Riwayat Perubahan RPS</p>
-                <PrimaryButton
-                  icon={<BiPlusCircle size={22} />}
-                  onClick={() => {
-                    setSelectedItemEdit(null);
-                    setOpenModalUploadType('RPS');
-                    setOpenModalUpload(true);
-                  }}
-                >
-                  Upload RPS
-                </PrimaryButton>
+                <div className="flex space-x-4">
+                  <PrimaryButton
+                    onClick={() => {
+                      navigate(
+                        `/pelaksanaan-pendidikan/dokumen-pembelajaran/${id}/rps`,
+                        { state: { data: dokumenPembelajaranData } }
+                      );
+                    }}
+                  >
+                    Buat RPS
+                  </PrimaryButton>
+                  <PrimaryButton
+                    icon={<BiPlusCircle size={22} />}
+                    onClick={() => {
+                      setSelectedItemEdit(null);
+                      setOpenModalUploadType('RPS');
+                      setOpenModalUpload(true);
+                    }}
+                  >
+                    Upload RPS
+                  </PrimaryButton>
+                </div>
               </div>
 
               <div className="mt-8 w-full rounded-t-lg">

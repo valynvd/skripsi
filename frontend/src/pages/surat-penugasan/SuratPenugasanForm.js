@@ -1063,8 +1063,8 @@ const SuratPenugasanForm = () => {
       },
     });
 
-    // return doc.save('test');
-    return doc.output('blob');
+    return doc.save('test');
+    // return doc.output('blob');
   };
 
   return (
@@ -1231,7 +1231,7 @@ const SuratPenugasanForm = () => {
               {/* <PDFObject height="60rem" url={link} /> */}
               <PrimaryButton
                 onClick={() => {
-                  // generatePDF();
+                  generatePDFPengajaran();
                 }}
               >
                 Download PDF

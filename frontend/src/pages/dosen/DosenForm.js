@@ -40,6 +40,8 @@ const DosenForm = () => {
       phone: null,
       email: null,
       inisial: null,
+      nik: null,
+      nidn: null,
       role: null,
       password: null,
       jabatan: null,
@@ -133,6 +135,12 @@ const DosenForm = () => {
     }
     if (dirtyFields.is_fulltime) {
       dosenFormData.append('is_fulltime', data.is_fulltime);
+    }
+    if (dirtyFields.nidn) {
+      dosenFormData.append('nidn', data.nidn);
+    }
+    if (dirtyFields.nik) {
+      dosenFormData.append('nik', data.nik);
     }
     if (dirtyFields.inisial) {
       dosenFormData.append('inisial', data.inisial);
@@ -255,6 +263,22 @@ const DosenForm = () => {
           required
           errors={errors}
           registeredName="inisial"
+          isDisabled={!editable}
+        />
+        <CRUInput
+          register={register}
+          name="NIDN"
+          required
+          errors={errors}
+          registeredName="nidn"
+          isDisabled={!editable}
+        />
+        <CRUInput
+          register={register}
+          name="NIK"
+          required
+          errors={errors}
+          registeredName="nik"
           isDisabled={!editable}
         />
         <CRUInput
