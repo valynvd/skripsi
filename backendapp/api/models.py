@@ -332,12 +332,11 @@ class MonitoringMahasiswa(models.Model):
 	appraisal_type = models.CharField(blank=True, null=True, max_length=100)
 	sm_object_type = models.CharField(blank=True, null=True, max_length=100)
 	sm_objid = models.CharField(blank=True, null=True, max_length=100)
-	# mata_kuliah = models.ForeignKey(MataKuliah, on_delete=models.CASCADE, null=True, blank=True)
-	penguasan_pengajaran = models.ForeignKey(PenugasanPengajaran, on_delete=models.SET_NULL, blank=True, null=True)
+	mata_kuliah = models.ForeignKey(MataKuliah, on_delete=models.CASCADE, null=True, blank=True)
 	event_package_objid = models.CharField(blank=True, null=True, max_length=100)
 	event_package_short = models.CharField(blank=True, null=True, max_length=100)
 	event_package_text = models.CharField(blank=True, null=True, max_length=100)
-	# dosen = models.ForeignKey(Dosen, on_delete=models.CASCADE, blank=True, null=True)
+	dosen = models.ForeignKey(Dosen, on_delete=models.CASCADE, blank=True, null=True)
 	LIST_GRADE = (
 			('A', 'A'),
 			('AB', 'AB'),

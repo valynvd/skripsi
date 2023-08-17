@@ -392,8 +392,8 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
             kode = "REE"
         elif name_prody == "Food Technology" :
             kode = "FBT"
-        # programstudi, created = models.ProgramStudi.objects.get_or_create(name=name_prody, kode_sap=program_study, kode=kode)
-        programstudi, created = models.ProgramStudi.objects.get(name=name_prody, kode_sap=program_study, kode=kode)
+        programstudi, created = models.ProgramStudi.objects.get_or_create(name=name_prody, kode_sap=program_study, kode=kode)
+
 
         # Check if DataMahasiswa already exists
         nama_mahasiswa = data_dict.get('nama_mahasiswa')
@@ -411,25 +411,16 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
         nidn_dosen = data_dict.get('nidn_dosen')
         nidn_dosen_split = str(nidn_dosen).split("/")
 
-        # subject
-        subject_short = data_dict.get('subject_short')
-
-        cekPenugasanPengajaran = models.PenugasanPengajaran.objects.filter(dosen_pengampu__nik=nik_dosen, mata_kuliah__kode=subject_short)
-
-        if(len(cekPenugasanPengajaran) == 0):
-            return Response({nama: 'bebek'}, status=status.HTTP_404_NOT_FOUND)
-
-
         if (len(inisial_split) >= 1) :
             for i in range(len(nama_dosen_split)):
-                dosen, created = models.Dosen.objects.get(
+                dosen, created = models.Dosen.objects.get_or_create(
                     name=nama_dosen_split[i],
                     inisial=inisial_split[i],
                     nik=nik_dosen_split[i],
                     nidn=nidn_dosen_split[i]
                 )
         else :
-            dosen, created = models.Dosen.objects.get(
+            dosen, created = models.Dosen.objects.get_or_create(
                     name=nama_dosen,
                     inisial=inisial,
                     nik=nik_dosen,
@@ -438,7 +429,7 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
 
         # Check if MataKuliah already exists
         subject = data_dict.get('subject')
-        
+        subject_short = data_dict.get('subject_short')
         graded_credits = data_dict.get('graded_credits')
         academic_year = data_dict.get('academic_year')
         academic_session = data_dict.get('academic_session')
@@ -623,6 +614,51 @@ class CapaianPembelajarViewSet(viewsets.ModelViewSet):
 class ValidasiMahasiswaViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.ValidasiMahasiswaSerializers
     queryset = models.ValidasiMahasiswa.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        convert_to = json.dumps(request.data, indent=4)
+        data_dict = json.loads(convert_to)
+        print(data_dict)
+
+        # Check if Data Mahasiswa is Exists
+        nim_mahasiswa = data_dict.get('nim_mahasiswa')
+        mahasiswa = models.DataMahasiswa.objects.get(nim=nim_mahasiswa)
+
+        jumlah_sks = data_dict.get('jumlah_sks')
+        nilaiE = data_dict.get('nilaie')
+        nilaiD = data_dict.get('nilaid')
+        status_kelulusan = data_dict.get('status_kelulusan')
+        nilaiIPK = data_dict.get('nilai_ipk')
+
+        if (status_kelulusan == "") :
+            None
+        else :
+            try :
+                get_validasi = models.ValidasiMahasiswa.objects.get(
+                    mahasiswa = mahasiswa,
+                )
+                get_validasi.jumlah_sks = jumlah_sks
+                get_validasi.nilaid = nilaiD
+                get_validasi.nilaie = nilaiE
+                get_validasi.nilai_ipk = nilaiIPK
+                get_validasi.status_kelulusan = status_kelulusan
+                get_validasi.save()
+
+                serializer = self.get_serializer(instance=get_validasi)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            except models.ValidasiMahasiswa.DoesNotExist:
+                validasi, created = models.ValidasiMahasiswa.objects.get_or_create(
+                    mahasiswa = mahasiswa,
+                    jumlah_sks = jumlah_sks,
+                    nilaie = nilaiE,
+                    nilaid = nilaiD,
+                    status_kelulusan = status_kelulusan,
+                    nilai_ipk = nilaiIPK,
+                )   
+            serializer = self.get_serializer(instance=validasi)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        # return Response("Bebek")
 
     def get_permissions(self):
         if self.action in ['list','retrieve']:
