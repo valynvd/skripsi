@@ -299,10 +299,10 @@ class PenugasanPengabdian(models.Model):
 			blank=True,
 			null=True,
 	)
-	title = models.CharField(max_length=100)
-	start_year = models.IntegerField()
-	total_year = models.IntegerField()
-	location = models.TextField()
+	title = models.CharField(max_length=100, blank=True, null=True)
+	start_year = models.IntegerField(blank=True, null=True)
+	total_year = models.IntegerField(blank=True, null=True)
+	location = models.TextField(blank=True, null=True)
 	dikti_total_fund = models.FloatField(blank=True, null=True)
 	college_total_fund = models.FloatField(blank=True, null=True)
 	other_institution_total_fund = models.FloatField(blank=True, null=True)

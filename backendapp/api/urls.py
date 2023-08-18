@@ -62,6 +62,7 @@ urlpatterns = [
   path('dokumenpembelajaranbyprodi/<prodiId>/', views.DokumenPembelajaranByProdiViewSet.as_view()),
   path('riwayatdokumenpembelajaranbydokumenpembelajaran/<dokumenPembelajaranId>/', views.RiwayatDokumenPembelajaranByDokumenPembelajaranViewSet.as_view()),
   # penugasan pengajaran
+  path('penugasanpengabdianbysuratpenugasan/<suratPenugasanId>/', views.PenugasanPengabdianBySuratPenugasan.as_view()),
   path('penugasanpenelitianbysuratpenugasan/<suratPenugasanId>/', views.PenugasanPenelitianBySuratPenugasan.as_view()),
   path('penugasanpengajaranbysuratpenugasan/<suratPenugasanId>/', views.PenugasanPengajaranBySuratPenugasan.as_view()),
   # portofolio perkuliahan
