@@ -21,8 +21,6 @@ import User from './user/User';
 import UserForm from './user/UserForm';
 import ForgotPassword from './ForgotPassword';
 import ResetPassword from './ResetPassword';
-import Penelitian from './penelitian/Penelitian';
-import Pengabdian from './pengabdian/Pengabdian';
 import { Outlet } from 'react-router-dom';
 import MataKuliah from './mata-kuliah/MataKuliah';
 import MatriksPenilaian from './matriks-penilaian/MatriksPenilaian';
@@ -47,11 +45,15 @@ import MahasiswaMember from './grup-mahasiswa/MahasiswaMember';
 import DataMahasiswa from './mahasiswa/DataMahasiswa';
 import DataMahasiswaForm from './mahasiswa/DataMahasiswaForm';
 import MonitoringMahasiswa from './monitoring-mahasiswa/MonitoringMahasiswa';
-import MonitoringMahasiswaImportExcel from './monitoring-mahasiswa/MonitoringMahasiswaImportExcel';
 import ValidasiMahasiswa from './validasi-kelulusan/ValidasiMahasiswa';
 import ValidasiMahasiswaByNIM from './validasi-kelulusan/ValidasiMahasiswaByNIM';
 import DegreeAuditKelulusan from './degreeaudit-kelulusan/DegreeAuditKelulusan';
 import DegreeAuditKelulusanForm from './degreeaudit-kelulusan/DegreeAuditKelulusanForm';
+import PenugasanPenelitian from './penelitian/PenugasanPenelitian';
+import PenugasanPenelitianForm from './penelitian/PenugasanPenelitianForm';
+import MonitoringMahasiswaImportExcel from './monitoring-mahasiswa/MonitoringMahasiswaImportExcel';
+import PenugasanPengabdian from './pengabdian/PenugasanPengabdian';
+import PenugasanPengabdianForm from './pengabdian/PenugasanPengabdianForm';
 
 const Router = () => {
   return (
@@ -60,18 +62,23 @@ const Router = () => {
         <Route path="/" element={<Base />}>
           <Route index element={<Home />} />
 
+          <Route path="pelaksanaan-penelitian/penugasan-penelitian">
+            <Route index element={<PenugasanPenelitian />} />
+            <Route path="form" element={<PenugasanPenelitianForm />} />
+            <Route path=":id" element={<PenugasanPenelitianForm />} />
+          </Route>
+
+          <Route path="pelaksanaan-pengabdian/penugasan-pengabdian">
+            <Route index element={<PenugasanPengabdian />} />
+            <Route path="form" element={<PenugasanPengabdianForm />} />
+            <Route path=":id" element={<PenugasanPengabdianForm />} />
+          </Route>
+
           <Route
             element={
               <RequireAuthWithRoles allowedRoles={['Admin', 'Superadmin']} />
             }
-          >
-            <Route path="pelaksanaan-penelitian/penelitian">
-              <Route index element={<Penelitian />} />
-            </Route>
-            <Route path="pelaksanaan-pengabdian/pengabdian">
-              <Route index element={<Pengabdian />} />
-            </Route>
-          </Route>
+          ></Route>
           <Route path="pelaksanaan-pendidikan" element={<Outlet />}>
             <Route
               element={
@@ -262,7 +269,7 @@ const Router = () => {
             </Route>
             <Route path="degreeaudit-kelulusan">
               <Route index element={<DegreeAuditKelulusan />} />
-              <Route path=":id" element={<DegreeAuditKelulusanForm/>} />
+              <Route path=":id" element={<DegreeAuditKelulusanForm />} />
             </Route>
             <Route path="validasi-kelulusan">
               <Route index element={<ValidasiMahasiswa />} />

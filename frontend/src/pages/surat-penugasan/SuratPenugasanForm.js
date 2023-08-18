@@ -37,6 +37,18 @@ import CRUDropdownInput from '../../components/CRUDropdownInput';
 import CancelButton from '../../components/CancelButton';
 import BreadCrumbs from '../../components/BreadCrumbs';
 import { useCycleData } from '../../hooks/useCycle';
+import PenugasanPenelitianTable from './components/PenugasanPenelitianTable';
+import {
+  useDeletePenugasanPenelitian,
+  usePenugasanPenelitianBySuratPenugasan,
+} from '../../hooks/usePenugasanPenelitian';
+import PenugasanPenelitianModalForm from './components/PenugasanPenelitianModalForm';
+import {
+  useDeletePenugasanPengabdian,
+  usePenugasanPengabdianBySuratPenugasan,
+} from '../../hooks/usePenugasanPengabdian';
+import PenugasanPengabdianModalForm from './components/PenugasanPengabdianModalForm';
+import PenugasanPengabdianTable from './components/PenugasanPengabdianTable';
 
 const SuratPenugasanForm = () => {
   const [errorMessage, setErrorMessage] = useState();
@@ -64,6 +76,8 @@ const SuratPenugasanForm = () => {
     },
   });
   const [openModal, setOpenModal] = useState(false);
+  const [openModalPenelitian, setOpenModalPenelitian] = useState(false);
+  const [openModalPengabdian, setOpenModalPengabdian] = useState(false);
 
   const { mutate: postSuratPenugasan, isLoading: postSuratPenugasanLoading } =
     usePostSuratPenugasan();
@@ -73,7 +87,23 @@ const SuratPenugasanForm = () => {
     data: dataPenugasanPengajaran,
     isLoading: isLoadingPenugasanPengajaran,
     refetch: penugasanPengajaranRefetch,
-  } = usePenugasanPengajaranBySuratPenugasan(id, { enabled: !!id });
+  } = usePenugasanPengajaranBySuratPenugasan(id, {
+    enabled: !!id && suratPenugasanData?.category === 'pengajaran',
+  });
+  const {
+    data: dataPenugasanPengabdian,
+    isLoading: isLoadingPenugasanPengabdian,
+    refetch: penugasanPengabdianRefetch,
+  } = usePenugasanPengabdianBySuratPenugasan(id, {
+    enabled: !!id && suratPenugasanData?.category === 'pengabdian',
+  });
+  const {
+    data: dataPenugasanPenelitian,
+    isLoading: isLoadingPenugasanPenelitian,
+    refetch: penugasanPenelitianRefetch,
+  } = usePenugasanPenelitianBySuratPenugasan(id, {
+    enabled: !!id && suratPenugasanData?.category === 'penelitian',
+  });
   const { data: dataCycle, isSuccess: dataCycleSuccess } = useCycleData({
     select: (response) => {
       const semesterName = {
@@ -106,6 +136,8 @@ const SuratPenugasanForm = () => {
   } = usePostDokumenPembelajaran();
   const navigate = useNavigate();
   const { mutate: deletePenugasanPengajaran } = useDeletePenugasanPengajaran();
+  const { mutate: deletePenugasanPenelitian } = useDeletePenugasanPenelitian();
+  const { mutate: deletePenugasanPengabdian } = useDeletePenugasanPengabdian();
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -144,34 +176,36 @@ const SuratPenugasanForm = () => {
         { data: suratPenugasanFormData, id: id },
         {
           onSuccess: () => {
-            if (
-              suratPenugasanData.approved === false &&
-              data.approved === true
-            ) {
-              dataPenugasanPengajaran.data.forEach((item) => {
-                const dokumenPembelajaranFormData = new FormData();
+            if (suratPenugasanData?.category === 'pengajaran') {
+              if (
+                suratPenugasanData.approved === false &&
+                data.approved === true
+              ) {
+                dataPenugasanPengajaran.data.forEach((item) => {
+                  const dokumenPembelajaranFormData = new FormData();
 
-                dokumenPembelajaranFormData.append(
-                  'penugasanPengajaranId',
-                  item.id
-                );
+                  dokumenPembelajaranFormData.append(
+                    'penugasanPengajaranId',
+                    item.id
+                  );
 
-                const postData = postDokumenPembelajaran(
-                  dokumenPembelajaranFormData,
-                  {
-                    onError: (err) => {
-                      console.log(err);
-                      return 'err';
-                    },
+                  const postData = postDokumenPembelajaran(
+                    dokumenPembelajaranFormData,
+                    {
+                      onError: (err) => {
+                        console.log(err);
+                        return 'err';
+                      },
+                    }
+                  );
+
+                  if (postData === 'err') {
+                    return;
                   }
-                );
-
-                if (postData === 'err') {
-                  return;
-                }
-              });
+                });
+              }
             }
-
+            updatedSuratPenugasanRefecth();
             setEditable(false);
           },
           onError: (err) => {
@@ -199,23 +233,23 @@ const SuratPenugasanForm = () => {
     }
   };
 
-  useEffect(() => {
-    if (firstRender.current) {
-      firstRender.current = false;
-      return;
-    }
+  // useEffect(() => {
+  //   if (firstRender.current) {
+  //     firstRender.current = false;
+  //     return;
+  //   }
 
-    const pdfURL = generatePDFPengajaran();
+  //   const pdfURL = generatePDFPengajaran();
 
-    let pdfBlob = new Blob([pdfURL], { type: 'application/pdf' });
-    let pdfURL2 = URL.createObjectURL(pdfBlob);
+  //   let pdfBlob = new Blob([pdfURL], { type: 'application/pdf' });
+  //   let pdfURL2 = URL.createObjectURL(pdfBlob);
 
-    setLink(pdfURL2);
+  //   setLink(pdfURL2);
 
-    return () => {
-      URL.revokeObjectURL(pdfURL2);
-    };
-  }, [dataPenugasanPengajaran]);
+  //   return () => {
+  //     URL.revokeObjectURL(pdfURL2);
+  //   };
+  // }, [dataPenugasanPengajaran]);
 
   const generatePDFPenelitian = () => {
     (function (jsPDFAPI) {
@@ -291,12 +325,22 @@ const SuratPenugasanForm = () => {
     doc.text('Dekan', marginLeft + 28, 75.5);
 
     doc.setFont('Times', 'normal');
-    doc.text(
-      'menugaskan Dosen Tetap Sekolah STEM Terapan Universitas Prasetiya Mulya seperti terlampir, untuk melaksanakan kegiatan Penelitian pada semester ganjil 2021/2022 untuk periode 06 September 2021 – 12 Januari 2022.',
-      marginLeft,
-      85.4,
-      { maxWidth: pageWidth - 17.6 - marginLeft, align: 'justify' }
-    );
+
+    if (suratPenugasanData?.category === 'penelitian') {
+      doc.text(
+        'menugaskan Dosen Tetap Sekolah STEM Terapan Universitas Prasetiya Mulya seperti terlampir, untuk melaksanakan kegiatan Penelitian pada semester ganjil 2021/2022 untuk periode 06 September 2021 – 12 Januari 2022.',
+        marginLeft,
+        85.4,
+        { maxWidth: pageWidth - 17.6 - marginLeft, align: 'justify' }
+      );
+    } else if (suratPenugasanData?.category === 'pengabdian') {
+      doc.text(
+        'menugaskan Dosen Tetap Sekolah STEM Terapan Universitas Prasetiya Mulya seperti terlampir, untuk melaksanakan kegiatan Pengabdian kepada Masyarakat pada semester ganjil 2021/2022 untuk periode 06 September 2021 – 12 Januari 2022.',
+        marginLeft,
+        85.4,
+        { maxWidth: pageWidth - 17.6 - marginLeft, align: 'justify' }
+      );
+    }
 
     doc.text(
       'Demikianlah surat tugas ini dibuat dengan sebenarnya untuk dilaksanakan sebagaimana mestinya.',
@@ -305,14 +349,16 @@ const SuratPenugasanForm = () => {
       { maxWidth: pageWidth - 17.6 - marginLeft, align: 'justify' }
     );
 
-    doc.addImage(
-      require('../../assets/prof-yudi-sign-penelitian.png'),
-      'PNG',
-      119.2,
-      133,
-      43,
-      0
-    );
+    if (suratPenugasanData?.approved) {
+      doc.addImage(
+        require('../../assets/prof-yudi-sign-penelitian.png'),
+        'PNG',
+        119.2,
+        133,
+        43,
+        0
+      );
+    }
 
     doc.setFont('Candara', 'normal');
     doc.text('Ditetapkan di', 114, 127);
@@ -400,12 +446,12 @@ const SuratPenugasanForm = () => {
     });
 
     const filterBody = () => {
-      if (!dataPenugasanPengajaran) {
+      if (!dataPenugasanPenelitian) {
         return [];
       }
-      const dataPenugasanPengajaranLen = dataPenugasanPengajaran.data.length;
+      const dataPenugasanPenelitianLen = dataPenugasanPenelitian.data.length;
 
-      dataPenugasanPengajaran.data.sort(function (a, b) {
+      dataPenugasanPenelitian.data.sort(function (a, b) {
         var nameA = a.dosen_pengampu_detail.prodi_detail.name.toLowerCase(),
           nameB = b.dosen_pengampu_detail.prodi_detail.name.toLowerCase();
         if (nameA < nameB) return -1;
@@ -414,16 +460,16 @@ const SuratPenugasanForm = () => {
       });
 
       let data = [];
-      for (let i = 0; i < dataPenugasanPengajaranLen; i++) {
+      for (let i = 0; i < dataPenugasanPenelitianLen; i++) {
         data.push([
           {
             content: i + 1,
             styles: { halign: 'center' },
           },
-          dataPenugasanPengajaran.data[i].dosen_pengampu_detail.name,
+          dataPenugasanPenelitian.data[i].dosen_pengampu_detail.name,
           {
             content:
-              dataPenugasanPengajaran.data[i].dosen_pengampu_detail.prodi_detail
+              dataPenugasanPenelitian.data[i].dosen_pengampu_detail.prodi_detail
                 .name,
             styles: { halign: 'center' },
           },
@@ -533,7 +579,8 @@ const SuratPenugasanForm = () => {
       },
     });
 
-    return doc.output('blob');
+    return doc.save('test');
+    // return doc.output('blob');
   };
 
   const generatePDFPengajaran = () => {
@@ -1070,22 +1117,58 @@ const SuratPenugasanForm = () => {
   return (
     <>
       <ModalDelete
-        title="Penugasan Pengajaran"
+        title={`Penugasan ${suratPenugasanData?.category
+          ?.charAt(0)
+          .toUpperCase()}${suratPenugasanData?.category?.slice(1)}`}
         isOpen={openModalDelete}
         setIsOpen={setOpenModalDelete}
-        deleteFunc={() =>
-          deletePenugasanPengajaran(selectedItem, {
-            onSuccess: () => {
-              queryClient.invalidateQueries(
-                'penugasan-pengajaran-by-surat-penugasan'
-              );
-              setOpenModalDelete(false);
-            },
-          })
-        }
+        deleteFunc={() => {
+          if (suratPenugasanData?.category === 'pengajaran') {
+            deletePenugasanPengajaran(selectedItem, {
+              onSuccess: () => {
+                queryClient.invalidateQueries(
+                  'penugasan-pengajaran-by-surat-penugasan'
+                );
+                setOpenModalDelete(false);
+              },
+            });
+          } else if (suratPenugasanData?.category === 'penelitian') {
+            deletePenugasanPenelitian(selectedItem, {
+              onSuccess: () => {
+                queryClient.invalidateQueries(
+                  'penugasan-penelitian-by-surat-penugasan'
+                );
+                setOpenModalDelete(false);
+              },
+            });
+          } else if (suratPenugasanData?.category === 'pengabdian') {
+            deletePenugasanPengabdian(selectedItem, {
+              onSuccess: () => {
+                queryClient.invalidateQueries(
+                  'penugasan-pengabdian-by-surat-penugasan'
+                );
+                setOpenModalDelete(false);
+              },
+            });
+          }
+        }}
+      />
+      <PenugasanPengabdianModalForm
+        penugasanPengabdianRefetch={penugasanPengabdianRefetch}
+        openModal={openModalPengabdian}
+        setOpenModal={setOpenModalPengabdian}
+        penugasanPengabdianData={selectedItemEdit}
+        suratPenugasanId={id}
+      />
+      <PenugasanPenelitianModalForm
+        penugasanPenelitianRefetch={penugasanPenelitianRefetch}
+        openModal={openModalPenelitian}
+        setOpenModal={setOpenModalPenelitian}
+        penugasanPenelitianData={selectedItemEdit}
+        suratPenugasanId={id}
       />
       <PenugasanPengajaranModalForm
-        penugasanPengajaranRefetch={penugasanPengajaranRefetch}
+        penugasanPeopenModalngajaranRefetch={penugasanPengajaranRefetch}
         openModal={openModal}
         setOpenModal={setOpenModal}
         penugasanPengajaranData={selectedItemEdit}
@@ -1195,43 +1278,116 @@ const SuratPenugasanForm = () => {
       </section>
       {id ? (
         <>
-          <section
-            id="penugasan-pengajaran-table"
-            className="section-container mt-4"
-          >
-            <div className="flex flex-col items-start lg:justify-between lg:items-center lg:flex-row space-y-2 lg:space-y-0">
-              <p className="font-semibold text-lg">
-                Daftar Penugasan Pengajaran
-              </p>
-              <PrimaryButton
-                icon={<BiPlusCircle size={22} />}
-                onClick={() => {
-                  setSelectedItemEdit(null);
-                  setOpenModal((openModal) => !openModal);
-                }}
-              >
-                Buat Penugasan Pengajaran
-              </PrimaryButton>
-            </div>
+          {suratPenugasanData?.category === 'pengajaran' && (
+            <section
+              id="penugasan-pengajaran-table"
+              className="section-container mt-4"
+            >
+              <div className="flex flex-col items-start lg:justify-between lg:items-center lg:flex-row space-y-2 lg:space-y-0">
+                <p className="font-semibold text-lg">
+                  Daftar Penugasan Pengajaran
+                </p>
+                <PrimaryButton
+                  icon={<BiPlusCircle size={22} />}
+                  onClick={() => {
+                    setSelectedItemEdit(null);
+                    setOpenModal((openModal) => !openModal);
+                  }}
+                >
+                  Buat Penugasan Pengajaran
+                </PrimaryButton>
+              </div>
 
-            <div className="mt-8 w-full rounded-t-lg">
-              <PenugasanPengajaranTable
-                setSelectedItem={setSelectedItem}
-                setSelectedItemEdit={setSelectedItemEdit}
-                setOpenModalDelete={setOpenModalDelete}
-                setOpenModalEdit={setOpenModal}
-                loading={isLoadingPenugasanPengajaran}
-                data={dataPenugasanPengajaran?.data ?? []}
-              />
-            </div>
-          </section>
+              <div className="mt-8 w-full rounded-t-lg">
+                <PenugasanPengajaranTable
+                  setSelectedItem={setSelectedItem}
+                  setSelectedItemEdit={setSelectedItemEdit}
+                  setOpenModalDelete={setOpenModalDelete}
+                  setOpenModalEdit={setOpenModal}
+                  loading={isLoadingPenugasanPengajaran}
+                  data={dataPenugasanPengajaran?.data ?? []}
+                />
+              </div>
+            </section>
+          )}
+          {suratPenugasanData?.category === 'penelitian' && (
+            <section
+              id="penugasan-pengajaran-table"
+              className="section-container mt-4"
+            >
+              <div className="flex flex-col items-start lg:justify-between lg:items-center lg:flex-row space-y-2 lg:space-y-0">
+                <p className="font-semibold text-lg">
+                  Daftar Penugasan Penelitian
+                </p>
+                <PrimaryButton
+                  icon={<BiPlusCircle size={22} />}
+                  onClick={() => {
+                    setSelectedItemEdit(null);
+                    setOpenModalPenelitian((openModal) => !openModal);
+                  }}
+                >
+                  Buat Penugasan Penelitian
+                </PrimaryButton>
+              </div>
+
+              <div className="mt-8 w-full rounded-t-lg">
+                <PenugasanPenelitianTable
+                  setSelectedItem={setSelectedItem}
+                  setSelectedItemEdit={setSelectedItemEdit}
+                  setOpenModalDelete={setOpenModalDelete}
+                  setOpenModalEdit={setOpenModalPenelitian}
+                  loading={isLoadingPenugasanPenelitian}
+                  data={dataPenugasanPenelitian?.data ?? []}
+                />
+              </div>
+            </section>
+          )}
+          {suratPenugasanData?.category === 'pengabdian' && (
+            <section
+              id="penugasan-pengajaran-table"
+              className="section-container mt-4"
+            >
+              <div className="flex flex-col items-start lg:justify-between lg:items-center lg:flex-row space-y-2 lg:space-y-0">
+                <p className="font-semibold text-lg">
+                  Daftar Penugasan Pengabdian
+                </p>
+                <PrimaryButton
+                  icon={<BiPlusCircle size={22} />}
+                  onClick={() => {
+                    setSelectedItemEdit(null);
+                    setOpenModalPengabdian((openModal) => !openModal);
+                  }}
+                >
+                  Buat Penugasan Pengabdian
+                </PrimaryButton>
+              </div>
+
+              <div className="mt-8 w-full rounded-t-lg">
+                <PenugasanPengabdianTable
+                  setSelectedItem={setSelectedItem}
+                  setSelectedItemEdit={setSelectedItemEdit}
+                  setOpenModalDelete={setOpenModalDelete}
+                  setOpenModalEdit={setOpenModalPenelitian}
+                  loading={isLoadingPenugasanPengabdian}
+                  data={dataPenugasanPengabdian?.data ?? []}
+                />
+              </div>
+            </section>
+          )}
           <section id="pdf" className="section-container mt-4">
             <p className="font-semibold text-lg">Format PDF</p>
             <div className="mt-2">
               {/* <PDFObject height="60rem" url={link} /> */}
               <PrimaryButton
                 onClick={() => {
-                  generatePDFPengajaran();
+                  if (suratPenugasanData?.category === 'pengajaran') {
+                    generatePDFPengajaran();
+                  } else if (
+                    suratPenugasanData?.category === 'penelitian' ||
+                    suratPenugasanData?.category === 'pengabdian'
+                  ) {
+                    generatePDFPenelitian();
+                  }
                 }}
               >
                 Download PDF

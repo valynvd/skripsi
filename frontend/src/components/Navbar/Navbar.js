@@ -68,70 +68,65 @@ const Navbar = () => {
                   url: '/dokumen-pembelajaran',
                   allowedRoles: userRole.facultyMember || userRole.admin,
                 },
-                {
-                  title: 'RPS',
-                  url: '/rps',
-                  allowedRoles: true,
-                },
               ]}
               icon={<AiOutlineBook size={22} />}
             />
           )}
+          <NavigationDropdownLink
+            title="Pelaks. Penelitian"
+            url="/pelaksanaan-penelitian"
+            setDropdownActive={setDropdownActive}
+            dropdownActive={dropdownActive}
+            childrenUrl={[
+              {
+                title: 'Penelitian',
+                url: '/penugasan-penelitian',
+                allowedRoles: true,
+              },
+              {
+                title: 'Publikasi Karya',
+                url: '/publikasi-karya',
+                allowedRoles: true,
+              },
+              {
+                title: 'Paten/HKI',
+                url: '/paten-hki',
+                allowedRoles: true,
+              },
+            ]}
+            icon={<GoBeaker size={22} />}
+          />
+          <NavigationDropdownLink
+            title="Pelaks. Pengabdian"
+            url="/pelaksanaan-pengabdian"
+            setDropdownActive={setDropdownActive}
+            dropdownActive={dropdownActive}
+            childrenUrl={[
+              {
+                title: 'Pengabdian',
+                url: '/penugasan-pengabdian',
+                allowedRoles: true,
+              },
+              {
+                title: 'Pengelola Jurnal',
+                url: '/pengelola-jurnal',
+                allowedRoles: true,
+              },
+              {
+                title: 'Pembicara',
+                url: '/pembicara',
+                allowedRoles: true,
+              },
+              {
+                title: 'Jabatan Struktural',
+                url: '/jabatan-struktural',
+                allowedRoles: true,
+              },
+            ]}
+            icon={<MdWorkspacesOutline size={22} />}
+          />
           {userRole.admin && (
             <>
-              <NavigationDropdownLink
-                title="Pelaks. Penelitian"
-                url="/pelaksanaan-penelitian"
-                setDropdownActive={setDropdownActive}
-                dropdownActive={dropdownActive}
-                childrenUrl={[
-                  {
-                    title: 'Penelitian',
-                    url: '/penelitian',
-                    allowedRoles: userRole.admin,
-                  },
-                  {
-                    title: 'Publikasi Karya',
-                    url: '/publikasi-karya',
-                    allowedRoles: userRole.admin,
-                  },
-                  {
-                    title: 'Paten/HKI',
-                    url: '/paten-hki',
-                    allowedRoles: userRole.admin,
-                  },
-                ]}
-                icon={<GoBeaker size={22} />}
-              />
-              <NavigationDropdownLink
-                title="Pelaks. Pengabdian"
-                url="/pelaksanaan-pengabdian"
-                setDropdownActive={setDropdownActive}
-                dropdownActive={dropdownActive}
-                childrenUrl={[
-                  {
-                    title: 'Pengabdian',
-                    url: '/pengabdian',
-                    allowedRoles: userRole.admin,
-                  },
-                  {
-                    title: 'Pengelola Jurnal',
-                    url: '/pengelola-jurnal',
-                    allowedRoles: userRole.admin,
-                  },
-                  {
-                    title: 'Pembicara',
-                    url: '/pembicara',
-                    allowedRoles: userRole.admin,
-                  },
-                  {
-                    title: 'Jabatan Struktural',
-                    url: '/jabatan-struktural',
-                    allowedRoles: userRole.admin,
-                  },
-                ]}
-                icon={<MdWorkspacesOutline size={22} />}
-              />
               <NavigationDropdownLink
                 title="Data Master"
                 url="/data-master"

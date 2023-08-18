@@ -1,12 +1,11 @@
 {
   "files": {
-    "main.css": "/static/css/main.94b538cc.css",
-    "main.js": "/static/js/main.7dccc3bc.js",
+    "main.css": "/static/css/main.1e547d03.css",
+    "main.js": "/static/js/main.2533560d.js",
     "static/js/498.8c7f5c60.chunk.js": "/static/js/498.8c7f5c60.chunk.js",
     "static/js/703.dd222d96.chunk.js": "/static/js/703.dd222d96.chunk.js",
-    "static/js/598.072debe1.chunk.js": "/static/js/598.072debe1.chunk.js",
+    "static/js/513.7037378c.chunk.js": "/static/js/513.7037378c.chunk.js",
     "static/js/787.cda612ba.chunk.js": "/static/js/787.cda612ba.chunk.js",
-    "static/media/rps1.png": "/static/media/rps1.b5e85f3b808f9d1e3375.png",
     "static/media/prasmul-logo-default.png": "/static/media/prasmul-logo-default.e50c408c98bf963dbf70.png",
     "static/media/prof-yudi-sign-penelitian.png": "/static/media/prof-yudi-sign-penelitian.d5d4d5d19215d3cd7970.png",
     "static/media/prasmul-logo-white.png": "/static/media/prasmul-logo-white.4f2c7838ae13a89925f5.png",
@@ -14,15 +13,15 @@
     "static/media/login-image.png": "/static/media/login-image.19ac1286e8b5afdfbdc5.png",
     "static/media/prasmul-logo-red.png": "/static/media/prasmul-logo-red.763bac7dd6fe6a877b6e.png",
     "index.html": "/index.html",
-    "main.94b538cc.css.map": "/static/css/main.94b538cc.css.map",
-    "main.7dccc3bc.js.map": "/static/js/main.7dccc3bc.js.map",
+    "main.1e547d03.css.map": "/static/css/main.1e547d03.css.map",
+    "main.2533560d.js.map": "/static/js/main.2533560d.js.map",
     "498.8c7f5c60.chunk.js.map": "/static/js/498.8c7f5c60.chunk.js.map",
     "703.dd222d96.chunk.js.map": "/static/js/703.dd222d96.chunk.js.map",
-    "598.072debe1.chunk.js.map": "/static/js/598.072debe1.chunk.js.map",
+    "513.7037378c.chunk.js.map": "/static/js/513.7037378c.chunk.js.map",
     "787.cda612ba.chunk.js.map": "/static/js/787.cda612ba.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.94b538cc.css",
-    "static/js/main.7dccc3bc.js"
+    "static/css/main.1e547d03.css",
+    "static/js/main.2533560d.js"
   ]
 }
