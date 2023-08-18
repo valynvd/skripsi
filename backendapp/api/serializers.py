@@ -65,11 +65,13 @@ class PatenSerializers(serializers.ModelSerializer):
       fields = '__all__'
 
 class PenugasanPenelitianSerializers(serializers.ModelSerializer):
+  dosen_pengampu_detail = DosenSerializers(source='dosen_pengampu', many=False, read_only=True)
   class Meta:
       model = models.PenugasanPenelitian
       fields = '__all__'
 
 class PenugasanPengabdianSerializers(serializers.ModelSerializer):
+  dosen_pengampu_detail = DosenSerializers(source='dosen_pengampu', many=False, read_only=True)
   class Meta:
       model = models.PenugasanPengabdian
       fields = '__all__'
