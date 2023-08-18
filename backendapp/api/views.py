@@ -115,6 +115,24 @@ class PenugasanPenelitianViewSet(viewsets.ModelViewSet):
             self.permission_classes = [IsAuthenticated]
         return super(self.__class__, self).get_permissions()
 
+class PenugasanPenelitianByDosenViewSet(generics.ListAPIView):
+    serializer_class = serializers.PenugasanPenelitianSerializers
+    queryset = models.PenugasanPenelitian.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        penugasanPenelitianByDosen = models.PenugasanPenelitian.objects.filter(dosen_pengampu__id = self.kwargs['dosenId'] )
+        serializer = self.get_serializer(penugasanPenelitianByDosen, many=True)
+
+        return Response(serializer.data)
+
+    def get_permissions(self):
+        print(self)
+        if self.request.method == 'GET':
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+
 class PublikasiKaryaViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.PublikasiKaryaSerializers
     queryset = models.PublikasiKarya.objects.all()
@@ -147,6 +165,25 @@ class PenugasanPengabdianViewSet(viewsets.ModelViewSet):
         else:
             self.permission_classes = [IsAuthenticated]
         return super(self.__class__, self).get_permissions()
+
+class PenugasanPengabdianByDosenViewSet(generics.ListAPIView):
+    serializer_class = serializers.PenugasanPengabdianSerializers
+    queryset = models.PenugasanPengabdian.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        penugasanPengabdianByDosen = models.PenugasanPengabdian.objects.filter(dosen_pengampu__id = self.kwargs['dosenId'] )
+        serializer = self.get_serializer(penugasanPengabdianByDosen, many=True)
+
+        return Response(serializer.data)
+
+    def get_permissions(self):
+        print(self)
+        if self.request.method == 'GET':
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+
 
 class PembicaraViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.PembicaraSerializers

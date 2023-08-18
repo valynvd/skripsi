@@ -63,8 +63,12 @@ urlpatterns = [
   path('riwayatdokumenpembelajaranbydokumenpembelajaran/<dokumenPembelajaranId>/', views.RiwayatDokumenPembelajaranByDokumenPembelajaranViewSet.as_view()),
   # penugasan pengajaran
   path('penugasanpengabdianbysuratpenugasan/<suratPenugasanId>/', views.PenugasanPengabdianBySuratPenugasan.as_view()),
-  path('penugasanpenelitianbysuratpenugasan/<suratPenugasanId>/', views.PenugasanPenelitianBySuratPenugasan.as_view()),
+  path('penugasanpengabdianbydosen/<dosenId>/', views.PenugasanPengabdianByDosenViewSet.as_view()),
+
   path('penugasanpengajaranbysuratpenugasan/<suratPenugasanId>/', views.PenugasanPengajaranBySuratPenugasan.as_view()),
+
+  path('penugasanpenelitianbysuratpenugasan/<suratPenugasanId>/', views.PenugasanPenelitianBySuratPenugasan.as_view()),
+  path('penugasanpenelitianbydosen/<dosenId>/', views.PenugasanPenelitianByDosenViewSet.as_view()),
   # portofolio perkuliahan
   path('portofolioperkuliahanbydosen/<dosenId>/', views.PortofolioPerkuliahanByDosenViewSet.as_view()),
   #  documentation
