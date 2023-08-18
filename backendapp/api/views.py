@@ -104,6 +104,83 @@ class SuratPenugasanViewSet(viewsets.ModelViewSet):
             self.permission_classes = [IsAuthenticated]
         return super(self.__class__, self).get_permissions()
 
+class PenugasanPenelitianViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.PenugasanPenelitianSerializers
+    queryset = models.PenugasanPenelitian.objects.all()
+
+    def get_permissions(self):
+        if self.action in ['list','retrieve']:
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+
+class PublikasiKaryaViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.PublikasiKaryaSerializers
+    queryset = models.PublikasiKarya.objects.all()
+
+    def get_permissions(self):
+        if self.action in ['list','retrieve']:
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+
+class PatenViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.PatenSerializers
+    queryset = models.Paten.objects.all()
+
+    def get_permissions(self):
+        if self.action in ['list','retrieve']:
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+
+class PenugasanPengabdianViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.PenugasanPengabdianSerializers
+    queryset = models.PenugasanPengabdian.objects.all()
+
+    def get_permissions(self):
+        if self.action in ['list','retrieve']:
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+
+class PembicaraViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.PembicaraSerializers
+    queryset = models.Pembicara.objects.all()
+
+    def get_permissions(self):
+        if self.action in ['list','retrieve']:
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+
+class PengelolaJurnalViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.PengelolaJurnalSerializers
+    queryset = models.PengelolaJurnal.objects.all()
+
+    def get_permissions(self):
+        if self.action in ['list','retrieve']:
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+
+class RiwayatJabatanStrukturalViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.RiwayatJabatanStrukturalSerializers
+    queryset = models.RiwayatJabatanStruktural.objects.all()
+
+    def get_permissions(self):
+        if self.action in ['list','retrieve']:
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+
 class PenugasanPengajaranViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.PenugasanPengajaranSerializers
     queryset = models.PenugasanPengajaran.objects.all()

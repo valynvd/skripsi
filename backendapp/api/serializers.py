@@ -54,6 +54,41 @@ class SuratPenugasanSerializers(serializers.ModelSerializer):
       model = models.SuratPenugasan
       fields = '__all__'
 
+class PublikasiKaryaSerializers(serializers.ModelSerializer):
+  class Meta:
+      model = models.PublikasiKarya
+      fields = '__all__'
+
+class PatenSerializers(serializers.ModelSerializer):
+  class Meta:
+      model = models.Paten
+      fields = '__all__'
+
+class PenugasanPenelitianSerializers(serializers.ModelSerializer):
+  class Meta:
+      model = models.PenugasanPenelitian
+      fields = '__all__'
+
+class PenugasanPengabdianSerializers(serializers.ModelSerializer):
+  class Meta:
+      model = models.PenugasanPengabdian
+      fields = '__all__'
+
+class PembicaraSerializers(serializers.ModelSerializer):
+  class Meta:
+      model = models.Pembicara
+      fields = '__all__'
+
+class PengelolaJurnalSerializers(serializers.ModelSerializer):
+  class Meta:
+      model = models.PengelolaJurnal
+      fields = '__all__'
+
+class RiwayatJabatanStrukturalSerializers(serializers.ModelSerializer):
+  class Meta:
+      model = models.RiwayatJabatanStruktural
+      fields = '__all__'
+
 class PenugasanPengajaranSerializers(serializers.ModelSerializer):
   surat_penugasan_detail = SuratPenugasanSerializers(source='surat_penugasan', many=False, read_only=True)
   dosen_pengampu_detail = DosenSerializers(source='dosen_pengampu', many=False, read_only=True)
@@ -150,7 +185,7 @@ class AssignMahasiswatoGrupSerializers(serializers.ModelSerializer):
 
   class Meta:
       model = models.AssignMahasiswatoGrup
-      fields = '__all__'
+      model = models.AssignMahasiswatoGrup
 
 class MonitoringMahasiswaSerializers(serializers.ModelSerializer):
   # nama_mahasiswa = serializers.CharField(write_only=True)

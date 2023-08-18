@@ -173,36 +173,170 @@ class SuratPenugasan(models.Model):
 	def __str__(self) -> str:
 		return '{}'.format(self.judul)
 
+class PublikasiKarya(models.Model):
+	created_at = models.DateTimeField(default=timezone.now)
+	dosenId = models.ForeignKey(Dosen, on_delete=models.SET_NULL, blank=True, null=True)
+	title = models.CharField(max_length=100)
+	description = models.TextField(blank=True, null=True)
+	file = UniqueNameFileField(upload_to='evaluasi/publikasi_karya/')
+
+	def __str__(self) -> str:
+		return '{}'.format(self.title)
+
+class Paten(models.Model):
+	created_at = models.DateTimeField(default=timezone.now)
+	dosenId = models.ForeignKey(Dosen, on_delete=models.SET_NULL, blank=True, null=True)
+	title = models.CharField(max_length=100)
+	description = models.TextField(blank=True, null=True)
+	file = UniqueNameFileField(upload_to='evaluasi/paten/')
+
+	def __str__(self) -> str:
+		return '{}'.format(self.title)
+
+class Pembicara(models.Model):
+	created_at = models.DateTimeField(default=timezone.now)
+	dosenId = models.ForeignKey(Dosen, on_delete=models.SET_NULL, blank=True, null=True)
+	title = models.CharField(max_length=100)
+	LIST_SPEAKER_CATEGORY = (
+			('Pembicara pada pertemuan ilmiah', 'Pembicara pada pertemuan ilmiah'),
+			('Pembicara kunci', 'Pembicara kunci'),
+			('Pembicara/narasumber pada pelatihan/penyuluhan/ceramah', 'Pembicara/narasumber pada pelatihan/penyuluhan/ceramah'),
+	)
+	speaker_category = models.CharField(max_length=200, choices=LIST_SPEAKER_CATEGORY, blank=True, null=True)
+	LIST_MEETING_LEVEL = (
+			('Lokal', 'Lokal'),
+			('Daerah', 'Daerah'),
+			('Nasional', 'Nasional'),
+			('Internasional', 'Internasional'),
+			('Lain-lain', 'Lain-lain'),
+	)
+	meeting_level = models.CharField(max_length=40, choices=LIST_MEETING_LEVEL, blank=True, null=True)
+	organizer = models.CharField(max_length=100)
+	start_date = models.DateField(blank=True, null=True)
+	language = models.CharField(max_length=20, blank=True, null=True)
+	file = UniqueNameFileField(upload_to='evaluasi/pembicara/', blank=True, null=True)
+
+	def __str__(self) -> str:
+		return '{}'.format(self.title)
+
+class PengelolaJurnal(models.Model):
+	created_at = models.DateTimeField(default=timezone.now)
+	dosenId = models.ForeignKey(Dosen, on_delete=models.SET_NULL, blank=True, null=True)
+	role = models.CharField(max_length=100)
+	publication_media = models.CharField(max_length=100)
+	assignment_letter_number = models.IntegerField()
+	start_date = models.DateField(blank=True, null=True)
+	end_date = models.DateField(blank=True, null=True)
+	file = UniqueNameFileField(upload_to='evaluasi/pengelola_jurnal/', blank=True, null=True)
+
+	def __str__(self) -> str:
+		return '{}'.format(self.role)
+
+class RiwayatJabatanStruktural(models.Model):
+	created_at = models.DateTimeField(default=timezone.now)
+	dosenId = models.ForeignKey(Dosen, on_delete=models.SET_NULL, blank=True, null=True)
+	LIST_POSITION_TITLE = (
+			('Kepala Dinas', 'Kepala Dinas'),
+			('Kepala Badan', 'Kepala Badan'),
+			('Anggota BPK', 'Anggota BPK'),
+			('Ketua MA', 'Ketua MA'),
+			('Wakil Ketua MA', 'Wakil Ketua MA'),
+			('Ketua Muda Ma', 'Ketua Muda Ma'),
+			('Hakim MA', 'Hakim MA'),
+			('Anggota DPA', 'Anggota DPA'),
+			('Menteri', 'Menteri'),
+			('Duta Besar', 'Duta Besar'),
+			('Kepala Pusat', 'Kepala Pusat'),
+			('Kepala Biro', 'Kepala Biro'),
+	)
+	position_title = models.CharField(max_length=50, choices=LIST_POSITION_TITLE, blank=True, null=True)
+	structural_position_decree_number = models.IntegerField()
+	start_date = models.DateField(blank=True, null=True)
+	end_date = models.DateField(blank=True, null=True)
+	location = models.TextField(blank=True, null=True)
+	file = UniqueNameFileField(upload_to='evaluasi/riwayat_jabatan_struktural/', blank=True, null=True)
+
+	def __str__(self) -> str:
+		return '{}'.format(self.position_title)
+
 class PenugasanPengajaran(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)
 	sks_realisasi = models.FloatField(default=0)
 	surat_penugasan = models.ForeignKey(
 			SuratPenugasan,
-			on_delete=models.CASCADE,
+			on_delete=models.SET_NULL,
+			blank=True,
+			null=True,
 	)
-	# tahun = models.CharField(max_length=30)
 	class_code = models.CharField(max_length=50, blank=True, null=True)
 	students_amount = models.IntegerField(null=True, blank=True)
-	# LIST_PERIODE = (
-	# 		('ganjil', 'ganjil'),
-	# 		('genap', 'genap'),
-	# 		('semester pendek', 'semester pendek'),
-	# )
-	# periode = models.CharField(max_length=100, choices=LIST_PERIODE, blank=True, null=True)
+	dosen_pengampu = models.ForeignKey(
+			Dosen,
+			on_delete=models.SET_NULL,
+			blank=True,
+			null=True,
+	)
+	mata_kuliah = models.ForeignKey(
+			MataKuliah,
+			on_delete=models.SET_NULL,
+			blank=True,
+			null=True,
+	)
+	def __str__(self) -> str:
+		return '{}-{}'.format(self.dosen_pengampu.inisial, self.mata_kuliah.name)
+
+class PenugasanPengabdian(models.Model):
+	created_at = models.DateTimeField(default=timezone.now)
+	surat_penugasan = models.ForeignKey(
+			SuratPenugasan,
+			on_delete=models.SET_NULL,
+			blank=True,
+			null=True,
+	)
 	dosen_pengampu = models.ForeignKey(
 			Dosen,
 			on_delete=models.CASCADE,
 			blank=True,
 			null=True,
 	)
-	mata_kuliah = models.ForeignKey(
-			MataKuliah,
+	title = models.CharField(max_length=100)
+	start_year = models.IntegerField()
+	total_year = models.IntegerField()
+	location = models.CharField(max_length=200)
+	dikti_total_fund = models.FloatField(blank=True, null=True)
+	college_total_fund = models.FloatField(blank=True, null=True)
+	other_institution_total_fund = models.FloatField(blank=True, null=True)
+	file = UniqueNameFileField(upload_to='evaluasi/pengabdian/', blank=True, null=True)
+
+	def __str__(self) -> str:
+		return '{}'.format(self.title)
+
+class PenugasanPenelitian(models.Model):
+	created_at = models.DateTimeField(default=timezone.now)
+	surat_penugasan = models.ForeignKey(
+			SuratPenugasan,
+			on_delete=models.SET_NULL,
+			blank=True,
+			null=True,
+	)
+	dosen_pengampu = models.ForeignKey(
+			Dosen,
 			on_delete=models.CASCADE,
 			blank=True,
 			null=True,
 	)
+	title = models.CharField(max_length=100)
+	start_year = models.IntegerField()
+	total_year = models.IntegerField()
+	location = models.CharField(max_length=200)
+	dikti_total_fund = models.FloatField(blank=True, null=True)
+	college_total_fund = models.FloatField(blank=True, null=True)
+	other_institution_total_fund = models.FloatField(blank=True, null=True)
+	file = UniqueNameFileField(upload_to='evaluasi/penelitian/', blank=True, null=True)
+
 	def __str__(self) -> str:
-		return '{}-{}'.format(self.dosen_pengampu.inisial, self.mata_kuliah.name)
+		return '{}'.format(self.title)
+
 
 class DokumenPembelajaran(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)
