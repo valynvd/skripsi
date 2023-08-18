@@ -75,7 +75,7 @@ const DegreeAuditKelulusanTable = ({
                   <div className="flex flex-row space-x-2">
                     <EditIcon
                         onClick={() => {
-                            navigate(`/data-master/data-mahasiswa/${value.id}`, {
+                            navigate(`/degreeaudit/degreeaudit-kelulusan/${value.id}`, {
                             state: value,
                             });
                         }}

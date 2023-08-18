@@ -11,6 +11,7 @@ import { ViewIcon, EditIcon } from '../../../components/IconButton';
 import { RxTriangleUp, RxTriangleDown } from 'react-icons/rx';
 import Pagination from '../../../components/Pagination';
 import { AiOutlineSearch } from 'react-icons/ai';
+import { ClipLoader } from 'react-spinners';
 // import { ExportPrimaryButton } from '../../../components/PrimaryButton';
 
 const KonsolChatbotTable = ({
@@ -172,7 +173,7 @@ const KonsolChatbotTable = ({
               </tr>
             ))}
           </thead>
-          {!loading && (
+          {!loading ? (
             <tbody {...getTableBodyProps()}>
               {page.map((row) => {
                 prepareRow(row);
@@ -202,6 +203,11 @@ const KonsolChatbotTable = ({
                 </tr>
               )}
             </tbody>
+          ) : (
+            <div className='center'>
+              <ClipLoader color="#ff0000" />
+            </div>
+          
           )}
         </table>
       </div>

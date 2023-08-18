@@ -9,11 +9,11 @@ const getValidasiMahasiswa = () => {
     });
 };
 
-// const getValidasiMahasiswaById = (id) => {
-//     return request({
-//         url: `/api-stem/datamahasiswa/${id}/`,
-//     });
-// };
+const getValidasiMahasiswaById = (id) => {
+    return request({
+        url: `/api-stem/validasimahasiswa/${id}/`,
+    });
+};
 
 const getValidasiMahasiswaByNIM = (nim) => {
     return request({
@@ -59,6 +59,13 @@ export const useValidasiMahasiswaDataByNIM = (nim, options) => {
       ...options,
     });
   };
+
+export const useValidasiMahasiswaById = (id, options) => {
+  return useQuery(['validasi-mahasiswa-by-id', id], () => getValidasiMahasiswaById(id), {
+    refetchOnWindowFocus: false,
+    ...options,
+  });
+};
 
 // export const useValidasiMahasiswaByProdi = (options) => {
 //     const prodi = useAuth().auth.userData?.dosen_detail?.prodi;

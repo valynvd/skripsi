@@ -88,37 +88,10 @@ const MonitoringMahasiswaImportExcel = () => {
             setProgress(newProgress.toFixed(2));
           },
         });
-      } catch (err) {
+        await delay(150);
+      } catch (error) {
         getResponseData.push(err.response.data);
       }
-
-      // try {
-      //   postMonitoringMahasiswa(monitoringMahasiswaFormData, {
-      //     onSuccess: () => {
-      //       console.log('Data submitted successfully for index:', index);
-      //       const newProgress = ((index + 1) / excelData.length) * 100;
-      //       if (newProgress == 100.0) {
-      //         setOpen(true);
-      //       }
-      //       setProgress(newProgress.toFixed(2));
-      //     },
-      //     onError: (error) => {
-      //       console.error('Error submitting data for index:', index, error);
-      //     },
-      //   });
-      //   // postTranskripNilai(transkripNilaiFormData, {
-      //   //   onSuccess: () => {
-      //   //     console.log('Data submitted successfully for index:', index);
-      //   //   },
-      //   //   onError: (error) => {
-      //   //     console.error('Error submitting data for index:', index, error);
-      //   //   },
-      //   // });
-
-      //   await delay(100);
-      // } catch (error) {
-      //   console.error('Error while processing data:', error);
-      // }
     }
 
     setResponseData(getResponseData);
@@ -128,6 +101,7 @@ const MonitoringMahasiswaImportExcel = () => {
 
   const handleToClose = () => {
     setOpen(false);
+    setProgress('');
   };
 
   return (

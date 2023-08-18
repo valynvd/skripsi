@@ -11,6 +11,7 @@ import { DeleteIcon, EditIcon } from '../../../components/IconButton';
 import { RxTriangleUp, RxTriangleDown } from 'react-icons/rx';
 import Pagination from '../../../components/Pagination';
 import { AiOutlineSearch } from 'react-icons/ai';
+import { ClipLoader } from 'react-spinners';
 // import { ExportPrimaryButton } from '../../../components/PrimaryButton';
 
 const KonsolChatbotTableSeputarLMS = ({
@@ -144,7 +145,7 @@ const KonsolChatbotTableSeputarLMS = ({
               </tr>
             ))}
           </thead>
-          {!loading && (
+          {!loading ? (
             <tbody {...getTableBodyProps()}>
               {page.map((row) => {
                 prepareRow(row);
@@ -174,6 +175,8 @@ const KonsolChatbotTableSeputarLMS = ({
                 </tr>
               )}
             </tbody>
+          ) : (
+            <ClipLoader color="#ff0000"/>
           )}
         </table>
       </div>

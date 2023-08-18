@@ -14,6 +14,7 @@ import { useForm } from 'react-hook-form';
 import { useProgramStudiData } from '../../../hooks/useProdi';
 import { RxTriangleUp, RxTriangleDown } from 'react-icons/rx';
 import { useNavigate } from 'react-router-dom';
+import { ClipLoader } from 'react-spinners';
 
 
 const MonitoringMahasiswaTable = ({
@@ -231,7 +232,7 @@ const MonitoringMahasiswaTable = ({
                     </tr>
                     ))}
                 </thead>
-                {!loading && (
+                {!loading ? (
                     <tbody {...getTableBodyProps()}>
                     {page.map((row) => {
                         prepareRow(row);
@@ -261,6 +262,8 @@ const MonitoringMahasiswaTable = ({
                         </tr>
                     )}
                     </tbody>
+                ) : (
+                    <ClipLoader color="#ff0000"/>
                 )}
                 </table>
             </div>

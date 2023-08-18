@@ -9,6 +9,7 @@ import { useLocation } from 'react-router-dom';
 import { useTranskripNilaiDataByNIM } from '../../hooks/useTranskripNilai';
 import { usePostValidasiMahasiswa } from '../../hooks/useValidasiMahasiswa';
 import jsPDF from 'jspdf';
+import { RxTriangleUp, RxTriangleRight } from 'react-icons/rx';
 import autoTable from 'jspdf-autotable';
 
 const ValidasiMahasiswaByNIM = () => {
@@ -30,6 +31,8 @@ const ValidasiMahasiswaByNIM = () => {
   const [statusKelulusan, setStatusKelulusan] = useState('')
   const [validasi, setValidasi] = useState([])
   const [readyAudit, setReadyAudit] = useState(false);
+  const [showTableD, setShowTableD] = useState(false);
+  const [showTableE, setShowTableE] = useState(false);
   
   const navigate = useNavigate();
 
@@ -121,20 +124,22 @@ const ValidasiMahasiswaByNIM = () => {
     const ipkData = calculateIPK(ipsData);
     setNilaiIpk(ipkData);
 
-    if (nilaiIpk > 3.50 && jumlahSks == "144") {
-      const status = "Cum Laude";
+    let status = "";
+
+    if (parseFloat(ipkData) > 3.50 && totalEarnedCredits == 144) {
+      status = "Cum Laude";
       setStatusKelulusan(status);
-    } else if (nilaiIpk > 3.01 && nilaiD <= 7 && nilaiE == 0 && jumlahSks == "144"){
-      const status = "Sangat Memuaskan";
+    } else if (ipkData > 3.01 && totalSKSNilaiD <= 7 && totalSKSNilaiE == 0 && totalEarnedCredits == 144){
+      status = "Sangat Memuaskan";
       setStatusKelulusan(status);
-    } else if (nilaiIpk > 2.76 && nilaiD <= 7 && nilaiE == 0 && jumlahSks == "144"){
-      const status = "Memuaskan";
+    } else if (ipkData > 2.76 && totalSKSNilaiD <= 7 && totalSKSNilaiE == 0 && totalEarnedCredits == 144){
+      status = "Memuaskan";
       setStatusKelulusan(status);
-    } else if (nilaiIpk > 2.00 && nilaiD <= 7 && nilaiE == 0 && jumlahSks == "144"){
-      const status = "Cukup";
+    } else if (ipkData > 2.00 && totalSKSNilaiD <= 7 && totalSKSNilaiE == 0 && totalEarnedCredits == 144){
+      status = "Cukup";
       setStatusKelulusan(status);
     } else {
-      const status = "Tidak Lulus";
+      status = "Tidak Lulus";
       setStatusKelulusan(status);
     }
 
@@ -145,9 +150,11 @@ const ValidasiMahasiswaByNIM = () => {
       jumlah_sks: totalEarnedCredits,
       nilaie: totalSKSNilaiE,
       nilaid: totalSKSNilaiD,
-      status_kelulusan: statusKelulusan,
+      status_kelulusan: status,
       nilai_ipk: ipkData,
     })
+
+    console.log(status)
 
     setReadyAudit(true)
     setValidasi(dataValidasi);
@@ -203,6 +210,26 @@ const ValidasiMahasiswaByNIM = () => {
     doc.save(`${transkripData[0].mahasiswa_detail.nama} Degree Audit.pdf`);
   }
 
+  const handleButtonHideD = () => {
+    if (showTableD) {
+      setShowTableD(false);
+    } else {
+      setShowTableD(true);
+      setShowTableE(false);
+    }
+    
+  }; 
+
+  const handleButtonHideE = () => {
+    if (showTableE) {
+      setShowTableE(false);
+    } else {
+      setShowTableE(true);
+      setShowTableD(false);
+    }
+    
+  }; 
+
   return (
     <section id="monitoring-mahasiswa" className="section-container">
       <div className="flex flex-col items-start lg:justify-between lg:items-center lg:flex-row space-y-2 lg:space-y-0">
@@ -211,8 +238,10 @@ const ValidasiMahasiswaByNIM = () => {
           {!userRole.admin}
         </p>
         <PrimaryButton
-          onClick={() => {
-            handleExport()
+          onClick={async () => {
+            setShowTableD(false);
+            setShowTableE(false);
+            await handleExport();
           }}
         >
           Export to PDF
@@ -296,8 +325,41 @@ const ValidasiMahasiswaByNIM = () => {
                 <td className="px-4 py-3">{transkripData[0].mahasiswa_detail.prodi_detail.name}</td>
                 <td className="px-4 py-3">{transkripData[0].mahasiswa_detail.angkatan}</td>
                 <td className="px-4 py-3">{jumlahSks} / 144</td>
-                <td className="px-4 py-3">{nilaiD} sks</td>
-                <td className="px-4 py-3">{nilaiE} sks</td>
+                <td className="px-4 py-3">
+                  {nilaiD} sks 
+                  {showTableD ? 
+                    <RxTriangleUp
+                        size={20}
+                        color="gray"
+                        className="inline ml-1"
+                        onClick={() => {handleButtonHideD()}}
+                    />
+                  : <RxTriangleRight
+                    size={20}
+                    color="gray"
+                    className="inline ml-1"
+                    onClick={() => {handleButtonHideD()}}
+                  />
+                  }
+                  
+                </td>
+                <td className="px-4 py-3">
+                  {nilaiE} sks
+                  {showTableE ? 
+                    <RxTriangleUp
+                        size={20}
+                        color="gray"
+                        className="inline ml-1"
+                        onClick={() => {handleButtonHideE()}}
+                    />
+                  : <RxTriangleRight
+                    size={20}
+                    color="gray"
+                    className="inline ml-1"
+                    onClick={() => {handleButtonHideE()}}
+                  />
+                  }
+                </td>
                 <td className="px-4 py-3">{nilaiIpk}</td>
                 <td className="px-4 py-3">{statusKelulusan}</td>
             </tr>
@@ -307,8 +369,119 @@ const ValidasiMahasiswaByNIM = () => {
           </table>
           
       </div>
+      { showTableD ? (
+      <div className="overflow-x-auto">
+        <table id="table-nilaid" className="w-full mt-10">
+          <thead className="bg-primary-400/[0.03] whitespace-nowrap rounded-xl">
+            <tr>
+              <th className="px-4 py-3 font-semibold">Mata Kuliah</th>
+              <th className="px-4 py-3 font-semibold">Sesi Akademik</th>
+              <th className="px-4 py-3 font-semibold">SKS</th>
+              <th className="px-4 py-3 font-semibold">Nilai</th>
+            </tr>
+          </thead>
+          <tbody>
+            {transkripData
+              .filter((getdata) => getdata.grade_symbol == "D") // Use === for comparison
+              .map((filteredData, index) => (
+                <tr key={index} className="bg-white border-b text-gray-600">
+                  <td className="px-4 py-3">
+                    <p className="flex flex-row items-center">
+                      {filteredData.mata_kuliah_detail.name}
+                    </p>
+                  </td>
+                  <td className="px-4 py-3">
+                    <p className="flex flex-row items-center">
+                      {filteredData.academic_year} - 
+                      {filteredData.academic_session === '10'
+                      ? " Odd"
+                      : filteredData.academic_session === '20'
+                      ? " Odd Short"
+                      : filteredData.academic_session === '30'
+                      ? " Even"
+                      : filteredData.academic_session === '40'
+                      ? " Even Short"
+                      : " Unknown Session Type"}
+                    </p>
+                  </td>
+                  <td className="px-4 py-3">
+                    <p className="flex flex-row items-center">
+                      {filteredData.mata_kuliah_detail.sks_total}
+                    </p>
+                  </td>
+                  <td className="px-4 py-3">
+                    <p className="flex flex-row items-center">
+                      {filteredData.grade_symbol}
+                    </p>
+                  </td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
+      </div>
+      ) : (
+        <div></div>
+      )
+    }
+    { showTableE ? (
+      <div className="overflow-x-auto">
+        <table id="table-nilaid" className="w-full mt-10">
+          <thead className="bg-primary-400/[0.03] whitespace-nowrap rounded-xl">
+            <tr>
+              <th className="px-4 py-3 font-semibold">Mata Kuliah</th>
+              <th className="px-4 py-3 font-semibold">Sesi Akademik</th>
+              <th className="px-4 py-3 font-semibold">SKS</th>
+              <th className="px-4 py-3 font-semibold">Nilai</th>
+            </tr>
+          </thead>
+          <tbody>
+            {transkripData
+              .filter((getdata) => getdata.grade_symbol == "E") // Use === for comparison
+              .map((filteredData, index) => (
+                <tr key={index} className="bg-white border-b text-gray-600">
+                  <td className="px-4 py-3">
+                    <p className="flex flex-row items-center">
+                      {filteredData.mata_kuliah_detail.name}
+                    </p>
+                  </td>
+                  <td className="px-4 py-3">
+                    <p className="flex flex-row items-center">
+                      {filteredData.academic_year} - 
+                      {filteredData.academic_session === '10'
+                      ? " Odd"
+                      : filteredData.academic_session === '20'
+                      ? " Odd Short"
+                      : filteredData.academic_session === '30'
+                      ? " Even"
+                      : filteredData.academic_session === '40'
+                      ? " Even Short"
+                      : " Unknown Session Type"}
+                    </p>
+                  </td>
+                  <td className="px-4 py-3">
+                    <p className="flex flex-row items-center">
+                      {filteredData.mata_kuliah_detail.sks_total}
+                    </p>
+                  </td>
+                  <td className="px-4 py-3">
+                    <p className="flex flex-row items-center">
+                      {filteredData.grade_symbol}
+                    </p>
+                  </td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
+      </div>
+      ) : (
+        <div></div>
+      )
+    }
 
-      {ipsSemester ? (
+      
+
+
+      {ipsSemester && showTableD == false && showTableE == false ? (
           <div className="overflow-x-auto">
           {ipsSemester.map((getData, tableIndex) => (
             <table id={`ips-table${tableIndex}`} key={tableIndex} className="w-full mt-10">
