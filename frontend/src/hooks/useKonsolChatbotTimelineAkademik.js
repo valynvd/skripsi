@@ -1,7 +1,7 @@
 import { request } from '../utils/axios-utils';
 import { useQuery, useMutation } from 'react-query';
 
-const url = 'http://localhost:5050/timelineakademik/';
+const url = 'https://servermongostem.vercel.app/timelineakademik/';
 
 const getKonsolChatbotTimeLineAkademik = () => {
     return request({
@@ -11,7 +11,7 @@ const getKonsolChatbotTimeLineAkademik = () => {
 
 const getKonsolChatbotTimeLineAkademikById = (id) => {
     return request({
-        url: `http://localhost:5050/timelineakademik/${id}/`,
+        url: `https://servermongostem.vercel.app/timelineakademik/${id}/`,
     });
 };
 

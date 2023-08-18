@@ -1,7 +1,7 @@
 import { request } from '../utils/axios-utils';
 import { useQuery, useMutation } from 'react-query';
 
-const url = 'http://localhost:5050/periodepembayaran/';
+const url = 'https://servermongostem.vercel.app/periodepembayaran/';
 
 const getKonsolChatbotPeriodePembayaran = () => {
     return request({
@@ -11,7 +11,7 @@ const getKonsolChatbotPeriodePembayaran = () => {
 
 const getKonsolChatbotPeriodePembayaranById = (id) => {
     return request({
-        url: `http://localhost:5050/periodepembayaran/${id}/`,
+        url: `https://servermongostem.vercel.app/periodepembayaran/${id}/`,
     });
 };
 

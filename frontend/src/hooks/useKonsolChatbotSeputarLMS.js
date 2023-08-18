@@ -1,7 +1,7 @@
 import { request } from '../utils/axios-utils';
 import { useQuery, useMutation } from 'react-query';
 
-const url = 'http://localhost:5050/seputarlms/';
+const url = 'https://servermongostem.vercel.app/seputarlms/';
 
 const getKonsolChatbotSeputarLMS= () => {
     return request({
@@ -11,7 +11,7 @@ const getKonsolChatbotSeputarLMS= () => {
 
 const getKonsolChatbotSeputarLMSById = (id) => {
     return request({
-        url: `http://localhost:5050/seputarlms/${id}/`,
+        url: `https://servermongostem.vercel.app/seputarlms/${id}/`,
     });
 };
 

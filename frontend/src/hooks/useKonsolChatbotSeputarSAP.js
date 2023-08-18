@@ -1,7 +1,7 @@
 import { request } from '../utils/axios-utils';
 import { useQuery, useMutation } from 'react-query';
 
-const url = 'http://localhost:5050/seputarsap/';
+const url = 'https://servermongostem.vercel.app/seputarsap/';
 
 const getKonsolChatbotSeputarSAP = () => {
     return request({
@@ -11,7 +11,7 @@ const getKonsolChatbotSeputarSAP = () => {
 
 const getKonsolChatbotSeputarSAPById = (id) => {
     return request({
-        url: `http://localhost:5050/seputarsap/${id}/`,
+        url: `https://servermongostem.vercel.app/seputarsap/${id}/`,
     });
 };
 

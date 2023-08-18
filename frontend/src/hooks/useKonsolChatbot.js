@@ -1,7 +1,7 @@
 import { request } from '../utils/axios-utils';
 import { useQuery, useMutation } from 'react-query';
 
-const url = 'http://localhost:5050/pertanyaanumum/';
+const url = 'https://servermongostem.vercel.app/pertanyaanumum/';
 
 const getKonsolChatbot = () => {
     return request({
