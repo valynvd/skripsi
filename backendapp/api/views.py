@@ -311,6 +311,23 @@ class RiwayatDokumenPembelajaranByDokumenPembelajaranViewSet(generics.ListAPIVie
             self.permission_classes = [IsAuthenticated]
         return super(self.__class__, self).get_permissions()
 
+class PenugasanPenelitianBySuratPenugasan(generics.ListAPIView):
+    serializer_class = serializers.PenugasanPenelitianSerializers
+    queryset = models.PenugasanPenelitian.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        penugasanPenelitianBySuratPenugasan = models.PenugasanPenelitian.objects.filter(surat_penugasan__id=self.kwargs['suratPenugasanId'])
+        serializer = self.get_serializer(penugasanPenelitianBySuratPenugasan, many=True)
+
+        return Response(serializer.data)
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+
 class PenugasanPengajaranBySuratPenugasan(generics.ListAPIView):
     serializer_class = serializers.PenugasanPengajaranSerializers
     queryset = models.PenugasanPengajaran.objects.all()
