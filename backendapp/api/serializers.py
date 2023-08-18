@@ -66,6 +66,8 @@ class PatenSerializers(serializers.ModelSerializer):
 
 class PenugasanPenelitianSerializers(serializers.ModelSerializer):
   dosen_pengampu_detail = DosenSerializers(source='dosen_pengampu', many=False, read_only=True)
+  surat_penugasan_detail = SuratPenugasanSerializers(source='surat_penugasan', many=False, read_only=True)
+
   class Meta:
       model = models.PenugasanPenelitian
       fields = '__all__'
