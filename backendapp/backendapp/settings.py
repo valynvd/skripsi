@@ -105,6 +105,11 @@ TEMPLATES = [
 WSGI_APPLICATION = 'backendapp.wsgi.application'
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 50000
 
+DJOSER = {
+    'SERIALIZERS': {
+        'current_user': 'account.serializers.UserSerializerMeDAB',
+    }
+}
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
