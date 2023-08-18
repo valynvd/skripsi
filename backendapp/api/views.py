@@ -120,7 +120,7 @@ class PenugasanPenelitianByDosenViewSet(generics.ListAPIView):
     queryset = models.PenugasanPenelitian.objects.all()
 
     def get(self, request, *args, **kwargs):
-        penugasanPenelitianByDosen = models.PenugasanPenelitian.objects.filter(dosen_pengampu__id = self.kwargs['dosenId'] )
+        penugasanPenelitianByDosen = models.PenugasanPenelitian.objects.filter(dosen_pengampu__user__id = self.kwargs['dosenId'] )
         serializer = self.get_serializer(penugasanPenelitianByDosen, many=True)
 
         return Response(serializer.data)
@@ -171,7 +171,7 @@ class PenugasanPengabdianByDosenViewSet(generics.ListAPIView):
     queryset = models.PenugasanPengabdian.objects.all()
 
     def get(self, request, *args, **kwargs):
-        penugasanPengabdianByDosen = models.PenugasanPengabdian.objects.filter(dosen_pengampu__id = self.kwargs['dosenId'] )
+        penugasanPengabdianByDosen = models.PenugasanPengabdian.objects.filter(dosen_pengampu__user__id = self.kwargs['dosenId'] )
         serializer = self.get_serializer(penugasanPengabdianByDosen, many=True)
 
         return Response(serializer.data)
