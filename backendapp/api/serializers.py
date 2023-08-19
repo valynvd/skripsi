@@ -55,6 +55,7 @@ class SuratPenugasanSerializers(serializers.ModelSerializer):
       fields = '__all__'
 
 class PublikasiKaryaSerializers(serializers.ModelSerializer):
+  dosen_pengampu_detail = DosenSerializers(source='dosen_pengampu', many=False, read_only=True)
   class Meta:
       model = models.PublikasiKarya
       fields = '__all__'
