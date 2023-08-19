@@ -144,6 +144,42 @@ class PublikasiKaryaViewSet(viewsets.ModelViewSet):
             self.permission_classes = [IsAuthenticated]
         return super(self.__class__, self).get_permissions()
 
+class PublikasiKaryaByDosenViewSet(generics.ListAPIView):
+    serializer_class = serializers.PublikasiKaryaSerializers
+    queryset = models.PublikasiKarya.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        publikasiKaryaByDosen = models.PublikasiKarya.objects.filter(dosen_pengampu__user__id = self.kwargs['dosenId'] )
+        serializer = self.get_serializer(publikasiKaryaByDosen, many=True)
+
+        return Response(serializer.data)
+
+    def get_permissions(self):
+        print(self)
+        if self.request.method == 'GET':
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+
+class PublikasiKaryaByProdiViewSet(generics.ListAPIView):
+    serializer_class = serializers.PublikasiKaryaSerializers
+    queryset = models.PublikasiKarya.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        publikasiKaryaByProdi = models.PublikasiKarya.objects.filter(dosen_pengampu__prodi__id=self.kwargs['prodiId'])
+        serializer = self.get_serializer(publikasiKaryaByProdi, many=True)
+
+        return Response(serializer.data)
+
+    def get_permissions(self):
+        print(self)
+        if self.request.method == 'GET':
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+
 class PatenViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.PatenSerializers
     queryset = models.Paten.objects.all()
@@ -183,7 +219,6 @@ class PenugasanPengabdianByProdiViewSet(generics.ListAPIView):
         else:
             self.permission_classes = [IsAuthenticated]
         return super(self.__class__, self).get_permissions()
-
 
 class PenugasanPengabdianByDosenViewSet(generics.ListAPIView):
     serializer_class = serializers.PenugasanPengabdianSerializers

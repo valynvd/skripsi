@@ -72,6 +72,9 @@ urlpatterns = [
   path('penugasanpenelitianbysuratpenugasan/<suratPenugasanId>/', views.PenugasanPenelitianBySuratPenugasan.as_view()),
   path('penugasanpenelitianbyprodi/<prodiId>/', views.PenugasanPenelitianByProdiViewSet.as_view()),
   path('penugasanpenelitianbydosen/<dosenId>/', views.PenugasanPenelitianByDosenViewSet.as_view()),
+  # publikasi karya
+  path('publikasikaryabydosen/<dosenId>/', views.PublikasiKaryaByDosenViewSet.as_view()),
+  path('publikasikaryabyprodi/<prodiId>/', views.PublikasiKaryaByProdiViewSet.as_view()),
   # portofolio perkuliahan
   path('portofolioperkuliahanbydosen/<dosenId>/', views.PortofolioPerkuliahanByDosenViewSet.as_view()),
   #  documentation

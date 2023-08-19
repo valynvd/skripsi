@@ -175,7 +175,7 @@ class SuratPenugasan(models.Model):
 
 class PublikasiKarya(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)
-	dosenId = models.ForeignKey(Dosen, on_delete=models.SET_NULL, blank=True, null=True)
+	dosen_pengampu = models.ForeignKey(Dosen, on_delete=models.SET_NULL, blank=True, null=True)
 	title = models.CharField(max_length=100)
 	description = models.TextField(blank=True, null=True)
 	file = UniqueNameFileField(upload_to='evaluasi/publikasi_karya/')
@@ -185,7 +185,7 @@ class PublikasiKarya(models.Model):
 
 class Paten(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)
-	dosenId = models.ForeignKey(Dosen, on_delete=models.SET_NULL, blank=True, null=True)
+	dosen_pengampu = models.ForeignKey(Dosen, on_delete=models.SET_NULL, blank=True, null=True)
 	title = models.CharField(max_length=100)
 	description = models.TextField(blank=True, null=True)
 	file = UniqueNameFileField(upload_to='evaluasi/paten/')
@@ -195,7 +195,7 @@ class Paten(models.Model):
 
 class Pembicara(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)
-	dosenId = models.ForeignKey(Dosen, on_delete=models.SET_NULL, blank=True, null=True)
+	dosen_pengampu = models.ForeignKey(Dosen, on_delete=models.SET_NULL, blank=True, null=True)
 	title = models.CharField(max_length=100)
 	LIST_SPEAKER_CATEGORY = (
 			('Pembicara pada pertemuan ilmiah', 'Pembicara pada pertemuan ilmiah'),
@@ -221,7 +221,7 @@ class Pembicara(models.Model):
 
 class PengelolaJurnal(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)
-	dosenId = models.ForeignKey(Dosen, on_delete=models.SET_NULL, blank=True, null=True)
+	dosen_pengampu = models.ForeignKey(Dosen, on_delete=models.SET_NULL, blank=True, null=True)
 	role = models.CharField(max_length=100)
 	publication_media = models.CharField(max_length=100)
 	assignment_letter_number = models.IntegerField()
@@ -234,7 +234,7 @@ class PengelolaJurnal(models.Model):
 
 class RiwayatJabatanStruktural(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)
-	dosenId = models.ForeignKey(Dosen, on_delete=models.SET_NULL, blank=True, null=True)
+	dosen_pengampu = models.ForeignKey(Dosen, on_delete=models.SET_NULL, blank=True, null=True)
 	LIST_POSITION_TITLE = (
 			('Kepala Dinas', 'Kepala Dinas'),
 			('Kepala Badan', 'Kepala Badan'),
