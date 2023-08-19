@@ -50,6 +50,8 @@ router.register('transkripnilai', views.TranskripNilaiViewSet)
 router.register('poinpenilaian', views_akreditasi.PoinPenilaianViewSet)
 router.register('filefolder', views_akreditasi.ListFileFolderViewSet)
 router.register('kriteria', views_akreditasi.KriteriaViewSet)
+router.register('riwayatpoinpenilaian', views_akreditasi.RiwayatPoinPenilaianViewSet)
+router.register('file', views_akreditasi.FileViewSet)
 
 urlpatterns = [
   path('', include(router.urls)),

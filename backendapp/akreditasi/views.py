@@ -19,6 +19,28 @@ class PoinPenilaianViewSet(viewsets.ModelViewSet):
             self.permission_classes = [IsAuthenticated]
         return super(self.__class__, self).get_permissions()
 
+class RiwayatPoinPenilaianViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.RiwayatPoinPenilaianSerializers
+    queryset = models.RiwayatPoinPenilaian.objects.all()
+
+    def get_permissions(self):
+        if self.action in ['list','retrieve']:
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+
+class FileViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.FileSerializers
+    queryset = models.File.objects.all()
+
+    def get_permissions(self):
+        if self.action in ['list','retrieve']:
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+
 class FolderFileByPoinPenilaian(viewsets.ModelViewSet):
     serializer_class = serializers.FileFolderSerializers
     queryset = models.FileFolder.objects.all()

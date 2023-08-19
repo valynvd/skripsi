@@ -1,6 +1,6 @@
 from django.db import models
-
-from api.models import Dosen, ProgramStudi, SuratPenugasan
+from django.utils import timezone
+from api.models import Dosen, ProgramStudi, SuratPenugasan, UniqueNameFileField
 
 # Create your models here.
 class Kriteria(models.Model):
@@ -8,6 +8,12 @@ class Kriteria(models.Model):
     deskripsi = models.TextField(blank=True, null=True)
     def __str__(self) -> str:
         return '{} - {}'.format(self.nama, self.deskripsi)
+
+class File(models.Model):
+	created_at = models.DateTimeField(default=timezone.now)
+	title = models.CharField(max_length=100)
+	description = models.TextField(blank=True, null=True)
+	file = UniqueNameFileField(upload_to='evaluasi/file/', blank=True, null=True)
 
 class PoinPenilaian(models.Model):
     kriteriaId = models.ForeignKey(
@@ -33,12 +39,19 @@ class PoinPenilaian(models.Model):
     description_grade_2 = models.TextField(blank=True, null=True)
     description_grade_3 = models.TextField(blank=True, null=True)
     description_grade_4 = models.TextField(blank=True, null=True)
+    dokumenPendukungSuratPenugasan = models.ManyToManyField(SuratPenugasan, blank=True)
+    dokumenPendukungFile = models.ManyToManyField(File, blank=True)
+    score = models.FloatField(default=0)
+    audit_upm_score = models.FloatField(default=0)
+    upm_comment = models.TextField(blank=True, null=True)
+    upm_follow_up = models.TextField(blank=True, null=True)
 
     def __str__(self) -> str:
         return '{}-{}'.format(self.element, self.kriteriaId.nama)
 
 class RiwayatPoinPenilaian(models.Model):
-    kriteriaId = models.ForeignKey(
+    created_at = models.DateTimeField(default=timezone.now)
+    poinPenilaianId = models.ForeignKey(
         PoinPenilaian,
         on_delete=models.SET_NULL,
         blank=True,
@@ -46,6 +59,7 @@ class RiwayatPoinPenilaian(models.Model):
 	)
     score = models.FloatField(default=0)
     dokumenPendukungSuratPenugasan = models.ManyToManyField(SuratPenugasan, blank=True)
+    dokumenPendukungFile = models.ManyToManyField(File, blank=True)
 
 class FileFolder(models.Model):
     matrix = models.ForeignKey(
