@@ -166,6 +166,25 @@ class PenugasanPengabdianViewSet(viewsets.ModelViewSet):
             self.permission_classes = [IsAuthenticated]
         return super(self.__class__, self).get_permissions()
 
+class PenugasanPengabdianByProdiViewSet(generics.ListAPIView):
+    serializer_class = serializers.PenugasanPengabdianSerializers
+    queryset = models.PenugasanPengabdian.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        penugasanPengabdianByProdi = models.PenugasanPengabdian.objects.filter(dosen_pengampu__prodi__id=self.kwargs['prodiId'])
+        serializer = self.get_serializer(penugasanPengabdianByProdi, many=True)
+
+        return Response(serializer.data)
+
+    def get_permissions(self):
+        print(self)
+        if self.request.method == 'GET':
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+
+
 class PenugasanPengabdianByDosenViewSet(generics.ListAPIView):
     serializer_class = serializers.PenugasanPengabdianSerializers
     queryset = models.PenugasanPengabdian.objects.all()
