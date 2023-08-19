@@ -124,7 +124,7 @@ class DokumenPembelajaranSerializers(serializers.ModelSerializer):
       return 'empty'
 
     if(riwayatDokumenPembelajaranByDokumenPembelajaran.latest('created_at').status == 'accepted'):
-      return "https://stem-management.s3.amazonaws.com/" + str(riwayatDokumenPembelajaranByDokumenPembelajaran[0].initial_document)
+      return {'accepted': True, "link":"https://stem-management.s3.amazonaws.com/" + str(riwayatDokumenPembelajaranByDokumenPembelajaran[0].initial_document )}
 
     return riwayatDokumenPembelajaranByDokumenPembelajaran.latest('created_at').status
 
@@ -136,7 +136,7 @@ class DokumenPembelajaranSerializers(serializers.ModelSerializer):
       return 'empty'
 
     if(riwayatDokumenPembelajaranByDokumenPembelajaran.latest('created_at').status == 'accepted'):
-      return "https://stem-management.s3.amazonaws.com/" + str(riwayatDokumenPembelajaranByDokumenPembelajaran[0].initial_document)
+      return {'accepted': True, "link":"https://stem-management.s3.amazonaws.com/" + str(riwayatDokumenPembelajaranByDokumenPembelajaran[0].initial_document )}
 
     return riwayatDokumenPembelajaranByDokumenPembelajaran.latest('created_at').status
   
