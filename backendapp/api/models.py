@@ -178,7 +178,7 @@ class PublikasiKarya(models.Model):
 	dosen_pengampu = models.ForeignKey(Dosen, on_delete=models.SET_NULL, blank=True, null=True)
 	title = models.CharField(max_length=100)
 	description = models.TextField(blank=True, null=True)
-	file = UniqueNameFileField(upload_to='evaluasi/publikasi_karya/')
+	file = UniqueNameFileField(upload_to='evaluasi/publikasi_karya/', blank=True, null=True)
 
 	def __str__(self) -> str:
 		return '{}'.format(self.title)
