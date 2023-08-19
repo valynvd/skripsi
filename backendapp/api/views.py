@@ -382,6 +382,25 @@ class PenugasanPenelitianBySuratPenugasan(generics.ListAPIView):
             self.permission_classes = [IsAuthenticated]
         return super(self.__class__, self).get_permissions()
 
+class PenugasanPenelitianByProdiViewSet(generics.ListAPIView):
+    serializer_class = serializers.PenugasanPenelitianSerializers
+    queryset = models.PenugasanPenelitian.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        penugasanPenelitianByProdi = models.PenugasanPenelitian.objects.filter(dosen_pengampu__prodi__id=self.kwargs['prodiId'])
+        serializer = self.get_serializer(penugasanPenelitianByProdi, many=True)
+
+        return Response(serializer.data)
+
+    def get_permissions(self):
+        print(self)
+        if self.request.method == 'GET':
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+
+
 class PenugasanPengajaranBySuratPenugasan(generics.ListAPIView):
     serializer_class = serializers.PenugasanPengajaranSerializers
     queryset = models.PenugasanPengajaran.objects.all()
