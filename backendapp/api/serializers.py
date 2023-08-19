@@ -108,28 +108,37 @@ class PortofolioPerkuliahanSerializers(serializers.ModelSerializer):
 
 class DokumenPembelajaranSerializers(serializers.ModelSerializer):
   penugasan_pengajaran_detail = PenugasanPengajaranSerializers(source='penugasanPengajaranId', many=False, read_only=True)
-  accepted_rps = serializers.SerializerMethodField(read_only=True)
-  accepted_rubrik = serializers.SerializerMethodField(read_only=True)
+  rps_status = serializers.SerializerMethodField(read_only=True)
+  rubrik_status = serializers.SerializerMethodField(read_only=True)
   portofolio_perkuliahan = serializers.SerializerMethodField(read_only=True) 
+
   class Meta:
       model = models.DokumenPembelajaran
       fields = '__all__'
 
-  def get_accepted_rps(self, obj):
-    riwayatDokumenPembelajaranByDokumenPembelajaran = models.RiwayatDokumenPembelajaran.objects.filter(dokumenPembelajaranId = obj.id, status="accepted", type="rps")
-    
-    if riwayatDokumenPembelajaranByDokumenPembelajaran:
-      return "https://stem-management.s3.amazonaws.com/" + str(riwayatDokumenPembelajaranByDokumenPembelajaran[0].initial_document)
-      
-    return None
+  def get_rps_status(self, obj):
+    riwayatDokumenPembelajaranByDokumenPembelajaran = models.RiwayatDokumenPembelajaran.objects.filter(dokumenPembelajaranId = obj.id, type="rps")
 
-  def get_accepted_rubrik(self, obj):
-    riwayatDokumenPembelajaranByDokumenPembelajaran = models.RiwayatDokumenPembelajaran.objects.filter(dokumenPembelajaranId = obj.id, status="accepted", type="rubrik")
-    
-    if riwayatDokumenPembelajaranByDokumenPembelajaran:
+    print(riwayatDokumenPembelajaranByDokumenPembelajaran)
+    if(len(riwayatDokumenPembelajaranByDokumenPembelajaran) == 0):
+      return 'empty'
+
+    if(riwayatDokumenPembelajaranByDokumenPembelajaran.latest('created_at').status == 'accepted'):
       return "https://stem-management.s3.amazonaws.com/" + str(riwayatDokumenPembelajaranByDokumenPembelajaran[0].initial_document)
-      
-    return None
+
+    return riwayatDokumenPembelajaranByDokumenPembelajaran.latest('created_at').status
+
+  def get_rubrik_status(self, obj):
+    riwayatDokumenPembelajaranByDokumenPembelajaran = models.RiwayatDokumenPembelajaran.objects.filter(dokumenPembelajaranId = obj.id, type="rubrik")
+
+    print(riwayatDokumenPembelajaranByDokumenPembelajaran)
+    if(len(riwayatDokumenPembelajaranByDokumenPembelajaran) == 0):
+      return 'empty'
+
+    if(riwayatDokumenPembelajaranByDokumenPembelajaran.latest('created_at').status == 'accepted'):
+      return "https://stem-management.s3.amazonaws.com/" + str(riwayatDokumenPembelajaranByDokumenPembelajaran[0].initial_document)
+
+    return riwayatDokumenPembelajaranByDokumenPembelajaran.latest('created_at').status
   
   def get_portofolio_perkuliahan(self, obj):
     portofolioPerkuliahanByPenugasanPengajaran = models.PortofolioPerkuliahan.objects.filter(penugasan=obj.penugasanPengajaranId)
@@ -137,7 +146,6 @@ class DokumenPembelajaranSerializers(serializers.ModelSerializer):
     if len(portofolioPerkuliahanByPenugasanPengajaran):
       checkUTS = False
       checkUAS = False
-      
 
       for portofolioPerkuliahan in portofolioPerkuliahanByPenugasanPengajaran:
         if(portofolioPerkuliahan.type == 'UTS'):
