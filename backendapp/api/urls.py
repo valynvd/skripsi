@@ -28,7 +28,7 @@ router.register('dosen', views.DosenViewSet)
 router.register('suratpenugasan', views.SuratPenugasanViewSet)
 router.register('penugasanpenelitian', views.PenugasanPenelitianViewSet)
 router.register('publikasikarya', views.PublikasiKaryaViewSet)
-router.register('paten', views.PatenViewSet)
+router.register('patenhki', views.PatenHKIViewSet)
 router.register('penugasanpengabdian', views.PenugasanPengabdianViewSet)
 router.register('pembicara', views.PembicaraViewSet)
 router.register('pengelolajurnal', views.PengelolaJurnalViewSet)
@@ -72,6 +72,9 @@ urlpatterns = [
   path('penugasanpenelitianbysuratpenugasan/<suratPenugasanId>/', views.PenugasanPenelitianBySuratPenugasan.as_view()),
   path('penugasanpenelitianbyprodi/<prodiId>/', views.PenugasanPenelitianByProdiViewSet.as_view()),
   path('penugasanpenelitianbydosen/<dosenId>/', views.PenugasanPenelitianByDosenViewSet.as_view()),
+  # paten hki
+  path('patenhkibydosen/<dosenId>/', views.PatenHKIByDosenViewSet.as_view()),
+  path('patenhkibyprodi/<prodiId>/', views.PatenHKIByProdiViewSet.as_view()),
   # publikasi karya
   path('publikasikaryabydosen/<dosenId>/', views.PublikasiKaryaByDosenViewSet.as_view()),
   path('publikasikaryabyprodi/<prodiId>/', views.PublikasiKaryaByProdiViewSet.as_view()),

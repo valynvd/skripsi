@@ -180,9 +180,9 @@ class PublikasiKaryaByProdiViewSet(generics.ListAPIView):
             self.permission_classes = [IsAuthenticated]
         return super(self.__class__, self).get_permissions()
 
-class PatenViewSet(viewsets.ModelViewSet):
-    serializer_class = serializers.PatenSerializers
-    queryset = models.Paten.objects.all()
+class PatenHKIViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.PatenHKISerializers
+    queryset = models.PatenHKI.objects.all()
 
     def get_permissions(self):
         if self.action in ['list','retrieve']:
@@ -190,6 +190,42 @@ class PatenViewSet(viewsets.ModelViewSet):
         else:
             self.permission_classes = [IsAuthenticated]
         return super(self.__class__, self).get_permissions()
+
+class PatenHKIByDosenViewSet(generics.ListAPIView):
+    serializer_class = serializers.PatenHKISerializers
+    queryset = models.PatenHKI.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        patenHKIByDosen = models.PatenHKI.objects.filter(dosen_pengampu__user__id = self.kwargs['dosenId'] )
+        serializer = self.get_serializer(patenHKIByDosen, many=True)
+        return Response(serializer.data)
+
+    def get_permissions(self):
+        print(self)
+        if self.request.method == 'GET':
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+
+class PatenHKIByProdiViewSet(generics.ListAPIView):
+    serializer_class = serializers.PatenHKISerializers
+    queryset = models.PatenHKI.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        patenHKIByProdi = models.PatenHKI.objects.filter(dosen_pengampu__prodi__id=self.kwargs['prodiId'])
+        serializer = self.get_serializer(patenHKIByProdi, many=True)
+
+        return Response(serializer.data)
+
+    def get_permissions(self):
+        print(self)
+        if self.request.method == 'GET':
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+
 
 class PenugasanPengabdianViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.PenugasanPengabdianSerializers
@@ -1027,4 +1063,3 @@ class TranskripNilaiaByNIMViewSet(generics.ListAPIView):
         else:
             self.permission_classes = [IsAuthenticated]
         return super(self.__class__, self).get_permissions()
-

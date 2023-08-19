@@ -60,9 +60,9 @@ class PublikasiKaryaSerializers(serializers.ModelSerializer):
       model = models.PublikasiKarya
       fields = '__all__'
 
-class PatenSerializers(serializers.ModelSerializer):
+class PatenHKISerializers(serializers.ModelSerializer):
   class Meta:
-      model = models.Paten
+      model = models.PatenHKI
       fields = '__all__'
 
 class PenugasanPenelitianSerializers(serializers.ModelSerializer):

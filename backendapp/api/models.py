@@ -183,7 +183,7 @@ class PublikasiKarya(models.Model):
 	def __str__(self) -> str:
 		return '{}'.format(self.title)
 
-class Paten(models.Model):
+class PatenHKI(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)
 	dosen_pengampu = models.ForeignKey(Dosen, on_delete=models.SET_NULL, blank=True, null=True)
 	title = models.CharField(max_length=100)
