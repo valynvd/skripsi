@@ -492,7 +492,7 @@ class MonitoringMahasiswa(models.Model):
 	mentor = models.CharField(blank=True, null=True, max_length=100)
 
 	def __str__(self) -> str:
-		return '{} - {}'.format(self.mahasiswa.nama, self.mata_kuliah.name)
+		return '{} '.format(self.mahasiswa.nama)
 	
 
 class ValidasiMahasiswa(models.Model):

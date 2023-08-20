@@ -689,12 +689,7 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
         nidn_dosen = data_dict.get('nidn_dosen')
         nidn_dosen_split = str(nidn_dosen).split("/")
 
-        # subject
-
-
-        print(nik_dosen_split)
         cekPenugasanPengajaran = models.PenugasanPengajaran.objects.filter(dosen_pengampu__nik__in=nik_dosen_split, mata_kuliah__kode=subject_short)
-        print(cekPenugasanPengajaran)
 
         if(len(cekPenugasanPengajaran) == 0):
             return Response({'nama_mahasiswa': nama_mahasiswa, 'nim_mahasiswa': nim_mahasiswa, 'name_prody': name_prody, 'angkatan': angkatan, 'subject': subject, 'earned_credits': earned_credits, 'grade_symbol': grade_symbol, 'error': True, 'error_message': 'Penugasan Pengajaran tidak ditemukan' }, status=status.HTTP_404_NOT_FOUND)
