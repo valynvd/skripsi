@@ -519,17 +519,17 @@ const ValidasiMahasiswaByNIM = () => {
                   getdata.academic_session === getData.academicSession) // Use === for comparison
                   .map((filteredData, index) => (
                     <tr key={index} className="bg-white border-b text-gray-600">
-                      <td className="px-4 py-3">
+                      <td className={`px-4 py-3 ${filteredData.grade_symbol == "D" ? 'bg-yellow-500' : '' || filteredData.grade_symbol == "E" ? 'bg-red-500 text-white' : ''}`}>
                         <p className="flex flex-row items-center">
                           {filteredData.mata_kuliah_detail.name}
                         </p>
                       </td>
-                      <td className="px-4 py-3">
+                      <td className={`px-4 py-3 ${filteredData.grade_symbol == "D" ? 'bg-yellow-500' : '' || filteredData.grade_symbol == "E" ? 'bg-red-500 text-white' : ''}`}>
                         <p className="flex flex-row items-center">
                           {filteredData.mata_kuliah_detail.sks_total}
                         </p>
                       </td>
-                      <td className="px-4 py-3">
+                      <td className={`px-4 py-3 ${filteredData.grade_symbol == "D" ? 'bg-yellow-500' : '' || filteredData.grade_symbol == "E" ? 'bg-red-500 text-white' : ''}`}>
                         <p className="flex flex-row items-center">
                           {filteredData.grade_symbol}
                         </p>

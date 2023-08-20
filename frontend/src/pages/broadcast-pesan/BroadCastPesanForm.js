@@ -28,6 +28,7 @@ const BroadCastPesanForm = () => {
 
     const [phonenumbers, setPhoneNumbers] = useState([]);
     const [message, setMessage] = useState('');
+    const [media, setMedia] = useState('');
     const [nama, setNama] = useState('');
     const [grupselected, setGrupselected] = useState([])
     const [percent, setPercent] = useState('');
@@ -94,9 +95,10 @@ const BroadCastPesanForm = () => {
     const handleSubmitBroadcast = (event) => {
         event.preventDefault();
         if (message && phonenumbers) {
-          socket.emit('broadcast', {phonenumbers, message, jadwal});
+          socket.emit('broadcast', {phonenumbers, message, jadwal, media});
           setPhoneNumbers([]);
           setMessage('');
+          setMedia('');
         }
       };
     
@@ -144,6 +146,7 @@ const BroadCastPesanForm = () => {
                 </div>
 
                 <textarea className='focus:outline-none w-full mt-1 rounded-lg px-3 py-2 focus:border-primary-400 border-[1px]' type="text" value={message} rows={4} cols={40} placeholder="Your message" onChange={(event) => setMessage(event.target.value)} />
+                <input className='focus:outline-none w-full mt-1 rounded-lg px-3 py-2 focus:border-primary-400 border-[1px]' type="text" value={media} rows={4} cols={40} placeholder="Link Attechment" onChange={(event) => setMedia(event.target.value)} />
                 
                 {/* <button type="submit">Send</button> */}
                 <PrimaryButton type='submit'>
