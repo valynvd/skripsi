@@ -24,7 +24,7 @@ class PoinPenilaianSerializers(serializers.ModelSerializer):
       model = models.PoinPenilaian
       fields = '__all__'
 
-  def get_riwayat_poin_penilaian(self, obj):
+  def get_riwayat_poin_penilaian_detail(self, obj):
     riwayatPoinPenilaian = models.RiwayatPoinPenilaian.objects.filter(poinPenilaianId=obj)
 
     return RiwayatPoinPenilaianSerializers(riwayatPoinPenilaian, many=True).data   
