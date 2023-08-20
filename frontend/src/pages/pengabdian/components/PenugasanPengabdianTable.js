@@ -26,7 +26,7 @@ import { ExportPrimaryButton } from '../../../components/PrimaryButton';
 import { utils, writeFile } from 'xlsx';
 // import CRUDropdownInput from '../../../components/CRUDropdownInput';
 
-const PenugasanPenelitianTable = ({
+const PenugasanPengabdianTable = ({
   setOpenModalDelete,
   setSelectedItem,
   loading,
@@ -61,6 +61,10 @@ const PenugasanPenelitianTable = ({
     {
       Header: 'Judul',
       accessor: 'title',
+      Cell: ({ value }) => {
+        console.log(value);
+        return <p>testingk</p>;
+      },
     },
     {
       Header: 'Tahun Pelaksanaan',
@@ -82,7 +86,7 @@ const PenugasanPenelitianTable = ({
             <EditIcon
               onClick={() => {
                 navigate(
-                  `/pelaksanaan-penelitian/penugasan-penelitian/${value.id}`,
+                  `/pelaksanaan-pengabdian/penugasan-pengabdian/${value.id}`,
                   { state: value }
                 );
               }}
@@ -312,4 +316,4 @@ const PenugasanPenelitianTable = ({
   );
 };
 
-export default PenugasanPenelitianTable;
+export default PenugasanPengabdianTable;

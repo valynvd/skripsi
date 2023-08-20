@@ -106,8 +106,8 @@ const DokumenPembelajaranForm = () => {
     dokumenPembelajaranData?.penugasan_pengajaran_detail?.dosen_pengampu,
     {
       enabled:
-        !!dokumenPembelajaranData?.accepted_rps &&
-        !!dokumenPembelajaranData?.accepted_rubrik,
+        !!dokumenPembelajaranData?.rps_status.accepted &&
+        !!dokumenPembelajaranData?.rubrik_status.accepted,
     }
   );
 
@@ -220,33 +220,33 @@ const DokumenPembelajaranForm = () => {
           </div>
         </section>
       ) : null}
-      {(dokumenPembelajaranData?.accepted_rps ||
-        dokumenPembelajaranData?.accepted_rubrik) && (
+      {(dokumenPembelajaranData?.rps_status.accepted ||
+        dokumenPembelajaranData?.rubrik_status.accepted) && (
         <section className="section-container mb-4">
-          <div className="space-y-4">
-            {dokumenPembelajaranData.accepted_rps && (
+          <div className="gap-4 flex flex-wrap">
+            {dokumenPembelajaranData.rps_status.accepted && (
               <div className="space-y-1">
                 <p>RPS Diterima</p>
                 <a
-                  href={dokumenPembelajaranData?.accepted_rps}
+                  href={dokumenPembelajaranData?.rps_status.link}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-block max-w-sm text-primary-400 overflow-ellipsis overflow-hidden focus:outline-none whitespace-nowrap"
+                  className="inline-block max-w-md text-primary-400 overflow-ellipsis overflow-hidden focus:outline-none whitespace-nowrap"
                 >
-                  {dokumenPembelajaranData?.accepted_rps}
+                  {dokumenPembelajaranData?.rps_status.link}
                 </a>
               </div>
             )}
-            {dokumenPembelajaranData.accepted_rubrik && (
+            {dokumenPembelajaranData.rubrik_status.accepted && (
               <div className="space-y-1">
                 <p>Rubrik Diterima</p>
                 <a
-                  href={dokumenPembelajaranData?.accepted_rubrik}
+                  href={dokumenPembelajaranData?.rubrik_status.link}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-block max-w-sm text-primary-400 overflow-ellipsis overflow-hidden focus:outline-none whitespace-nowrap"
+                  className="inline-block max-w-md text-primary-400 overflow-ellipsis overflow-hidden focus:outline-none whitespace-nowrap"
                 >
-                  {dokumenPembelajaranData?.accepted_rubrik}
+                  {dokumenPembelajaranData?.rubrik_status.link}
                 </a>
               </div>
             )}
@@ -331,8 +331,8 @@ const DokumenPembelajaranForm = () => {
         >
           Riwayat RPS
         </PageButton>
-        {dokumenPembelajaranData?.accepted_rps &&
-          dokumenPembelajaranData?.accepted_rubrik && (
+        {dokumenPembelajaranData?.rps_status.accepted &&
+          dokumenPembelajaranData?.rubrik_status.accepted && (
             <PageButton
               active={page === 'Portofolio Perkuliahan'}
               onClick={() => {
@@ -537,7 +537,7 @@ const DokumenPembelajaranForm = () => {
                   setOpenModalUpload={setOpenModalUpload}
                   setOpenModalUploadType={setOpenModalUploadType}
                   loading={portofolioPerkuliahanByDosenDataLoading}
-                  data={portofolioPerkuliahanByDosenData?.data}
+                  data={portofolioPerkuliahanByDosenData?.data || []}
                 />
               </div>
             </section>

@@ -4,19 +4,19 @@ import { PrimaryButton } from '../../components/PrimaryButton';
 import { BiPlusCircle } from 'react-icons/bi';
 import ModalDelete from '../../components/ModalDelete';
 import { useQueryClient } from 'react-query';
-import PenugasanPenelitianTable from './components/PenugasanPenelitianTable';
+import PatenHKITable from './components/PatenHKITable';
 import {
-  useDeletePenugasanPenelitian,
-  usePenugasanPenelitianByDosen,
-  usePenugasanPenelitianByProdi,
-  usePenugasanPenelitianData,
-} from '../../hooks/usePenugasanPenelitian';
+  useDeletePatenHKI,
+  usePatenHKIByDosen,
+  usePatenHKIByProdi,
+  usePatenHKIData,
+} from '../../hooks/usePatenHKI';
 import useAuth from '../../hooks/useAuth';
 import { useCheckRole } from '../../hooks/useCheckRole';
-import PenugasanPenelitianTableDosen from './components/PenugasanPenelitianTableDosen';
-import PenugasanPenelitianTableKaprodi from './components/PenugasanPenelitianTableKaprodi';
+import PatenHKITableDosen from './components/PatenHKITableDosen';
+import PatenHKITableKaprodi from './components/PatenHKITableKaprodi';
 
-const PenugasanPenelitian = () => {
+const PatenHKI = () => {
   const [openModalDelete, setOpenModalDelete] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const queryClient = useQueryClient();
@@ -26,10 +26,10 @@ const PenugasanPenelitian = () => {
   } = useAuth();
 
   const {
-    data: penugasanPenelitianData,
-    isLoading: penugasanPenelitianDataIsLoading,
-    refetch: penugasanPenelitianDataRefetch,
-  } = usePenugasanPenelitianData({
+    data: patenHKIData,
+    isLoading: patenHKIDataIsLoading,
+    refetch: patenHKIDataRefetch,
+  } = usePatenHKIData({
     enabled: !!userRole.admin,
     select: (response) => {
       return response.data;
@@ -37,10 +37,10 @@ const PenugasanPenelitian = () => {
   });
 
   const {
-    data: penugasanPenelitianDataByDosen,
-    isLoading: penugasanPenelitianDataByDosenIsLoading,
-    refetch: penugasanPenelitianDataByDosenRefetch,
-  } = usePenugasanPenelitianByDosen(userData.id, {
+    data: patenHKIDataByDosen,
+    isLoading: patenHKIDataByDosenIsLoading,
+    refetch: patenHKIDataByDosenRefetch,
+  } = usePatenHKIByDosen(userData.id, {
     enabled: !!userRole.facultyMember,
     select: (response) => {
       return response.data;
@@ -48,33 +48,33 @@ const PenugasanPenelitian = () => {
   });
 
   const {
-    data: penugasanPenelitianDataByProdi,
-    isLoading: penugasanPenelitianDataByProdiIsLoading,
-    refetch: penugasanPenelitianDataByProdiRefetch,
-  } = usePenugasanPenelitianByProdi({
+    data: patenHKIDataByProdi,
+    isLoading: patenHKIDataByProdiIsLoading,
+    refetch: patenHKIDataByProdiRefetch,
+  } = usePatenHKIByProdi({
     enabled: !!userRole.kaprodi,
     select: (response) => {
       return response.data;
     },
   });
 
-  const { mutate: deletePenugasanPenelitian } = useDeletePenugasanPenelitian();
+  const { mutate: deletePatenHKI } = useDeletePatenHKI();
 
   return (
-    <section id="penelitian" className="section-container">
+    <section id="paten-hki" className="section-container">
       <ModalDelete
-        title="Penugasan Penelitian"
+        title="Paten/HKI"
         isOpen={openModalDelete}
         setIsOpen={setOpenModalDelete}
         deleteFunc={() =>
-          deletePenugasanPenelitian(selectedItem, {
+          deletePatenHKI(selectedItem, {
             onSuccess: () => {
               if (userRole.admin) {
-                penugasanPenelitianDataRefetch();
+                patenHKIDataRefetch();
               } else if (userRole.dosen) {
-                penugasanPenelitianDataByDosenRefetch();
+                patenHKIDataByDosenRefetch();
               } else if (userRole.kaprodi) {
-                penugasanPenelitianDataByProdiRefetch();
+                patenHKIDataByProdiRefetch();
               }
 
               setOpenModalDelete(false);
@@ -83,37 +83,37 @@ const PenugasanPenelitian = () => {
         }
       />
       <div className="flex flex-col items-start lg:justify-between lg:items-center lg:flex-row space-y-2 lg:space-y-0">
-        <p className="font-semibold text-lg">Daftar Penelitian</p>
+        <p className="font-semibold text-lg">Daftar Paten/HKI</p>
         <PrimaryButton
           icon={<BiPlusCircle size={22} />}
-          link="/pelaksanaan-penelitian/penugasan-penelitian/form"
+          link="/pelaksanaan-penelitian/paten-hki/form"
         >
-          Buat Penelitian
+          Buat Paten/HKI
         </PrimaryButton>
       </div>
       <div className="mt-8 w-full rounded-t-lg">
         {userRole.admin && (
-          <PenugasanPenelitianTable
+          <PatenHKITable
             setSelectedItem={setSelectedItem}
             setOpenModalDelete={setOpenModalDelete}
-            loading={penugasanPenelitianDataIsLoading}
-            data={penugasanPenelitianData || []}
+            loading={patenHKIDataIsLoading}
+            data={patenHKIData || []}
           />
         )}
         {userRole.kaprodi && (
-          <PenugasanPenelitianTableKaprodi
+          <PatenHKITableKaprodi
             setSelectedItem={setSelectedItem}
             setOpenModalDelete={setOpenModalDelete}
-            loading={penugasanPenelitianDataByProdiIsLoading}
-            data={penugasanPenelitianDataByProdi || []}
+            loading={patenHKIDataByProdiIsLoading}
+            data={patenHKIDataByProdi || []}
           />
         )}
         {userRole.dosen && (
-          <PenugasanPenelitianTableDosen
+          <PatenHKITableDosen
             setSelectedItem={setSelectedItem}
             setOpenModalDelete={setOpenModalDelete}
-            loading={penugasanPenelitianDataByDosenIsLoading}
-            data={penugasanPenelitianDataByDosen || []}
+            loading={patenHKIDataByDosenIsLoading}
+            data={patenHKIDataByDosen || []}
           />
         )}
       </div>
@@ -121,4 +121,4 @@ const PenugasanPenelitian = () => {
   );
 };
 
-export default PenugasanPenelitian;
+export default PatenHKI;

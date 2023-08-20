@@ -26,7 +26,7 @@ import { ExportPrimaryButton } from '../../../components/PrimaryButton';
 import { utils, writeFile } from 'xlsx';
 // import CRUDropdownInput from '../../../components/CRUDropdownInput';
 
-const PenugasanPenelitianTable = ({
+const PatenHKITableDosen = ({
   setOpenModalDelete,
   setSelectedItem,
   loading,
@@ -37,38 +37,24 @@ const PenugasanPenelitianTable = ({
 
   const columns = [
     {
-      Header: 'Dosen',
-      accessor: 'dosen_pengampu_detail.name',
-    },
-    {
-      Header: 'Surat Penugasan',
-      accessor: 'surat_penugasan_detail',
-      Cell: ({ value }) => {
-        if (value) {
-          return (
-            <a
-              target="_blank"
-              className="text-primary-400 underline"
-              href={value.files}
-              rel="noreferrer"
-            >
-              {value.judul}
-            </a>
-          );
-        }
-      },
-    },
-    {
       Header: 'Judul',
       accessor: 'title',
     },
     {
-      Header: 'Tahun Pelaksanaan',
-      accessor: 'start_year',
-    },
-    {
-      Header: 'Lama Kegiatan',
-      accessor: 'total_year',
+      Header: 'file',
+      accessor: 'file',
+      Cell: ({ value }) => {
+        return (
+          <a
+            href={value}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-block max-w-[12rem] text-primary-400 overflow-ellipsis overflow-hidden whitespace-nowrap"
+          >
+            {value}
+          </a>
+        );
+      },
     },
     {
       Header: 'Aksi',
@@ -81,10 +67,9 @@ const PenugasanPenelitianTable = ({
           <div className="flex flex-row space-x-2">
             <EditIcon
               onClick={() => {
-                navigate(
-                  `/pelaksanaan-penelitian/penugasan-penelitian/${value.id}`,
-                  { state: value }
-                );
+                navigate(`/pelaksanaan-penelitian/paten-hki/${value.id}`, {
+                  state: value,
+                });
               }}
             />
             <DeleteIcon
@@ -216,7 +201,7 @@ const PenugasanPenelitianTable = ({
               onChange={(e) => setGlobalFilter(e.target.value)}
             />
           </div>
-          <FilterInput
+          {/* <FilterInput
             clearFunc={() => {
               setValue('prodi', null);
             }}
@@ -227,7 +212,7 @@ const PenugasanPenelitianTable = ({
             registeredName="prodi"
             placeholder="Semua Prodi"
             options={dataProgramStudiSuccess ? dataProgramStudi : []}
-          />
+          /> */}
           {/* <ExportPrimaryButton onClick={handleExport} /> */}
         </form>
       </div>
@@ -312,4 +297,4 @@ const PenugasanPenelitianTable = ({
   );
 };
 
-export default PenugasanPenelitianTable;
+export default PatenHKITableDosen;

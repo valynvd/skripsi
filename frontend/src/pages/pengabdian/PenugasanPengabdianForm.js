@@ -15,6 +15,11 @@ import EditButton from '../../components/EditButton';
 import { usePenugasanPengajaranByPenugasanPengabdian } from '../../hooks/usePenugasanPengajaran';
 import useAuth from '../../hooks/useAuth';
 import CancelButton from '../../components/CancelButton';
+import { useCheckRole } from '../../hooks/useCheckRole';
+import { useSuratPenugasanData } from '../../hooks/useSuratPenugasan';
+import { useDosenData } from '../../hooks/useDosen';
+import CRUDropdownInput from '../../components/CRUDropdownInput';
+import BreadCrumbs from '../../components/BreadCrumbs';
 
 const PenugasanPengabdianForm = () => {
   const [errorMessage, setErrorMessage] = useState();
@@ -31,6 +36,7 @@ const PenugasanPengabdianForm = () => {
   });
   const [editable, setEditable] = useState(true);
   const [penugasanPengabdianData, setPenugasanPengabdianData] = useState(state);
+  const userRole = useCheckRole();
 
   const { data: updatedPenugasanPengabdianData } = usePenugasanPengabdianById(
     id,
@@ -38,6 +44,25 @@ const PenugasanPengabdianForm = () => {
       enabled: !!id && !penugasanPengabdianData,
     }
   );
+  const { data: dataSuratPenugasan, isSuccess: suratPenugasanDataSuccess } =
+    useSuratPenugasanData({
+      select: (response) => {
+        const formatSuratPenugasanData = response.data.map(({ id, judul }) => {
+          return { value: id, label: judul };
+        });
+
+        return formatSuratPenugasanData;
+      },
+    });
+  const { data: dataDosen, isSuccess: dosenDataSuccess } = useDosenData({
+    select: (response) => {
+      const formatDosenData = response.data.map(({ id, name }) => {
+        return { value: id, label: name };
+      });
+
+      return formatDosenData;
+    },
+  });
 
   useEffect(() => {
     if (id) {
@@ -66,6 +91,26 @@ const PenugasanPengabdianForm = () => {
 
   const onSubmit = (data) => {
     const penugasanPengabdianFormData = new FormData();
+
+    if (userRole.admin || userRole.kaprodi) {
+      if (dirtyFields.dosen_pengampu) {
+        penugasanPengabdianFormData.append(
+          'dosen_pengampu',
+          data.dosen_pengampu
+        );
+      }
+      if (dirtyFields.surat_penugasan) {
+        penugasanPengabdianFormData.append(
+          'surat_penugasan',
+          data.surat_penugasan
+        );
+      }
+    } else if (userRole.dosen) {
+      penugasanPengabdianFormData.append(
+        'dosen_pengampu',
+        userData.dosen_detail.id
+      );
+    }
 
     if (dirtyFields.title) {
       penugasanPengabdianFormData.append('title', data.title);
@@ -101,11 +146,6 @@ const PenugasanPengabdianForm = () => {
       penugasanPengabdianFormData.append('files', data.files[0]);
     }
 
-    penugasanPengabdianFormData.append(
-      'dosen_pengampu',
-      userData.dosen_detail.id
-    );
-
     if (id) {
       patchPenugasanPengabdian(
         { data: penugasanPengabdianFormData, id: id },
@@ -139,10 +179,55 @@ const PenugasanPengabdianForm = () => {
   return (
     <>
       <section id="surat-penugasan-form" className="section-container">
+        <BreadCrumbs
+          links={[
+            {
+              name: 'Daftar Penugasan Pengabdian',
+              link: '/pelaksanaan-pengabdian/penugasan-pengabdian',
+            },
+            {
+              name: `${id ? 'Detail' : 'Buat'}`,
+            },
+          ]}
+        />
         <p className="text-lg font-semibold">
           {id ? 'Edit' : 'Buat'} Penugasan Pengabdian
         </p>
         <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4">
+          {(userRole.admin || userRole.kaprodi) && (
+            <>
+              <CRUDropdownInput
+                control={control}
+                name="Surat Penugasan"
+                registeredName="surat_penugasan"
+                defaultValue={
+                  state?.surat_penugasan_detail
+                    ? {
+                        value: state.surat_penugasan_detail.id,
+                        label: state.surat_penugasan_detail.judul,
+                      }
+                    : null
+                }
+                options={suratPenugasanDataSuccess ? dataSuratPenugasan : []}
+                isDisabled={!editable}
+              />
+              <CRUDropdownInput
+                control={control}
+                name="Dosen"
+                registeredName="dosen_pengampu"
+                defaultValue={
+                  state?.dosen_pengampu_detail
+                    ? {
+                        value: state.dosen_pengampu_detail.id,
+                        label: state.dosen_pengampu_detail.name,
+                      }
+                    : null
+                }
+                options={dosenDataSuccess ? dataDosen : []}
+                isDisabled={!editable}
+              />
+            </>
+          )}
           <CRUInput
             register={register}
             name="judul"

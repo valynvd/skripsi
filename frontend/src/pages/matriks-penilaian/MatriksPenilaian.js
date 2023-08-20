@@ -76,7 +76,6 @@ const MatriksPenilaian = () => {
 
   return (
     <>
-      <TableSimulate simulateData={simulateData} />
       <TableForm
         handleSubmit={handleSubmit}
         onSubmit={onSubmit}
@@ -84,6 +83,9 @@ const MatriksPenilaian = () => {
         errors={errors}
         reset={reset}
       />
+      {simulateData.length !== 0 && (
+        <TableSimulate simulateData={simulateData} />
+      )}
     </>
   );
 };

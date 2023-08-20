@@ -1,6 +1,7 @@
 import { request } from '../utils/axios-utils';
 import { useQuery } from 'react-query';
 import { useMutation } from 'react-query';
+import useAuth from './useAuth';
 
 const url = '/api-stem/penugasanpenelitian/';
 
@@ -47,6 +48,12 @@ const getPenugasanPenelitianByDosen = (id) => {
   });
 };
 
+const getPenugasanPenelitianByProdi = (id) => {
+  return request({
+    url: `/api-stem/penugasanpenelitianbyprodi/${id}/`,
+  });
+};
+
 const getPenugasanPenelitianById = (id) => {
   return request({
     url: `/api-stem/penugasanpenelitian/${id}/`,
@@ -58,6 +65,19 @@ export const usePenugasanPenelitianData = (options) => {
     refetchOnWindowFocus: false,
     ...options,
   });
+};
+
+export const usePenugasanPenelitianByProdi = (options) => {
+  const prodi = useAuth().auth.userData?.dosen_detail?.prodi;
+
+  return useQuery(
+    ['dokumen-pembelajaran-by-prodi', prodi],
+    () => getPenugasanPenelitianByProdi(prodi),
+    {
+      refetchOnWindowFocus: false,
+      ...options,
+    }
+  );
 };
 
 export const usePenugasanPenelitianById = (id, options) => {

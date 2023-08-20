@@ -21,7 +21,6 @@ const Dosen = () => {
 
   return (
     <section id="dosen" className="section-container">
-      query
       <ModalDelete
         title="Dosen"
         isOpen={openModalDelete}

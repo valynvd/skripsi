@@ -4,25 +4,55 @@ import { PrimaryButton } from '../../components/PrimaryButton';
 import { BiPlusCircle } from 'react-icons/bi';
 import ModalDelete from '../../components/ModalDelete';
 import { useQueryClient } from 'react-query';
-import PenugasanPengabdianTable from './components/PenugasanPenelitianTable';
+import PenugasanPengabdianTable from './components/PenugasanPengabdianTable';
 import {
   useDeletePenugasanPengabdian,
   usePenugasanPengabdianByDosen,
+  usePenugasanPengabdianByProdi,
+  usePenugasanPengabdianData,
 } from '../../hooks/usePenugasanPengabdian';
 import useAuth from '../../hooks/useAuth';
+import { useCheckRole } from '../../hooks/useCheckRole';
+import PenugasanPengabdianTableDosen from './components/PenugasanPengabdianTableDosen';
+import PenugasanPengabdianTableKaprodi from './components/PenugasanPengabdianTableKaprodi';
 
 const PenugasanPengabdian = () => {
   const [openModalDelete, setOpenModalDelete] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const queryClient = useQueryClient();
-
+  const userRole = useCheckRole();
   const {
     auth: { userData },
   } = useAuth();
+
   const {
     data: penugasanPengabdianData,
     isLoading: penugasanPengabdianDataIsLoading,
+    refetch: penugasanPengabdianDataRefetch,
+  } = usePenugasanPengabdianData({
+    enabled: !!userRole.admin,
+    select: (response) => {
+      return response.data;
+    },
+  });
+
+  const {
+    data: penugasanPengabdianDataByDosen,
+    isLoading: penugasanPengabdianDataByDosenIsLoading,
+    refetch: penugasanPengabdianDataByDosenRefetch,
   } = usePenugasanPengabdianByDosen(userData.id, {
+    enabled: !!userRole.facultyMember,
+    select: (response) => {
+      return response.data;
+    },
+  });
+
+  const {
+    data: penugasanPengabdianDataByProdi,
+    isLoading: penugasanPengabdianDataByProdiIsLoading,
+    refetch: penugasanPengabdianDataByProdiRefetch,
+  } = usePenugasanPengabdianByProdi({
+    enabled: !!userRole.kaprodi,
     select: (response) => {
       return response.data;
     },
@@ -39,7 +69,14 @@ const PenugasanPengabdian = () => {
         deleteFunc={() =>
           deletePenugasanPengabdian(selectedItem, {
             onSuccess: () => {
-              queryClient.invalidateQueries('penugasan-pengabdian-by-dosen');
+              if (userRole.admin) {
+                penugasanPengabdianDataRefetch();
+              } else if (userRole.dosen) {
+                penugasanPengabdianDataByDosenRefetch();
+              } else if (userRole.kaprodi) {
+                penugasanPengabdianDataByProdiRefetch();
+              }
+
               setOpenModalDelete(false);
             },
           })
@@ -55,12 +92,30 @@ const PenugasanPengabdian = () => {
         </PrimaryButton>
       </div>
       <div className="mt-8 w-full rounded-t-lg">
-        <PenugasanPengabdianTable
-          setSelectedItem={setSelectedItem}
-          setOpenModalDelete={setOpenModalDelete}
-          loading={penugasanPengabdianDataIsLoading}
-          data={penugasanPengabdianData || []}
-        />
+        {userRole.admin && (
+          <PenugasanPengabdianTable
+            setSelectedItem={setSelectedItem}
+            setOpenModalDelete={setOpenModalDelete}
+            loading={penugasanPengabdianDataIsLoading}
+            data={penugasanPengabdianData || []}
+          />
+        )}
+        {userRole.kaprodi && (
+          <PenugasanPengabdianTableKaprodi
+            setSelectedItem={setSelectedItem}
+            setOpenModalDelete={setOpenModalDelete}
+            loading={penugasanPengabdianDataByProdiIsLoading}
+            data={penugasanPengabdianDataByProdi || []}
+          />
+        )}
+        {userRole.dosen && (
+          <PenugasanPengabdianTableDosen
+            setSelectedItem={setSelectedItem}
+            setOpenModalDelete={setOpenModalDelete}
+            loading={penugasanPengabdianDataByDosenIsLoading}
+            data={penugasanPengabdianDataByDosen || []}
+          />
+        )}
       </div>
     </section>
   );

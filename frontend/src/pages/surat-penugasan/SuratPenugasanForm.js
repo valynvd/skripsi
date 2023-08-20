@@ -175,7 +175,7 @@ const SuratPenugasanForm = () => {
       patchSuratPenugasan(
         { data: suratPenugasanFormData, id: id },
         {
-          onSuccess: () => {
+          onSuccess: (res) => {
             if (suratPenugasanData?.category === 'pengajaran') {
               if (
                 suratPenugasanData.approved === false &&
@@ -205,7 +205,7 @@ const SuratPenugasanForm = () => {
                 });
               }
             }
-            updatedSuratPenugasanRefecth();
+            setSuratPenugasanData(res.data);
             setEditable(false);
           },
           onError: (err) => {
@@ -219,9 +219,8 @@ const SuratPenugasanForm = () => {
     } else {
       postSuratPenugasan(suratPenugasanFormData, {
         onSuccess: ({ data }) => {
-          navigate(`/pelaksanaan-pendidikan/surat-penugasan/${data.id}`, {
-            state: data,
-          });
+          navigate(`/pelaksanaan-pendidikan/surat-penugasan/${data.id}`);
+          setSuratPenugasanData(data);
         },
         onError: (err) => {
           setErrorMessage(err.message);
@@ -899,7 +898,7 @@ const SuratPenugasanForm = () => {
             styles: { valign: 'middle', halign: 'center' },
           },
           {
-            content: item.class_code,
+            content: item.class_code || 'Tidak ada',
             styles: { valign: 'middle', halign: 'center' },
           },
           {
@@ -911,7 +910,7 @@ const SuratPenugasanForm = () => {
             styles: { valign: 'middle', halign: 'center' },
           },
           {
-            content: item.students_amount,
+            content: item.students_amount || 'Tidak ada',
             styles: { valign: 'middle', halign: 'center' },
           },
         ];
@@ -1168,7 +1167,7 @@ const SuratPenugasanForm = () => {
         suratPenugasanId={id}
       />
       <PenugasanPengajaranModalForm
-        penugasanPeopenModalngajaranRefetch={penugasanPengajaranRefetch}
+        penugasanPengajaranRefetch={penugasanPengajaranRefetch}
         openModal={openModal}
         setOpenModal={setOpenModal}
         penugasanPengajaranData={selectedItemEdit}
@@ -1198,7 +1197,7 @@ const SuratPenugasanForm = () => {
           />
           <CRUDropdownInput
             control={control}
-            name="Siklus"
+            name="Periode"
             registeredName="cycle"
             options={dataCycleSuccess ? dataCycle : []}
             required
@@ -1206,7 +1205,7 @@ const SuratPenugasanForm = () => {
           />
           <CRUDropdownInput
             control={control}
-            name="Category"
+            name="Kategori"
             registeredName="category"
             defaultValue={
               suratPenugasanData?.category

@@ -224,70 +224,72 @@ const Table = ({
                           )}
                         </td>
                         <td className="border-gray-300 border-t border-r p-3 w-[20%] space-y-3">
-                          {item2.dokumen_pendukung_detail.map((item3) => {
-                            return (
-                              <div
-                                key={item3.id}
-                                className="w-full flex flex-row items-center space-x-2"
-                              >
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    setSelectedSuratPenugasan2(item3);
-                                    setOpenModal2((prev) => !prev);
-                                  }}
-                                  className=" bg-gray-700 hover:bg-gray-800 duration-200 transition-all px-4 py-1 border border-gray-700 rounded-full cursor-pointer"
+                          {item2.dokumen_pendukung_surat_penugasan_detail.map(
+                            (item3) => {
+                              return (
+                                <div
+                                  key={item3.id}
+                                  className="w-full flex flex-row items-center space-x-2"
                                 >
-                                  <p className="overflow-hidden break-all overflow-ellipsisfont-medium line-clamp-1 text-white">
-                                    {item3.judul}
-                                  </p>
-                                </button>
-                                {matriksEdit[item2.id] && (
-                                  <DeleteIcon
-                                    className="shrink-0"
+                                  <button
+                                    type="button"
                                     onClick={() => {
-                                      setDocumentLoading((prev) => {
-                                        let dupeDocumentLoading = {
-                                          ...prev,
-                                        };
-
-                                        dupeDocumentLoading[item2.id] =
-                                          'loading';
-
-                                        return dupeDocumentLoading;
-                                      });
-                                      patchPoinPenilaian(
-                                        {
-                                          data: {
-                                            dokumenPendukung:
-                                              item2.dokumenPendukung.filter(
-                                                (item) => item !== item3.id
-                                              ),
-                                          },
-                                          id: item2.id,
-                                        },
-                                        {
-                                          onSuccess: () => {
-                                            setDocumentLoading((prev) => {
-                                              let dupeDocumentLoading = {
-                                                ...prev,
-                                              };
-
-                                              dupeDocumentLoading[item2.id] =
-                                                'updated';
-
-                                              return dupeDocumentLoading;
-                                            });
-                                            kriteriaRefetch();
-                                          },
-                                        }
-                                      );
+                                      setSelectedSuratPenugasan2(item3);
+                                      setOpenModal2((prev) => !prev);
                                     }}
-                                  />
-                                )}
-                              </div>
-                            );
-                          })}
+                                    className=" bg-gray-700 hover:bg-gray-800 duration-200 transition-all px-4 py-1 border border-gray-700 rounded-full cursor-pointer"
+                                  >
+                                    <p className="overflow-hidden break-all overflow-ellipsisfont-medium line-clamp-1 text-white">
+                                      {item3.judul}
+                                    </p>
+                                  </button>
+                                  {matriksEdit[item2.id] && (
+                                    <DeleteIcon
+                                      className="shrink-0"
+                                      onClick={() => {
+                                        setDocumentLoading((prev) => {
+                                          let dupeDocumentLoading = {
+                                            ...prev,
+                                          };
+
+                                          dupeDocumentLoading[item2.id] =
+                                            'loading';
+
+                                          return dupeDocumentLoading;
+                                        });
+                                        patchPoinPenilaian(
+                                          {
+                                            data: {
+                                              dokumenPendukungSuratPenugasan:
+                                                item2.dokumenPendukungSuratPenugasan.filter(
+                                                  (item) => item !== item3.id
+                                                ),
+                                            },
+                                            id: item2.id,
+                                          },
+                                          {
+                                            onSuccess: () => {
+                                              setDocumentLoading((prev) => {
+                                                let dupeDocumentLoading = {
+                                                  ...prev,
+                                                };
+
+                                                dupeDocumentLoading[item2.id] =
+                                                  'updated';
+
+                                                return dupeDocumentLoading;
+                                              });
+                                              kriteriaRefetch();
+                                            },
+                                          }
+                                        );
+                                      }}
+                                    />
+                                  )}
+                                </div>
+                              );
+                            }
+                          )}
 
                           <div className="flex space-x-2">
                             {matriksEdit[item2.id] ? (
@@ -303,7 +305,8 @@ const Table = ({
                                 }}
                               />
                             ) : (
-                              item2.dokumenPendukung.length > 0 && (
+                              item2.dokumenPendukungSuratPenugasan.length >
+                                0 && (
                                 <EditButton
                                   onClick={() => {
                                     setMatriksEdit((prev) => {

@@ -18,23 +18,16 @@ class RiwayatPoinPenilaianSerializers(serializers.ModelSerializer):
       fields = '__all__'
 
 class PoinPenilaianSerializers(serializers.ModelSerializer):
-  # riwayat_poin_penilaian = serializers.SerializerMethodField(read_only=True)
-  dokumen_pendukung_file_detail = FileSerializers(source="dokumenPendukungFile", many=True, read_only=True)
-  dokumen_pendukung_surat_penugasan_detail = SuratPenugasanSerializers(source="dokumenPendukungSuratPenugasan", many=True, read_only=True)
-
+  riwayat_poin_penilaian_detail = serializers.SerializerMethodField(read_only=True)
 
   class Meta:
       model = models.PoinPenilaian
       fields = '__all__'
 
-  # def get_riwayat_poin_penilaian(self, obj):
-  #   riwayatPoinPenilaian = models.RiwayatPoinPenilaian.objects.filter(poinPenilaianId=obj)
+  def get_riwayat_poin_penilaian(self, obj):
+    riwayatPoinPenilaian = models.RiwayatPoinPenilaian.objects.filter(poinPenilaianId=obj)
 
-  #   if(len(riwayatPoinPenilaian) == 0):
-  #     return None
-  #   else:
-  #     return RiwayatPoinPenilaianSerializers(riwayatPoinPenilaian[0], many=False).data   
-
+    return RiwayatPoinPenilaianSerializers(riwayatPoinPenilaian, many=True).data   
 
 class KriteriaSerializers(serializers.ModelSerializer):
   poin_penilaian_detail = serializers.SerializerMethodField(read_only=True)

@@ -26,7 +26,7 @@ import { ExportPrimaryButton } from '../../../components/PrimaryButton';
 import { utils, writeFile } from 'xlsx';
 // import CRUDropdownInput from '../../../components/CRUDropdownInput';
 
-const PenugasanPenelitianTable = ({
+const PenugasanPengabdianTableDosen = ({
   setOpenModalDelete,
   setSelectedItem,
   loading,
@@ -36,10 +36,6 @@ const PenugasanPenelitianTable = ({
   const navigate = useNavigate();
 
   const columns = [
-    {
-      Header: 'Dosen',
-      accessor: 'dosen_pengampu_detail.name',
-    },
     {
       Header: 'Surat Penugasan',
       accessor: 'surat_penugasan_detail',
@@ -82,7 +78,7 @@ const PenugasanPenelitianTable = ({
             <EditIcon
               onClick={() => {
                 navigate(
-                  `/pelaksanaan-penelitian/penugasan-penelitian/${value.id}`,
+                  `/pelaksanaan-pengabdian/penugasan-pengabdian/${value.id}`,
                   { state: value }
                 );
               }}
@@ -216,7 +212,7 @@ const PenugasanPenelitianTable = ({
               onChange={(e) => setGlobalFilter(e.target.value)}
             />
           </div>
-          <FilterInput
+          {/* <FilterInput
             clearFunc={() => {
               setValue('prodi', null);
             }}
@@ -227,7 +223,7 @@ const PenugasanPenelitianTable = ({
             registeredName="prodi"
             placeholder="Semua Prodi"
             options={dataProgramStudiSuccess ? dataProgramStudi : []}
-          />
+          /> */}
           {/* <ExportPrimaryButton onClick={handleExport} /> */}
         </form>
       </div>
@@ -312,4 +308,4 @@ const PenugasanPenelitianTable = ({
   );
 };
 
-export default PenugasanPenelitianTable;
+export default PenugasanPengabdianTableDosen;

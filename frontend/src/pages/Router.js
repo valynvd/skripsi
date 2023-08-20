@@ -55,6 +55,10 @@ import MonitoringMahasiswaImportExcel from './monitoring-mahasiswa/MonitoringMah
 import PenugasanPengabdian from './pengabdian/PenugasanPengabdian';
 import PenugasanPengabdianForm from './pengabdian/PenugasanPengabdianForm';
 import GrupMahasiswaImportExcel from './grup-mahasiswa/GrupMahasiswaImportExcel';
+import PublikasiKarya from './publikasi-karya/PublikasiKarya';
+import PublikasiKaryaForm from './publikasi-karya/PublikasiKaryaForm';
+import PatenHKI from './paten-hki/PatenHKI';
+import PatenHKIForm from './paten-hki/PatenHKIForm';
 
 const Router = () => {
   return (
@@ -63,10 +67,22 @@ const Router = () => {
         <Route path="/" element={<Base />}>
           <Route index element={<Home />} />
 
-          <Route path="pelaksanaan-penelitian/penugasan-penelitian">
-            <Route index element={<PenugasanPenelitian />} />
-            <Route path="form" element={<PenugasanPenelitianForm />} />
-            <Route path=":id" element={<PenugasanPenelitianForm />} />
+          <Route path="pelaksanaan-penelitian">
+            <Route path="penugasan-penelitian">
+              <Route index element={<PenugasanPenelitian />} />
+              <Route path="form" element={<PenugasanPenelitianForm />} />
+              <Route path=":id" element={<PenugasanPenelitianForm />} />
+            </Route>
+            <Route path="publikasi-karya">
+              <Route index element={<PublikasiKarya />} />
+              <Route path="form" element={<PublikasiKaryaForm />} />
+              <Route path=":id" element={<PublikasiKaryaForm />} />
+            </Route>
+            <Route path="paten-hki">
+              <Route index element={<PatenHKI />} />
+              <Route path="form" element={<PatenHKIForm />} />
+              <Route path=":id" element={<PatenHKIForm />} />
+            </Route>
           </Route>
 
           <Route path="pelaksanaan-pengabdian/penugasan-pengabdian">
@@ -83,7 +99,9 @@ const Router = () => {
           <Route path="pelaksanaan-pendidikan" element={<Outlet />}>
             <Route
               element={
-                <RequireAuthWithRoles allowedRoles={['Admin', 'Superadmin']} />
+                <RequireAuthWithRoles
+                  allowedRoles={['Admin', 'Superadmin', 'Kaprodi']}
+                />
               }
             >
               <Route path="surat-penugasan">
@@ -203,7 +221,7 @@ const Router = () => {
               </Route>
               <Route path="pengaturan-grup">
                 <Route index element={<GrupMahasiswa />} />
-                <Route path="import" element={<GrupMahasiswaImportExcel />}/>
+                <Route path="import" element={<GrupMahasiswaImportExcel />} />
                 <Route path="mahasiswa-member" element={<MahasiswaMember />} />
               </Route>
               <Route path="konsol-chatbot">

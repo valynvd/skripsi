@@ -18,7 +18,7 @@ const TableSimulate = ({ simulateData }) => {
   };
 
   return (
-    <section id="penugasan-pengajaran" className="section-container">
+    <section id="penugasan-pengajaran" className="section-container mt-4">
       <table>
         <thead>
           <tr>

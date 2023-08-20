@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { PrimaryButton } from '../../components/PrimaryButton';
 import { BiPlusCircle } from 'react-icons/bi';
 import SuratPenugasanTable from './components/SuratPenugasanTable';
@@ -15,10 +15,6 @@ const SuratPenugasan = () => {
   const [openModalDelete, setOpenModalDelete] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const queryClient = useQueryClient();
-
-  useEffect(() => {
-    console.log(response?.data);
-  }, [response]);
 
   return (
     <section id="surat-penugasan" className="section-container">

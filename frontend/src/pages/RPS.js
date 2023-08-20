@@ -523,16 +523,16 @@ const RPS = () => {
         {/* <div className="flex flex-col items-start lg:justify-between lg:items-center lg:flex-row space-y-2 lg:space-y-0">
         <p className="font-semibold text-lg">RPS</p>
       </div> */}
-        {/* <Editor
-        toolbar={{
-          options: ['inline', 'fontSize', 'list', 'textAlign', 'history'],
-        }}
-        initialContentState={null}
-        onContentStateChange={(res) => {
-          setSubjectMatter(res);
-        }}
-        wrapperClassName="wrapper-class"
-      /> */}
+        <Editor
+          toolbar={{
+            options: ['inline', 'fontSize', 'list', 'textAlign', 'history'],
+          }}
+          initialContentState={null}
+          onContentStateChange={(res) => {
+            setSubjectMatter(res);
+          }}
+          wrapperClassName="wrapper-class"
+        />
         <div className="w-full rounded-t-lg">
           <PDFObject page={1} height="60rem" url={link} />
         </div>

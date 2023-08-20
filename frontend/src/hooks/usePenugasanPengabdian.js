@@ -1,6 +1,7 @@
 import { request } from '../utils/axios-utils';
 import { useQuery } from 'react-query';
 import { useMutation } from 'react-query';
+import useAuth from './useAuth';
 
 const url = '/api-stem/penugasanpengabdian/';
 
@@ -60,6 +61,12 @@ const getPenugasanPengabdianByDosen = (id) => {
   });
 };
 
+const getPenugasanPengabdianByProdi = (id) => {
+  return request({
+    url: `/api-stem/penugasanpengabdianbyprodi/${id}/`,
+  });
+};
+
 export const usePenugasanPengabdianById = (id, options) => {
   return useQuery(
     ['penugasan-pengabdian-by-id', id],
@@ -75,6 +82,19 @@ export const usePenugasanPengabdianBySuratPenugasan = (id, options) => {
   return useQuery(
     ['penugasan-pengabdian-by-surat-penugasan', id],
     () => getPenugasanPengabdianBySuratPenugasan(id),
+    {
+      refetchOnWindowFocus: false,
+      ...options,
+    }
+  );
+};
+
+export const usePenugasanPengabdianByProdi = (options) => {
+  const prodi = useAuth().auth.userData?.dosen_detail?.prodi;
+
+  return useQuery(
+    ['dokumen-pembelajaran-by-prodi', prodi],
+    () => getPenugasanPengabdianByProdi(prodi),
     {
       refetchOnWindowFocus: false,
       ...options,

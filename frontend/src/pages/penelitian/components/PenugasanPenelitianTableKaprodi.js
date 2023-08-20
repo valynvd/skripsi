@@ -26,7 +26,7 @@ import { ExportPrimaryButton } from '../../../components/PrimaryButton';
 import { utils, writeFile } from 'xlsx';
 // import CRUDropdownInput from '../../../components/CRUDropdownInput';
 
-const PenugasanPenelitianTable = ({
+const PenugasanPenelitianTableKaprodi = ({
   setOpenModalDelete,
   setSelectedItem,
   loading,
@@ -216,7 +216,7 @@ const PenugasanPenelitianTable = ({
               onChange={(e) => setGlobalFilter(e.target.value)}
             />
           </div>
-          <FilterInput
+          {/* <FilterInput
             clearFunc={() => {
               setValue('prodi', null);
             }}
@@ -227,7 +227,7 @@ const PenugasanPenelitianTable = ({
             registeredName="prodi"
             placeholder="Semua Prodi"
             options={dataProgramStudiSuccess ? dataProgramStudi : []}
-          />
+          /> */}
           {/* <ExportPrimaryButton onClick={handleExport} /> */}
         </form>
       </div>
@@ -312,4 +312,4 @@ const PenugasanPenelitianTable = ({
   );
 };
 
-export default PenugasanPenelitianTable;
+export default PenugasanPenelitianTableKaprodi;

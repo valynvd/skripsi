@@ -76,11 +76,13 @@ const TableForm = ({ handleSubmit, onSubmit, control, errors, reset }) => {
             item_number: item2.item_number,
             value: item2.score,
             max_score: item2.max_score,
-            dokumen_pendukung: [],
+            dokumen_pendukung_surat_penugasan: [],
           };
 
-          item2.dokumen_pendukung_detail.forEach((item3) => {
-            formatFormState[item2.order_number]['dokumen_pendukung'].push({
+          item2.dokumen_pendukung_surat_penugasan_detail.forEach((item3) => {
+            formatFormState[item2.order_number][
+              'dokumen_pendukung_surat_penugasan'
+            ].push({
               label: item3.judul,
               value: item3.id,
             });
@@ -140,7 +142,7 @@ const TableForm = ({ handleSubmit, onSubmit, control, errors, reset }) => {
   };
 
   return (
-    <section className="section-container mt-4">
+    <section className="section-container">
       <DetailModal
         openModal2={openModal2}
         setOpenModal2={setOpenModal2}

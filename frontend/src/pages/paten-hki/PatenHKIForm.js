@@ -5,14 +5,14 @@ import CRUInput from '../../components/CRUInput';
 import { PrimaryButton } from '../../components/PrimaryButton';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import {
-  usePostPenugasanPenelitian,
-  usePatchPenugasanPenelitian,
-  usePenugasanPenelitianById,
-} from '../../hooks/usePenugasanPenelitian';
+  usePostPatenHKI,
+  usePatchPatenHKI,
+  usePatenHKIById,
+} from '../../hooks/usePatenHKI';
 import { AlertError } from '../../components/Alert';
 import CRUFileInput from '../../components/CRUFileInput';
 import EditButton from '../../components/EditButton';
-import { usePenugasanPengajaranByPenugasanPenelitian } from '../../hooks/usePenugasanPengajaran';
+import { usePenugasanPengajaranByPatenHKI } from '../../hooks/usePenugasanPengajaran';
 import useAuth from '../../hooks/useAuth';
 import CancelButton from '../../components/CancelButton';
 import { useCheckRole } from '../../hooks/useCheckRole';
@@ -21,7 +21,7 @@ import { useDosenData } from '../../hooks/useDosen';
 import CRUDropdownInput from '../../components/CRUDropdownInput';
 import BreadCrumbs from '../../components/BreadCrumbs';
 
-const PenugasanPenelitianForm = () => {
+const PatenHKIForm = () => {
   const [errorMessage, setErrorMessage] = useState();
   const { id } = useParams();
   const { state } = useLocation();
@@ -35,15 +35,12 @@ const PenugasanPenelitianForm = () => {
     defaultValues: {},
   });
   const [editable, setEditable] = useState(true);
-  const [penugasanPenelitianData, setPenugasanPenelitianData] = useState(state);
+  const [patenHKIData, setPatenHKIData] = useState(state);
   const userRole = useCheckRole();
 
-  const { data: updatedPenugasanPenelitianData } = usePenugasanPenelitianById(
-    id,
-    {
-      enabled: !!id && !penugasanPenelitianData,
-    }
-  );
+  const { data: updatedPatenHKIData } = usePatenHKIById(id, {
+    enabled: !!id && !patenHKIData,
+  });
   const { data: dataSuratPenugasan, isSuccess: suratPenugasanDataSuccess } =
     useSuratPenugasanData({
       select: (response) => {
@@ -68,90 +65,50 @@ const PenugasanPenelitianForm = () => {
     if (id) {
       if (state) {
         reset(state);
-      } else if (updatedPenugasanPenelitianData) {
-        setPenugasanPenelitianData(updatedPenugasanPenelitianData?.data);
-        reset(updatedPenugasanPenelitianData?.data);
+      } else if (updatedPatenHKIData) {
+        setPatenHKIData(updatedPatenHKIData?.data);
+        reset(updatedPatenHKIData?.data);
       }
       setEditable(false);
     }
-  }, [state, id, reset, updatedPenugasanPenelitianData]);
+  }, [state, id, reset, updatedPatenHKIData]);
 
-  const {
-    mutate: postPenugasanPenelitian,
-    isLoading: postPenugasanPenelitianLoading,
-  } = usePostPenugasanPenelitian();
-  const {
-    mutate: patchPenugasanPenelitian,
-    isLoading: patchPenugasanPenelitianLoading,
-  } = usePatchPenugasanPenelitian();
+  const { mutate: postPatenHKI, isLoading: postPatenHKILoading } =
+    usePostPatenHKI();
+  const { mutate: patchPatenHKI, isLoading: patchPatenHKILoading } =
+    usePatchPatenHKI();
   const navigate = useNavigate();
   const {
     auth: { userData },
   } = useAuth();
 
   const onSubmit = (data) => {
-    const penugasanPenelitianFormData = new FormData();
+    const patenHKIFormData = new FormData();
 
     if (userRole.admin || userRole.kaprodi) {
       if (dirtyFields.dosen_pengampu) {
-        penugasanPenelitianFormData.append(
-          'dosen_pengampu',
-          data.dosen_pengampu
-        );
-      }
-      if (dirtyFields.surat_penugasan) {
-        penugasanPenelitianFormData.append(
-          'surat_penugasan',
-          data.surat_penugasan
-        );
+        patenHKIFormData.append('dosen_pengampu', data.dosen_pengampu);
       }
     } else if (userRole.dosen) {
-      penugasanPenelitianFormData.append(
-        'dosen_pengampu',
-        userData.dosen_detail.id
-      );
+      patenHKIFormData.append('dosen_pengampu', userData.dosen_detail.id);
     }
 
     if (dirtyFields.title) {
-      penugasanPenelitianFormData.append('title', data.title);
+      patenHKIFormData.append('title', data.title);
     }
-    if (dirtyFields.start_year) {
-      penugasanPenelitianFormData.append('start_year', data.start_year);
+    if (dirtyFields.description) {
+      patenHKIFormData.append('description', data.description);
     }
-    if (dirtyFields.total_year) {
-      penugasanPenelitianFormData.append('total_year', data.total_year);
-    }
-    if (dirtyFields.location) {
-      penugasanPenelitianFormData.append('location', data.location);
-    }
-    if (dirtyFields.dikti_total_fund) {
-      penugasanPenelitianFormData.append(
-        'dikti_total_fund',
-        data.dikti_total_fund
-      );
-    }
-    if (dirtyFields.college_total_fund) {
-      penugasanPenelitianFormData.append(
-        'college_total_fund',
-        data.college_total_fund
-      );
-    }
-    if (dirtyFields.other_institution_total_fund) {
-      penugasanPenelitianFormData.append(
-        'other_institution_total_fund',
-        data.other_institution_total_fund
-      );
-    }
-    if (dirtyFields.files) {
-      penugasanPenelitianFormData.append('files', data.files[0]);
+    if (dirtyFields.file) {
+      patenHKIFormData.append('file', data.file);
     }
 
     if (id) {
-      patchPenugasanPenelitian(
-        { data: penugasanPenelitianFormData, id: id },
+      patchPatenHKI(
+        { data: patenHKIFormData, id: id },
         {
           onSuccess: () => {
-            navigate('/pelaksanaan-penelitian/penugasan-penelitian');
+            navigate('/pelaksanaan-penelitian/paten-hki');
           },
           onError: (err) => {
             setErrorMessage(err.message);
@@ -162,9 +119,9 @@ const PenugasanPenelitianForm = () => {
         }
       );
     } else {
-      postPenugasanPenelitian(penugasanPenelitianFormData, {
+      postPatenHKI(patenHKIFormData, {
         onSuccess: () => {
-          navigate('/pelaksanaan-penelitian/penugasan-penelitian');
+          navigate('/pelaksanaan-penelitian/paten-hki');
         },
         onError: (err) => {
           setErrorMessage(err.message);
@@ -182,8 +139,8 @@ const PenugasanPenelitianForm = () => {
         <BreadCrumbs
           links={[
             {
-              name: 'Daftar Penugasan Penelitian',
-              link: '/pelaksanaan-penelitian/penugasan-penelitian',
+              name: 'Daftar Paten/HKI',
+              link: '/pelaksanaan-penelitian/paten-hki',
             },
             {
               name: `${id ? 'Detail' : 'Buat'}`,
@@ -191,26 +148,11 @@ const PenugasanPenelitianForm = () => {
           ]}
         />
         <p className="text-lg font-semibold">
-          {id ? 'Edit' : 'Buat'} Penugasan Penelitian
+          {id ? 'Edit' : 'Buat'} Paten/HKI
         </p>
         <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4">
           {(userRole.admin || userRole.kaprodi) && (
             <>
-              <CRUDropdownInput
-                control={control}
-                name="Surat Penugasan"
-                registeredName="surat_penugasan"
-                defaultValue={
-                  state?.surat_penugasan_detail
-                    ? {
-                        value: state.surat_penugasan_detail.id,
-                        label: state.surat_penugasan_detail.judul,
-                      }
-                    : null
-                }
-                options={suratPenugasanDataSuccess ? dataSuratPenugasan : []}
-                isDisabled={!editable}
-              />
               <CRUDropdownInput
                 control={control}
                 name="Dosen"
@@ -237,51 +179,16 @@ const PenugasanPenelitianForm = () => {
           />
           <CRUInput
             register={register}
-            name="tanggal pelaksanaan"
+            name="deskripsi"
             errors={errors}
-            registeredName="start_year"
-            isDisabled={!editable}
-          />
-          <CRUInput
-            register={register}
-            name="lama kegiatan (tahun)"
-            errors={errors}
-            registeredName="total_year"
-            isDisabled={!editable}
-          />
-          <CRUInput
-            register={register}
-            name="lokasi kegiatan"
-            errors={errors}
-            registeredName="location"
-            isDisabled={!editable}
-          />
-          <CRUInput
-            register={register}
-            name="dana dari dikti (rp.)"
-            errors={errors}
-            registeredName="dikti_total_fund"
-            isDisabled={!editable}
-          />
-          <CRUInput
-            register={register}
-            name="dana dari perguruan tinggi (rp.)"
-            errors={errors}
-            registeredName="college_total_fund"
-            isDisabled={!editable}
-          />
-          <CRUInput
-            register={register}
-            name="dana dari institusi lain (rp.)"
-            errors={errors}
-            registeredName="other_institution_total_fund"
+            registeredName="description"
             isDisabled={!editable}
           />
           <CRUFileInput
             control={control}
             fileLink={state?.files}
             register={register}
-            registeredName="files"
+            registeredName="file"
             name="File"
             type="file"
             isDisabled={!editable}
@@ -302,7 +209,7 @@ const PenugasanPenelitianForm = () => {
                 <EditButton
                   className={`!text-base`}
                   type="submit"
-                  isLoading={patchPenugasanPenelitianLoading}
+                  isLoading={patchPatenHKILoading}
                   name="Update"
                 />
               )}
@@ -311,10 +218,7 @@ const PenugasanPenelitianForm = () => {
           ) : (
             <PrimaryButton
               className={`!mt-8`}
-              isLoading={
-                patchPenugasanPenelitianLoading ||
-                postPenugasanPenelitianLoading
-              }
+              isLoading={patchPatenHKILoading || postPatenHKILoading}
             >
               Buat
             </PrimaryButton>
@@ -325,4 +229,4 @@ const PenugasanPenelitianForm = () => {
   );
 };
 
-export default PenugasanPenelitianForm;
+export default PatenHKIForm;

@@ -85,7 +85,7 @@ const AddModal = ({
                     suratPenugasanData && selectedPoinPenilaian
                       ? suratPenugasanData.filter(
                           (item) =>
-                            !selectedPoinPenilaian.dokumenPendukung.includes(
+                            !selectedPoinPenilaian.dokumenPendukungSuratPenugasan.includes(
                               item.value
                             )
                         )
@@ -159,8 +159,8 @@ const AddModal = ({
                         patchPoinPenilaian(
                           {
                             data: {
-                              dokumenPendukung: [
-                                ...selectedPoinPenilaian.dokumenPendukung,
+                              dokumenPendukungSuratPenugasan: [
+                                ...selectedPoinPenilaian.dokumenPendukungSuratPenugasan,
                                 selectedSuratPenugasan.value,
                               ],
                             },

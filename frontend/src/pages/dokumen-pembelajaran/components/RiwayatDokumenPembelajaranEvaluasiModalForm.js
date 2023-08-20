@@ -73,10 +73,11 @@ const RiwayatDokumenPembelajaranEvaluasiModalForm = ({
     if (dirtyFields.status) {
       if (data.status === true) {
         riwayatDokumenPembelajaranFormData.append('status', 'accepted');
-      } else if (data.status === false) {
-        riwayatDokumenPembelajaranFormData.append('status', 'revision');
       }
+    } else {
+      riwayatDokumenPembelajaranFormData.append('status', 'revision');
     }
+
     if (dirtyFields.notes) {
       riwayatDokumenPembelajaranFormData.append('notes', data.notes);
     }

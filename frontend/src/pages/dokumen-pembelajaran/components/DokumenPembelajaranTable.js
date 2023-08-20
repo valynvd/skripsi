@@ -1,17 +1,12 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/jsx-key */
 import React, { useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import {
-  LinkIconAccepted,
-  LinkIconRejected,
-  LinkIconWarning,
-} from '../../../components/LinkIcon';
-import { DeleteIcon } from '../../../components/IconButton';
-import {
-  useTable,
   usePagination,
   useGlobalFilter,
   useSortBy,
+  useTable,
 } from 'react-table';
 import { RxTriangleUp, RxTriangleDown } from 'react-icons/rx';
 import { AiOutlineSearch } from 'react-icons/ai';
@@ -22,6 +17,13 @@ import { useProgramStudiData } from '../../../hooks/useProdi';
 import FilterInput from '../../../components/FitlerInput';
 import { ExportPrimaryButton } from '../../../components/PrimaryButton';
 import { utils, writeFile } from 'xlsx';
+import {
+  LinkIconAccepted,
+  LinkIconRejected,
+  LinkIconReview,
+  LinkIconWarning,
+} from '../../../components/LinkIcon';
+import { DeleteIcon } from '../../../components/IconButton';
 // import CRUDropdownInput from '../../../components/CRUDropdownInput';
 
 const DokumenPembelajaranTable = ({
@@ -40,22 +42,8 @@ const DokumenPembelajaranTable = ({
   };
 
   const columns = [
-    // {
-    //   Header: 'Info',
-    //   Cell: ({
-    //     cell: {
-    //       row: { original: value },
-    //     },
-    //   }) => {
-    //     return value.rps ? (
-    //       <TooltipAccept>RPS sudah diisi</TooltipAccept>
-    //     ) : (
-    //       <TooltipWarning>Tolong untuk segera mengisi RPS</TooltipWarning>
-    //     );
-    //   },
-    // },
     {
-      Header: 'Siklus',
+      Header: 'Periode',
       accessor:
         'penugasan_pengajaran_detail.surat_penugasan_detail.cycle_detail',
       Cell: ({ value }) => {
@@ -75,7 +63,6 @@ const DokumenPembelajaranTable = ({
       accessor:
         'penugasan_pengajaran_detail.dosen_pengampu_detail.prodi_detail.name',
     },
-    // { Header: 'Catatan', accessor: 'notes' },
     {
       Header: 'Rubrik',
       Cell: ({
@@ -83,29 +70,59 @@ const DokumenPembelajaranTable = ({
           row: { original: value },
         },
       }) => {
-        return value.accepted_rubrik ? (
-          <LinkIconAccepted
-            onClick={() => {
-              navigate(
-                `/pelaksanaan-pendidikan/dokumen-pembelajaran/${value.id}`,
-                {
-                  state: { data: value, selectedPage: 'Riwayat Rubrik' },
-                }
-              );
-            }}
-          />
-        ) : (
-          <LinkIconWarning
-            onClick={() => {
-              navigate(
-                `/pelaksanaan-pendidikan/dokumen-pembelajaran/${value.id}`,
-                {
-                  state: { data: value, selectedPage: 'Riwayat Rubrik' },
-                }
-              );
-            }}
-          />
-        );
+        if (value.rubrik_status === 'empty') {
+          return (
+            <LinkIconRejected
+              onClick={() => {
+                navigate(
+                  `/pelaksanaan-pendidikan/dokumen-pembelajaran/${value.id}`,
+                  {
+                    state: { data: value, selectedPage: 'Riwayat Rubrik' },
+                  }
+                );
+              }}
+            />
+          );
+        } else if (value.rubrik_status === 'waiting review') {
+          return (
+            <LinkIconReview
+              onClick={() => {
+                navigate(
+                  `/pelaksanaan-pendidikan/dokumen-pembelajaran/${value.id}`,
+                  {
+                    state: { data: value, selectedPage: 'Riwayat Rubrik' },
+                  }
+                );
+              }}
+            />
+          );
+        } else if (value.rubrik_status === 'revision') {
+          return (
+            <LinkIconWarning
+              onClick={() => {
+                navigate(
+                  `/pelaksanaan-pendidikan/dokumen-pembelajaran/${value.id}`,
+                  {
+                    state: { data: value, selectedPage: 'Riwayat Rubrik' },
+                  }
+                );
+              }}
+            />
+          );
+        } else if (value.rubrik_status.accepted) {
+          return (
+            <LinkIconAccepted
+              onClick={() => {
+                navigate(
+                  `/pelaksanaan-pendidikan/dokumen-pembelajaran/${value.id}`,
+                  {
+                    state: { data: value, selectedPage: 'Riwayat Rubrik' },
+                  }
+                );
+              }}
+            />
+          );
+        }
       },
     },
     {
@@ -116,29 +133,59 @@ const DokumenPembelajaranTable = ({
           row: { original: value },
         },
       }) => {
-        return value.accepted_rps ? (
-          <LinkIconAccepted
-            onClick={() => {
-              navigate(
-                `/pelaksanaan-pendidikan/dokumen-pembelajaran/${value.id}`,
-                {
-                  state: { data: value, selectedPage: 'Riwayat RPS' },
-                }
-              );
-            }}
-          />
-        ) : (
-          <LinkIconWarning
-            onClick={() => {
-              navigate(
-                `/pelaksanaan-pendidikan/dokumen-pembelajaran/${value.id}`,
-                {
-                  state: { data: value, selectedPage: 'Riwayat RPS' },
-                }
-              );
-            }}
-          />
-        );
+        if (value.rps_status === 'empty') {
+          return (
+            <LinkIconRejected
+              onClick={() => {
+                navigate(
+                  `/pelaksanaan-pendidikan/dokumen-pembelajaran/${value.id}`,
+                  {
+                    state: { data: value, selectedPage: 'Riwayat RPS' },
+                  }
+                );
+              }}
+            />
+          );
+        } else if (value.rps_status === 'waiting review') {
+          return (
+            <LinkIconReview
+              onClick={() => {
+                navigate(
+                  `/pelaksanaan-pendidikan/dokumen-pembelajaran/${value.id}`,
+                  {
+                    state: { data: value, selectedPage: 'Riwayat RPS' },
+                  }
+                );
+              }}
+            />
+          );
+        } else if (value.rps_status === 'revision') {
+          return (
+            <LinkIconWarning
+              onClick={() => {
+                navigate(
+                  `/pelaksanaan-pendidikan/dokumen-pembelajaran/${value.id}`,
+                  {
+                    state: { data: value, selectedPage: 'Riwayat RPS' },
+                  }
+                );
+              }}
+            />
+          );
+        } else if (value.rps_status.accepted) {
+          return (
+            <LinkIconAccepted
+              onClick={() => {
+                navigate(
+                  `/pelaksanaan-pendidikan/dokumen-pembelajaran/${value.id}`,
+                  {
+                    state: { data: value, selectedPage: 'Riwayat RPS' },
+                  }
+                );
+              }}
+            />
+          );
+        }
       },
     },
     {
@@ -148,7 +195,7 @@ const DokumenPembelajaranTable = ({
           row: { original: value },
         },
       }) => {
-        if (value.accepted_rps && value.accepted_rubrik) {
+        if (value.rps_status.accepted && value.rubrik_status.accepted) {
           if (value.portofolio_perkuliahan) {
             return (
               <LinkIconAccepted
@@ -167,7 +214,7 @@ const DokumenPembelajaranTable = ({
             );
           } else {
             return (
-              <LinkIconWarning
+              <LinkIconRejected
                 onClick={() => {
                   navigate(
                     `/pelaksanaan-pendidikan/dokumen-pembelajaran/${value.id}`,
@@ -182,8 +229,6 @@ const DokumenPembelajaranTable = ({
               />
             );
           }
-        } else {
-          return <LinkIconRejected />;
         }
       },
     },
@@ -363,9 +408,9 @@ const DokumenPembelajaranTable = ({
             isClearable
             className="w-64"
             control={control}
-            name="Siklus"
+            name="Periode"
             registeredName="cycle"
-            placeholder="Semua Siklus"
+            placeholder="Semua Periode"
             options={dataCycleSuccess ? dataCycle : []}
           />
           <FilterInput

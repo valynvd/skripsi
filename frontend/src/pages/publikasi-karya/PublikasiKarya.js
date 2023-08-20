@@ -4,19 +4,19 @@ import { PrimaryButton } from '../../components/PrimaryButton';
 import { BiPlusCircle } from 'react-icons/bi';
 import ModalDelete from '../../components/ModalDelete';
 import { useQueryClient } from 'react-query';
-import PenugasanPenelitianTable from './components/PenugasanPenelitianTable';
+import PublikasiKaryaTable from './components/PublikasiKaryaTable';
 import {
-  useDeletePenugasanPenelitian,
-  usePenugasanPenelitianByDosen,
-  usePenugasanPenelitianByProdi,
-  usePenugasanPenelitianData,
-} from '../../hooks/usePenugasanPenelitian';
+  useDeletePublikasiKarya,
+  usePublikasiKaryaByDosen,
+  usePublikasiKaryaByProdi,
+  usePublikasiKaryaData,
+} from '../../hooks/usePublikasiKarya';
 import useAuth from '../../hooks/useAuth';
 import { useCheckRole } from '../../hooks/useCheckRole';
-import PenugasanPenelitianTableDosen from './components/PenugasanPenelitianTableDosen';
-import PenugasanPenelitianTableKaprodi from './components/PenugasanPenelitianTableKaprodi';
+import PublikasiKaryaTableDosen from './components/PublikasiKaryaTableDosen';
+import PublikasiKaryaTableKaprodi from './components/PublikasiKaryaTableKaprodi';
 
-const PenugasanPenelitian = () => {
+const PublikasiKarya = () => {
   const [openModalDelete, setOpenModalDelete] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const queryClient = useQueryClient();
@@ -26,10 +26,10 @@ const PenugasanPenelitian = () => {
   } = useAuth();
 
   const {
-    data: penugasanPenelitianData,
-    isLoading: penugasanPenelitianDataIsLoading,
-    refetch: penugasanPenelitianDataRefetch,
-  } = usePenugasanPenelitianData({
+    data: publikasiKaryaData,
+    isLoading: publikasiKaryaDataIsLoading,
+    refetch: publikasiKaryaDataRefetch,
+  } = usePublikasiKaryaData({
     enabled: !!userRole.admin,
     select: (response) => {
       return response.data;
@@ -37,10 +37,10 @@ const PenugasanPenelitian = () => {
   });
 
   const {
-    data: penugasanPenelitianDataByDosen,
-    isLoading: penugasanPenelitianDataByDosenIsLoading,
-    refetch: penugasanPenelitianDataByDosenRefetch,
-  } = usePenugasanPenelitianByDosen(userData.id, {
+    data: publikasiKaryaDataByDosen,
+    isLoading: publikasiKaryaDataByDosenIsLoading,
+    refetch: publikasiKaryaDataByDosenRefetch,
+  } = usePublikasiKaryaByDosen(userData.id, {
     enabled: !!userRole.facultyMember,
     select: (response) => {
       return response.data;
@@ -48,33 +48,33 @@ const PenugasanPenelitian = () => {
   });
 
   const {
-    data: penugasanPenelitianDataByProdi,
-    isLoading: penugasanPenelitianDataByProdiIsLoading,
-    refetch: penugasanPenelitianDataByProdiRefetch,
-  } = usePenugasanPenelitianByProdi({
+    data: publikasiKaryaDataByProdi,
+    isLoading: publikasiKaryaDataByProdiIsLoading,
+    refetch: publikasiKaryaDataByProdiRefetch,
+  } = usePublikasiKaryaByProdi({
     enabled: !!userRole.kaprodi,
     select: (response) => {
       return response.data;
     },
   });
 
-  const { mutate: deletePenugasanPenelitian } = useDeletePenugasanPenelitian();
+  const { mutate: deletePublikasiKarya } = useDeletePublikasiKarya();
 
   return (
-    <section id="penelitian" className="section-container">
+    <section id="publikasi-karya" className="section-container">
       <ModalDelete
-        title="Penugasan Penelitian"
+        title="Publikasi Karya"
         isOpen={openModalDelete}
         setIsOpen={setOpenModalDelete}
         deleteFunc={() =>
-          deletePenugasanPenelitian(selectedItem, {
+          deletePublikasiKarya(selectedItem, {
             onSuccess: () => {
               if (userRole.admin) {
-                penugasanPenelitianDataRefetch();
+                publikasiKaryaDataRefetch();
               } else if (userRole.dosen) {
-                penugasanPenelitianDataByDosenRefetch();
+                publikasiKaryaDataByDosenRefetch();
               } else if (userRole.kaprodi) {
-                penugasanPenelitianDataByProdiRefetch();
+                publikasiKaryaDataByProdiRefetch();
               }
 
               setOpenModalDelete(false);
@@ -83,37 +83,37 @@ const PenugasanPenelitian = () => {
         }
       />
       <div className="flex flex-col items-start lg:justify-between lg:items-center lg:flex-row space-y-2 lg:space-y-0">
-        <p className="font-semibold text-lg">Daftar Penelitian</p>
+        <p className="font-semibold text-lg">Daftar Publikasi Karya</p>
         <PrimaryButton
           icon={<BiPlusCircle size={22} />}
-          link="/pelaksanaan-penelitian/penugasan-penelitian/form"
+          link="/pelaksanaan-penelitian/publikasi-karya/form"
         >
-          Buat Penelitian
+          Buat Publikasi Karya
         </PrimaryButton>
       </div>
       <div className="mt-8 w-full rounded-t-lg">
         {userRole.admin && (
-          <PenugasanPenelitianTable
+          <PublikasiKaryaTable
             setSelectedItem={setSelectedItem}
             setOpenModalDelete={setOpenModalDelete}
-            loading={penugasanPenelitianDataIsLoading}
-            data={penugasanPenelitianData || []}
+            loading={publikasiKaryaDataIsLoading}
+            data={publikasiKaryaData || []}
           />
         )}
         {userRole.kaprodi && (
-          <PenugasanPenelitianTableKaprodi
+          <PublikasiKaryaTableKaprodi
             setSelectedItem={setSelectedItem}
             setOpenModalDelete={setOpenModalDelete}
-            loading={penugasanPenelitianDataByProdiIsLoading}
-            data={penugasanPenelitianDataByProdi || []}
+            loading={publikasiKaryaDataByProdiIsLoading}
+            data={publikasiKaryaDataByProdi || []}
           />
         )}
         {userRole.dosen && (
-          <PenugasanPenelitianTableDosen
+          <PublikasiKaryaTableDosen
             setSelectedItem={setSelectedItem}
             setOpenModalDelete={setOpenModalDelete}
-            loading={penugasanPenelitianDataByDosenIsLoading}
-            data={penugasanPenelitianDataByDosen || []}
+            loading={publikasiKaryaDataByDosenIsLoading}
+            data={publikasiKaryaDataByDosen || []}
           />
         )}
       </div>
@@ -121,4 +121,4 @@ const PenugasanPenelitian = () => {
   );
 };
 
-export default PenugasanPenelitian;
+export default PublikasiKarya;

@@ -5,23 +5,18 @@ import CRUInput from '../../components/CRUInput';
 import { PrimaryButton } from '../../components/PrimaryButton';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import {
-  usePostPenugasanPenelitian,
-  usePatchPenugasanPenelitian,
-  usePenugasanPenelitianById,
-} from '../../hooks/usePenugasanPenelitian';
+  usePostPenugasanPengabdian,
+  usePatchPenugasanPengabdian,
+  usePenugasanPengabdianById,
+} from '../../hooks/usePenugasanPengabdian';
 import { AlertError } from '../../components/Alert';
 import CRUFileInput from '../../components/CRUFileInput';
 import EditButton from '../../components/EditButton';
-import { usePenugasanPengajaranByPenugasanPenelitian } from '../../hooks/usePenugasanPengajaran';
+import { usePenugasanPengajaranByPenugasanPengabdian } from '../../hooks/usePenugasanPengajaran';
 import useAuth from '../../hooks/useAuth';
 import CancelButton from '../../components/CancelButton';
-import { useCheckRole } from '../../hooks/useCheckRole';
-import { useSuratPenugasanData } from '../../hooks/useSuratPenugasan';
-import { useDosenData } from '../../hooks/useDosen';
-import CRUDropdownInput from '../../components/CRUDropdownInput';
-import BreadCrumbs from '../../components/BreadCrumbs';
 
-const PenugasanPenelitianForm = () => {
+const PenugasanPengabdianForm = () => {
   const [errorMessage, setErrorMessage] = useState();
   const { id } = useParams();
   const { state } = useLocation();
@@ -35,123 +30,88 @@ const PenugasanPenelitianForm = () => {
     defaultValues: {},
   });
   const [editable, setEditable] = useState(true);
-  const [penugasanPenelitianData, setPenugasanPenelitianData] = useState(state);
-  const userRole = useCheckRole();
+  const [penugasanPengabdianData, setPenugasanPengabdianData] = useState(state);
 
-  const { data: updatedPenugasanPenelitianData } = usePenugasanPenelitianById(
+  const { data: updatedPenugasanPengabdianData } = usePenugasanPengabdianById(
     id,
     {
-      enabled: !!id && !penugasanPenelitianData,
+      enabled: !!id && !penugasanPengabdianData,
     }
   );
-  const { data: dataSuratPenugasan, isSuccess: suratPenugasanDataSuccess } =
-    useSuratPenugasanData({
-      select: (response) => {
-        const formatSuratPenugasanData = response.data.map(({ id, judul }) => {
-          return { value: id, label: judul };
-        });
-
-        return formatSuratPenugasanData;
-      },
-    });
-  const { data: dataDosen, isSuccess: dosenDataSuccess } = useDosenData({
-    select: (response) => {
-      const formatDosenData = response.data.map(({ id, name }) => {
-        return { value: id, label: name };
-      });
-
-      return formatDosenData;
-    },
-  });
 
   useEffect(() => {
     if (id) {
       if (state) {
         reset(state);
-      } else if (updatedPenugasanPenelitianData) {
-        setPenugasanPenelitianData(updatedPenugasanPenelitianData?.data);
-        reset(updatedPenugasanPenelitianData?.data);
+      } else if (updatedPenugasanPengabdianData) {
+        setPenugasanPengabdianData(updatedPenugasanPengabdianData?.data);
+        reset(updatedPenugasanPengabdianData?.data);
       }
       setEditable(false);
     }
-  }, [state, id, reset, updatedPenugasanPenelitianData]);
+  }, [state, id, reset, updatedPenugasanPengabdianData]);
 
   const {
-    mutate: postPenugasanPenelitian,
-    isLoading: postPenugasanPenelitianLoading,
-  } = usePostPenugasanPenelitian();
+    mutate: postPenugasanPengabdian,
+    isLoading: postPenugasanPengabdianLoading,
+  } = usePostPenugasanPengabdian();
   const {
-    mutate: patchPenugasanPenelitian,
-    isLoading: patchPenugasanPenelitianLoading,
-  } = usePatchPenugasanPenelitian();
+    mutate: patchPenugasanPengabdian,
+    isLoading: patchPenugasanPengabdianLoading,
+  } = usePatchPenugasanPengabdian();
   const navigate = useNavigate();
   const {
     auth: { userData },
   } = useAuth();
 
   const onSubmit = (data) => {
-    const penugasanPenelitianFormData = new FormData();
-
-    if (userRole.admin || userRole.kaprodi) {
-      if (dirtyFields.dosen_pengampu) {
-        penugasanPenelitianFormData.append(
-          'dosen_pengampu',
-          data.dosen_pengampu
-        );
-      }
-      if (dirtyFields.surat_penugasan) {
-        penugasanPenelitianFormData.append(
-          'surat_penugasan',
-          data.surat_penugasan
-        );
-      }
-    } else if (userRole.dosen) {
-      penugasanPenelitianFormData.append(
-        'dosen_pengampu',
-        userData.dosen_detail.id
-      );
-    }
+    const penugasanPengabdianFormData = new FormData();
 
     if (dirtyFields.title) {
-      penugasanPenelitianFormData.append('title', data.title);
+      penugasanPengabdianFormData.append('title', data.title);
     }
     if (dirtyFields.start_year) {
-      penugasanPenelitianFormData.append('start_year', data.start_year);
+      penugasanPengabdianFormData.append('start_year', data.start_year);
     }
     if (dirtyFields.total_year) {
-      penugasanPenelitianFormData.append('total_year', data.total_year);
+      penugasanPengabdianFormData.append('total_year', data.total_year);
     }
     if (dirtyFields.location) {
-      penugasanPenelitianFormData.append('location', data.location);
+      penugasanPengabdianFormData.append('location', data.location);
     }
     if (dirtyFields.dikti_total_fund) {
-      penugasanPenelitianFormData.append(
+      penugasanPengabdianFormData.append(
         'dikti_total_fund',
         data.dikti_total_fund
       );
     }
     if (dirtyFields.college_total_fund) {
-      penugasanPenelitianFormData.append(
+      penugasanPengabdianFormData.append(
         'college_total_fund',
         data.college_total_fund
       );
     }
     if (dirtyFields.other_institution_total_fund) {
-      penugasanPenelitianFormData.append(
+      penugasanPengabdianFormData.append(
         'other_institution_total_fund',
         data.other_institution_total_fund
       );
     }
     if (dirtyFields.files) {
-      penugasanPenelitianFormData.append('files', data.files[0]);
+      penugasanPengabdianFormData.append('files', data.files[0]);
     }
 
+    penugasanPengabdianFormData.append(
+      'dosen_pengampu',
+      userData.dosen_detail.id
+    );
+
     if (id) {
-      patchPenugasanPenelitian(
-        { data: penugasanPenelitianFormData, id: id },
+      patchPenugasanPengabdian(
+        { data: penugasanPengabdianFormData, id: id },
         {
           onSuccess: () => {
-            navigate('/pelaksanaan-penelitian/penugasan-penelitian');
+            navigate('/pelaksanaan-pengabdian/penugasan-pengabdian');
           },
           onError: (err) => {
             setErrorMessage(err.message);
@@ -162,9 +122,9 @@ const PenugasanPenelitianForm = () => {
         }
       );
     } else {
-      postPenugasanPenelitian(penugasanPenelitianFormData, {
+      postPenugasanPengabdian(penugasanPengabdianFormData, {
         onSuccess: () => {
-          navigate('/pelaksanaan-penelitian/penugasan-penelitian');
+          navigate('/pelaksanaan-pengabdian/penugasan-pengabdian');
         },
         onError: (err) => {
           setErrorMessage(err.message);
@@ -179,55 +139,10 @@ const PenugasanPenelitianForm = () => {
   return (
     <>
       <section id="surat-penugasan-form" className="section-container">
-        <BreadCrumbs
-          links={[
-            {
-              name: 'Daftar Penugasan Penelitian',
-              link: '/pelaksanaan-penelitian/penugasan-penelitian',
-            },
-            {
-              name: `${id ? 'Detail' : 'Buat'}`,
-            },
-          ]}
-        />
         <p className="text-lg font-semibold">
-          {id ? 'Edit' : 'Buat'} Penugasan Penelitian
+          {id ? 'Edit' : 'Buat'} Penugasan Pengabdian
         </p>
         <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4">
-          {(userRole.admin || userRole.kaprodi) && (
-            <>
-              <CRUDropdownInput
-                control={control}
-                name="Surat Penugasan"
-                registeredName="surat_penugasan"
-                defaultValue={
-                  state?.surat_penugasan_detail
-                    ? {
-                        value: state.surat_penugasan_detail.id,
-                        label: state.surat_penugasan_detail.judul,
-                      }
-                    : null
-                }
-                options={suratPenugasanDataSuccess ? dataSuratPenugasan : []}
-                isDisabled={!editable}
-              />
-              <CRUDropdownInput
-                control={control}
-                name="Dosen"
-                registeredName="dosen_pengampu"
-                defaultValue={
-                  state?.dosen_pengampu_detail
-                    ? {
-                        value: state.dosen_pengampu_detail.id,
-                        label: state.dosen_pengampu_detail.name,
-                      }
-                    : null
-                }
-                options={dosenDataSuccess ? dataDosen : []}
-                isDisabled={!editable}
-              />
-            </>
-          )}
           <CRUInput
             register={register}
             name="judul"
@@ -302,7 +217,7 @@ const PenugasanPenelitianForm = () => {
                 <EditButton
                   className={`!text-base`}
                   type="submit"
-                  isLoading={patchPenugasanPenelitianLoading}
+                  isLoading={patchPenugasanPengabdianLoading}
                   name="Update"
                 />
               )}
@@ -312,8 +227,8 @@ const PenugasanPenelitianForm = () => {
             <PrimaryButton
               className={`!mt-8`}
               isLoading={
-                patchPenugasanPenelitianLoading ||
-                postPenugasanPenelitianLoading
+                patchPenugasanPengabdianLoading ||
+                postPenugasanPengabdianLoading
               }
             >
               Buat
@@ -325,4 +240,4 @@ const PenugasanPenelitianForm = () => {
   );
 };
 
-export default PenugasanPenelitianForm;
+export default PenugasanPengabdianForm;

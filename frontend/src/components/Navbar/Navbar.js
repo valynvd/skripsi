@@ -61,7 +61,7 @@ const Navbar = () => {
                 {
                   title: 'Surat Penugasan',
                   url: '/surat-penugasan',
-                  allowedRoles: userRole.admin,
+                  allowedRoles: userRole.kaprodi || userRole.admin,
                 },
                 {
                   title: 'Dokumen Pembelajaran',
