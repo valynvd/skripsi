@@ -54,11 +54,11 @@ const DegreeAuditKelulusanTable = ({
         },
         {
             Header:'Nilai E',
-            accessor:'nilaie'
+            accessor:'nilaie',
         },
         {
             Header:'IPK',
-            accessor:'nilai_ipk'
+            accessor:'nilai_ipk',
         },
         {
             Header:'Status Kelulusan',
@@ -154,45 +154,39 @@ const DegreeAuditKelulusanTable = ({
         usePagination
     );
     const handleExport = () => {
-        let filterToExcel = [];
-    
-        rows.forEach(({ values }) => {
-          let filteredItem = {
-            'Nama Mahasiswa': null,
-            'NIM Mahasiswa': null,
-            'Jurusan': null,
-            'Angkatan': null,
-            'Jumlah SKS Lulus': null,
-            'Jumlah Nilai D (SKS)': null,
-            'Jumlah Nilai E (SKS)': null,
-            'IPK': null,
-            'Status Kelulusan': null,
-          };
-    
-          filteredItem['Nama Mahasiswa'] =
-            values['mahasiswa_detail.nama'];
-          filteredItem['NIM Mahasiswa'] =
-            values['mahasiswa_detail.nim'];
-          filteredItem['Jurusan'] =
-            values['mahasiswa_detail.prodi_detail.name'];
-          filteredItem['Angkatan'] =
-            values['mahasiswa_detail.angkatan'];
-          filteredItem['Jumlah SKS Lulus'] =
-            values['jumlah_sks'];
-          filteredItem['Jumlah Nilai D (SKS)'] =
-            values['nilaid'];
-          filteredItem['Jumlah Nilai E (SKS)'] =
-            values['nilaie'];
-          filteredItem['IPK'] =
-            values['nilai_ipk'];
-          filteredItem['Status Kelulusan'] =
-            values['status_kelulusan'];
-    
-          filterToExcel.push(filteredItem);
+        const filterToExcel = rows.map(({ values }) => {
+            const filteredItem = {
+              'Nama Mahasiswa': values['mahasiswa_detail.nama'],
+              'NIM Mahasiswa': values['mahasiswa_detail.nim'],
+              'Jurusan': values['mahasiswa_detail.prodi_detail.name'],
+              'Angkatan': values['mahasiswa_detail.angkatan'],
+              'Jumlah SKS Lulus': values['jumlah_sks'],
+              'Jumlah Nilai D (SKS)': values['nilaid'],
+              'Jumlah Nilai E (SKS)': values['nilaie'],
+              'IPK': values['nilai_ipk'],
+              'Status Kelulusan': values['status_kelulusan'],
+            };
+        
+            // Apply conditional formatting to Jumlah SKS Lulus column
+            if (values['jumlah_sks'] < 144) {
+              filteredItem['Jumlah SKS Lulus'] = {
+                v: values['jumlah_sks'],
+                s: {
+                    fill: {
+                      bgColor: { rgb: 'FF0000' } // Red background color
+                    },
+                    font: {
+                      color: { rgb: 'FFFFFF' } // White text color
+                    }
+                  }, // Red background, white text
+              };
+            }
+        
+            return filteredItem;
         });
-    
-        let wb = utils.book_new();
-        let ws = utils.json_to_sheet(filterToExcel);
+        
+        const wb = utils.book_new();
+        const ws = utils.json_to_sheet(filterToExcel);
     
         utils.book_append_sheet(wb, ws, `${filterToExcel[0].Jurusan}`);
     
@@ -286,12 +280,21 @@ const DegreeAuditKelulusanTable = ({
                         return (
                         <tr
                             {...row.getRowProps()}
-                            className="bg-white border-b text-gray-600"
+                            className="bg-white border-b text-gray-600" 
                         >
                             {row.cells.map((cell) => {
                             return (
-                                <td {...cell.getCellProps()} className="px-4 py-3">
-                                {cell.render('Cell')}
+                                <td {...cell.getCellProps()} className={`px-4 py-3 ${
+                                        cell.column.id === 'jumlah_sks' 
+                                        && cell.value < 144 ? 
+                                            'bg-red-500 text-white' : '' || 
+                                        cell.column.id === 'nilaid' 
+                                        && cell.value >= 7 ? 
+                                            'bg-red-500 text-white' : '' || 
+                                        cell.column.id === 'nilaie' 
+                                        && cell.value >= 1 ? 
+                                            'bg-red-500 text-white' : ''}`}>
+                                    {cell.render('Cell')}
                                 </td>
                             );
                             })}

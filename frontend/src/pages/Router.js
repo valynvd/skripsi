@@ -54,6 +54,7 @@ import PenugasanPenelitianForm from './penelitian/PenugasanPenelitianForm';
 import MonitoringMahasiswaImportExcel from './monitoring-mahasiswa/MonitoringMahasiswaImportExcel';
 import PenugasanPengabdian from './pengabdian/PenugasanPengabdian';
 import PenugasanPengabdianForm from './pengabdian/PenugasanPengabdianForm';
+import GrupMahasiswaImportExcel from './grup-mahasiswa/GrupMahasiswaImportExcel';
 
 const Router = () => {
   return (
@@ -202,6 +203,7 @@ const Router = () => {
               </Route>
               <Route path="pengaturan-grup">
                 <Route index element={<GrupMahasiswa />} />
+                <Route path="import" element={<GrupMahasiswaImportExcel />}/>
                 <Route path="mahasiswa-member" element={<MahasiswaMember />} />
               </Route>
               <Route path="konsol-chatbot">

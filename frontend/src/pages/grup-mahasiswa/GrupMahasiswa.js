@@ -46,9 +46,9 @@ const GrupMahasiswa = () => {
         
         <PrimaryButton
           icon={<BiPlusCircle size={22} />}
-          link="/stem-chatbot/broadcast-pesan/form"
+          link="/stem-chatbot/pengaturan-grup/import"
         >
-          Buat Grup Baru
+          Import Data Dari Excel
         </PrimaryButton>
         
       </div>

@@ -30,7 +30,7 @@ const MahasiswaMemberTable = ({
         },
         {
             Header:'Jurusan',
-            accessor:'nama_mahasiswa.prodi.name'
+            accessor:'nama_mahasiswa.prodi_detail.name'
         },
         {
             Header:'Angkatan',
