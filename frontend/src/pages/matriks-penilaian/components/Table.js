@@ -359,7 +359,9 @@ const Table = ({
                                         copyCounter[item2.id] = {
                                           ...copyCounter[item2.id],
                                           dokumenPendukungSuratPenugasan:
-                                            copyCounter[item2.id].filter(
+                                            copyCounter[
+                                              item2.id
+                                            ].dokumenPendukungSuratPenugasan.filter(
                                               (item) =>
                                                 item.value !== item3.value
                                             ),
