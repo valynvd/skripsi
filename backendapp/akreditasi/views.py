@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from rest_framework import viewsets
 from rest_framework import generics
+from rest_framework import status
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -90,3 +92,26 @@ class FolderFileByKriteria(viewsets.ModelViewSet):
     #     else:
     #         self.permission_classes = [IsAuthenticated]
     #     return super(self.__class__, self).get_permissions()
+
+@api_view(('GET',))
+def MatriksPenilaianByProdi(request, prodiId):
+    poinPenilaianByProdi = models.PoinPenilaian.objects.filter(prodiId__id=prodiId).order_by("order_number")
+    formattedMatriksPenilaian = []
+    storedIndex = 0
+
+    for index, item in enumerate(poinPenilaianByProdi):
+        if(item.kriteriaId == None):
+            poinPenilaianData = serializers.PoinPenilaianSerializers(item).data
+            poinPenilaianData['nama'] = None
+
+            formattedMatriksPenilaian.append(poinPenilaianData)
+        else:
+            if(item.kriteriaId.nama == formattedMatriksPenilaian[storedIndex]['nama']):
+                formattedMatriksPenilaian[storedIndex]['poin_penilaian_detail'].append(serializers.PoinPenilaianSerializers(item).data)
+            else:
+                formattedMatriksPenilaian.append(serializers.KriteriaSerializers(item.kriteriaId).data)
+                formattedMatriksPenilaian[-1]['poin_penilaian_detail'] = [serializers.PoinPenilaianSerializers(item).data]
+                storedIndex = len(formattedMatriksPenilaian) - 1
+
+    return Response(formattedMatriksPenilaian, status=status.HTTP_200_OK)
+    
