@@ -9,6 +9,8 @@ import Select from 'react-select';
 import { PrimaryButton } from '../../../components/PrimaryButton';
 
 const AddModal = ({
+  setPointId,
+  pointId,
   setDocumentLoading,
   kriteriaRefetch,
   openModal,
@@ -19,6 +21,8 @@ const AddModal = ({
   semesterName,
   setSelectedSuratPenugasan,
   patchPoinPenilaian,
+  counter,
+  setCounter,
 }) => {
   return (
     <Transition show={openModal} as={Fragment}>
@@ -82,14 +86,48 @@ const AddModal = ({
                       }`,
                   }}
                   options={
-                    suratPenugasanData && selectedPoinPenilaian
-                      ? suratPenugasanData.filter(
-                          (item) =>
-                            !selectedPoinPenilaian.dokumenPendukungSuratPenugasan.includes(
-                              item.value
-                            )
-                        )
-                      : []
+                    (() => {
+                      let filteredSuratPenugasanData = [];
+
+                      if (
+                        counter[selectedPoinPenilaian.id]
+                          .dokumenPendukungSuratPenugasan.length === 0
+                      ) {
+                        return suratPenugasanData;
+                      } else {
+                        counter[
+                          selectedPoinPenilaian.id
+                        ].dokumenPendukungSuratPenugasan.forEach((item) => {
+                          suratPenugasanData.forEach((item2) => {
+                            if (item.value !== item2.value) {
+                              filteredSuratPenugasanData.push(item2);
+                            }
+                          });
+                        });
+
+                        return filteredSuratPenugasanData;
+                      }
+                    })()
+                    // suratPenugasanData && selectedPoinPenilaian
+                    //   ? suratPenugasanData.filter(
+                    //       (item) =>
+                    //         !counter[
+                    //           selectedPoinPenilaian.id
+                    //         ].dokumenPendukungSuratPenugasan.includes(item)
+                    //     )
+                    //   : suratPenugasanData
+
+                    // suratPenugasanData && selectedPoinPenilaian
+                    //   ? selectedPoinPenilaian.riwayat_poin_penilaian_detail
+                    //       .length > 0
+                    //     ? suratPenugasanData.filter(
+                    //         (item) =>
+                    //           !selectedPoinPenilaian.dokumenPendukungSuratPenugasan.includes(
+                    //             item.value
+                    //           )
+                    //       )
+                    //     : suratPenugasanData
+                    //   : []
                   }
                   value={selectedSuratPenugasan}
                   onChange={(val, triggeredAction) => {
@@ -145,43 +183,72 @@ const AddModal = ({
                     </div>
                     <PrimaryButton
                       onClick={() => {
-                        setDocumentLoading((prev) => {
-                          let dupeDocumentLoading = {
-                            ...prev,
+                        // setDocumentLoading((prev) => {
+                        //   let dupeDocumentLoading = {
+                        //     ...prev,
+                        //   };
+
+                        //   dupeDocumentLoading[selectedPoinPenilaian.id] =
+                        //     'loading';
+
+                        //   return dupeDocumentLoading;
+                        // });
+
+                        setCounter((prev) => {
+                          let copyCounter = { ...prev };
+
+                          let formattedDokumenPendukungSuratPenugasan = [];
+
+                          if (
+                            copyCounter[selectedPoinPenilaian.id]
+                              .dokumenPendukungSuratPenugasan
+                          ) {
+                            formattedDokumenPendukungSuratPenugasan =
+                              copyCounter[selectedPoinPenilaian.id]
+                                .dokumenPendukungSuratPenugasan;
+                          }
+
+                          formattedDokumenPendukungSuratPenugasan.push(
+                            selectedSuratPenugasan
+                          );
+
+                          copyCounter[selectedPoinPenilaian.id] = {
+                            ...copyCounter[selectedPoinPenilaian.id],
+                            dokumenPendukungSuratPenugasan:
+                              formattedDokumenPendukungSuratPenugasan,
                           };
 
-                          dupeDocumentLoading[selectedPoinPenilaian.id] =
-                            'loading';
-
-                          return dupeDocumentLoading;
+                          return copyCounter;
                         });
 
-                        patchPoinPenilaian(
-                          {
-                            data: {
-                              dokumenPendukungSuratPenugasan: [
-                                ...selectedPoinPenilaian.dokumenPendukungSuratPenugasan,
-                                selectedSuratPenugasan.value,
-                              ],
-                            },
-                            id: selectedPoinPenilaian.id,
-                          },
-                          {
-                            onSuccess: () => {
-                              setDocumentLoading((prev) => {
-                                let dupeDocumentLoading = {
-                                  ...prev,
-                                };
+                        setPointId(selectedPoinPenilaian.id);
 
-                                dupeDocumentLoading[selectedPoinPenilaian.id] =
-                                  'updated';
+                        // patchPoinPenilaian(
+                        //   {
+                        //     data: {
+                        //       dokumenPendukungSuratPenugasan: [
+                        //         ...selectedPoinPenilaian.dokumenPendukungSuratPenugasan,
+                        //         selectedSuratPenugasan.value,
+                        //       ],
+                        //     },
+                        //     id: selectedPoinPenilaian.id,
+                        //   },
+                        //   {
+                        //     onSuccess: () => {
+                        //       setDocumentLoading((prev) => {
+                        //         let dupeDocumentLoading = {
+                        //           ...prev,
+                        //         };
 
-                                return dupeDocumentLoading;
-                              });
-                              kriteriaRefetch();
-                            },
-                          }
-                        );
+                        //         dupeDocumentLoading[selectedPoinPenilaian.id] =
+                        //           'updated';
+
+                        //         return dupeDocumentLoading;
+                        //       });
+                        //       kriteriaRefetch();
+                        //     },
+                        //   }
+                        // );
                         setOpenModal(false);
                       }}
                       className="w-full rounded-lg"

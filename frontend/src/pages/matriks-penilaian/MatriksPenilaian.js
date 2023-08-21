@@ -14,6 +14,7 @@ const MatriksPenilaian = () => {
     formState: { errors, dirtyFields },
   } = useForm({});
   const [simulateData, setSimulateData] = useState([]);
+  const [counter, setCounter] = useState({});
 
   const onSubmit = (values) => {
     let filteredValues = [];
@@ -78,6 +79,8 @@ const MatriksPenilaian = () => {
     <>
       <TableForm
         handleSubmit={handleSubmit}
+        counter={counter}
+        setCounter={setCounter}
         onSubmit={onSubmit}
         control={control}
         errors={errors}

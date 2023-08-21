@@ -1,4 +1,5 @@
-import React from 'react';
+/* eslint-disable no-unused-vars */
+import React, { useEffect, useRef, useState } from 'react';
 import { BiSolidDownArrow } from 'react-icons/bi';
 import { Controller } from 'react-hook-form';
 import { TooltipInfo } from '../../../components/Tooltip';
@@ -11,6 +12,9 @@ import { BiPlusCircle } from 'react-icons/bi';
 import { PrimaryButton } from '../../../components/PrimaryButton';
 
 const Table = ({
+  setPoinPenilaianLoading,
+  poinPenilaianLoading,
+  postRiwayatPoinPenilaian,
   data,
   setCriteriaState,
   criteriaState,
@@ -26,8 +30,13 @@ const Table = ({
   setMatriksEdit,
   setSelectedSuratPenugasan,
   setSelectedPoinPenilaian,
+  selectedPoinPenilaian,
   setOpenModal,
   documentLoading,
+  counter,
+  setCounter,
+  pointId,
+  setPointId,
 }) => {
   const LoadingInfo = () => (
     <div className="flex items-center justify-center rounded-lg bg-yellow-50 border-yellow-400 border px-2 py-1 mt-3">
@@ -40,6 +49,87 @@ const Table = ({
       <p className="text-green-500">Updated</p>
     </div>
   );
+
+  const timeoutCounter = useRef({});
+
+  useEffect(() => {
+    if (pointId) {
+      clearTimeout(timeoutCounter.current[pointId]);
+
+      const riwayatPoinPenilaianFormData = new FormData();
+
+      riwayatPoinPenilaianFormData.append('score', counter[pointId].score);
+      riwayatPoinPenilaianFormData.append(
+        'poinPenilaianId',
+        selectedPoinPenilaian?.id
+      );
+
+      counter[pointId].dokumenPendukungSuratPenugasan.forEach((item) => {
+        riwayatPoinPenilaianFormData.append(
+          'dokumenPendukungSuratPenugasan',
+          item.value
+        );
+      });
+
+      timeoutCounter.current[pointId] = setTimeout(() => {
+        setPoinPenilaianLoading((prev) => {
+          let copyPoinPenilaianLoading = { ...prev };
+
+          copyPoinPenilaianLoading[selectedPoinPenilaian.id] = 'loading';
+          return copyPoinPenilaianLoading;
+        });
+        postRiwayatPoinPenilaian(riwayatPoinPenilaianFormData, {
+          onSuccess: () => {
+            setPoinPenilaianLoading((prev) => {
+              let copyPoinPenilaianLoading = { ...prev };
+
+              copyPoinPenilaianLoading[selectedPoinPenilaian.id] = 'updated';
+              return copyPoinPenilaianLoading;
+            });
+            setTimeout(() => {
+              setPoinPenilaianLoading((prev) => {
+                let copyPoinPenilaianLoading = { ...prev };
+
+                copyPoinPenilaianLoading[selectedPoinPenilaian.id] = 'stale';
+                return copyPoinPenilaianLoading;
+              });
+            }, 2000);
+          },
+        });
+      }, 5000);
+    }
+  }, [counter, pointId]);
+
+  // useEffect(() => {
+  //   console.log(counter);
+  // }, [counter]);
+
+  // const changeCounter = (id, value) => {
+  //   setCounter((prev) => {
+  //     let prevCounter = { ...prev };
+  //     let timeOutCounter = {};
+
+  //     if (prev[id]) {
+  //       clearTimeout(timeOutCounter[id]);
+  //     }
+
+  //     timeOutCounter[id] = setTimeout(() => {
+  //       setCounter((prev2) => {
+  //         let prevCounter2 = { ...prev2 };
+
+  //         prevCounter2[id].timeout = 'finished';
+  //         return prevCounter2;
+  //       });
+  //     }, 5000);
+
+  //     prevCounter[id] = {
+  //       ...value,
+  //       status: 'waiting',
+  //     };
+
+  //     return prevCounter;
+  //   });
+  // };
 
   const TableTh = ({ children, className }) => {
     return (
@@ -71,9 +161,8 @@ const Table = ({
           <TableTh className="w-16">3</TableTh>
           <TableTh className="w-16">4</TableTh>
           <TableTh className="w-[10%]">Nilai</TableTh>
-          <TableTh className="border-r-0 w-[20%] z-10">
-            Dokumen Pendukung
-          </TableTh>
+          <TableTh className="w-[20%] z-10">Dokumen Pendukung</TableTh>
+          <TableTh className="w-40 border-r-0">Status</TableTh>
         </tr>
       </thead>
       <tbody>
@@ -167,7 +256,7 @@ const Table = ({
                 </TableTd>
                 <Controller
                   control={control}
-                  name={`${item2.id}`}
+                  name={`${item2.order_number}`}
                   render={({ field }) => {
                     return (
                       <>
@@ -184,35 +273,49 @@ const Table = ({
                                 value: e.target.value,
                               });
 
-                              setScoreLoading((prev) => {
-                                let dupeScoreLoading = { ...prev };
+                              setSelectedPoinPenilaian(item2);
 
-                                dupeScoreLoading[item2.id] = 'loading';
+                              // setScoreLoading((prev) => {
+                              //   let dupeScoreLoading = { ...prev };
 
-                                return dupeScoreLoading;
+                              //   dupeScoreLoading[item2.id] = 'loading';
+
+                              //   return dupeScoreLoading;
+                              // });
+
+                              setCounter((prev) => {
+                                let copyCounter = { ...prev };
+
+                                copyCounter[item2.id] = {
+                                  ...copyCounter[item2.id],
+                                  score: e.target.value,
+                                };
+
+                                return copyCounter;
                               });
 
-                              patchPoinPenilaian(
-                                {
-                                  data: {
-                                    score: e.target.value,
-                                  },
-                                  id: item2.id,
-                                },
-                                {
-                                  onSuccess: () => {
-                                    setScoreLoading((prev) => {
-                                      let dupeScoreLoading = { ...prev };
+                              setPointId(item2.id);
+                              // patchPoinPenilaian(
+                              //   {
+                              //     data: {
+                              //       score: e.target.value,
+                              //     },
+                              //     id: item2.id,
+                              //   },
+                              //   {
+                              //     onSuccess: () => {
+                              //       setScoreLoading((prev) => {
+                              //         let dupeScoreLoading = { ...prev };
 
-                                      dupeScoreLoading[item2.id] = 'updated';
+                              //         dupeScoreLoading[item2.id] = 'updated';
 
-                                      return dupeScoreLoading;
-                                    });
+                              //         return dupeScoreLoading;
+                              //       });
 
-                                    kriteriaRefetch();
-                                  },
-                                }
-                              );
+                              //       kriteriaRefetch();
+                              //     },
+                              //   }
+                              // );
                             }}
                             value={field.value?.value || ''}
                           />
@@ -224,72 +327,88 @@ const Table = ({
                           )}
                         </td>
                         <td className="border-gray-300 border-t border-r p-3 w-[20%] space-y-3">
-                          {item2.dokumen_pendukung_surat_penugasan_detail.map(
-                            (item3) => {
-                              return (
-                                <div
-                                  key={item3.id}
-                                  className="w-full flex flex-row items-center space-x-2"
+                          {counter[
+                            item2.id
+                          ]?.dokumenPendukungSuratPenugasan.map((item3) => {
+                            return (
+                              <div
+                                key={item3.id}
+                                className="w-full flex flex-row items-center space-x-2"
+                              >
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setSelectedSuratPenugasan2(item3);
+                                    setOpenModal2((prev) => !prev);
+                                  }}
+                                  className=" bg-gray-700 hover:bg-gray-800 duration-200 transition-all px-4 py-1 border border-gray-700 rounded-full cursor-pointer"
                                 >
-                                  <button
-                                    type="button"
+                                  <p className="overflow-hidden break-all overflow-ellipsisfont-medium line-clamp-1 text-white">
+                                    {item3.label}
+                                  </p>
+                                </button>
+                                {matriksEdit[item2.id] && (
+                                  <DeleteIcon
+                                    className="shrink-0"
                                     onClick={() => {
-                                      setSelectedSuratPenugasan2(item3);
-                                      setOpenModal2((prev) => !prev);
+                                      setSelectedPoinPenilaian(item2);
+
+                                      setCounter((prev) => {
+                                        let copyCounter = { ...prev };
+
+                                        copyCounter[item2.id] = {
+                                          ...copyCounter[item2.id],
+                                          dokumenPendukungSuratPenugasan:
+                                            copyCounter[item2.id].filter(
+                                              (item) =>
+                                                item.value !== item3.value
+                                            ),
+                                        };
+
+                                        return copyCounter;
+                                      });
+                                      // setDocumentLoading((prev) => {
+                                      //   let dupeDocumentLoading = {
+                                      //     ...prev,
+                                      //   };
+
+                                      //   dupeDocumentLoading[item2.id] =
+                                      //     'loading';
+
+                                      //   return dupeDocumentLoading;
+                                      // });
+                                      // patchPoinPenilaian(
+                                      //   {
+                                      //     data: {
+                                      //       dokumenPendukungSuratPenugasan:
+                                      //         item2.dokumenPendukungSuratPenugasan.filter(
+                                      //           (item) => item !== item3.id
+                                      //         ),
+                                      //     },
+                                      //     id: item2.id,
+                                      //   },
+                                      //   {
+                                      //     onSuccess: () => {
+                                      //       setDocumentLoading((prev) => {
+                                      //         let dupeDocumentLoading = {
+                                      //           ...prev,
+                                      //         };
+
+                                      //         dupeDocumentLoading[item2.id] =
+                                      //           'updated';
+
+                                      //         return dupeDocumentLoading;
+                                      //       });
+                                      //       kriteriaRefetch();
+                                      //     },
+                                      //   }
+                                      // );
                                     }}
-                                    className=" bg-gray-700 hover:bg-gray-800 duration-200 transition-all px-4 py-1 border border-gray-700 rounded-full cursor-pointer"
-                                  >
-                                    <p className="overflow-hidden break-all overflow-ellipsisfont-medium line-clamp-1 text-white">
-                                      {item3.judul}
-                                    </p>
-                                  </button>
-                                  {matriksEdit[item2.id] && (
-                                    <DeleteIcon
-                                      className="shrink-0"
-                                      onClick={() => {
-                                        setDocumentLoading((prev) => {
-                                          let dupeDocumentLoading = {
-                                            ...prev,
-                                          };
-
-                                          dupeDocumentLoading[item2.id] =
-                                            'loading';
-
-                                          return dupeDocumentLoading;
-                                        });
-                                        patchPoinPenilaian(
-                                          {
-                                            data: {
-                                              dokumenPendukungSuratPenugasan:
-                                                item2.dokumenPendukungSuratPenugasan.filter(
-                                                  (item) => item !== item3.id
-                                                ),
-                                            },
-                                            id: item2.id,
-                                          },
-                                          {
-                                            onSuccess: () => {
-                                              setDocumentLoading((prev) => {
-                                                let dupeDocumentLoading = {
-                                                  ...prev,
-                                                };
-
-                                                dupeDocumentLoading[item2.id] =
-                                                  'updated';
-
-                                                return dupeDocumentLoading;
-                                              });
-                                              kriteriaRefetch();
-                                            },
-                                          }
-                                        );
-                                      }}
-                                    />
-                                  )}
-                                </div>
-                              );
-                            }
-                          )}
+                                  />
+                                )}
+                              </div>
+                            );
+                          })}
 
                           <div className="flex space-x-2">
                             {matriksEdit[item2.id] ? (
@@ -305,8 +424,11 @@ const Table = ({
                                 }}
                               />
                             ) : (
-                              item2.dokumenPendukungSuratPenugasan.length >
-                                0 && (
+                              item2.riwayat_poin_penilaian_detail.length > 0 &&
+                              item2.riwayat_poin_penilaian_detail[
+                                item2.riwayat_poin_penilaian_detail.length - 1
+                              ].dokumen_pendukung_surat_penugasan_detail
+                                .length !== 0 && (
                                 <EditButton
                                   onClick={() => {
                                     setMatriksEdit((prev) => {
@@ -335,17 +457,19 @@ const Table = ({
                               Tambah
                             </PrimaryButton>
                           </div>
-                          {documentLoading[item2.id] === 'loading' && (
-                            <LoadingInfo />
-                          )}
-                          {documentLoading[item2.id] === 'updated' && (
-                            <UpdatedInfo />
-                          )}
                         </td>
                       </>
                     );
                   }}
                 />
+                <TableTd className="w-40 border-r-0">
+                  {poinPenilaianLoading[item2.id] === 'loading' && (
+                    <LoadingInfo />
+                  )}
+                  {poinPenilaianLoading[item2.id] === 'updated' && (
+                    <UpdatedInfo />
+                  )}
+                </TableTd>
               </tr>
             ))}
           </tbody>

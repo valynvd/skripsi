@@ -18,8 +18,17 @@ import AddModal from './components/AddModal';
 import CancelButton from '../../components/CancelButton';
 import { BeatLoader } from 'react-spinners';
 import Table from './components/Table';
+import { usePostRiwayatPoinPenilaian } from '../../hooks/useRiwayatPoinPenilaian';
 
-const TableForm = ({ handleSubmit, onSubmit, control, errors, reset }) => {
+const TableForm = ({
+  handleSubmit,
+  onSubmit,
+  control,
+  counter,
+  setCounter,
+  errors,
+  reset,
+}) => {
   const { data, refetch: kriteriaRefetch } = useKriteriaData();
   const { data: suratPenugasanData } = useSuratPenugasanData({
     select: (response) =>
@@ -27,6 +36,7 @@ const TableForm = ({ handleSubmit, onSubmit, control, errors, reset }) => {
         return { label: judul, value: id, ...options };
       }),
   });
+  const { mutate: postRiwayatPoinPenilaian } = usePostRiwayatPoinPenilaian();
   const [criteriaState, setCriteriaState] = useState({});
   const [openModal, setOpenModal] = useState(false);
   const [openModal2, setOpenModal2] = useState(false);
@@ -34,10 +44,12 @@ const TableForm = ({ handleSubmit, onSubmit, control, errors, reset }) => {
   const [selectedSuratPenugasan2, setSelectedSuratPenugasan2] = useState(null);
   const [selectedPoinPenilaian, setSelectedPoinPenilaian] = useState(null);
   const [matriksEdit, setMatriksEdit] = useState({});
+  const [poinPenilaianLoading, setPoinPenilaianLoading] = useState({});
   const [scoreLoading, setScoreLoading] = useState({});
   const [documentLoading, setDocumentLoading] = useState({});
   const { mutate: patchPoinPenilaian } = usePatchPoinPenilaian();
   const [filteredKriteria, setFilteredKriteria] = useState();
+  const [pointId, setPointId] = useState();
 
   const semesterName = {
     Odd: 'Ganjil',
@@ -64,29 +76,54 @@ const TableForm = ({ handleSubmit, onSubmit, control, errors, reset }) => {
 
       const formatFormState = {};
       const formatMatriksPenilaianEdit = {};
-      const formatScoreAndDocumentLoading = {};
+      const formatPoinPenilaianLoading = {};
+      const formatCounter = {};
 
       data.data.forEach((item) => {
         item.poin_penilaian_detail.forEach((item2) => {
           formatMatriksPenilaianEdit[item2.id] = false;
-          formatScoreAndDocumentLoading[item2.id] = 'stale';
+          formatPoinPenilaianLoading[item2.id] = 'stale';
+
+          const riwayatPoinPenilaianLastItem =
+            item2.riwayat_poin_penilaian_detail[
+              item2.riwayat_poin_penilaian_detail.length - 1
+            ];
+
+          if (item2.riwayat_poin_penilaian_detail.length === 0) {
+            formatCounter[item2.id] = {
+              score: 0,
+              dokumenPendukungSuratPenugasan: [],
+            };
+          } else {
+            formatCounter[item2.id] = {
+              score: riwayatPoinPenilaianLastItem.score,
+              dokumenPendukungSuratPenugasan:
+                riwayatPoinPenilaianLastItem.dokumen_pendukung_surat_penugasan_detail.map(
+                  (item3) => {
+                    return { ...item3, value: item3.id, label: item3.judul };
+                  }
+                ),
+            };
+          }
 
           formatFormState[item2.order_number] = {
             id: item2.id,
             item_number: item2.item_number,
-            value: item2.score,
+            value: riwayatPoinPenilaianLastItem?.score || null,
             max_score: item2.max_score,
             dokumen_pendukung_surat_penugasan: [],
           };
 
-          item2.dokumen_pendukung_surat_penugasan_detail.forEach((item3) => {
-            formatFormState[item2.order_number][
-              'dokumen_pendukung_surat_penugasan'
-            ].push({
-              label: item3.judul,
-              value: item3.id,
-            });
-          });
+          // if (item2.riwayat_poin_penilaian_detail.length > 0) {
+          //   item2.dokumen_pendukung_surat_penugasan_detail.forEach((item3) => {
+          //     formatFormState[item2.order_number][
+          //       'dokumen_pendukung_surat_penugasan'
+          //     ].push({
+          //       label: item3.judul,
+          //       value: item3.id,
+          //     });
+          //   });
+          // }
 
           if (item.nama === 'Kriteria 0') {
             formatFormState[item2.order_number]['description'] = item2.element;
@@ -99,10 +136,12 @@ const TableForm = ({ handleSubmit, onSubmit, control, errors, reset }) => {
       formatCriteriaState['Kriteria 0'] = true;
       reset(formatFormState);
 
+      setCounter(formatCounter);
       setCriteriaState(formatCriteriaState);
       setMatriksEdit(formatMatriksPenilaianEdit);
       setScoreLoading({ ...formatMatriksPenilaianEdit });
       setDocumentLoading({ ...formatMatriksPenilaianEdit });
+      setPoinPenilaianLoading(formatPoinPenilaianLoading);
     }
   }, [data, reset]);
 
@@ -150,6 +189,8 @@ const TableForm = ({ handleSubmit, onSubmit, control, errors, reset }) => {
         semesterName={semesterName}
       />
       <AddModal
+        pointId={pointId}
+        setPointId={setPointId}
         setDocumentLoading={setDocumentLoading}
         openModal={openModal}
         setOpenModal={setOpenModal}
@@ -160,6 +201,8 @@ const TableForm = ({ handleSubmit, onSubmit, control, errors, reset }) => {
         selectedPoinPenilaian={selectedPoinPenilaian}
         patchPoinPenilaian={patchPoinPenilaian}
         kriteriaRefetch={kriteriaRefetch}
+        counter={counter}
+        setCounter={setCounter}
       />
       <form
         onSubmit={handleSubmit2(onSubmit2)}
@@ -175,7 +218,15 @@ const TableForm = ({ handleSubmit, onSubmit, control, errors, reset }) => {
       <p className="font-semibold text-lg mt-4">Matriks Penilaian</p>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Table
+          setPoinPenilaianLoading={setPoinPenilaianLoading}
+          poinPenilaianLoading={poinPenilaianLoading}
+          postRiwayatPoinPenilaian={postRiwayatPoinPenilaian}
+          selectedPoinPenilaian={selectedPoinPenilaian}
+          setPointId={setPointId}
+          pointId={pointId}
           data={filteredKriteria ? filteredKriteria : data ? data.data : []}
+          counter={counter}
+          setCounter={setCounter}
           setCriteriaState={setCriteriaState}
           criteriaState={criteriaState}
           control={control}
