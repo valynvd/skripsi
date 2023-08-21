@@ -22,13 +22,13 @@ admin.site.site_header = 'SIMANTAB Prodi Software Engineering'
 
 urlpatterns = [
     #  # API
-    path('api-stem/', include('api.urls')),
+    path('simantap/api-stem/', include('api.urls')),
 
     # auth djoser
     # auth token
-    path('auth-stem/', include('djoser.urls')),
-    path('auth-stem/', include('djoser.urls.authtoken')),
-    path('admin-stem/', admin.site.urls),
+    path('simantap/auth-stem/', include('djoser.urls')),
+    path('simantap/auth-stem/', include('djoser.urls.authtoken')),
+    path('simantap/admin-stem/', admin.site.urls),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
