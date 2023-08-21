@@ -28,7 +28,7 @@ urlpatterns = [
     # auth token
     path('auth-stem/', include('djoser.urls')),
     path('auth-stem/', include('djoser.urls.authtoken')),
-    path('admin-stem/', admin.site.urls),
+    path('web/admin-stem/', admin.site.urls),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
