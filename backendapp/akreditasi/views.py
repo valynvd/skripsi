@@ -146,9 +146,9 @@ class KriteriaByDokumenAkreditasiViewSet(generics.ListAPIView):
         serializer = self.get_serializer(kriteriaByDokumenAkreditasi, many=True)
 
         return Response(serializer.data)
-
+    
     def get_permissions(self):
-        if self.action in ['list','retrieve']:
+        if self.request.method == 'GET':
             self.permission_classes = [AllowAny]
         else:
             self.permission_classes = [IsAuthenticated]
