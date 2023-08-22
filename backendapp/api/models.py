@@ -261,7 +261,7 @@ class RiwayatJabatanStruktural(models.Model):
 
 class PenugasanPengajaran(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)
-	sks_realisasi = models.IntegerField(default=0)
+	sks_realisasi = models.FloatField(default=0)
 	surat_penugasan = models.ForeignKey(
 			SuratPenugasan,
 			on_delete=models.SET_NULL,
