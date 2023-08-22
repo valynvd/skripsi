@@ -58,3 +58,17 @@ class ListFileFolderSerializers(serializers.ModelSerializer):
   class Meta:
       model = models.FileFolder
       fields = '__all__'
+
+class DokumenAkreditasiSerializers(serializers.ModelSerializer):
+  prodi_detail = ProgramStudiSerializers(source='prodiId', many=False, read_only=True)
+
+  class Meta:
+      model = models.DokumenAkreditasi
+      fields = '__all__'
+
+class SimulasiMatriksSerializers(serializers.ModelSerializer):
+  dokumen_akreditasi_detail = DokumenAkreditasiSerializers(source='dokumenAkreditasiId', many=False, read_only=True)
+
+  class Meta:
+      model = models.SimulasiMatriks
+      fields = '__all__'

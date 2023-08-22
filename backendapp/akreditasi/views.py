@@ -115,3 +115,24 @@ def MatriksPenilaianByProdi(request, prodiId):
 
     return Response(formattedMatriksPenilaian, status=status.HTTP_200_OK)
     
+class DokumenAkreditasiViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.DokumenAkreditasiSerializers
+    queryset = models.DokumenAkreditasi.objects.all()
+
+    def get_permissions(self):
+        if self.action in ['list','retrieve']:
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+
+class SimulasiMatriksViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.SimulasiMatriksSerializers
+    queryset = models.SimulasiMatriks.objects.all()
+
+    def get_permissions(self):
+        if self.action in ['list','retrieve']:
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
