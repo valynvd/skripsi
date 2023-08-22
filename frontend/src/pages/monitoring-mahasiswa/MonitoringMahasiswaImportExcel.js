@@ -108,15 +108,9 @@ const MonitoringMahasiswaImportExcel = () => {
     <section id="datamahasiswa-form" className="section-container">
       <Transition
         show={open}
-        enter="transition duration-100 ease-out"
-        enterFrom="transform scale-95 opacity-0"
-        enterTo="transform scale-100 opacity-100"
-        leave="transition duration-75 ease-out"
-        leaveFrom="transform scale-100 opacity-100"
-        leaveTo="transform scale-95 opacity-0"
         as={Fragment}
       >
-        <Dialog onClose={() => setOpen(false)} className={`relative z-50`}>
+        <Dialog onClose={() => setOpen(false)} className={`relative z-100`}>
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -356,15 +350,17 @@ const MonitoringMahasiswaImportExcel = () => {
                   .filter((getdata) => {
                     return (
                       (namamahasiswa === '' ||
-                        getdata.nama_mahasiswa
+                        (getdata.nama_mahasiswa
                           .toLowerCase()
-                          .includes(namamahasiswa.toLowerCase())) &&
+                          .includes(namamahasiswa.toLowerCase()))
+                        ) &&
                       (nim === '' ||
-                        getdata.nim_mahasiswa.toString().includes(nim)) &&
+                        (getdata.nim_mahasiswa.toString().includes(nim))) &&
                       (prodi === '' ||
-                        getdata.name_prody
+                        (getdata.name_prody
                           .toLowerCase()
-                          .includes(prodi.toLowerCase()))
+                          .includes(prodi.toLowerCase())) 
+                        )
                     );
                   })
                   .map((filteredData, index) => (
@@ -392,13 +388,21 @@ const MonitoringMahasiswaImportExcel = () => {
                       <td className="px-4 py-3">{index + 1}</td>
                       <td className="px-4 py-3">
                         {filteredData.nama_mahasiswa}
+                        {/* {filteredData.mahasiswa_detail['nama']} */}
                       </td>
                       <td className="px-4 py-3">
                         {filteredData.nim_mahasiswa}
+                        {/* {filteredData.mahasiswa_detail.nim} */}
                       </td>
-                      <td className="px-4 py-3">{filteredData.name_prody}</td>
-                      <td className="px-4 py-3">{filteredData.angkatan}</td>
-                      <td className="px-4 py-3">{filteredData.subject}</td>
+                      <td className="px-4 py-3">{filteredData.name_prody}
+                        {/* {filteredData.mahasiswa_detail.prodi_detail.name} */}
+                      </td>
+                      <td className="px-4 py-3">{filteredData.angkatan}
+                        {/* {filteredData.mahasiswa_detail.angkatan} */}
+                        </td>
+                      <td className="px-4 py-3">{filteredData.subject}
+                        {/* {filteredData.mata_kuliah_detail.name} */}
+                        </td>
                       <td className="px-4 py-3">
                         {filteredData.earned_credits}
                       </td>

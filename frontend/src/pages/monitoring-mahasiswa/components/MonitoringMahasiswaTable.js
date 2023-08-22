@@ -46,23 +46,21 @@ const MonitoringMahasiswaTable = ({
             Header:'Faculty Member',
             Cell: ({ row }) => {
                 if (Array.isArray(row.original.penugasan_pengajaran_detail) && row.original.penugasan_pengajaran_detail.length > 0) {
-                    // Create a string representation of all values in the value array
                     const allValues = row.original.penugasan_pengajaran_detail.map(item => item.dosen_pengampu_detail.name).join(', ');
                     return allValues;
                 }
-                return ''; // Handle the case where the value array is empty
+                return '';
             },
             
         },
         {
             Header:'Mata Kuliah',
             Cell: ({ row }) => {
-                if (Array.isArray(row.original.penugasan_pengajaran_detail) && row.original.penugasan_pengajaran_detail.length > 0) {
-                    // Create a string representation of all values in the value array
-                    const allValues = row.original.penugasan_pengajaran_detail.map(item => item.mata_kuliah_detail.name).join(', ');
-                    return allValues;
+                const penugasanDetail = row.original.penugasan_pengajaran_detail;
+                if (Array.isArray(penugasanDetail) && penugasanDetail.length > 0) {
+                    return penugasanDetail[0].mata_kuliah_detail.name;
                 }
-                return ''; // Handle the case where the value array is empty
+                return '';
             },
         },
         {
