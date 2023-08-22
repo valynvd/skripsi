@@ -44,7 +44,7 @@ const MonitoringMahasiswaTable = ({
         },
         {
             Header:'Faculty Member',
-            accessor:'dosen_detail.name'
+            accessor:'panugasan_pengajaran_detail.dosen_pengampu_detail.name'
         },
         {
             Header:'Mata Kuliah',

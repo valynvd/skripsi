@@ -393,18 +393,18 @@ const MonitoringMahasiswaImportExcel = () => {
                       </td>
                       <td className="px-4 py-3">{index + 1}</td>
                       <td className="px-4 py-3">
-                        {filteredData.nama_mahasiswa}
+                        {filteredData.Name}
                       </td>
                       <td className="px-4 py-3">
-                        {filteredData.nim_mahasiswa}
+                        {filteredData.NIM}
                       </td>
-                      <td className="px-4 py-3">{filteredData.name_prody}</td>
-                      <td className="px-4 py-3">{filteredData.angkatan}</td>
-                      <td className="px-4 py-3">{filteredData.subject}</td>
+                      <td className="px-4 py-3">{filteredData['Program (Desc.)']}</td>
+                      <td className="px-4 py-3">{filteredData.Angkatan}</td>
+                      <td className="px-4 py-3">{filteredData.Subject}</td>
                       <td className="px-4 py-3">
-                        {filteredData.earned_credits}
+                        {filteredData['Graded Credits']}
                       </td>
-                      <td className="px-4 py-3">{filteredData.grade_symbol}</td>
+                      <td className="px-4 py-3">{filteredData['Grade symbol']}</td>
                     </tr>
                   ))
               : excelData
