@@ -35,6 +35,12 @@ const getKriteria = () => {
   });
 };
 
+const getKriteriaByDokumenAkreditasi = (id) => {
+  return request({
+    url: `/api-stem/kriteriabydokumenakreditasi/${id}/`,
+  });
+};
+
 const getKriteriaById = (id) => {
   return request({
     url: `/api-stem/kriteria/${id}/`,
@@ -46,6 +52,17 @@ export const useKriteriaData = (options) => {
     refetchOnWindowFocus: false,
     ...options,
   });
+};
+
+export const useKriteriaByDokumenAkreditasi = (id, options) => {
+  return useQuery(
+    ['kriteria-by-dokumen-akreditasi', id],
+    () => getKriteriaByDokumenAkreditasi(id),
+    {
+      refetchOnWindowFocus: false,
+      ...options,
+    }
+  );
 };
 
 export const useKriteriaById = (id, options) => {

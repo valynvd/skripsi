@@ -23,7 +23,6 @@ import ForgotPassword from './ForgotPassword';
 import ResetPassword from './ResetPassword';
 import { Outlet } from 'react-router-dom';
 import MataKuliah from './mata-kuliah/MataKuliah';
-import MatriksPenilaian from './matriks-penilaian/MatriksPenilaian';
 import RPS from './RPS';
 import MataKuliahForm from './mata-kuliah/MataKuliahForm';
 import Kurikulum from './kurikulum/Kurikulum';
@@ -63,7 +62,8 @@ import Kriteria from './kriteria/Kriteria';
 import KriteriaForm from './kriteria/KriteriaForm';
 import PoinPenilaian from './poin-penilaian/PoinPenilaian';
 import PoinPenilaianForm from './poin-penilaian/PoinPenilaianForm';
-import MatriksPenilaianAdmin from './matriks-penilaian/MatriksPenilaianAdmin';
+import DokumenAkreditasi from './dokumen-akreditasi/DokumenAkreditasi';
+import DokumenAkreditasiForm from './dokumen-akreditasi/DokumenAkreditasiForm';
 
 const Router = () => {
   return (
@@ -219,10 +219,15 @@ const Router = () => {
           </Route>
 
           <Route path="akreditasi" element={<Outlet />}>
-            <Route path="matriks-penilaian">
-              <Route index element={<MatriksPenilaian />} />
+            <Route path="dokumen-akreditasi">
+              <Route index element={<DokumenAkreditasi />} />
+              <Route path="form" element={<DokumenAkreditasiForm />} />
+              <Route path=":id" element={<DokumenAkreditasiForm />} />
             </Route>
-            <Route
+            {/* <Route path="matriks-penilaian">
+              <Route index element={<MatriksPenilaian />} />
+            </Route> */}
+            {/* <Route
               element={
                 <RequireAuthWithRoles allowedRoles={['Admin', 'Superadmin']} />
               }
@@ -234,10 +239,10 @@ const Router = () => {
                   path="matriks-penilaian/:id"
                   element={<MatriksPenilaian />}
                 />
-                {/* <Route path="form" element={<UserForm />} />
-                <Route path=":id" element={<UserForm />} /> */}
+                <Route path="form" element={<UserForm />} />
+                <Route path=":id" element={<UserForm />} />
               </Route>
-            </Route>
+            </Route> */}
           </Route>
 
           <Route path="stem-chatbot" element={<Outlet />}>

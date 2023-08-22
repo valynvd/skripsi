@@ -245,8 +245,13 @@ const Navbar = () => {
                 allowedRoles: userRole.kaprodi,
               },
               {
-                title: 'Daftar Matriks Penilaian',
-                url: '/daftar-matriks-penilaian',
+                title: 'Simulasi Matriks',
+                url: '/simulasi-matriks',
+                allowedRoles: userRole.admin,
+              },
+              {
+                title: 'Dokumen Akreditasi',
+                url: '/dokumen-akreditasi',
                 allowedRoles: userRole.admin,
               },
             ]}

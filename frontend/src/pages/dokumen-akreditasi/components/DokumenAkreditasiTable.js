@@ -1,10 +1,10 @@
 import React from 'react';
 import Table from '../../../components/Table';
 import { useNavigate } from 'react-router-dom';
-import { EditIcon } from '../../../components/IconButton';
+import { DeleteIcon, EditIcon } from '../../../components/IconButton';
 import { useCheckRole } from '../../../hooks/useCheckRole';
 
-const MatriksPenilaianAdminTable = ({
+const DokumenAkreditasiTable = ({
   setOpenModalDelete,
   setSelectedItem,
   ...options
@@ -18,10 +18,6 @@ const MatriksPenilaianAdminTable = ({
       accessor: 'name',
     },
     {
-      Header: 'Kode',
-      accessor: 'kode',
-    },
-    {
       Header: 'Aksi',
       Cell: ({
         cell: {
@@ -32,19 +28,17 @@ const MatriksPenilaianAdminTable = ({
           <div className="flex flex-row space-x-2">
             <EditIcon
               onClick={() => {
-                navigate(
-                  `/akreditasi/daftar-matriks-penilaian/matriks-penilaian/${value.id}`
-                );
+                navigate(`/akreditasi/dokumen-akreditasi/${value.id}`, {
+                  state: value,
+                });
               }}
             />
-            {/* {userRole.admin && (
-              <DeleteIcon
-                onClick={() => {
-                  setSelectedItem(value.id);
-                  setOpenModalDelete(true);
-                }}
-              />
-            )} */}
+            <DeleteIcon
+              onClick={() => {
+                setSelectedItem(value.id);
+                setOpenModalDelete(true);
+              }}
+            />
           </div>
         );
       },
@@ -54,4 +48,4 @@ const MatriksPenilaianAdminTable = ({
   return <Table {...options} userRole={userRole} columns={columns} />;
 };
 
-export default MatriksPenilaianAdminTable;
+export default DokumenAkreditasiTable;

@@ -21,9 +21,6 @@ import CancelButton from '../../../components/CancelButton';
 import CRUDropdownInput from '../../../components/CRUDropdownInput';
 import { useLocation } from 'react-router-dom';
 import CRUTextEditor from '../../../components/CRUTextEditor';
-import { useRef } from 'react';
-import { useLayoutEffect } from 'react';
-import { Editor } from 'react-draft-wysiwyg';
 
 const PortofolioPerkuliahanModalForm = ({
   portofolioPerkuliahanRefetch,
@@ -241,12 +238,6 @@ const PortofolioPerkuliahanModalForm = ({
               { value: 'UTS', label: 'UTS' },
               { value: 'UAS', label: 'UAS' },
             ]}
-          />
-          <Editor
-            toolbarClassName="toolbarClassName"
-            wrapperClassName="wrapperClassName"
-            editorClassName="editorClassName"
-            onEditorStateChange={() => {}}
           />
           <CRUTextEditor
             control={control}

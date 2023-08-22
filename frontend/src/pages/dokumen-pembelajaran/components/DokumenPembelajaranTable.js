@@ -47,7 +47,7 @@ const DokumenPembelajaranTable = ({
       accessor:
         'penugasan_pengajaran_detail.surat_penugasan_detail.cycle_detail',
       Cell: ({ value }) => {
-        return value.start_year + '-' + semesterName2[value.semester];
+        return value?.start_year + '-' + semesterName2[value?.semester];
       },
     },
     {

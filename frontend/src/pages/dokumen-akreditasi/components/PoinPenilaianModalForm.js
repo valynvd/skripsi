@@ -1,84 +1,66 @@
-/* eslint-disable no-unused-vars */
+/* eslint-disable no-constant-condition */
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import CRUInput from '../../components/CRUInput';
-import { PrimaryButton } from '../../components/PrimaryButton';
-import { useNavigate, useParams, useLocation } from 'react-router-dom';
+import CRUInput from '../../../components/CRUInput';
+import { PrimaryButton } from '../../../components/PrimaryButton';
+import { useLocation } from 'react-router-dom';
 import {
   usePostPoinPenilaian,
   usePatchPoinPenilaian,
-  usePoinPenilaianById,
-} from '../../hooks/usePoinPenilaian';
-import { AlertError } from '../../components/Alert';
-import EditButton from '../../components/EditButton';
-import CancelButton from '../../components/CancelButton';
-import CRUDropdownInput from '../../components/CRUDropdownInput';
-import BreadCrumbs from '../../components/BreadCrumbs';
-import { useKriteriaData } from '../../hooks/useKriteria';
-import { useProgramStudiData } from '../../hooks/useProdi';
-import CRUTextAreaInput from '../../components/CRUTextAreaInput';
+} from '../../../hooks/usePoinPenilaian';
+import { AlertError } from '../../../components/Alert';
+import EditButton from '../../../components/EditButton';
+import ModalCreateForm from '../../../components/ModalCreateForm';
+import CancelButton from '../../../components/CancelButton';
+import CRUTextAreaInput from '../../../components/CRUTextAreaInput';
 
-const PoinPenilaianForm = () => {
+const PoinPenilaianModalForm = ({
+  refetchMatriksPenilaianData,
+  matriksPenilaianData,
+  poinPenilaianRefetch,
+  selectedPoinPenilaian,
+  openPoinPenilaianModalForm,
+  setOpenPoinPenilaianModalForm,
+  dokumenAkreditasiId,
+  selectedKriteria,
+}) => {
   const [errorMessage, setErrorMessage] = useState();
-  const { id } = useParams();
   const { state } = useLocation();
+  const [editable, setEditable] = useState(true);
   const {
     register,
     handleSubmit,
     reset,
-    control,
     formState: { errors, dirtyFields },
   } = useForm({
     defaultValues: {},
   });
-  const [editable, setEditable] = useState(true);
-  const [poinPenilaianData, setPoinPenilaianData] = useState(state);
-
-  const { data: updatedPoinPenilaianData } = usePoinPenilaianById(id, {
-    enabled: !!id && !poinPenilaianData,
-  });
-
-  const { data: kriteriaData, isSuccess: kriteriaDataSuccess } =
-    useKriteriaData({
-      select: (response) => {
-        const formatKriteriaData = response.data.map(
-          ({ id, nama, deskripsi }) => {
-            return { value: id, label: nama + ' ' + deskripsi };
-          }
-        );
-
-        return formatKriteriaData;
-      },
-    });
-
-  const { data: programStudiData, isSuccess: programStudiDataSuccess } =
-    useProgramStudiData({
-      select: (response) => {
-        const formatProgramStudiData = response.data.map(({ id, name }) => {
-          return { value: id, label: name };
-        });
-
-        return formatProgramStudiData;
-      },
-    });
 
   useEffect(() => {
-    if (id) {
-      if (state) {
-        reset(state);
-      } else if (updatedPoinPenilaianData) {
-        setPoinPenilaianData(updatedPoinPenilaianData?.data);
-        reset(updatedPoinPenilaianData?.data);
-      }
+    if (selectedPoinPenilaian) {
+      reset(selectedPoinPenilaian);
       setEditable(false);
+    } else {
+      reset({
+        type: null,
+        order_number: null,
+        item_number: null,
+        max_score: null,
+        element: null,
+        description: null,
+        description_grade_1: null,
+        description_grade_2: null,
+        description_grade_3: null,
+        description_grade_4: null,
+      });
+      setEditable(true);
     }
-  }, [state, id, reset, updatedPoinPenilaianData]);
+  }, [state, selectedPoinPenilaian, reset]);
 
   const { mutate: postPoinPenilaian, isLoading: postPoinPenilaianLoading } =
     usePostPoinPenilaian();
   const { mutate: patchPoinPenilaian, isLoading: patchPoinPenilaianLoading } =
     usePatchPoinPenilaian();
-  const navigate = useNavigate();
 
   const onSubmit = (data) => {
     const poinPenilaianFormData = new FormData();
@@ -89,12 +71,27 @@ const PoinPenilaianForm = () => {
       }
     });
 
-    if (id) {
+    poinPenilaianFormData.append('kriteriaId', selectedKriteria);
+
+    if (selectedPoinPenilaian) {
       patchPoinPenilaian(
-        { data: poinPenilaianFormData, id: id },
+        { data: poinPenilaianFormData, id: data.id },
         {
           onSuccess: () => {
-            navigate('/data-master/poin-penilaian');
+            refetchMatriksPenilaianData();
+            setOpenPoinPenilaianModalForm(false);
+            reset({
+              type: null,
+              order_number: null,
+              item_number: null,
+              max_score: null,
+              element: null,
+              description: null,
+              description_grade_1: null,
+              description_grade_2: null,
+              description_grade_3: null,
+              description_grade_4: null,
+            });
           },
           onError: (err) => {
             setErrorMessage(err.message);
@@ -107,7 +104,20 @@ const PoinPenilaianForm = () => {
     } else {
       postPoinPenilaian(poinPenilaianFormData, {
         onSuccess: () => {
-          navigate('/data-master/poin-penilaian');
+          refetchMatriksPenilaianData();
+          setOpenPoinPenilaianModalForm(false);
+          reset({
+            type: null,
+            order_number: null,
+            item_number: null,
+            max_score: null,
+            element: null,
+            description: null,
+            description_grade_1: null,
+            description_grade_2: null,
+            description_grade_3: null,
+            description_grade_4: null,
+          });
         },
         onError: (err) => {
           setErrorMessage(err.message);
@@ -120,45 +130,20 @@ const PoinPenilaianForm = () => {
   };
 
   return (
-    <>
-      <section id="surat-penugasan-form" className="section-container">
-        <BreadCrumbs
-          links={[
-            {
-              name: 'Daftar Poin Penilaian',
-              link: '/data-master/poin-penilaian',
-            },
-            {
-              name: `${id ? 'Detail' : 'Buat'}`,
-            },
-          ]}
-        />
+    <ModalCreateForm
+      isOpen={openPoinPenilaianModalForm}
+      setIsOpen={setOpenPoinPenilaianModalForm}
+      link="/login"
+    >
+      <section
+        id="poin-penilaian-form"
+        className="section-container !min-w-[44rem] h-full"
+      >
         <p className="text-lg font-semibold">
-          {id ? 'Edit' : 'Buat'} Poin Penilaian
+          {selectedPoinPenilaian ? 'Detail' : 'Buat'} Poin Penilaian
         </p>
         <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4">
-          <CRUDropdownInput
-            control={control}
-            name="Kriteria"
-            registeredName="kriteriaId"
-            options={kriteriaDataSuccess ? kriteriaData : []}
-            isDisabled={!editable}
-          />
-          <CRUDropdownInput
-            control={control}
-            name="Program Studi"
-            registeredName="prodiId"
-            options={programStudiDataSuccess ? programStudiData : []}
-            isDisabled={!editable}
-          />
-          <CRUInput
-            register={register}
-            name="Dokumen referensi"
-            errors={errors}
-            registeredName="document_reference"
-            isDisabled={!editable}
-            note="Contoh: LAMINFOKOM FEBRUARI 2022"
-          />
+          <input type="text" className="overflow-hidden h-0 absolute top-0" />
           <CRUInput
             register={register}
             name="jenis"
@@ -234,7 +219,7 @@ const PoinPenilaianForm = () => {
           {errorMessage ? (
             <AlertError className="inline-block">{errorMessage}</AlertError>
           ) : null}
-          {id ? (
+          {selectedPoinPenilaian ? (
             <div className="flex flex-row !mt-8 space-x-3">
               {!editable && (
                 <EditButton
@@ -263,8 +248,8 @@ const PoinPenilaianForm = () => {
           )}
         </form>
       </section>
-    </>
+    </ModalCreateForm>
   );
 };
 
-export default PoinPenilaianForm;
+export default PoinPenilaianModalForm;
