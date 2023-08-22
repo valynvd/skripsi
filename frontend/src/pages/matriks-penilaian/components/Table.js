@@ -10,6 +10,8 @@ import CancelButton from '../../../components/CancelButton';
 import EditButton from '../../../components/EditButton';
 import { BiPlusCircle } from 'react-icons/bi';
 import { PrimaryButton } from '../../../components/PrimaryButton';
+import useAuth from '../../../hooks/useAuth';
+import { useCheckRole } from '../../../hooks/useCheckRole';
 
 const Table = ({
   setPoinPenilaianLoading,
@@ -49,6 +51,7 @@ const Table = ({
       <p className="text-green-500">Updated</p>
     </div>
   );
+  const userRole = useCheckRole();
 
   const timeoutCounter = useRef({});
 
@@ -170,6 +173,12 @@ const Table = ({
           <TableTh className="w-16">3</TableTh>
           <TableTh className="w-16">4</TableTh>
           <TableTh className="w-[10%]">Nilai</TableTh>
+          {userRole.admin && (
+            <>
+              <TableTh className="">Nilai Audit UPM</TableTh>
+              <TableTh className="">Komentar UPM</TableTh>
+            </>
+          )}
           <TableTh className="w-[20%] z-10">Dokumen Pendukung</TableTh>
           <TableTh className="w-40 border-r-0">Status</TableTh>
         </tr>
@@ -293,12 +302,6 @@ const Table = ({
                             }}
                             value={field.value?.value || ''}
                           />
-                          {scoreLoading[item.id] === 'loading' && (
-                            <LoadingInfo />
-                          )}
-                          {scoreLoading[item.id] === 'updated' && (
-                            <UpdatedInfo />
-                          )}
                         </td>
                         <td className="border-gray-300 border-t border-r p-3 w-[20%] space-y-3">
                           {counter[item.id]?.dokumenPendukung.map((item3) => {

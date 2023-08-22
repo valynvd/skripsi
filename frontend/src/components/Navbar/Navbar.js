@@ -242,7 +242,7 @@ const Navbar = () => {
               {
                 title: 'Matriks Penilaian',
                 url: '/matriks-penilaian',
-                allowedRoles: true,
+                allowedRoles: userRole.kaprodi,
               },
               {
                 title: 'Daftar Matriks Penilaian',

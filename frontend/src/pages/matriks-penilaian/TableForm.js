@@ -22,6 +22,7 @@ import { usePostRiwayatPoinPenilaian } from '../../hooks/useRiwayatPoinPenilaian
 import { useFileData } from '../../hooks/useFile.js';
 import useAuth from '../../hooks/useAuth';
 import { useMatriksPenilaianByProdi } from '../../hooks/useMatriksPenilaian';
+import { useParams } from 'react-router-dom';
 
 const TableForm = ({
   handleSubmit,
@@ -35,8 +36,11 @@ const TableForm = ({
   const {
     auth: { userData },
   } = useAuth();
+  const { id } = useParams();
 
-  const { data, refetch: kriteriaRefetch } = useMatriksPenilaianByProdi(1);
+  const { data, refetch: kriteriaRefetch } = useMatriksPenilaianByProdi(
+    id ? id : userData.dosen_detail.id
+  );
 
   // const { refetch: kriteriaRefetch } = useKriteriaData();
   const { data: fileData } = useFileData({

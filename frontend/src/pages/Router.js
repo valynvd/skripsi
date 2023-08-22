@@ -229,6 +229,11 @@ const Router = () => {
             >
               <Route path="daftar-matriks-penilaian">
                 <Route index element={<MatriksPenilaianAdmin />} />
+
+                <Route
+                  path="matriks-penilaian/:id"
+                  element={<MatriksPenilaian />}
+                />
                 {/* <Route path="form" element={<UserForm />} />
                 <Route path=":id" element={<UserForm />} /> */}
               </Route>

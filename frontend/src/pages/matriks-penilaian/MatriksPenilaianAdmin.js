@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React from 'react';
 import { PrimaryButton } from '../../components/PrimaryButton';
 import { BiPlusCircle } from 'react-icons/bi';
@@ -31,15 +32,15 @@ const MatriksPenilaianAdmin = () => {
         }
       /> */}
       <div className="flex flex-col items-start lg:justify-between lg:items-center lg:flex-row space-y-2 lg:space-y-0">
-        <p className="font-semibold text-lg">Daftar Mata Kuliah</p>
-        {userRole.admin && (
+        <p className="font-semibold text-lg">Daftar Matriks Penilaian</p>
+        {/* {userRole.admin && (
           <PrimaryButton
             icon={<BiPlusCircle size={22} />}
             link="/data-master/mata-kuliah/form"
           >
             Buat Mata Kuliah
           </PrimaryButton>
-        )}
+        )} */}
       </div>
       <div className="mt-8 w-full rounded-t-lg">
         <MatriksPenilaianAdminTable

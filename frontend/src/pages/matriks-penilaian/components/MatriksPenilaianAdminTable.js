@@ -32,9 +32,9 @@ const MatriksPenilaianAdminTable = ({
           <div className="flex flex-row space-x-2">
             <EditIcon
               onClick={() => {
-                navigate(`/data-master/mata-kuliah/${value.id}`, {
-                  state: value,
-                });
+                navigate(
+                  `/akreditasi/daftar-matriks-penilaian/matriks-penilaian/${value.id}`
+                );
               }}
             />
             {/* {userRole.admin && (
