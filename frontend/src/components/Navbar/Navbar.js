@@ -170,6 +170,16 @@ const Navbar = () => {
                     url: '/cycle',
                     allowedRoles: userRole.admin,
                   },
+                  {
+                    title: 'Kriteria',
+                    url: '/kriteria',
+                    allowedRoles: userRole.admin,
+                  },
+                  {
+                    title: 'Poin Penilaian',
+                    url: '/poin-penilaian',
+                    allowedRoles: userRole.admin,
+                  },
                 ]}
                 icon={<BsClipboardData size={22} />}
               />
@@ -233,6 +243,11 @@ const Navbar = () => {
                 title: 'Matriks Penilaian',
                 url: '/matriks-penilaian',
                 allowedRoles: true,
+              },
+              {
+                title: 'Daftar Matriks Penilaian',
+                url: '/daftar-matriks-penilaian',
+                allowedRoles: userRole.admin,
               },
             ]}
             icon={<MdWorkspacePremium size={22} />}

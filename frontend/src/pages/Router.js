@@ -59,6 +59,11 @@ import PublikasiKarya from './publikasi-karya/PublikasiKarya';
 import PublikasiKaryaForm from './publikasi-karya/PublikasiKaryaForm';
 import PatenHKI from './paten-hki/PatenHKI';
 import PatenHKIForm from './paten-hki/PatenHKIForm';
+import Kriteria from './kriteria/Kriteria';
+import KriteriaForm from './kriteria/KriteriaForm';
+import PoinPenilaian from './poin-penilaian/PoinPenilaian';
+import PoinPenilaianForm from './poin-penilaian/PoinPenilaianForm';
+import MatriksPenilaianAdmin from './matriks-penilaian/MatriksPenilaianAdmin';
 
 const Router = () => {
   return (
@@ -152,6 +157,16 @@ const Router = () => {
                 <Route path="form" element={<PenugasanPengajaranForm />} />
                 <Route path=":id" element={<PenugasanPengajaranForm />} />
               </Route>
+              <Route path="kriteria">
+                <Route index element={<Kriteria />} />
+                <Route path="form" element={<KriteriaForm />} />
+                <Route path=":id" element={<KriteriaForm />} />
+              </Route>
+              <Route path="poin-penilaian">
+                <Route index element={<PoinPenilaian />} />
+                <Route path="form" element={<PoinPenilaianForm />} />
+                <Route path=":id" element={<PoinPenilaianForm />} />
+              </Route>
             </Route>
             <Route
               element={
@@ -206,6 +221,17 @@ const Router = () => {
           <Route path="akreditasi" element={<Outlet />}>
             <Route path="matriks-penilaian">
               <Route index element={<MatriksPenilaian />} />
+            </Route>
+            <Route
+              element={
+                <RequireAuthWithRoles allowedRoles={['Admin', 'Superadmin']} />
+              }
+            >
+              <Route path="daftar-matriks-penilaian">
+                <Route index element={<MatriksPenilaianAdmin />} />
+                {/* <Route path="form" element={<UserForm />} />
+                <Route path=":id" element={<UserForm />} /> */}
+              </Route>
             </Route>
           </Route>
 

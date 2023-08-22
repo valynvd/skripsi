@@ -15,14 +15,15 @@ const AddModal = ({
   kriteriaRefetch,
   openModal,
   setOpenModal,
-  selectedSuratPenugasan,
+  selectedDokumenPendukung,
   suratPenugasanData,
   selectedPoinPenilaian,
   semesterName,
-  setSelectedSuratPenugasan,
+  setSelectedDokumenPendukung,
   patchPoinPenilaian,
   counter,
   setCounter,
+  dokumenPendukungList,
 }) => {
   return (
     <Transition show={openModal} as={Fragment}>
@@ -87,25 +88,41 @@ const AddModal = ({
                   }}
                   options={
                     (() => {
-                      let filteredSuratPenugasanData = [];
+                      let filteredDokumenPendukung = [];
 
-                      if (
-                        counter[selectedPoinPenilaian.id]
-                          .dokumenPendukungSuratPenugasan.length === 0
-                      ) {
-                        return suratPenugasanData;
-                      } else {
-                        counter[
-                          selectedPoinPenilaian.id
-                        ].dokumenPendukungSuratPenugasan.forEach((item) => {
-                          suratPenugasanData.forEach((item2) => {
-                            if (item.value !== item2.value) {
-                              filteredSuratPenugasanData.push(item2);
+                      if (counter && selectedPoinPenilaian) {
+                        if (
+                          counter[selectedPoinPenilaian.id].dokumenPendukung
+                            .length === 0
+                        ) {
+                          return dokumenPendukungList;
+                        } else {
+                          dokumenPendukungList.forEach((item) => {
+                            let found = false;
+                            counter[
+                              selectedPoinPenilaian.id
+                            ].dokumenPendukung.every((item2) => {
+                              if (item.value === item2.value) {
+                                found = true;
+                                return false;
+                              }
+                              return true;
+                            });
+                            if (!found) {
+                              filteredDokumenPendukung.push(item);
                             }
                           });
-                        });
-
-                        return filteredSuratPenugasanData;
+                          // counter[
+                          //   selectedPoinPenilaian.id
+                          // ].dokumenPendukung.forEach((item) => {
+                          //   dokumenPendukungList.forEach((item2) => {
+                          //     if (item.value !== item2.value) {
+                          //       filteredDokumenPendukung.push(item2);
+                          //     }
+                          //   });
+                          // });
+                          return filteredDokumenPendukung;
+                        }
                       }
                     })()
                     // suratPenugasanData && selectedPoinPenilaian
@@ -129,134 +146,144 @@ const AddModal = ({
                     //     : suratPenugasanData
                     //   : []
                   }
-                  value={selectedSuratPenugasan}
+                  value={selectedDokumenPendukung}
                   onChange={(val, triggeredAction) => {
-                    setSelectedSuratPenugasan(val);
+                    setSelectedDokumenPendukung(val);
                   }}
                 />
-                {selectedSuratPenugasan && (
-                  <div className="mt-4 space-y-4">
-                    <div className="flex">
-                      <div className="w-1/3">
-                        <p className="font-semibold">Kategori</p>
-                        <p>{selectedSuratPenugasan.category || 'Tidak ada'}</p>
+                {selectedDokumenPendukung &&
+                  (selectedDokumenPendukung.document_type === 'file' ? (
+                    <div className="mt-4 space-y-4">
+                      <div>
+                        <p className="font-semibold">Deskripsi</p>
+                        <p>{selectedDokumenPendukung.description}</p>
                       </div>
-                      <div className="w-1/3">
-                        <p className="font-semibold">Siklus</p>
-                        <p>
-                          {selectedSuratPenugasan.cycle_detail
-                            ? `${
-                                selectedSuratPenugasan.cycle_detail.start_year
-                              }/${
-                                selectedSuratPenugasan.cycle_detail.end_year
-                              } ${
-                                semesterName[
-                                  selectedSuratPenugasan.cycle_detail.semester
-                                ]
-                              }`
-                            : 'Tidak ada'}
-                        </p>
+                      <div>
+                        <p className="font-semibold">File</p>
+                        <a
+                          target="_blank"
+                          className={`w-full block ${
+                            selectedDokumenPendukung.files && 'text-primary-400'
+                          } whitespace-nowrap overflow-hidden overflow-ellipsis`}
+                          href={selectedDokumenPendukung.files}
+                          rel="noreferrer"
+                        >
+                          {selectedDokumenPendukung.files || 'Tidak ada'}
+                        </a>
                       </div>
-                      <div className="w-1/3">
-                        <p className="font-semibold">Diterima</p>
-                        <p>
-                          {selectedSuratPenugasan.approved ? (
-                            <LinkIconAccepted />
-                          ) : (
-                            <LinkIconRejected />
-                          )}
-                        </p>
-                      </div>
-                    </div>
-                    <div>
-                      <p className="font-semibold">File</p>
-                      <a
-                        target="_blank"
-                        className={`w-full block ${
-                          selectedSuratPenugasan.files && 'text-primary-400'
-                        } whitespace-nowrap overflow-hidden overflow-ellipsis`}
-                        href={selectedSuratPenugasan.files}
-                        rel="noreferrer"
-                      >
-                        {selectedSuratPenugasan.files || 'Tidak ada'}
-                      </a>
-                    </div>
-                    <PrimaryButton
-                      onClick={() => {
-                        // setDocumentLoading((prev) => {
-                        //   let dupeDocumentLoading = {
-                        //     ...prev,
-                        //   };
-
-                        //   dupeDocumentLoading[selectedPoinPenilaian.id] =
-                        //     'loading';
-
-                        //   return dupeDocumentLoading;
-                        // });
-
-                        setCounter((prev) => {
-                          let copyCounter = { ...prev };
-
-                          let formattedDokumenPendukungSuratPenugasan = [];
-
-                          if (
-                            copyCounter[selectedPoinPenilaian.id]
-                              .dokumenPendukungSuratPenugasan
-                          ) {
-                            formattedDokumenPendukungSuratPenugasan =
+                      <PrimaryButton
+                        onClick={() => {
+                          setCounter((prev) => {
+                            let copyCounter = { ...prev };
+                            let formattedDokumenPendukung = [];
+                            if (
                               copyCounter[selectedPoinPenilaian.id]
-                                .dokumenPendukungSuratPenugasan;
-                          }
-
-                          formattedDokumenPendukungSuratPenugasan.push(
-                            selectedSuratPenugasan
-                          );
-
-                          copyCounter[selectedPoinPenilaian.id] = {
-                            ...copyCounter[selectedPoinPenilaian.id],
-                            dokumenPendukungSuratPenugasan:
-                              formattedDokumenPendukungSuratPenugasan,
-                          };
-
-                          return copyCounter;
-                        });
-
-                        setPointId(selectedPoinPenilaian.id);
-
-                        // patchPoinPenilaian(
-                        //   {
-                        //     data: {
-                        //       dokumenPendukungSuratPenugasan: [
-                        //         ...selectedPoinPenilaian.dokumenPendukungSuratPenugasan,
-                        //         selectedSuratPenugasan.value,
-                        //       ],
-                        //     },
-                        //     id: selectedPoinPenilaian.id,
-                        //   },
-                        //   {
-                        //     onSuccess: () => {
-                        //       setDocumentLoading((prev) => {
-                        //         let dupeDocumentLoading = {
-                        //           ...prev,
-                        //         };
-
-                        //         dupeDocumentLoading[selectedPoinPenilaian.id] =
-                        //           'updated';
-
-                        //         return dupeDocumentLoading;
-                        //       });
-                        //       kriteriaRefetch();
-                        //     },
-                        //   }
-                        // );
-                        setOpenModal(false);
-                      }}
-                      className="w-full rounded-lg"
-                    >
-                      Tambah
-                    </PrimaryButton>
-                  </div>
-                )}
+                                .dokumenPendukung.length !== 0
+                            ) {
+                              formattedDokumenPendukung =
+                                copyCounter[selectedPoinPenilaian.id]
+                                  .dokumenPendukung;
+                            }
+                            formattedDokumenPendukung.push(
+                              selectedDokumenPendukung
+                            );
+                            copyCounter[selectedPoinPenilaian.id] = {
+                              ...copyCounter[selectedPoinPenilaian.id],
+                              dokumenPendukung: formattedDokumenPendukung,
+                            };
+                            return copyCounter;
+                          });
+                          setPointId(selectedPoinPenilaian.id);
+                          setOpenModal(false);
+                        }}
+                        className="w-full rounded-lg"
+                      >
+                        Tambah
+                      </PrimaryButton>
+                    </div>
+                  ) : (
+                    <div className="mt-4 space-y-4">
+                      <div className="flex">
+                        <div className="w-1/3">
+                          <p className="font-semibold">Kategori</p>
+                          <p>
+                            {selectedDokumenPendukung.category || 'Tidak ada'}
+                          </p>
+                        </div>
+                        <div className="w-1/3">
+                          <p className="font-semibold">Siklus</p>
+                          <p>
+                            {selectedDokumenPendukung.cycle_detail
+                              ? `${
+                                  selectedDokumenPendukung.cycle_detail
+                                    .start_year
+                                }/${
+                                  selectedDokumenPendukung.cycle_detail.end_year
+                                } ${
+                                  semesterName[
+                                    selectedDokumenPendukung.cycle_detail
+                                      .semester
+                                  ]
+                                }`
+                              : 'Tidak ada'}
+                          </p>
+                        </div>
+                        <div className="w-1/3">
+                          <p className="font-semibold">Diterima</p>
+                          <p>
+                            {selectedDokumenPendukung.approved ? (
+                              <LinkIconAccepted />
+                            ) : (
+                              <LinkIconRejected />
+                            )}
+                          </p>
+                        </div>
+                      </div>
+                      <div>
+                        <p className="font-semibold">File</p>
+                        <a
+                          target="_blank"
+                          className={`w-full block ${
+                            selectedDokumenPendukung.files && 'text-primary-400'
+                          } whitespace-nowrap overflow-hidden overflow-ellipsis`}
+                          href={selectedDokumenPendukung.files}
+                          rel="noreferrer"
+                        >
+                          {selectedDokumenPendukung.files || 'Tidak ada'}
+                        </a>
+                      </div>
+                      <PrimaryButton
+                        onClick={() => {
+                          setCounter((prev) => {
+                            let copyCounter = { ...prev };
+                            let formattedDokumenPendukungSuratPenugasan = [];
+                            if (
+                              copyCounter[selectedPoinPenilaian.id]
+                                .dokumenPendukung
+                            ) {
+                              formattedDokumenPendukungSuratPenugasan =
+                                copyCounter[selectedPoinPenilaian.id]
+                                  .dokumenPendukung;
+                            }
+                            formattedDokumenPendukungSuratPenugasan.push(
+                              selectedDokumenPendukung
+                            );
+                            copyCounter[selectedPoinPenilaian.id] = {
+                              ...copyCounter[selectedPoinPenilaian.id],
+                              dokumenPendukung:
+                                formattedDokumenPendukungSuratPenugasan,
+                            };
+                            return copyCounter;
+                          });
+                          setPointId(selectedPoinPenilaian.id);
+                          setOpenModal(false);
+                        }}
+                        className="w-full rounded-lg"
+                      >
+                        Tambah
+                      </PrimaryButton>
+                    </div>
+                  ))}
               </Dialog.Panel>
             </div>
           </div>

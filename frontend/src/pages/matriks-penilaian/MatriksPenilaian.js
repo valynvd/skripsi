@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect } from 'react';
 import { PrimaryButton } from '../../components/PrimaryButton';
-import { useForm } from 'react-hook-form';
+import { set, useForm } from 'react-hook-form';
 import { useState } from 'react';
 import TableSimulate from './TableSimulate';
 import TableForm from './TableForm';
@@ -14,6 +14,7 @@ const MatriksPenilaian = () => {
     formState: { errors, dirtyFields },
   } = useForm({});
   const [simulateData, setSimulateData] = useState([]);
+  const [radarData, setRadarData] = useState();
   const [counter, setCounter] = useState({});
 
   const onSubmit = (values) => {
@@ -72,6 +73,18 @@ const MatriksPenilaian = () => {
       }
     }
     filteredValues.push(totalSimulation);
+
+    let radarLabels = [];
+    let radarData = [];
+
+    filteredValues.forEach((item) => {
+      if (item.name !== 'total') {
+        radarLabels.push(item.name);
+        radarData.push((item.mark_counted / item.max_score) * 100);
+      }
+    });
+
+    setRadarData({ label: radarLabels, data: radarData });
     setSimulateData(filteredValues);
   };
 
@@ -87,7 +100,7 @@ const MatriksPenilaian = () => {
         reset={reset}
       />
       {simulateData.length !== 0 && (
-        <TableSimulate simulateData={simulateData} />
+        <TableSimulate simulateData={simulateData} radarData={radarData} />
       )}
     </>
   );

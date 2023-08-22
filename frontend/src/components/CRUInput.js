@@ -9,6 +9,7 @@ const CRUInput = ({
   errors = false,
   isDisabled = false,
   className = '',
+  note = false,
 }) => {
   return (
     <div>
@@ -26,6 +27,7 @@ const CRUInput = ({
           required: required ? name + ' harus diisi' : false,
         })}
       />
+      {note && <p className="text-sm mt-2 text-yellow-500">{note}</p>}
       {errors[registeredName] && (
         <p className="mt-1 text-sm text-primary-400">
           {errors[registeredName].message}

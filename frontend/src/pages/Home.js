@@ -1,40 +1,13 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
+import { useMatriksPenilaianByProdi } from '../hooks/useMatriksPenilaian';
 
 const Home = () => {
   const [testing, setTesting] = useState();
   const [counter, setCounter] = useState({});
 
-  useEffect(() => {
-    console.log(counter);
-    // for (let id in counter) {
-    //   console.log(counter[id]);
-    // }
-  }, [counter]);
-
-  const changeCounter = (id, value) => {
-    setCounter((prev) => {
-      if (prev[id]) {
-        clearTimeout(prev[id].timeout);
-      }
-
-      let prevCounter = { ...prev };
-
-      prevCounter[id] = {
-        ...value,
-        timeout: setTimeout(() => {
-          setCounter((prev2) => {
-            let prevCounter2 = { ...prev2 };
-
-            prevCounter2[id].timeout = true;
-            return prevCounter2;
-          });
-        }, 5000),
-      };
-
-      return prevCounter;
-    });
-  };
+  const { data, refetch: kriteriaRefetch } = useMatriksPenilaianByProdi(1);
+  console.log(data);
 
   return (
     <>
@@ -47,20 +20,6 @@ const Home = () => {
             Tinggi (SIMANTAP)
           </p>
         </div>
-      </section>
-      <section className="section-container mt-4">
-        <input
-          type="text"
-          onChange={(e) => {
-            changeCounter(1, { score: e.target.value });
-          }}
-        />
-        <input
-          type="text"
-          onChange={(e) => {
-            changeCounter(2, { score: e.target.value });
-          }}
-        />
       </section>
     </>
   );

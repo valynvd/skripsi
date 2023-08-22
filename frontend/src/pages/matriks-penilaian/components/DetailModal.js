@@ -8,7 +8,7 @@ import {
 const DetailModal = ({
   openModal2,
   setOpenModal2,
-  selectedSuratPenugasan2,
+  selectedDokumenPendukung2,
   semesterName,
 }) => {
   return (
@@ -45,65 +45,116 @@ const DetailModal = ({
                 <Dialog.Title className="text-xl font-semibold text-black-800">
                   Detail Dokumen Pendukung
                 </Dialog.Title>
-                {selectedSuratPenugasan2 && (
-                  <div className="mt-4 space-y-4">
-                    <div className="flex flex-col">
-                      <p className="font-semibold">Judul</p>
-                      <p>{selectedSuratPenugasan2.judul || 'Tidak ada'}</p>
-                    </div>
-                    <div className="flex">
-                      <div className="w-1/3">
-                        <p className="font-semibold">Kategori</p>
-                        <p>{selectedSuratPenugasan2.category || 'Tidak ada'}</p>
+                {selectedDokumenPendukung2 &&
+                  (selectedDokumenPendukung2.document_type === 'file' ? (
+                    <div className="mt-4 space-y-4">
+                      <div className="flex flex-col">
+                        <p className="font-semibold">Judul</p>
+                        <p>{selectedDokumenPendukung2.label || 'Tidak ada'}</p>
                       </div>
-                      <div className="w-1/3">
-                        <p className="font-semibold">Siklus</p>
-                        <p>
-                          {selectedSuratPenugasan2.cycle_detail
-                            ? `${
-                                selectedSuratPenugasan2.cycle_detail.start_year
-                              }/${
-                                selectedSuratPenugasan2.cycle_detail.end_year
-                              } ${
-                                semesterName[
-                                  selectedSuratPenugasan2.cycle_detail.semester
-                                ]
-                              }`
-                            : 'Tidak ada'}
-                        </p>
+                      <div className="flex">
+                        <div>
+                          <p className="font-semibold">Deskripsi</p>
+                          <p>
+                            {selectedDokumenPendukung2.description ||
+                              'Tidak ada'}
+                          </p>
+                        </div>
                       </div>
-                      <div className="w-1/3">
-                        <p className="font-semibold">Diterima</p>
-                        <p>
-                          {selectedSuratPenugasan2.approved ? (
-                            <LinkIconAccepted />
-                          ) : (
-                            <LinkIconRejected />
-                          )}
-                        </p>
+                      <div>
+                        <p className="font-semibold">File</p>
+                        {selectedDokumenPendukung2.file ? (
+                          <a
+                            target="_blank"
+                            className={`w-full block ${
+                              selectedDokumenPendukung2.file &&
+                              'text-primary-400'
+                            } whitespace-nowrap overflow-hidden overflow-ellipsis`}
+                            href={
+                              'https://api-simantap.kaospoloskato.com' +
+                              selectedDokumenPendukung2.file
+                            }
+                            rel="noreferrer"
+                          >
+                            {`${
+                              'https://api-simantap.kaospoloskato.com' +
+                              selectedDokumenPendukung2.file
+                            }` || 'Tidak ada'}
+                          </a>
+                        ) : (
+                          'Tidak ada'
+                        )}
                       </div>
                     </div>
-                    <div>
-                      <p className="font-semibold">File</p>
-                      <a
-                        target="_blank"
-                        className={`w-full block ${
-                          selectedSuratPenugasan2.files && 'text-primary-400'
-                        } whitespace-nowrap overflow-hidden overflow-ellipsis`}
-                        href={
-                          'https://api-simantap.kaospoloskato.com' +
-                          selectedSuratPenugasan2.files
-                        }
-                        rel="noreferrer"
-                      >
-                        {`${
-                          'https://api-simantap.kaospoloskato.com' +
-                          selectedSuratPenugasan2.files
-                        }` || 'Tidak ada'}
-                      </a>
+                  ) : (
+                    <div className="mt-4 space-y-4">
+                      <div className="flex flex-col">
+                        <p className="font-semibold">Judul</p>
+                        <p>{selectedDokumenPendukung2.judul || 'Tidak ada'}</p>
+                      </div>
+                      <div className="flex">
+                        <div className="w-1/3">
+                          <p className="font-semibold">Kategori</p>
+                          <p>
+                            {selectedDokumenPendukung2.category || 'Tidak ada'}
+                          </p>
+                        </div>
+                        <div className="w-1/3">
+                          <p className="font-semibold">Siklus</p>
+                          <p>
+                            {selectedDokumenPendukung2.cycle_detail
+                              ? `${
+                                  selectedDokumenPendukung2.cycle_detail
+                                    .start_year
+                                }/${
+                                  selectedDokumenPendukung2.cycle_detail
+                                    .end_year
+                                } ${
+                                  semesterName[
+                                    selectedDokumenPendukung2.cycle_detail
+                                      .semester
+                                  ]
+                                }`
+                              : 'Tidak ada'}
+                          </p>
+                        </div>
+                        <div className="w-1/3">
+                          <p className="font-semibold">Diterima</p>
+                          <p>
+                            {selectedDokumenPendukung2.approved ? (
+                              <LinkIconAccepted />
+                            ) : (
+                              <LinkIconRejected />
+                            )}
+                          </p>
+                        </div>
+                      </div>
+                      <div>
+                        <p className="font-semibold">File</p>
+                        {selectedDokumenPendukung2.files ? (
+                          <a
+                            target="_blank"
+                            className={`w-full block ${
+                              selectedDokumenPendukung2.files &&
+                              'text-primary-400'
+                            } whitespace-nowrap overflow-hidden overflow-ellipsis`}
+                            href={
+                              'https://api-simantap.kaospoloskato.com' +
+                              selectedDokumenPendukung2.files
+                            }
+                            rel="noreferrer"
+                          >
+                            {`${
+                              'https://api-simantap.kaospoloskato.com' +
+                              selectedDokumenPendukung2.files
+                            }` || 'Tidak ada'}
+                          </a>
+                        ) : (
+                          'Tidak ada'
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  ))}
               </Dialog.Panel>
             </div>
           </div>
