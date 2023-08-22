@@ -45,6 +45,7 @@ const MonitoringMahasiswaImportExcel = () => {
     const excelfile = xlsx.read(data);
     const excelsheet = excelfile.Sheets[excelfile.SheetNames[0]];
     const exceljson = xlsx.utils.sheet_to_json(excelsheet);
+    console.log(exceljson)
 
     setExcelData(exceljson);
   };
@@ -409,13 +410,14 @@ const MonitoringMahasiswaImportExcel = () => {
                   .filter((getdata) => {
                     return (
                       (namamahasiswa === '' ||
-                        getdata.nama_mahasiswa
+                        getdata.Name
                           .toLowerCase()
                           .includes(namamahasiswa.toLowerCase())) &&
                       (nim === '' ||
-                        getdata.nim_mahasiswa.toString().includes(nim)) &&
+                        getdata.NIM.toString().includes(nim)) &&
                       (prodi === '' ||
-                        getdata.name_prody
+                        getdata['Program (Desc.)']
+
                           .toLowerCase()
                           .includes(prodi.toLowerCase()))
                     );
@@ -424,18 +426,18 @@ const MonitoringMahasiswaImportExcel = () => {
                     <tr key={index} className="bg-white border-b text-gray-600">
                       <td className="px-4 py-3">{index + 1}</td>
                       <td className="px-4 py-3">
-                        {filteredData.nama_mahasiswa}
+                        {filteredData.Name}
                       </td>
                       <td className="px-4 py-3">
-                        {filteredData.nim_mahasiswa}
+                        {filteredData.NIM}
                       </td>
-                      <td className="px-4 py-3">{filteredData.name_prody}</td>
-                      <td className="px-4 py-3">{filteredData.angkatan}</td>
-                      <td className="px-4 py-3">{filteredData.subject}</td>
+                      <td className="px-4 py-3">{filteredData['Program (Desc.)']}</td>
+                      <td className="px-4 py-3">{filteredData.Angkatan}</td>
+                      <td className="px-4 py-3">{filteredData.Subject}</td>
                       <td className="px-4 py-3">
-                        {filteredData.earned_credits}
+                        {filteredData['Graded Credits']}
                       </td>
-                      <td className="px-4 py-3">{filteredData.grade_symbol}</td>
+                      <td className="px-4 py-3">{filteredData['Grade symbol']}</td>
                     </tr>
                   ))}
           </tbody>
