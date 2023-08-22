@@ -634,26 +634,26 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
         convert_to = json.dumps(request.data, indent=4)
         data_dict = json.loads(convert_to)
 
-        name_prody = data_dict.get('name_prody')
-        program_study = data_dict.get('program_study')
+        name_prody = data_dict.get('Program (Desc.)')
+        program_study = data_dict.get('Program of study')
 
         # get mahasiswa
-        nama_mahasiswa = data_dict.get('nama_mahasiswa')
-        nim_mahasiswa = data_dict.get('nim_mahasiswa')
-        angkatan = data_dict.get('angkatan')
+        nama_mahasiswa = data_dict.get('Name')
+        nim_mahasiswa = data_dict.get('NIM')
+        angkatan = data_dict.get('Angkatan')
 
         # get subject
-        subject = data_dict.get('subject')
-        subject_short = data_dict.get('subject_short')
-        graded_credits = data_dict.get('graded_credits')
-        academic_year = data_dict.get('academic_year')
-        academic_session = data_dict.get('academic_session')
+        subject = data_dict.get('Subject')
+        subject_short = data_dict.get('Subject Short')
+        graded_credits = data_dict.get('Graded Credits')
+        academic_year = data_dict.get('Academic Year')
+        academic_session = data_dict.get('Academic Session')
 
         # get credit
-        earned_credits = data_dict.get('earned_credits')
+        earned_credits = data_dict.get('Earned Credits')
 
         # get grade
-        grade_symbol = data_dict.get('grade_symbol')
+        grade_symbol = data_dict.get('Grade symbol')
 
         # Check if ProgramStudi already exists
         if name_prody == "Computer Systems Engineering" :
@@ -680,13 +680,13 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
         datamahasiswa, created= models.DataMahasiswa.objects.get_or_create(nama=nama_mahasiswa, nim=nim_mahasiswa, angkatan=angkatan, prodi=programstudi[0])
         
         # # Check if Dosen already exists
-        nama_dosen = data_dict.get('nama_dosen')
+        nama_dosen = data_dict.get('Name_1')
         nama_dosen_split = str(nama_dosen).split("/")
-        inisial = data_dict.get('initial_dosen')
+        inisial = data_dict.get('Initial')
         inisial_split = str(inisial).split("/")
-        nik_dosen = data_dict.get('nik_dosen')
+        nik_dosen = data_dict.get('NIK')
         nik_dosen_split = str(nik_dosen).split("/")
-        nidn_dosen = data_dict.get('nidn_dosen')
+        nidn_dosen = data_dict.get('NIDN')
         nidn_dosen_split = str(nidn_dosen).split("/")
 
         cekPenugasanPengajaran = models.PenugasanPengajaran.objects.filter(dosen_pengampu__nik__in=nik_dosen_split, mata_kuliah__kode=subject_short)
@@ -760,21 +760,21 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
             kode = subject_short,
         )
 
-        st_object_type = data_dict.get('st_object_type')
-        st_objid = data_dict.get('st_objid')
-        student_id = data_dict.get('student_id')
-        appraisal_type = data_dict.get('appraisal_type')
-        sm_object_type = data_dict.get('sm_object_type')
-        sm_objid = data_dict.get('sm_objid')
-        event_package_objid = data_dict.get('event_package_objid')
-        event_package_short = data_dict.get('event_package_short')
-        event_package_text = data_dict.get('event_package_text')
-        if (data_dict.get('grade_symbol') == None):
+        st_object_type = data_dict.get('Object type')
+        st_objid = data_dict.get('ST Objid')
+        student_id = data_dict.get('Student ID')
+        appraisal_type = data_dict.get('Appraisal Type')
+        sm_object_type = data_dict.get('Object type')
+        sm_objid = data_dict.get('SM Objid')
+        event_package_objid = data_dict.get('Event Package Objid')
+        event_package_short = data_dict.get('Event Package Short')
+        event_package_text = data_dict.get('Event Package Text')
+        if (data_dict.get('Grade symbol') == None):
             grade_symbol = "T"
         else :
-            grade_symbol = data_dict.get('grade_symbol')
-        credit_type = data_dict.get('credit_type')
-        mentor = data_dict.get('mentor')
+            grade_symbol = data_dict.get('Grade symbol')
+        credit_type = data_dict.get('Credit Type')
+        mentor = data_dict.get('Mentor')
 
         monitoring_mahasiswa, created = models.MonitoringMahasiswa.objects.get_or_create(
             st_object_type = st_object_type,
