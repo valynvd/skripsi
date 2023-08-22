@@ -82,16 +82,17 @@ const MonitoringMahasiswaImportExcel = () => {
           onSuccess: (res) => {
             getResponseData.push(res.data);
             console.log('Data submitted successfully for index:', index);
-            const newProgress = ((index + 1) / excelData.length) * 100;
-            if (newProgress == 100.0) {
-              setOpen(true);
-            }
+            
             setProgress(newProgress.toFixed(2));
           },
         });
-        await delay(150);
+        await delay(200);
       } catch (err) {
         getResponseData.push(err.response.data);
+      }
+      const newProgress = ((index + 1) / excelData.length) * 100;
+      if (newProgress == 100.0) {
+        setOpen(true);
       }
     }
 
