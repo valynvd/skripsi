@@ -221,7 +221,7 @@ class MonitoringMahasiswaSerializers(serializers.ModelSerializer):
   mata_kuliah_detail = MataKuliahSerializers(source='mata_kuliah', read_only=True)
   prodi_detail = ProgramStudiSerializers(source='prodi', read_only=True)
   dosen_detail = DosenSerializers(source='dosen', read_only=True)
-  penugasan_pengajaran_detail = PenugasanPengajaranSerializers(source='penugasan_pengajaran', read_only=True)
+  penugasan_pengajaran_detail = PenugasanPengajaranSerializers(source='penugasan_pengajaran', read_only=True, many=True)
 
   class Meta:
       model = models.MonitoringMahasiswa
