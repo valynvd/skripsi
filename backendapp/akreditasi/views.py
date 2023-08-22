@@ -136,3 +136,20 @@ class SimulasiMatriksViewSet(viewsets.ModelViewSet):
         else:
             self.permission_classes = [IsAuthenticated]
         return super(self.__class__, self).get_permissions()
+
+class KriteriaByDokumenAkreditasiViewSet(generics.ListAPIView):
+    serializer_class = serializers.KriteriaSerializers
+    queryset = models.Kriteria.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        kriteriaByDokumenAkreditasi = models.Kriteria.objects.filter(dokumenAkreditasiId = self.kwargs['dokumenAkreditasiId']) 
+        serializer = self.get_serializer(kriteriaByDokumenAkreditasi, many=True)
+
+        return Response(serializer.data)
+
+    def get_permissions(self):
+        if self.action in ['list','retrieve']:
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
