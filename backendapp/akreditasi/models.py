@@ -3,7 +3,34 @@ from django.utils import timezone
 from api.models import Dosen, ProgramStudi, SuratPenugasan, UniqueNameFileField
 
 # Create your models here.
+class DokumenAkreditasi(models.Model):
+    prodiId = models.ForeignKey(
+        ProgramStudi,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True
+	)
+    nama = models.CharField(max_length=100)
+    file = UniqueNameFileField(upload_to='evaluasi/dokumen-akreditasi/', blank=True, null=True)
+
+class SimulasiMatriks(models.Model):
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at =  models.DateTimeField(default=timezone.now)
+    dokumenAkreditasiId = models.ForeignKey(
+        DokumenAkreditasi,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True
+	)
+    judul = models.CharField(max_length=200)
+
 class Kriteria(models.Model):
+    dokumenAkreditasiId = models.ForeignKey(
+        DokumenAkreditasi,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True
+	)
     nama = models.CharField(max_length=100)
     deskripsi = models.TextField(blank=True, null=True)
     def __str__(self) -> str:
