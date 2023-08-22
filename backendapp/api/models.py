@@ -283,7 +283,7 @@ class PenugasanPengajaran(models.Model):
 			null=True,
 	)
 	def __str__(self) -> str:
-		return '{} - {}'.format(self.dosen_pengampu.inisial, self.mata_kuliah.name)
+		return '{}'.format(self.dosen_pengampu.inisial)
 
 class PenugasanPengabdian(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)
