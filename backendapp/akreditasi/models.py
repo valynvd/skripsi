@@ -10,7 +10,7 @@ class DokumenAkreditasi(models.Model):
         blank=True,
         null=True
 	)
-    nama = models.CharField(max_length=100)
+    name = models.CharField(max_length=100)
     file = UniqueNameFileField(upload_to='evaluasi/dokumen-akreditasi/', blank=True, null=True)
 
 class SimulasiMatriks(models.Model):
@@ -22,7 +22,7 @@ class SimulasiMatriks(models.Model):
         blank=True,
         null=True
 	)
-    judul = models.CharField(max_length=200)
+    title = models.CharField(max_length=200)
 
 class Kriteria(models.Model):
     dokumenAkreditasiId = models.ForeignKey(
