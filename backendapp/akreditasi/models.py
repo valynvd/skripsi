@@ -41,7 +41,7 @@ class PoinPenilaian(models.Model):
     description_grade_4 = models.TextField(blank=True, null=True)
 
     def __str__(self) -> str:
-        return '{}-{}'.format(self.element, self.kriteriaId.nama)
+        return '{}'.format(self.element)
 
 class RiwayatPoinPenilaian(models.Model):
     created_at = models.DateTimeField(default=timezone.now)

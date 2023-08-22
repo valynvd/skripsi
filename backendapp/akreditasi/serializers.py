@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from rest_framework_recursive.fields import RecursiveField
-from api.serializers import DosenSerializers, ProgramStudiSerializers, SuratPenugasanSerializers
+from api.serializers import DosenSerializers, ProgramStudiSerializers, SuratPenugasanSerializers, ProgramStudiSerializers
 from . import models
 
 
@@ -19,6 +19,7 @@ class RiwayatPoinPenilaianSerializers(serializers.ModelSerializer):
 
 class PoinPenilaianSerializers(serializers.ModelSerializer):
   riwayat_poin_penilaian_detail = serializers.SerializerMethodField(read_only=True)
+  prodi_detail = ProgramStudiSerializers(source="prodiId", many=False, read_only=True)
 
   class Meta:
       model = models.PoinPenilaian
@@ -30,16 +31,16 @@ class PoinPenilaianSerializers(serializers.ModelSerializer):
     return RiwayatPoinPenilaianSerializers(riwayatPoinPenilaian, many=True).data   
 
 class KriteriaSerializers(serializers.ModelSerializer):
-  poin_penilaian_detail = serializers.SerializerMethodField(read_only=True)
+  # poin_penilaian_detail = serializers.SerializerMethodField(read_only=True)
 
   class Meta:
       model = models.Kriteria
       fields = '__all__'
   
-  def get_poin_penilaian_detail(self, obj):
-    poinPenilaianByKriteria = models.PoinPenilaian.objects.filter(kriteriaId=obj)
+  # def get_poin_penilaian_detail(self, obj):
+  #   poinPenilaianByKriteria = models.PoinPenilaian.objects.filter(kriteriaId=obj)
 
-    return PoinPenilaianSerializers(poinPenilaianByKriteria, many=True).data
+  #   return PoinPenilaianSerializers(poinPenilaianByKriteria, many=True).data
 
 class FileFolderSerializers(serializers.ModelSerializer):
   kriteria_detail = KriteriaSerializers(source='kriteria', many=False, read_only=True)

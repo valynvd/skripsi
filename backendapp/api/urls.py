@@ -80,6 +80,8 @@ urlpatterns = [
   # publikasi karya
   path('publikasikaryabydosen/<dosenId>/', views.PublikasiKaryaByDosenViewSet.as_view()),
   path('publikasikaryabyprodi/<prodiId>/', views.PublikasiKaryaByProdiViewSet.as_view()),
+  # matriks penilaian
+  path('matrikspenilaianbyprodi/<prodiId>/', views_akreditasi.MatriksPenilaianByProdi),
   # portofolio perkuliahan
   path('portofolioperkuliahanbydosen/<dosenId>/', views.PortofolioPerkuliahanByDosenViewSet.as_view()),
   #  documentation
