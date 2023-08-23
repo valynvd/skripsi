@@ -7,7 +7,6 @@ const Home = () => {
   const [counter, setCounter] = useState({});
 
   const { data, refetch: kriteriaRefetch } = useMatriksPenilaianByProdi(1);
-  console.log(data);
 
   return (
     <>

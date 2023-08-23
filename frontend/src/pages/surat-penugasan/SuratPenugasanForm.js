@@ -193,7 +193,6 @@ const SuratPenugasanForm = () => {
                     dokumenPembelajaranFormData,
                     {
                       onError: (err) => {
-                        console.log(err);
                         return 'err';
                       },
                     }

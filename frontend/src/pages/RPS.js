@@ -42,7 +42,6 @@ const RPS = () => {
   } = useAuth();
 
   useEffect(() => {
-    console.log(dokumenPembelajaranData);
   }, [dokumenPembelajaranData]);
 
   const {
@@ -63,7 +62,6 @@ const RPS = () => {
   }, [dokumenPembelajaranData, updatedDokumenPembelajaranData]);
 
   // useEffect(() => {
-  //   console.log(subjectMatter);
   // }, [subjectMatter]);
   //
 

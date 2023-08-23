@@ -62,7 +62,6 @@ const PenugasanPengabdianTable = ({
       Header: 'Judul',
       accessor: 'title',
       Cell: ({ value }) => {
-        console.log(value);
         return <p>testingk</p>;
       },
     },
@@ -128,7 +127,6 @@ const PenugasanPengabdianTable = ({
   const memoData = useMemo(() => {
     let filteredData = [...data];
     if (prodiWatch) {
-      console.log(filteredData);
       filteredData = filteredData.filter(
         (item) => item.dosen_pengampu_detail?.prodi === prodiWatch
       );

@@ -12,7 +12,6 @@ const KonsolChatbotLogin = () => {
 
     useEffect(() => {
         socket.on('qr', (qrstring) => {
-            console.log(qrstring)
             setQrs((qrstring.qrstring));
         });
         socket.on('status', (connected) => {

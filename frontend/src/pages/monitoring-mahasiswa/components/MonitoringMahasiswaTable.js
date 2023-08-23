@@ -144,8 +144,6 @@ const MonitoringMahasiswaTable = ({
     const memoData = useMemo(() => {
         let filteredData = [...data];
         if (prodiWatch) {
-            console.log(prodiWatch)
-            console.log(filteredData)
             filteredData = filteredData.filter(
               (item) =>
                 item.prodi === prodiWatch

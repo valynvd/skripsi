@@ -22,7 +22,6 @@ ChartJS.register(
 
 const TableSimulate = ({ simulateData, radarData }) => {
   useEffect(() => {
-    console.log(simulateData);
   }, [simulateData]);
 
   const TableTh = ({ children, className }) => {

@@ -17,7 +17,6 @@ const PenugasanPengajaran = () => {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    console.log(response?.data);
   }, [response]);
 
   return (

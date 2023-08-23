@@ -41,9 +41,7 @@ const ValidasiMahasiswaByNIM = () => {
   
   useEffect(()=> {
     if(isLoading == false) {
-      console.log(responseData.data)
       setTranskripData(responseData.data);
-      console.log(transkripData);
     }
   }, [isLoading])
 
@@ -154,8 +152,6 @@ const ValidasiMahasiswaByNIM = () => {
       nilai_ipk: ipkData,
     })
 
-    console.log(status)
-
     setReadyAudit(true)
     setValidasi(dataValidasi);
 
@@ -175,14 +171,13 @@ const ValidasiMahasiswaByNIM = () => {
       try {
         postValidasiMahasiswa(validasiFormData, {
           onSuccess: () => {
-            console.log('Data submitted successfully for index:', index);
           },
           onError: (error) => {
-            console.error('Error submitting data for index:', index, error);
+            console.error(error)
           },
         });
       } catch (error) {
-        console.error('Error while processing data:', error);
+        console.error(error)
       }
     }
   }, [validasi])
