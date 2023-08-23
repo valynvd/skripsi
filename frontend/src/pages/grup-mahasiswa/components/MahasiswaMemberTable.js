@@ -47,7 +47,6 @@ const MahasiswaMemberTable = ({
                   row: { original: value },
                 },
               }) => {
-                console.log(value)
                 return (
                   <div className="flex flex-row space-x-2">
                     <EditIcon

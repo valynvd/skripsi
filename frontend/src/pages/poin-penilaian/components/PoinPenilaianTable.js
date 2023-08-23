@@ -123,7 +123,6 @@ const PenugasanPenelitianTable = ({
   const memoData = useMemo(() => {
     let filteredData = [...data];
     if (prodiWatch) {
-      console.log(filteredData);
       filteredData = filteredData.filter(
         (item) => item.prodi_detail?.id === prodiWatch
       );

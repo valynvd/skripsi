@@ -94,8 +94,6 @@ const SuratPenugasanForm = () => {
     return <td className="border border-black p-3">{children}</td>;
   };
 
-  console.log(dataPenugasanPengajaran);
-
   return (
     <>
       <section id="surat-penugasan-form" className="section-container">

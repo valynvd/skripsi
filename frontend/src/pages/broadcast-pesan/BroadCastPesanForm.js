@@ -63,7 +63,6 @@ const BroadCastPesanForm = () => {
 
     useEffect(() => {
         socket.on('sendsuccess', (nama) => {
-            console.log(nama)
             setNama((nama))
         })
         socket.on('percen', (percent) => {
@@ -89,7 +88,6 @@ const BroadCastPesanForm = () => {
     }, [grupselected])
 
     useEffect(() => {
-        console.log(phonenumbers)
     }, [phonenumbers])
 
     const handleSubmitBroadcast = (event) => {

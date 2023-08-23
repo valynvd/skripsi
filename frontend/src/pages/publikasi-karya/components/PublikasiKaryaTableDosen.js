@@ -110,7 +110,6 @@ const PublikasiKaryaTableDosen = ({
   const memoData = useMemo(() => {
     let filteredData = [...data];
     if (prodiWatch) {
-      console.log(filteredData);
       filteredData = filteredData.filter(
         (item) => item.dosen_pengampu_detail?.prodi === prodiWatch
       );

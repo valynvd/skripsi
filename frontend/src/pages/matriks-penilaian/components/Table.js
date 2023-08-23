@@ -67,8 +67,6 @@ const Table = ({
         selectedPoinPenilaian?.id
       );
 
-      console.log(counter[pointId].dokumenPendukung);
-
       counter[pointId].dokumenPendukung.forEach((item) => {
         if (item.document_type === 'file') {
           riwayatPoinPenilaianFormData.append(

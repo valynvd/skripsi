@@ -16,7 +16,6 @@ const User = () => {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    console.log(response?.data);
   }, [response]);
 
   return (

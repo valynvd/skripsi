@@ -45,7 +45,6 @@ const MonitoringMahasiswaImportExcel = () => {
     const excelfile = xlsx.read(data);
     const excelsheet = excelfile.Sheets[excelfile.SheetNames[0]];
     const exceljson = xlsx.utils.sheet_to_json(excelsheet);
-    console.log(exceljson)
 
     setExcelData(exceljson);
   };
@@ -58,7 +57,6 @@ const MonitoringMahasiswaImportExcel = () => {
 
   const onSubmit = async () => {
     if (excelData.length === 0) {
-      console.log('No data to submit');
       return;
     }
 
@@ -78,11 +76,8 @@ const MonitoringMahasiswaImportExcel = () => {
         await postMonitoringMahasiswa(monitoringMahasiswaFormData, {
           onSuccess: (res) => {
             getResponseData.push(res.data);
-            console.log('Data submitted successfully for index:', index);
-            
           },
         });
-        
         await delay(200);
       } catch (err) {
         getResponseData.push(err.response.data);
@@ -96,8 +91,6 @@ const MonitoringMahasiswaImportExcel = () => {
 
     setResponseData(getResponseData);
   };
-
-  console.log(responseData);
 
   const handleToClose = () => {
     setOpen(false);

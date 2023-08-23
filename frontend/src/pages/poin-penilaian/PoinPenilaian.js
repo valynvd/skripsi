@@ -26,7 +26,6 @@ const PoinPenilaian = () => {
   const { mutate: deletePoinPenilaian } = useDeletePoinPenilaian();
 
   useEffect(() => {
-    console.log(poinPenilaianData);
   }, [poinPenilaianData]);
 
   return (

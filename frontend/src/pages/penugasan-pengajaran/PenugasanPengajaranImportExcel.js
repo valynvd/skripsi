@@ -45,7 +45,6 @@ const PenugasanPengajaranImportExcel = () => {
     const excelfile = xlsx.read(data);
     const excelsheet = excelfile.Sheets[excelfile.SheetNames[0]];
     const exceljson = xlsx.utils.sheet_to_json(excelsheet);
-    console.log(exceljson)
 
     setExcelData(exceljson);
   };
@@ -58,7 +57,6 @@ const PenugasanPengajaranImportExcel = () => {
 
   const onSubmit = async () => {
     if (excelData.length === 0) {
-      console.log('No data to submit');
       return;
     }
 
@@ -75,7 +73,6 @@ const PenugasanPengajaranImportExcel = () => {
       try {
         await postPenugasanPengajaranByExcel(penugasanPengajaranFormData, {
           onSuccess: (res) => {
-            console.log('Data submitted successfully for index:', index);
           },
         });
         
@@ -92,8 +89,6 @@ const PenugasanPengajaranImportExcel = () => {
 
     setResponseData(getResponseData);
   };
-
-  console.log(responseData);
 
   const handleToClose = () => {
     setOpen(false);

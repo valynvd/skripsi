@@ -60,7 +60,6 @@ const GrupMahasiswaImportExcel = () => {
 
   const onSubmit = async () => {
     if (excelData.length === 0) {
-      console.log('No data to submit');
       return;
     }
 
@@ -80,7 +79,6 @@ const GrupMahasiswaImportExcel = () => {
         await postGrupMahasiswa(grupMahasiswaFormData, {
           onSuccess: (res) => {
             getResponseData.push(res.data);
-            console.log('Data submitted successfully for index:', index);
             const newProgress = ((index + 1) / excelData.length) * 100;
             if (newProgress == 100.0) {
               setOpen(true);
@@ -96,8 +94,6 @@ const GrupMahasiswaImportExcel = () => {
 
     setResponseData(getResponseData);
   };
-
-  console.log(responseData);
 
   const handleToClose = () => {
     setOpen(false);

@@ -14,7 +14,6 @@ const Kriteria = () => {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    console.log(response?.data);
   }, [response]);
 
   return (
