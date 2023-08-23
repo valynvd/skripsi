@@ -84,6 +84,7 @@ urlpatterns = [
   path('publikasikaryabyprodi/<prodiId>/', views.PublikasiKaryaByProdiViewSet.as_view()),
   # matriks penilaian
   path('matrikspenilaianbyprodi/<prodiId>/', views_akreditasi.MatriksPenilaianByProdi),
+  path('kriteriabydokumenakreditasiandsimulasimatriks/<dokumenAkreditasiId>/<simulasiMatriksId>/', views_akreditasi.KriteriaByDokumenAkreditasiAndSimulasiMatriks),
   path('kriteriabydokumenakreditasi/<dokumenAkreditasiId>/', views_akreditasi.KriteriaByDokumenAkreditasiViewSet.as_view()),
   # portofolio perkuliahan
   path('portofolioperkuliahanbydosen/<dosenId>/', views.PortofolioPerkuliahanByDosenViewSet.as_view()),

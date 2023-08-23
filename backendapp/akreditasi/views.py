@@ -146,10 +146,23 @@ class KriteriaByDokumenAkreditasiViewSet(generics.ListAPIView):
         serializer = self.get_serializer(kriteriaByDokumenAkreditasi, many=True)
 
         return Response(serializer.data)
-    
+
     def get_permissions(self):
         if self.request.method == 'GET':
             self.permission_classes = [AllowAny]
         else:
             self.permission_classes = [IsAuthenticated]
         return super(self.__class__, self).get_permissions()
+
+
+@api_view(('GET',))
+def KriteriaByDokumenAkreditasiAndSimulasiMatriks(request, dokumenAkreditasiId, simulasiMatriksId):
+    kriteriaByDokumenAkreditasi = serializers.KriteriaSerializers(models.Kriteria.objects.filter(dokumenAkreditasiId__id=dokumenAkreditasiId), many=True).data
+
+    for item in kriteriaByDokumenAkreditasi:
+        for item2 in item['poin_penilaian_detail']:
+            riwayatPoinPenilaianByPoinPenilaianAndSimulasiMatriks = models.RiwayatPoinPenilaian.objects.filter(poinPenilaianId__id=item2['id'], simulasiMatriksId__id=simulasiMatriksId)
+
+            item2['riwayat_poin_penilaian_detail'] = serializers.RiwayatPoinPenilaianSerializers(riwayatPoinPenilaianByPoinPenilaianAndSimulasiMatriks, many=True).data
+
+    return Response(kriteriaByDokumenAkreditasi)
