@@ -42,6 +42,12 @@ const PenugasanPengajaran = () => {
         >
           Buat Penugasan Pengajaran
         </PrimaryButton>
+        <PrimaryButton
+          icon={<BiPlusCircle size={22} />}
+          link="/data-master/penugasan-pengajaran/import"
+        >
+          Import Excel
+        </PrimaryButton>
       </div>
       <div className="mt-8 w-full rounded-t-lg">
         <PenugasanPengajaranTable

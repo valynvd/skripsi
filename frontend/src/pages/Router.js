@@ -64,6 +64,8 @@ import PoinPenilaian from './poin-penilaian/PoinPenilaian';
 import PoinPenilaianForm from './poin-penilaian/PoinPenilaianForm';
 import DokumenAkreditasi from './dokumen-akreditasi/DokumenAkreditasi';
 import DokumenAkreditasiForm from './dokumen-akreditasi/DokumenAkreditasiForm';
+// import MatriksPenilaianAdmin from './matriks-penilaian/MatriksPenilaianAdmin';
+import PenugasanPengajaranImportExcel from './penugasan-pengajaran/PenugasanPengajaranImportExcel';
 
 const Router = () => {
   return (
@@ -154,6 +156,7 @@ const Router = () => {
               </Route>
               <Route path="penugasan-pengajaran">
                 <Route index element={<PenugasanPengajaran />} />
+                <Route path="import" element={<PenugasanPengajaranImportExcel />} />
                 <Route path="form" element={<PenugasanPengajaranForm />} />
                 <Route path=":id" element={<PenugasanPengajaranForm />} />
               </Route>
