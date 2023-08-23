@@ -62,13 +62,10 @@ import Kriteria from './kriteria/Kriteria';
 import KriteriaForm from './kriteria/KriteriaForm';
 import PoinPenilaian from './poin-penilaian/PoinPenilaian';
 import PoinPenilaianForm from './poin-penilaian/PoinPenilaianForm';
-<<<<<<< Updated upstream
 import DokumenAkreditasi from './dokumen-akreditasi/DokumenAkreditasi';
 import DokumenAkreditasiForm from './dokumen-akreditasi/DokumenAkreditasiForm';
-=======
-import MatriksPenilaianAdmin from './matriks-penilaian/MatriksPenilaianAdmin';
+// import MatriksPenilaianAdmin from './matriks-penilaian/MatriksPenilaianAdmin';
 import PenugasanPengajaranImportExcel from './penugasan-pengajaran/PenugasanPengajaranImportExcel';
->>>>>>> Stashed changes
 
 const Router = () => {
   return (
