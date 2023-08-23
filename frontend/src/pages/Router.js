@@ -66,6 +66,8 @@ import DokumenAkreditasi from './dokumen-akreditasi/DokumenAkreditasi';
 import DokumenAkreditasiForm from './dokumen-akreditasi/DokumenAkreditasiForm';
 // import MatriksPenilaianAdmin from './matriks-penilaian/MatriksPenilaianAdmin';
 import PenugasanPengajaranImportExcel from './penugasan-pengajaran/PenugasanPengajaranImportExcel';
+import SimulasiMatriks from './simulasi-matriks/SimulasiMatriks';
+import SimulasiMatriksForm from './simulasi-matriks/SimulasiMatriksForm';
 
 const Router = () => {
   return (
@@ -156,7 +158,10 @@ const Router = () => {
               </Route>
               <Route path="penugasan-pengajaran">
                 <Route index element={<PenugasanPengajaran />} />
-                <Route path="import" element={<PenugasanPengajaranImportExcel />} />
+                <Route
+                  path="import"
+                  element={<PenugasanPengajaranImportExcel />}
+                />
                 <Route path="form" element={<PenugasanPengajaranForm />} />
                 <Route path=":id" element={<PenugasanPengajaranForm />} />
               </Route>
@@ -226,6 +231,11 @@ const Router = () => {
               <Route index element={<DokumenAkreditasi />} />
               <Route path="form" element={<DokumenAkreditasiForm />} />
               <Route path=":id" element={<DokumenAkreditasiForm />} />
+            </Route>
+            <Route path="simulasi-matriks">
+              <Route index element={<SimulasiMatriks />} />
+              <Route path="form" element={<SimulasiMatriksForm />} />
+              <Route path=":id" element={<SimulasiMatriksForm />} />
             </Route>
             {/* <Route path="matriks-penilaian">
               <Route index element={<MatriksPenilaian />} />

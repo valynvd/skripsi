@@ -2,57 +2,55 @@
 import React, { useState } from 'react';
 import { PrimaryButton } from '../../components/PrimaryButton';
 import { BiPlusCircle } from 'react-icons/bi';
-import DokumenAkreditasiTable from './components/DokumenAkreditasiTable';
+import SimulasiMatriksTable from './components/SimulasiMatriksTable';
 import { useCheckRole } from '../../hooks/useCheckRole';
 import {
-  useDeleteDokumenAkreditasi,
-  useDokumenAkreditasiData,
-} from '../../hooks/useDokumenAkreditasi';
+  useDeleteSimulasiMatriks,
+  useSimulasiMatriksData,
+} from '../../hooks/useSimulasiMatriks';
 import ModalDelete from '../../components/ModalDelete';
 
-const DokumenAkreditasi = () => {
+const SimulasiMatriks = () => {
   const {
-    data: dokumenAkreditasiData,
-    isLoading: isLoadingDokumenAkreditasiData,
-    refetch: dokumenAkreditasiDataRefetch,
-  } = useDokumenAkreditasiData({
-    select: (response) => {
-      return response?.data;
-    },
+    data: simulasiMatriksData,
+    isLoading: isLoadingSimulasiMatriksData,
+    refetch: simulasiMatriksDataRefetch,
+  } = useSimulasiMatriksData({
+    select: (response) => response?.data,
   });
 
-  const { mutate: deleteDokumenAkreditasi } = useDeleteDokumenAkreditasi();
+  const { mutate: deleteSimulasiMatriks } = useDeleteSimulasiMatriks();
   const [openModalDelete, setOpenModalDelete] = useState(false);
   const [selectedItem, setSelectedItem] = useState();
 
   return (
-    <section id="dokumen-akreditasi" className="section-container">
+    <section id="simulasi-matriks" className="section-container">
       <ModalDelete
-        title="Dokumen Akreditasi"
+        title="Simulasi Matriks"
         isOpen={openModalDelete}
         setIsOpen={setOpenModalDelete}
         deleteFunc={() =>
-          deleteDokumenAkreditasi(selectedItem, {
+          deleteSimulasiMatriks(selectedItem, {
             onSuccess: () => {
-              dokumenAkreditasiDataRefetch();
+              simulasiMatriksDataRefetch();
               setOpenModalDelete(false);
             },
           })
         }
       />
       <div className="flex flex-col items-start lg:justify-between lg:items-center lg:flex-row space-y-2 lg:space-y-0">
-        <p className="font-semibold text-lg">Daftar Dokumen Akreditasi</p>
+        <p className="font-semibold text-lg">Daftar Simulasi Matriks</p>
         <PrimaryButton
           icon={<BiPlusCircle size={22} />}
-          link="/akreditasi/dokumen-akreditasi/form"
+          link="/akreditasi/simulasi-matriks/form"
         >
-          Buat Dokumen Akreditasi
+          Buat Simulasi Matriks
         </PrimaryButton>
       </div>
       <div className="mt-8 w-full rounded-t-lg">
-        <DokumenAkreditasiTable
-          loading={isLoadingDokumenAkreditasiData}
-          data={dokumenAkreditasiData ?? []}
+        <SimulasiMatriksTable
+          loading={isLoadingSimulasiMatriksData}
+          data={simulasiMatriksData ?? []}
           setSelectedItem={setSelectedItem}
           setOpenModalDelete={setOpenModalDelete}
         />
@@ -61,4 +59,4 @@ const DokumenAkreditasi = () => {
   );
 };
 
-export default DokumenAkreditasi;
+export default SimulasiMatriks;

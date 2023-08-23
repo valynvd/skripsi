@@ -35,6 +35,15 @@ const getKriteria = () => {
   });
 };
 
+const getKriteriaByDokumenAkreditasiAndSimulasiMatriks = (
+  dokumenAkreditasiId,
+  simulasiMatriksId
+) => {
+  return request({
+    url: `/api-stem/kriteriabydokumenakreditasiandsimulasimatriks/${dokumenAkreditasiId}/${simulasiMatriksId}/`,
+  });
+};
+
 const getKriteriaByDokumenAkreditasi = (id) => {
   return request({
     url: `/api-stem/kriteriabydokumenakreditasi/${id}/`,
@@ -52,6 +61,28 @@ export const useKriteriaData = (options) => {
     refetchOnWindowFocus: false,
     ...options,
   });
+};
+
+export const useKriteriaByDokumenAkreditasiAndSimulasiMatriks = (
+  dokumenAkreditasiId,
+  simulasiMatriksId,
+  options
+) => {
+  return useQuery(
+    [
+      'kriteria-by-dokumen-akreditasi',
+      { dokumenAkreditasiId } + ' ' + { simulasiMatriksId },
+    ],
+    () =>
+      getKriteriaByDokumenAkreditasiAndSimulasiMatriks(
+        dokumenAkreditasiId,
+        simulasiMatriksId
+      ),
+    {
+      refetchOnWindowFocus: false,
+      ...options,
+    }
+  );
 };
 
 export const useKriteriaByDokumenAkreditasi = (id, options) => {

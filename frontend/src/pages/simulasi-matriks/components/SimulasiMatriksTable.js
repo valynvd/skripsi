@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { DeleteIcon, EditIcon } from '../../../components/IconButton';
 import { useCheckRole } from '../../../hooks/useCheckRole';
 
-const DokumenAkreditasiTable = ({
+const SimulasiMatriksTable = ({
   setOpenModalDelete,
   setSelectedItem,
   ...options
@@ -14,8 +14,16 @@ const DokumenAkreditasiTable = ({
 
   const columns = [
     {
-      Header: 'Nama',
-      accessor: 'name',
+      Header: 'Dibuat Tanggal',
+      accessor: 'created_at',
+    },
+    {
+      Header: 'Diperbarui Tanggal',
+      accessor: 'updated_at',
+    },
+    {
+      Header: 'Judul',
+      accessor: 'title',
     },
     {
       Header: 'Aksi',
@@ -28,7 +36,7 @@ const DokumenAkreditasiTable = ({
           <div className="flex flex-row space-x-2">
             <EditIcon
               onClick={() => {
-                navigate(`/akreditasi/dokumen-akreditasi/${value.id}`, {
+                navigate(`/akreditasi/simulasi-matriks/${value.id}`, {
                   state: value,
                 });
               }}
@@ -48,4 +56,4 @@ const DokumenAkreditasiTable = ({
   return <Table {...options} userRole={userRole} columns={columns} />;
 };
 
-export default DokumenAkreditasiTable;
+export default SimulasiMatriksTable;
