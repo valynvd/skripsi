@@ -319,6 +319,51 @@ class PenugasanPengajaranViewSet(viewsets.ModelViewSet):
             self.permission_classes = [IsAuthenticated]
         return super(self.__class__, self).get_permissions()
 
+class PenugasanPengajaranByExcelViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.PenugasanPengajaranSerializers
+    queryset = models.PenugasanPengajaran.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        convert_to = json.dumps(request.data, indent=4)
+        data_dict = json.loads(convert_to)
+        print(data_dict)
+
+        subject = data_dict.get('Subject')
+        subject_short = data_dict.get('Subject Short')
+        graded_credits = data_dict.get('Graded Credits')
+        surat_penugasan = data_dict.get('Surat Penugasan')
+
+        matakuliah, created= models.MataKuliah.objects.get_or_create(name=subject, kode=subject_short, sks_total=graded_credits)
+        
+        suratpenugasan, created= models.SuratPenugasan.objects.get_or_create(judul=surat_penugasan)
+
+        nama_dosen = data_dict.get('Name_1')
+        nama_dosen_split = str(nama_dosen).split("/")
+        inisial = data_dict.get('Initial')
+        inisial_split = str(inisial).split("/")
+        nik_dosen = data_dict.get('NIK')
+        nik_dosen_split = str(nik_dosen).split("/")
+
+        for i in range(len(inisial_split)): 
+            dosen, created = models.Dosen.objects.get_or_create(
+                name=nama_dosen_split[i], nik=nik_dosen_split[i], inisial=inisial_split[i]  
+            )
+            penugasan_pengajaran, created = models.PenugasanPengajaran.objects.get_or_create(
+                sks_realisasi=graded_credits, dosen_pengampu=dosen, mata_kuliah=matakuliah, surat_penugasan=suratpenugasan
+            )
+
+        serializer = self.get_serializer(instance=penugasan_pengajaran, many=True)
+        headers = self.get_success_headers(serializer.data)
+        return Response({'nama_dosen': nama_dosen, 'nik_dosen': nik_dosen, 'mata_kuliah': subject, 'kode_mk': subject_short, 'subject': subject, 'sks': graded_credits, 'surat_penugasan': surat_penugasan, 'error': False }, status=status.HTTP_201_CREATED, headers=headers)
+        
+
+    def get_permissions(self):
+        if self.action in ['list','retrieve']:
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+
 class DokumenPembelajaranViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.DokumenPembelajaranSerializers
     queryset = models.DokumenPembelajaran.objects.all()
