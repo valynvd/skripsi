@@ -326,7 +326,6 @@ class PenugasanPengajaranByExcelViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         convert_to = json.dumps(request.data, indent=4)
         data_dict = json.loads(convert_to)
-        print(data_dict)
 
         subject = data_dict.get('Subject')
         subject_short = data_dict.get('Subject Short')
@@ -337,7 +336,7 @@ class PenugasanPengajaranByExcelViewSet(viewsets.ModelViewSet):
         
         suratpenugasan, created= models.SuratPenugasan.objects.get_or_create(judul=surat_penugasan)
 
-        nama_dosen = data_dict.get('Name_1')
+        nama_dosen = data_dict.get('Name')
         nama_dosen_split = str(nama_dosen).split("/")
         inisial = data_dict.get('Initial')
         inisial_split = str(inisial).split("/")
@@ -345,11 +344,12 @@ class PenugasanPengajaranByExcelViewSet(viewsets.ModelViewSet):
         nik_dosen_split = str(nik_dosen).split("/")
 
         for i in range(len(inisial_split)): 
-            dosen, created = models.Dosen.objects.get_or_create(
+            dosen_fm, created = models.Dosen.objects.get_or_create(
                 name=nama_dosen_split[i], nik=nik_dosen_split[i], inisial=inisial_split[i]  
             )
+            print(dosen_fm)
             penugasan_pengajaran, created = models.PenugasanPengajaran.objects.get_or_create(
-                sks_realisasi=graded_credits, dosen_pengampu=dosen, mata_kuliah=matakuliah, surat_penugasan=suratpenugasan
+                sks_realisasi=graded_credits, dosen_pengampu=dosen_fm, mata_kuliah=matakuliah, surat_penugasan=suratpenugasan
             )
 
         serializer = self.get_serializer(instance=penugasan_pengajaran, many=True)
