@@ -78,6 +78,12 @@ class RiwayatPoinPenilaian(models.Model):
         blank=True,
         null=True
 	)
+    simulasiMatriksId = models.ForeignKey(
+        SimulasiMatriks,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True
+	)
     score = models.FloatField(default=0)
     dokumenPendukungSuratPenugasan = models.ManyToManyField(SuratPenugasan, blank=True)
     dokumenPendukungFile = models.ManyToManyField(File, blank=True)
