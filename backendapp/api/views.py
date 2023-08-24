@@ -343,7 +343,7 @@ class PenugasanPengajaranByExcelViewSet(viewsets.ModelViewSet):
         nik_dosen = data_dict.get('NIK')
         nik_dosen_split = str(nik_dosen).split("/")
 
-        for i in range(len(inisial_split)): 
+        for i in range(len(inisial_split)-1): 
             dosen_fm, created = models.Dosen.objects.get_or_create(
                 name=nama_dosen_split[i], nik=nik_dosen_split[i], inisial=inisial_split[i]  
             )
@@ -354,7 +354,7 @@ class PenugasanPengajaranByExcelViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(instance=penugasan_pengajaran, many=True)
         headers = self.get_success_headers(serializer.data)
-        return Response({'nama_dosen': nama_dosen, 'nik_dosen': nik_dosen, 'mata_kuliah': subject, 'kode_mk': subject_short, 'subject': subject, 'sks': graded_credits, 'surat_penugasan': surat_penugasan, 'error': False }, status=status.HTTP_201_CREATED, headers=headers)
+        return Response({'nama_dosen': nama_dosen, 'nik_dosen': nik_dosen, 'inisial_dosen':inisial,  'mata_kuliah': subject, 'kode_mk': subject_short, 'sks': graded_credits, 'surat_penugasan': surat_penugasan, 'error': False }, status=status.HTTP_201_CREATED, headers=headers)
         
 
     def get_permissions(self):
@@ -688,11 +688,7 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
         angkatan = data_dict.get('Angkatan')
 
         # get subject
-        subject = data_dict.get('Subject')
-        subject_short = data_dict.get('Subject Short')
-        graded_credits = data_dict.get('Graded Credits')
-        academic_year = data_dict.get('Academic Year')
-        academic_session = data_dict.get('Academic Session')
+       
 
         # get credit
         earned_credits = data_dict.get('Earned Credits')
@@ -714,30 +710,33 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
         elif name_prody == "Food Technology" :
             kode = "FBT"
 
-        # programstudi, created = models.ProgramStudi.objects.get_or_create(name=name_prody, kode_sap=program_study, kode=kode)
-        programstudi = models.ProgramStudi.objects.filter(name=name_prody, kode_sap=program_study)
+        programstudi, created = models.ProgramStudi.objects.get_or_create(name=name_prody, kode_sap=program_study, kode=kode)
+        # programstudi = models.ProgramStudi.objects.filter(name=name_prody, kode_sap=program_study)
 
-        if(len(programstudi) == 0):
-            return Response({'nama_mahasiswa': nama_mahasiswa, 'nim_mahasiswa': nim_mahasiswa, 'name_prody': name_prody, 'angkatan': angkatan, 'subject': subject, 'earned_credits': earned_credits, 'grade_symbol': grade_symbol, 'error': True, 'error_message': 'Jurusan tidak ditemukan' }, status=status.HTTP_404_NOT_FOUND)
+
+        # if(len(programstudi) == 0):
+        #     return Response({'nama_mahasiswa': nama_mahasiswa, 'nim_mahasiswa': nim_mahasiswa, 'name_prody': name_prody, 'angkatan': angkatan, 'subject': subject, 'earned_credits': earned_credits, 'grade_symbol': grade_symbol, 'error': True, 'error_message': 'Jurusan tidak ditemukan' }, status=status.HTTP_404_NOT_FOUND)
 
 
         # # Check if DataMahasiswa already exists
-        datamahasiswa, created= models.DataMahasiswa.objects.get_or_create(nama=nama_mahasiswa, nim=nim_mahasiswa, angkatan=angkatan, prodi=programstudi[0])
+        datamahasiswa, created= models.DataMahasiswa.objects.get_or_create(nama=nama_mahasiswa, nim=nim_mahasiswa, angkatan=angkatan, prodi=programstudi)
         
         # # Check if Dosen already exists
-        nama_dosen = data_dict.get('Name_1')
-        nama_dosen_split = str(nama_dosen).split("/")
-        inisial = data_dict.get('Initial')
-        inisial_split = str(inisial).split("/")
-        nik_dosen = data_dict.get('NIK')
-        nik_dosen_split = str(nik_dosen).split("/")
-        nidn_dosen = data_dict.get('NIDN')
-        nidn_dosen_split = str(nidn_dosen).split("/")
+        # nama_dosen = data_dict.get('Name_1')
+        # nama_dosen_split = str(nama_dosen).split("/")
+        # inisial = data_dict.get('Initial')
+        # inisial_split = str(inisial).split("/")
+        # nik_dosen = data_dict.get('NIK')
+        # nik_dosen_split = str(nik_dosen).split("/")
+        # nidn_dosen = data_dict.get('NIDN')
+        # nidn_dosen_split = str(nidn_dosen).split("/")
 
-        cekPenugasanPengajaran = models.PenugasanPengajaran.objects.filter(dosen_pengampu__nik__in=nik_dosen_split, mata_kuliah__kode=subject_short)
 
-        if(len(cekPenugasanPengajaran) == 0):
-            return Response({'nama_mahasiswa': nama_mahasiswa, 'nim_mahasiswa': nim_mahasiswa, 'name_prody': name_prody, 'angkatan': angkatan, 'subject': subject, 'earned_credits': earned_credits, 'grade_symbol': grade_symbol, 'error': True, 'error_message': 'Penugasan Pengajaran tidak ditemukan' }, status=status.HTTP_404_NOT_FOUND)
+
+        # cekPenugasanPengajaran = models.PenugasanPengajaran.objects.filter(dosen_pengampu__nik__in=nik_dosen_split, mata_kuliah__kode=subject_short)
+
+        # if(len(cekPenugasanPengajaran) == 0):
+        #     return Response({'nama_mahasiswa': nama_mahasiswa, 'nim_mahasiswa': nim_mahasiswa, 'name_prody': name_prody, 'angkatan': angkatan, 'subject': subject, 'earned_credits': earned_credits, 'grade_symbol': grade_symbol, 'error': True, 'error_message': 'Penugasan Pengajaran tidak ditemukan' }, status=status.HTTP_404_NOT_FOUND)
 
         # if (len(inisial_split) >= 1) :
         #     for i in range(len(nama_dosen_split)):
@@ -800,9 +799,16 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
         #     sks_total = graded_credits,
         #     # semester = session
         # )
-        matakuliah = models.MataKuliah.objects.get(
+        subject = data_dict.get('Subject')
+        subject_short = data_dict.get('Subject Short')
+        graded_credits = data_dict.get('Graded Credits')
+        academic_year = data_dict.get('Academic Year')
+        academic_session = data_dict.get('Academic Session')
+
+        matakuliah, created = models.MataKuliah.objects.get_or_create(
             name = subject,
             kode = subject_short,
+            sks_total = graded_credits
         )
 
         st_object_type = data_dict.get('Object type')
@@ -829,7 +835,7 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
             appraisal_type = appraisal_type,
             sm_object_type = sm_object_type,
             sm_objid = sm_objid,
-            # mata_kuliah = matakuliah,
+            mata_kuliah = matakuliah,
             event_package_objid = event_package_objid,
             event_package_short = event_package_short,
             event_package_text = event_package_text,
@@ -837,13 +843,11 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
             grade_symbol = grade_symbol,
             earned_credits = earned_credits,
             credit_type = credit_type,
-            prodi = programstudi[0],
+            prodi = programstudi,
             mentor = mentor,
             academic_session = academic_session,
             academic_year = academic_year,
         )
-
-        monitoring_mahasiswa.penugasan_pengajaran.set(cekPenugasanPengajaran)
 
         try :
             get_transkrip_nilai = models.TranskripNilai.objects.get(
@@ -894,14 +898,14 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
                 mata_kuliah = matakuliah,
                 earned_credits = earned_credits
             )
-            # serializer = self.get_serializer(instance=transkrip_nilai)
-            # headers = self.get_success_headers(serializer.data)
-            # return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+            serializer = self.get_serializer(instance=transkrip_nilai)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
+        # # serializer = self.get_serializer(instance=monitoring_mahasiswa)
         # serializer = self.get_serializer(instance=monitoring_mahasiswa)
-        serializer = self.get_serializer(instance=monitoring_mahasiswa)
-        headers = self.get_success_headers(serializer.data)
-        return Response({'nama_mahasiswa': nama_mahasiswa, 'nim_mahasiswa': nim_mahasiswa, 'name_prody': name_prody, 'angkatan': angkatan, 'subject': subject, 'earned_credits': earned_credits, 'grade_symbol': grade_symbol, 'error': False }, status=status.HTTP_201_CREATED, headers=headers)
+        # # headers = self.get_success_headers(serializer.data)
+        # return Response(serializer.data, status=status.HTTP_200_OK)
 
     def get_permissions(self):
         if self.action in ['list','retrieve']:
