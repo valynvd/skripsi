@@ -11,20 +11,24 @@ import { PrimaryButton } from '../../../components/PrimaryButton';
 const AddModal = ({
   setPointId,
   pointId,
-  setDocumentLoading,
-  kriteriaRefetch,
   openModal,
   setOpenModal,
   selectedDokumenPendukung,
   suratPenugasanData,
   selectedPoinPenilaian,
-  semesterName,
   setSelectedDokumenPendukung,
   patchPoinPenilaian,
-  counter,
-  setCounter,
+  answerdata,
+  setAnswerData,
   dokumenPendukungList,
 }) => {
+  const semesterName = {
+    Odd: 'Ganjil',
+    'Odd Short': 'Pendek Ganjil',
+    Even: 'Genap',
+    'Even Short': 'Pendek Genap',
+  };
+
   return (
     <Transition show={openModal} as={Fragment}>
       <Dialog
@@ -90,16 +94,16 @@ const AddModal = ({
                     (() => {
                       let filteredDokumenPendukung = [];
 
-                      if (counter && selectedPoinPenilaian) {
+                      if (answerdata && selectedPoinPenilaian) {
                         if (
-                          counter[selectedPoinPenilaian.id].dokumenPendukung
+                          answerdata[selectedPoinPenilaian.id].dokumenPendukung
                             .length === 0
                         ) {
                           return dokumenPendukungList;
                         } else {
                           dokumenPendukungList.forEach((item) => {
                             let found = false;
-                            counter[
+                            answerdata[
                               selectedPoinPenilaian.id
                             ].dokumenPendukung.every((item2) => {
                               if (item.value === item2.value) {
@@ -112,7 +116,7 @@ const AddModal = ({
                               filteredDokumenPendukung.push(item);
                             }
                           });
-                          // counter[
+                          // answerdata[
                           //   selectedPoinPenilaian.id
                           // ].dokumenPendukung.forEach((item) => {
                           //   dokumenPendukungList.forEach((item2) => {
@@ -128,7 +132,7 @@ const AddModal = ({
                     // suratPenugasanData && selectedPoinPenilaian
                     //   ? suratPenugasanData.filter(
                     //       (item) =>
-                    //         !counter[
+                    //         !answerdata[
                     //           selectedPoinPenilaian.id
                     //         ].dokumenPendukungSuratPenugasan.includes(item)
                     //     )
@@ -173,25 +177,25 @@ const AddModal = ({
                       </div>
                       <PrimaryButton
                         onClick={() => {
-                          setCounter((prev) => {
-                            let copyCounter = { ...prev };
+                          setAnswerData((prev) => {
+                            let copyAnswerData = { ...prev };
                             let formattedDokumenPendukung = [];
                             if (
-                              copyCounter[selectedPoinPenilaian.id]
+                              copyAnswerData[selectedPoinPenilaian.id]
                                 .dokumenPendukung.length !== 0
                             ) {
                               formattedDokumenPendukung =
-                                copyCounter[selectedPoinPenilaian.id]
+                                copyAnswerData[selectedPoinPenilaian.id]
                                   .dokumenPendukung;
                             }
                             formattedDokumenPendukung.push(
                               selectedDokumenPendukung
                             );
-                            copyCounter[selectedPoinPenilaian.id] = {
-                              ...copyCounter[selectedPoinPenilaian.id],
+                            copyAnswerData[selectedPoinPenilaian.id] = {
+                              ...copyAnswerData[selectedPoinPenilaian.id],
                               dokumenPendukung: formattedDokumenPendukung,
                             };
-                            return copyCounter;
+                            return copyAnswerData;
                           });
                           setPointId(selectedPoinPenilaian.id);
                           setOpenModal(false);
@@ -254,26 +258,26 @@ const AddModal = ({
                       </div>
                       <PrimaryButton
                         onClick={() => {
-                          setCounter((prev) => {
-                            let copyCounter = { ...prev };
+                          setAnswerData((prev) => {
+                            let copyAnswerData = { ...prev };
                             let formattedDokumenPendukungSuratPenugasan = [];
                             if (
-                              copyCounter[selectedPoinPenilaian.id]
+                              copyAnswerData[selectedPoinPenilaian.id]
                                 .dokumenPendukung
                             ) {
                               formattedDokumenPendukungSuratPenugasan =
-                                copyCounter[selectedPoinPenilaian.id]
+                                copyAnswerData[selectedPoinPenilaian.id]
                                   .dokumenPendukung;
                             }
                             formattedDokumenPendukungSuratPenugasan.push(
                               selectedDokumenPendukung
                             );
-                            copyCounter[selectedPoinPenilaian.id] = {
-                              ...copyCounter[selectedPoinPenilaian.id],
+                            copyAnswerData[selectedPoinPenilaian.id] = {
+                              ...copyAnswerData[selectedPoinPenilaian.id],
                               dokumenPendukung:
                                 formattedDokumenPendukungSuratPenugasan,
                             };
-                            return copyCounter;
+                            return copyAnswerData;
                           });
                           setPointId(selectedPoinPenilaian.id);
                           setOpenModal(false);

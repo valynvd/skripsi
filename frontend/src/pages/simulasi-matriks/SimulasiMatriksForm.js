@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import CRUInput from '../../components/CRUInput';
@@ -15,6 +16,7 @@ import CancelButton from '../../components/CancelButton';
 import BreadCrumbs from '../../components/BreadCrumbs';
 import { useDokumenAkreditasiData } from '../../hooks/useDokumenAkreditasi';
 import TableForm from './components/TableForm';
+import TableSimulate from './components/TableSimulate';
 
 const SimulasiMatriksForm = () => {
   const [errorMessage, setErrorMessage] = useState();
@@ -45,6 +47,8 @@ const SimulasiMatriksForm = () => {
     isLoading: patchSimulasiMatriksLoading,
   } = usePatchSimulasiMatriks();
   const navigate = useNavigate();
+  const [radarData, setRadarData] = useState();
+  const [simulateData, setSimulateData] = useState();
 
   const {
     data: dokumenAkreditasiData,
@@ -176,7 +180,12 @@ const SimulasiMatriksForm = () => {
           )}
         </form>
       </section>
+
       <TableForm simulasiMatriksData={simulasiMatriksData} />
+
+      {radarData && simulateData && (
+        <TableSimulate simulateData={simulateData} radarData={radarData} />
+      )}
     </>
   );
 };
