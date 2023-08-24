@@ -465,9 +465,7 @@ const ValidasiMahasiswaByNIM = () => {
               .map((filteredData, index) => (
                 <tr key={index} className="bg-white border-b text-gray-600">
                   <td className="px-4 py-3">
-                    <p className="flex flex-row items-center">
                       {filteredData.mata_kuliah_detail.name}
-                    </p>
                   </td>
                   <td className="px-4 py-3">
                     <p className="flex flex-row items-center">
@@ -502,9 +500,6 @@ const ValidasiMahasiswaByNIM = () => {
         <div></div>
       )
     }
-
-      
-
 
       {ipsSemester && showTableD == false && showTableE == false ? (
           <div className="overflow-x-auto">
@@ -545,14 +540,10 @@ const ValidasiMahasiswaByNIM = () => {
                   .map((filteredData, index) => (
                     <tr key={index} className="bg-white border-b text-gray-600">
                       <td className={`px-4 py-3 ${filteredData.grade_symbol == "D" ? 'bg-yellow-500' : '' || filteredData.grade_symbol == "E" ? 'bg-red-500 text-white' : ''}`}>
-                        <p className="flex flex-row items-center ">
                           {filteredData.mata_kuliah_detail.name}
-                        </p>
                       </td>
-                      <td className={`px-4 py-3 ${filteredData.grade_symbol == "D" ? 'bg-yellow-500' : '' || filteredData.grade_symbol == "E" ? 'bg-red-500 text-white ' : ''}`}>
-                        <p className="flex flex-row items-center">
+                      <td className={`px-4 py-3 text-center ${filteredData.grade_symbol == "D" ? 'bg-yellow-500' : '' || filteredData.grade_symbol == "E" ? 'bg-red-500 text-white ' : ''}`}>
                           {filteredData.mata_kuliah_detail.sks_total}
-                        </p>
                       </td>
                       <td className={`px-4 py-3 ${filteredData.grade_symbol == "D" ? 'bg-yellow-500' : '' || filteredData.grade_symbol == "E" ? 'bg-red-500 text-white' : ''}`}>
                         <p className="flex flex-row items-center">

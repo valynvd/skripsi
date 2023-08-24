@@ -78,7 +78,7 @@ const MonitoringMahasiswaImportExcel = () => {
             getResponseData.push(res.data);
           },
         });
-        await delay(200);
+        await delay(25);
       } catch (err) {
         getResponseData.push(err.response.data);
       }
