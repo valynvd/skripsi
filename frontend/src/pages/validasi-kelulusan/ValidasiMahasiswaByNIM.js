@@ -5,8 +5,8 @@ import { PrimaryButton } from '../../components/PrimaryButton';
 import { AiOutlineSearch } from 'react-icons/ai';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
-// import { useMonitoringMahasiswaDataByNIM } from '../../hooks/useMonitoringMahasiswa';
-import { useTranskripNilaiDataByNIM } from '../../hooks/useTranskripNilai';
+import { useMonitoringMahasiswaDataByNIM } from '../../hooks/useMonitoringMahasiswa';
+import { useTranskripNilaiDataByNIM} from '../../hooks/useTranskripNilai';
 import { usePostValidasiMahasiswa } from '../../hooks/useValidasiMahasiswa';
 import jsPDF from 'jspdf';
 import { RxTriangleUp, RxTriangleRight } from 'react-icons/rx';
@@ -18,7 +18,8 @@ const ValidasiMahasiswaByNIM = () => {
   const [namamahasiswa, setNamaMahasiswa] = useState('')
   const [nim1, setNim] = useState('')
   const { state } = useLocation();
-  const { data: responseData, isLoading} = useTranskripNilaiDataByNIM(nim)
+  const { data: responseResult, isLoading: isLoadingResult } = useMonitoringMahasiswaDataByNIM(nim);
+  const { data: responseData, isLoading: isLoadingTranskrip } = useTranskripNilaiDataByNIM(nim);
   const [nilaiD, setNilaiD] = useState('')
   const [nilaiE, setNilaiE] = useState('')
   const [jumlahSks, setJumlahSks] = useState('')
@@ -30,20 +31,25 @@ const ValidasiMahasiswaByNIM = () => {
   const [nilaiIpk, setNilaiIpk] = useState('')
   const [statusKelulusan, setStatusKelulusan] = useState('')
   const [validasi, setValidasi] = useState([])
+  const [result, setResult] = useState([])
   const [readyAudit, setReadyAudit] = useState(false);
   const [showTableD, setShowTableD] = useState(false);
   const [showTableE, setShowTableE] = useState(false);
+  const [ngulangNilai, setNgulangNilai] = useState(false);
+  const [nilaiTA, setNilaiTA] = useState('');
   
   const navigate = useNavigate();
 
   const {mutate: postValidasiMahasiswa, isLoading: postValidasiMahasiswaLoading} = 
     usePostValidasiMahasiswa();
-  
+
   useEffect(()=> {
-    if(isLoading == false) {
+    if(isLoadingResult == false) {
       setTranskripData(responseData.data);
+      setResult(responseResult.data);
+      console.log(responseData.data)
     }
-  }, [isLoading])
+  }, [isLoadingResult, isLoadingTranskrip])
 
   useEffect(() => {
   
@@ -61,9 +67,19 @@ const ValidasiMahasiswaByNIM = () => {
   
     const totalSKSNilaiE = calculateTotalCredits(transkripData, 'E').toString();
     setNilaiE(totalSKSNilaiE);
+
+    const checkNilai = result.reduce((fixResult, resultData) => {
+      if (['D', 'E'].includes(resultData.grade_symbol)){
+        return fixResult = true;
+      }
+      return fixResult;
+    }, false);    
+    console.log(checkNilai)
+    setNgulangNilai(checkNilai)
+
   
     const totalSKS = transkripData.reduce((totalCredits, getdata) => {
-      if (!['D', 'E'].includes(getdata.grade_symbol)) {
+      if (!['E'].includes(getdata.grade_symbol)) {
         return totalCredits + parseInt(getdata.earned_credits);
       }
       return totalCredits;
@@ -122,9 +138,18 @@ const ValidasiMahasiswaByNIM = () => {
     const ipkData = calculateIPK(ipsData);
     setNilaiIpk(ipkData);
 
+    const checkNilaiTA = transkripData.reduce((gradeSymbol, transkripData) => {
+      if (transkripData.mata_kuliah_detail.name === "Final Project") {
+        return transkripData.grade_symbol; // Return the gradeSymbol for "Final Project"
+      }
+      return gradeSymbol; // Return the accumulated gradeSymbol
+    }, null);
+
+    setNilaiTA(checkNilaiTA)
+
     let status = "";
 
-    if (parseFloat(ipkData) > 3.50 && totalEarnedCredits == 144) {
+    if (parseFloat(ipkData) > 3.50 && totalEarnedCredits == 144 && (!ngulangNilai) && (checkNilaiTA == "A" || checkNilaiTA == "AB" || checkNilaiTA == "B")) {
       status = "Cum Laude";
       setStatusKelulusan(status);
     } else if (ipkData > 3.01 && totalSKSNilaiD <= 7 && totalSKSNilaiE == 0 && totalEarnedCredits == 144){
@@ -154,7 +179,6 @@ const ValidasiMahasiswaByNIM = () => {
 
     setReadyAudit(true)
     setValidasi(dataValidasi);
-
       
   }, [transkripData])
 
@@ -309,6 +333,9 @@ const ValidasiMahasiswaByNIM = () => {
                 <th className="px-4 py-3 font-semibold">
                   <p className="flex flex-row items-center">Status Lulus</p> 
                 </th>
+                <th className="px-4 py-3 font-semibold">
+                  <p className="flex flex-row items-center">Ket.</p> 
+                </th>
               </tr>
             </thead>
             
@@ -318,8 +345,8 @@ const ValidasiMahasiswaByNIM = () => {
                 <td className="px-4 py-3">{transkripData[0].mahasiswa_detail.nama}</td>
                 <td className="px-4 py-3">{transkripData[0].mahasiswa_detail.nim}</td>
                 <td className="px-4 py-3">{transkripData[0].mahasiswa_detail.prodi_detail.name}</td>
-                <td className="px-4 py-3">{transkripData[0].mahasiswa_detail.angkatan}</td>
-                <td className="px-4 py-3">{jumlahSks} / 144</td>
+                <td className="px-4 py-3 text-center">{transkripData[0].mahasiswa_detail.angkatan}</td>
+                <td className="px-4 py-3 text-center">{jumlahSks} / 144</td>
                 <td className="px-4 py-3">
                   {nilaiD} sks 
                   {showTableD ? 
@@ -357,6 +384,9 @@ const ValidasiMahasiswaByNIM = () => {
                 </td>
                 <td className="px-4 py-3">{nilaiIpk}</td>
                 <td className="px-4 py-3">{statusKelulusan}</td>
+                <td className="px-4 py-3">{
+                  ngulangNilai ? <p>Pernah Mengulang</p> : <p>Aman</p>
+                }</td>
             </tr>
           </tbody>
             ) : <div/>}
@@ -385,8 +415,8 @@ const ValidasiMahasiswaByNIM = () => {
                       {filteredData.mata_kuliah_detail.name}
                     </p>
                   </td>
-                  <td className="px-4 py-3">
-                    <p className="flex flex-row items-center">
+                  <td className="px-4 py-3 text-center">
+                    <p className="flex flex-row">
                       {filteredData.academic_year} - 
                       {filteredData.academic_session === '10'
                       ? " Odd"
@@ -453,12 +483,12 @@ const ValidasiMahasiswaByNIM = () => {
                       : " Unknown Session Type"}
                     </p>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 text-center">
                     <p className="flex flex-row items-center">
                       {filteredData.mata_kuliah_detail.sks_total}
                     </p>
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-4 py-3 text-center">
                     <p className="flex flex-row items-center">
                       {filteredData.grade_symbol}
                     </p>
@@ -515,11 +545,11 @@ const ValidasiMahasiswaByNIM = () => {
                   .map((filteredData, index) => (
                     <tr key={index} className="bg-white border-b text-gray-600">
                       <td className={`px-4 py-3 ${filteredData.grade_symbol == "D" ? 'bg-yellow-500' : '' || filteredData.grade_symbol == "E" ? 'bg-red-500 text-white' : ''}`}>
-                        <p className="flex flex-row items-center">
+                        <p className="flex flex-row items-center ">
                           {filteredData.mata_kuliah_detail.name}
                         </p>
                       </td>
-                      <td className={`px-4 py-3 ${filteredData.grade_symbol == "D" ? 'bg-yellow-500' : '' || filteredData.grade_symbol == "E" ? 'bg-red-500 text-white' : ''}`}>
+                      <td className={`px-4 py-3 ${filteredData.grade_symbol == "D" ? 'bg-yellow-500' : '' || filteredData.grade_symbol == "E" ? 'bg-red-500 text-white ' : ''}`}>
                         <p className="flex flex-row items-center">
                           {filteredData.mata_kuliah_detail.sks_total}
                         </p>

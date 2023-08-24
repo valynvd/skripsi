@@ -73,9 +73,9 @@ const PenugasanPengajaranImportExcel = () => {
       try {
         await postPenugasanPengajaranByExcel(penugasanPengajaranFormData, {
           onSuccess: (res) => {
+            getResponseData.push(res.data);
           },
         });
-        
         await delay(100);
       } catch (err) {
         getResponseData.push(err.response.data);

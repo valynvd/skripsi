@@ -9,17 +9,11 @@ const getMonitoringMahasiswa = () => {
     });
 };
 
-// const getMonitoringMahasiswaById = (id) => {
-//     return request({
-//         url: `/api-stem/datamahasiswa/${id}/`,
-//     });
-// };
-
 const getMonitoringMahasiswaByNIM = (nim) => {
-    return request({
-      url: `/api-stem/monitoringmahasiswabynim/${nim}/`,
-    });
-  };
+  return request({
+    url: `/api-stem/monitoringmahasiswabynim/${nim}/`,
+  });
+};
 
 const postMonitoringMahasiswa = (data) => {
     return request({
@@ -47,7 +41,7 @@ const patchMonitoringMahasiswa = ({ data, id }) => {
 }; 
 
 export const useMonitoringMahasiswaData = (options) => {
-    return useQuery('data-master', getMonitoringMahasiswa, {
+    return useQuery('monitoring-mahasiswa', getMonitoringMahasiswa, {
       refetchOnWindowFocus: false,
       ...options,
     });

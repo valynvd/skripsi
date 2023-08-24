@@ -285,15 +285,14 @@ const DegreeAuditKelulusanTable = ({
                             {row.cells.map((cell) => {
                             return (
                                 <td {...cell.getCellProps()} className={`px-4 py-3 ${
-                                        cell.column.id === 'jumlah_sks' 
-                                        && cell.value < 144 ? 
-                                            'bg-red-500 text-white' : '' || 
-                                        cell.column.id === 'nilaid' 
-                                        && cell.value >= 7 ? 
-                                            'bg-red-500 text-white' : '' || 
-                                        cell.column.id === 'nilaie' 
-                                        && cell.value >= 1 ? 
-                                            'bg-red-500 text-white' : ''}`}>
+                                        cell.column.id === 'jumlah_sks' && cell.value < 144 ? 
+                                            'bg-red-500 text-white text-center' : '' || 
+                                        cell.column.id === 'nilaid' && cell.value >= 7 ? 
+                                            'bg-red-500 text-white text-center' : '' || 
+                                        cell.column.id === 'nilaie' && cell.value >= 1 ? 
+                                            'bg-red-500 text-white text-center' : '' ||
+                                        cell.column.id === 'jumlah_sks' || cell.column.id === 'nilaid' || cell.column.id === 'mahasiswa_detail.angkatan' || cell.column.id === 'nilai_ipk'||  cell.column.id === 'nilaie' ? 'text-center' : ''}`}>
+                                        
                                     {cell.render('Cell')}
                                 </td>
                             );

@@ -16,6 +16,12 @@ const getTranskripNilaiByNIM = (nim) => {
     });
   };
 
+const getMonitoringMahasiswaByNIM = (nim) => {
+  return request({
+    url: `/api-stem/monitoringmahasiswabynim/${nim}/`,
+  });
+};
+
 const postTranskripNilai = (data) => {
     return request({
       url: url,
@@ -54,6 +60,13 @@ export const useTranskripNilaiDataByNIM = (nim, options) => {
       ...options,
     });
   };
+
+export const useMonitoringMahasiswaDataByNIM = (nim, options) => {
+  return useQuery(['monitoring-mahasiswa-by-nim', nim], () => getMonitoringMahasiswaByNIM(nim), {
+    refetchOnWindowFocus: false,
+    ...options,
+  });
+};
 
 // export const useTranskripNilaiByProdi = (options) => {
 //     const prodi = useAuth().auth.userData?.dosen_detail?.prodi;

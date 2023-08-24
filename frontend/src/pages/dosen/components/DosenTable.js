@@ -26,6 +26,10 @@ const Dosen = ({ setOpenModalDelete, setSelectedItem, ...options }) => {
       accessor: 'prodi_detail.name',
     },
     {
+      Header: 'NIK',
+      accessor: 'nik',
+    },
+    {
       Header: 'Aksi',
       Cell: ({
         cell: {
