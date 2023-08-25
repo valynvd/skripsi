@@ -46,8 +46,8 @@ const Navbar = () => {
           <MdKeyboardArrowLeft size={'100%'} color={primary400} />
         </button>
       </div>
-      <nav className="flex-1 bg-secondary-400">
-        <div className="pt-6">
+      <nav className="flex-1 bg-secondary-400 max-h-[calc(100vh-5.5rem)] overflow-y-auto">
+        <div className="pt-6 h-[calc(100vh - 5.5rem)] overflow-y-auto">
           <NavigationLink url="/" icon={<BiHome size={22} />}>
             Dashboard
           </NavigationLink>
