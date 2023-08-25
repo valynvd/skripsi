@@ -679,36 +679,82 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
         convert_to = json.dumps(request.data, indent=4)
         data_dict = json.loads(convert_to)
 
+        name_prody = data_dict.get('Program (Desc.)')
+        program_study = data_dict.get('Program of study')
+
+        # get mahasiswa
+        nama_mahasiswa = data_dict.get('Name')
+        nim_mahasiswa = data_dict.get('NIM')
+        angkatan = data_dict.get('Angkatan')
+
+        # get subject
+       
+
+        # get credit
+        earned_credits = data_dict.get('Earned Credits')
+
+        # get grade
+        grade_symbol = data_dict.get('Grade symbol')
+
         # Check if ProgramStudi already exists
-        name_prody = data_dict.get('name_prody')
-        program_study = data_dict.get('program_study')
         if name_prody == "Computer Systems Engineering" :
-            kode_prody = "CSE"
+            kode = "CSE"
         elif name_prody == "Software Engineering" :
-            kode_prody = "SE"
+            kode = "SE"
         elif name_prody == "Mathematics" :
-            kode_prody = "BM"
+            kode = "BM"
         elif name_prody == "Product Design Engineering" :
-            kode_prody = "PDE"
+            kode = "PDE"
         elif name_prody == "Renewable Energy Engineering" :
-            kode_prody = "REE"
+            kode = "REE"
         elif name_prody == "Food Technology" :
-            kode_prody = "FBT"
-        programstudi, created = models.ProgramStudi.objects.get_or_create(name=name_prody, kode_sap=program_study, kode=kode_prody)
+            kode = "FBT"
+
+        programstudi, created = models.ProgramStudi.objects.get_or_create(name=name_prody, kode_sap=program_study)
+        # programstudi = models.ProgramStudi.objects.filter(name=name_prody, kode_sap=program_study)
 
 
-        # Check if DataMahasiswa already exists
-        nama_mahasiswa = data_dict.get('nama_mahasiswa')
-        nim_mahasiswa = data_dict.get('nim_mahasiswa')
-        angkatan = data_dict.get('angkatan')
+        # if(len(programstudi) == 0):
+        #     return Response({'nama_mahasiswa': nama_mahasiswa, 'nim_mahasiswa': nim_mahasiswa, 'name_prody': name_prody, 'angkatan': angkatan, 'subject': subject, 'earned_credits': earned_credits, 'grade_symbol': grade_symbol, 'error': True, 'error_message': 'Jurusan tidak ditemukan' }, status=status.HTTP_404_NOT_FOUND)
+
+
+        # # Check if DataMahasiswa already exists
         datamahasiswa, created= models.DataMahasiswa.objects.get_or_create(nama=nama_mahasiswa, nim=nim_mahasiswa, angkatan=angkatan, prodi=programstudi)
+        
+        # # Check if Dosen already exists
+        # nama_dosen = data_dict.get('Name_1')
+        # nama_dosen_split = str(nama_dosen).split("/")
+        # inisial = data_dict.get('Initial')
+        # inisial_split = str(inisial).split("/")
+        # nik_dosen = data_dict.get('NIK')
+        # nik_dosen_split = str(nik_dosen).split("/")
+        # nidn_dosen = data_dict.get('NIDN')
+        # nidn_dosen_split = str(nidn_dosen).split("/")
+
+
+
+        # cekPenugasanPengajaran = models.PenugasanPengajaran.objects.filter(dosen_pengampu__nik__in=nik_dosen_split, mata_kuliah__kode=subject_short)
+
+        # if(len(cekPenugasanPengajaran) == 0):
+        #     return Response({'nama_mahasiswa': nama_mahasiswa, 'nim_mahasiswa': nim_mahasiswa, 'name_prody': name_prody, 'angkatan': angkatan, 'subject': subject, 'earned_credits': earned_credits, 'grade_symbol': grade_symbol, 'error': True, 'error_message': 'Penugasan Pengajaran tidak ditemukan' }, status=status.HTTP_404_NOT_FOUND)
+
+        # if (len(inisial_split) >= 1) :
+        #     for i in range(len(nama_dosen_split)):
+        #         dosen, created = models.Dosen.objects.get(
+        #             name=nama_dosen_split[i],
+        #             inisial=inisial_split[i],
+        #             nik=nik_dosen_split[i],
+        #             nidn=nidn_dosen_split[i]
+        #         )
+        # else :
+        #     dosen, created = models.Dosen.objects.get(
+        #             name=nama_dosen,
+        #             inisial=inisial,
+        #             nik=nik_dosen,
+        #             nidn=nidn_dosen
+        #         )
 
         # Check if MataKuliah already exists
-        subject = data_dict.get('subject')
-        subject_short = data_dict.get('subject_short')
-        graded_credits = data_dict.get('graded_credits')
-        academic_year = data_dict.get('academic_year')
-        academic_session = data_dict.get('academic_session')
     
         # if (academic_year == angkatan) :
         #     if (academic_session == '10') :
@@ -747,29 +793,39 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
         #     elif (academic_session == '40') :
         #         session = 'SP8'
 
+        # matakuliah, created = models.MataKuliah.objects.get_or_create(
+        #     name = subject,
+        #     kode = subject_short,
+        #     sks_total = graded_credits,
+        #     # semester = session
+        # )
+        subject = data_dict.get('Subject')
+        subject_short = data_dict.get('Subject Short')
+        graded_credits = data_dict.get('Graded Credits')
+        academic_year = data_dict.get('Academic Year')
+        academic_session = data_dict.get('Academic Session')
+
         matakuliah, created = models.MataKuliah.objects.get_or_create(
             name = subject,
             kode = subject_short,
-            sks_total = graded_credits,
-            # semester = session
+            sks_total = graded_credits
         )
 
-        st_object_type = data_dict.get('st_object_type')
-        st_objid = data_dict.get('st_objid')
-        student_id = data_dict.get('student_id')
-        appraisal_type = data_dict.get('appraisal_type')
-        sm_object_type = data_dict.get('sm_object_type')
-        sm_objid = data_dict.get('sm_objid')
-        event_package_objid = data_dict.get('event_package_objid')
-        event_package_short = data_dict.get('event_package_short')
-        event_package_text = data_dict.get('event_package_text')
-        if (data_dict.get('grade_symbol') == None):
+        st_object_type = data_dict.get('Object type')
+        st_objid = data_dict.get('ST Objid')
+        student_id = data_dict.get('Student ID')
+        appraisal_type = data_dict.get('Appraisal Type')
+        sm_object_type = data_dict.get('Object type')
+        sm_objid = data_dict.get('SM Objid')
+        event_package_objid = data_dict.get('Event Package Objid')
+        event_package_short = data_dict.get('Event Package Short')
+        event_package_text = data_dict.get('Event Package Text')
+        if (data_dict.get('Grade symbol') == None):
             grade_symbol = "T"
         else :
-            grade_symbol = data_dict.get('grade_symbol')
-        earned_credits = data_dict.get('earned_credits')
-        credit_type = data_dict.get('credit_type')
-        mentor = data_dict.get('mentor')
+            grade_symbol = data_dict.get('Grade symbol')
+        credit_type = data_dict.get('Credit Type')
+        mentor = data_dict.get('Mentor')
 
         monitoring_mahasiswa, created = models.MonitoringMahasiswa.objects.get_or_create(
             st_object_type = st_object_type,
@@ -783,6 +839,7 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
             event_package_objid = event_package_objid,
             event_package_short = event_package_short,
             event_package_text = event_package_text,
+            # dosen = dosen,
             grade_symbol = grade_symbol,
             earned_credits = earned_credits,
             credit_type = credit_type,
@@ -797,8 +854,7 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
                 mahasiswa = datamahasiswa,
                 mata_kuliah = matakuliah,
             )
-            print(get_transkrip_nilai.grade_symbol)
-            print("ada data om")
+
             
             if (get_transkrip_nilai.grade_symbol == "AB" and grade_symbol == "A"):
                 get_transkrip_nilai.grade_symbol = grade_symbol
@@ -841,15 +897,23 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
                 mata_kuliah = matakuliah,
                 earned_credits = earned_credits
             )
-            # serializer = self.get_serializer(instance=transkrip_nilai)
-            # headers = self.get_success_headers(serializer.data)
-            # return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+            serializer = self.get_serializer(instance=transkrip_nilai)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
+        # # serializer = self.get_serializer(instance=monitoring_mahasiswa)
         # serializer = self.get_serializer(instance=monitoring_mahasiswa)
-        serializer = self.get_serializer(instance=monitoring_mahasiswa)
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        # # headers = self.get_success_headers(serializer.data)
+        # return Response(serializer.data, status=status.HTTP_200_OK)
 
+    def get_permissions(self):
+        if self.action in ['list','retrieve']:
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+
+    
 class MonitoringMahasiswaByNIMViewSet(generics.ListAPIView):
     serializer_class = serializers.MonitoringMahasiswaSerializers
     queryset = models.MonitoringMahasiswa.objects.all()
