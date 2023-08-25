@@ -47,6 +47,7 @@ const MonitoringMahasiswaImportExcel = () => {
     const exceljson = xlsx.utils.sheet_to_json(excelsheet);
 
     setExcelData(exceljson);
+    console.log(exceljson)
   };
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -78,7 +79,7 @@ const MonitoringMahasiswaImportExcel = () => {
             getResponseData.push(res.data);
           },
         });
-        await delay(25);
+        await delay(50);
       } catch (err) {
         getResponseData.push(err.response.data);
       }
