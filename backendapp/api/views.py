@@ -850,8 +850,6 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-
-    
 class MonitoringMahasiswaByNIMViewSet(generics.ListAPIView):
     serializer_class = serializers.MonitoringMahasiswaSerializers
     queryset = models.MonitoringMahasiswa.objects.all()
