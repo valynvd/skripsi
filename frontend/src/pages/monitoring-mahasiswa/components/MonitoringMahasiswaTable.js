@@ -43,25 +43,8 @@ const MonitoringMahasiswaTable = ({
             accessor:'mahasiswa_detail.angkatan'
         },
         {
-            Header:'Faculty Member',
-            Cell: ({ row }) => {
-                if (Array.isArray(row.original.penugasan_pengajaran_detail) && row.original.penugasan_pengajaran_detail.length > 0) {
-                    const allValues = row.original.penugasan_pengajaran_detail.map(item => item.dosen_pengampu_detail.name).join(', ');
-                    return allValues;
-                }
-                return '';
-            },
-            
-        },
-        {
             Header:'Mata Kuliah',
-            Cell: ({ row }) => {
-                const penugasanDetail = row.original.penugasan_pengajaran_detail;
-                if (Array.isArray(penugasanDetail) && penugasanDetail.length > 0) {
-                    return penugasanDetail[0].mata_kuliah_detail.name;
-                }
-                return '';
-            },
+            ccessor:'mata_kuliah_detail.name'
         },
         {
             Header:'SKS',

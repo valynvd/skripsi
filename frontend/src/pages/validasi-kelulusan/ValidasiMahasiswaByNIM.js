@@ -545,10 +545,10 @@ const ValidasiMahasiswaByNIM = () => {
                       <td className={`px-4 py-3 text-center ${filteredData.grade_symbol == "D" ? 'bg-yellow-500' : '' || filteredData.grade_symbol == "E" ? 'bg-red-500 text-white ' : ''}`}>
                           {filteredData.mata_kuliah_detail.sks_total}
                       </td>
-                      <td className={`px-4 py-3 ${filteredData.grade_symbol == "D" ? 'bg-yellow-500' : '' || filteredData.grade_symbol == "E" ? 'bg-red-500 text-white' : ''}`}>
-                        <p className="flex flex-row items-center">
+                      <td className={`px-4 py-3 text-center ${filteredData.grade_symbol == "D" ? 'bg-yellow-500' : '' || filteredData.grade_symbol == "E" ? 'bg-red-500 text-white' : ''}`}>
+                        
                           {filteredData.grade_symbol}
-                        </p>
+                     
                       </td>
                     </tr>
                   ))}
