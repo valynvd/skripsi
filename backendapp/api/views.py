@@ -854,8 +854,6 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
                 mahasiswa = datamahasiswa,
                 mata_kuliah = matakuliah,
             )
-            print(get_transkrip_nilai.grade_symbol)
-            print("ada data om")
             
             if (get_transkrip_nilai.grade_symbol == "AB" and grade_symbol == "A"):
                 get_transkrip_nilai.grade_symbol = grade_symbol
