@@ -44,7 +44,7 @@ const MonitoringMahasiswaTable = ({
         },
         {
             Header:'Mata Kuliah',
-            ccessor:'mata_kuliah_detail.name'
+            accessor:'mata_kuliah_detail.name'
         },
         {
             Header:'SKS',
