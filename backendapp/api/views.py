@@ -683,18 +683,18 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
         name_prody = data_dict.get('name_prody')
         program_study = data_dict.get('program_study')
         if name_prody == "Computer Systems Engineering" :
-            kode = "CSE"
+            kode_prody = "CSE"
         elif name_prody == "Software Engineering" :
-            kode = "SE"
+            kode_prody = "SE"
         elif name_prody == "Mathematics" :
-            kode = "BM"
+            kode_prody = "BM"
         elif name_prody == "Product Design Engineering" :
-            kode = "PDE"
+            kode_prody = "PDE"
         elif name_prody == "Renewable Energy Engineering" :
-            kode = "REE"
+            kode_prody = "REE"
         elif name_prody == "Food Technology" :
-            kode = "FBT"
-        programstudi, created = models.ProgramStudi.objects.get_or_create(name=name_prody, kode_sap=program_study, kode=kode)
+            kode_prody = "FBT"
+        programstudi, created = models.ProgramStudi.objects.get_or_create(name=name_prody, kode_sap=program_study, kode=kode_prody)
 
 
         # Check if DataMahasiswa already exists
