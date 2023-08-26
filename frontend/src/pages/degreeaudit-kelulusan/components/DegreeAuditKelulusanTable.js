@@ -16,6 +16,7 @@ import { RxTriangleUp, RxTriangleDown } from 'react-icons/rx';
 import { useNavigate } from 'react-router-dom';
 import { ExportPrimaryButton } from '../../../components/PrimaryButton';
 import { utils, writeFile } from 'xlsx';
+import { Link } from 'react-router-dom'
 
 
 const DegreeAuditKelulusanTable = ({
@@ -28,9 +29,16 @@ const DegreeAuditKelulusanTable = ({
     const navigate = useNavigate();
     const [selectedAngkatan, setSelectedAngkatan] = useState('');
     const columns = [
-        {
+        { 
             Header:'Nama Mahasiswa',
-            accessor:'mahasiswa_detail.nama',
+            // accessor:'mahasiswa_detail.nama',
+            Cell: ({ row }) => (
+                <Link 
+                    to={`/degreeaudit/validasi-kelulusan/${row.original.mahasiswa_detail.nim}`}
+                >
+                    {row.original.mahasiswa_detail.nama}
+                </Link>
+            )
         },
         {
             Header:'NIM',

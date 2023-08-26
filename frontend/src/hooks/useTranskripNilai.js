@@ -31,6 +31,13 @@ const postTranskripNilai = (data) => {
     });
 };
 
+const fetchData = async (nim) => {
+  // Fetch data logic here
+  const response = await fetch(`/api/transkrip/${nim}`);
+  const data = await response.json();
+  return data;
+};
+
 const deleteTranskripNilai = (data) => {
     return request({
       url: url + data + '/',
@@ -60,6 +67,11 @@ export const useTranskripNilaiDataByNIM = (nim, options) => {
       ...options,
     });
   };
+
+export const useTranskripNilaiDataByNIM2 = (nim) => {
+  return useMutation(['transkrip-nilai-by-nim', nim], () => fetchData(nim), {
+  });
+};
 
 export const useMonitoringMahasiswaDataByNIM = (nim, options) => {
   return useQuery(['monitoring-mahasiswa-by-nim', nim], () => getMonitoringMahasiswaByNIM(nim), {

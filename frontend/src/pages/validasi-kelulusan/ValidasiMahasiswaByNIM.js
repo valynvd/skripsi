@@ -52,8 +52,7 @@ const ValidasiMahasiswaByNIM = () => {
   }, [isLoadingResult, isLoadingTranskrip])
 
   useEffect(() => {
-  
-    const calculateTotalCredits = (transkripData, gradeSymbol) => {
+    const calculateTotalCreditsD = (transkripData, gradeSymbol) => {
       return transkripData.reduce((totalCredits, getdata) => {
         if (getdata.grade_symbol.includes(gradeSymbol)) {
           return totalCredits + parseInt(getdata.earned_credits);
@@ -61,11 +60,20 @@ const ValidasiMahasiswaByNIM = () => {
         return totalCredits;
       }, 0);
     };
+
+    const calculateTotalCreditsE = (transkripData, gradeSymbol) => {
+      return transkripData.reduce((totalCredits, getdata) => {
+        if (getdata.grade_symbol.includes(gradeSymbol)) {
+          return totalCredits + parseInt(getdata.mata_kuliah_detail.sks_total);
+        }
+        return totalCredits;
+      }, 0);
+    };
   
-    const totalSKSNilaiD = calculateTotalCredits(transkripData, 'D').toString();
+    const totalSKSNilaiD = calculateTotalCreditsD(transkripData, 'D').toString();
     setNilaiD(totalSKSNilaiD);
   
-    const totalSKSNilaiE = calculateTotalCredits(transkripData, 'E').toString();
+    const totalSKSNilaiE = calculateTotalCreditsE(result, 'E').toString();
     setNilaiE(totalSKSNilaiE);
 
     const checkNilai = result.reduce((fixResult, resultData) => {
