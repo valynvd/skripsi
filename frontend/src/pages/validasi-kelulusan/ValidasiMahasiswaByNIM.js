@@ -73,7 +73,7 @@ const ValidasiMahasiswaByNIM = () => {
     const totalSKSNilaiD = calculateTotalCreditsD(transkripData, 'D').toString();
     setNilaiD(totalSKSNilaiD);
   
-    const totalSKSNilaiE = calculateTotalCreditsE(result, 'E').toString();
+    const totalSKSNilaiE = calculateTotalCreditsE(transkripData, 'E').toString();
     setNilaiE(totalSKSNilaiE);
 
     const checkNilai = result.reduce((fixResult, resultData) => {
@@ -199,7 +199,6 @@ const ValidasiMahasiswaByNIM = () => {
       for (const key in data) {
         validasiFormData.append(key, data[key]);
       }
-      
       try {
         postValidasiMahasiswa(validasiFormData, {
           onSuccess: () => {

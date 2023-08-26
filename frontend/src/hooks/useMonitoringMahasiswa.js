@@ -63,6 +63,10 @@ export const useMonitoringMahasiswaDataByNIM = (nim, options) => {
 //     });
 // };
 
+export const useMonitoringMahasiswaDataByNIM2 = () => {
+  return useMutation(getMonitoringMahasiswaByNIM);
+};
+
 export const usePostMonitoringMahasiswa = () => {
     return useMutation(postMonitoringMahasiswa);
 };

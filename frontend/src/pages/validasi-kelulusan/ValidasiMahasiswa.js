@@ -6,12 +6,13 @@ import { AiOutlineSearch } from 'react-icons/ai';
 import { useNavigate } from 'react-router-dom';
 import { useProgramStudiData } from '../../hooks/useProdi';
 import {
-  useGetMataKuliahById,
   useTranskripNilaiDataByNIM2,
 } from '../../hooks/useTranskripNilai';
 import FilterInput from '../../components/FitlerInput';
 import { useForm } from 'react-hook-form';
 import { useDataMahasiswaData } from '../../hooks/useDataMahasiswa';
+import { usePostValidasiMahasiswa } from '../../hooks/useValidasiMahasiswa';
+import { useMonitoringMahasiswaDataByNIM2 } from '../../hooks/useMonitoringMahasiswa';
 
 const ValidasiMahasiswa = () => {
   const userRole = useCheckRole();
@@ -29,6 +30,11 @@ const ValidasiMahasiswa = () => {
   });
   const { data: responseData, isLoading: isLoadingMahasiswa } =
     useDataMahasiswaData();
+
+  const {mutate: postValidasiMahasiswa, isLoading: postValidasiMahasiswaLoading} = 
+    usePostValidasiMahasiswa();
+
+  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
   useEffect(() => {
     if (isLoadingMahasiswa === false) {
@@ -70,43 +76,165 @@ const ValidasiMahasiswa = () => {
     ...new Set(dataMahasiswa.map((item) => item.angkatan)),
   ];
 
+  const { mutateAsync: getTranskripNilaiDataByNIMAsync } = useTranskripNilaiDataByNIM2();
+  const { mutateAsync: getMonitoringMahasiswaDataByNIMAsync } = useMonitoringMahasiswaDataByNIM2();
+
+  const calculateTotalCreditsD = (responseData, gradeSymbol) => {
+    return responseData.reduce((totalCredits, data) => {
+      if (data.grade_symbol.includes(gradeSymbol)) {
+        return totalCredits + parseInt(data.earned_credits);
+      }
+      return totalCredits;
+    }, 0);
+  };
+
+  const calculateTotalCreditsE = (transkripData, gradeSymbol) => {
+    return transkripData.reduce((totalCredits, getdata) => {
+      if (getdata.grade_symbol.includes(gradeSymbol)) {
+        return totalCredits + parseInt(getdata.mata_kuliah_detail.sks_total);
+      }
+      return totalCredits;
+    }, 0);
+  };
+  
+
   const onAudit = async () => {
     try {
       for (let index = 0; index < filterMahasiswa.length; index++) {
         const nimMahasiswa = filterMahasiswa[index].nim;
+        const responseData = await getTranskripNilaiDataByNIMAsync(nimMahasiswa);
+        const result = await getMonitoringMahasiswaDataByNIMAsync(nimMahasiswa);
 
-        const responseData =
-          await useTranskripNilaiDataByNIM2.fetchTranskripData(nimMahasiswa);
+        // Check nilai D dan E
+        const totalSKSNilaiD = calculateTotalCreditsD(responseData.data, 'D').toString();
+        const totalSKSNilaiE = calculateTotalCreditsE(responseData.data, 'E').toString();
+        const checkNilai = result.data.reduce((fixResult, resultData) => {
+          if (['D', 'E'].includes(resultData.grade_symbol)){
+            return fixResult = true;
+          }
+          return fixResult;
+        }, false); 
 
-        console.log(responseData); // Handle the responseData as needed inside the loop
+        // Hitung SKS lulus
+        const totalSKS = responseData.data.reduce((totalCredits, getdata) => {
+          if (!['E'].includes(getdata.grade_symbol)) {
+            return totalCredits + parseInt(getdata.earned_credits);
+          }
+          return totalCredits;
+        }, 0);
+        const totalEarnedCredits = totalSKS.toString();
+
+        // Pisah tiap tahun untuk hitung IPS
+        const uniqueTahunAkademik = Array.from(
+          new Set(
+            responseData.data.map((getdata) => JSON.stringify({
+              academicYear: getdata.academic_year,
+              academicSession: getdata.academic_session,
+            }))
+          )
+        ).map(JSON.parse);
+
+        // Hitung IPS
+        const calculateIPS = (gradesData) => {
+          const ipsResults = [];
+      
+          uniqueTahunAkademik.forEach((academicData) => {
+            let ips = 0.0;
+            let sks = 0;
+      
+            const filteredGrades = gradesData.filter((dataGet) =>
+              dataGet.academic_year === academicData.academicYear &&
+              dataGet.academic_session === academicData.academicSession
+            );
+      
+            filteredGrades.forEach((transkripData) => {
+              const gradeValues = {
+                A: 4.0, AB: 3.5, B: 3.0, BC: 2.5, C: 2.0, D: 1.0, E: 0.0
+              };
+              ips += gradeValues[transkripData.grade_symbol] * parseInt(transkripData.earned_credits);
+              sks += parseInt(transkripData.earned_credits);
+            });
+      
+            ipsResults.push({
+              academicYear: academicData.academicYear,
+              academicSession: academicData.academicSession,
+              ips: (ips / sks).toFixed(2),
+              sks: sks,
+            });
+          });
+      
+          return ipsResults;
+        };
+
+        const ipsData = calculateIPS(responseData.data);
+        console.log(ipsData)
+
+        // Hitung IPK
+        const calculateIPK = (ipsData) => {
+          const totalIPS = ipsData.reduce((sum, dataIPS) => sum + parseFloat(dataIPS.ips), 0);
+          return (totalIPS / ipsData.length).toFixed(2);
+        };
+        const ipkData = calculateIPK(ipsData);
+        
+        // Check Nilai TA
+        const checkNilaiTA = responseData.data.reduce((gradeSymbol, transkripData) => {
+          if (transkripData.mata_kuliah_detail.name === "Final Project") {
+            return transkripData.grade_symbol; 
+          }
+          return gradeSymbol; 
+        }, null);
+
+        let status = "";
+
+        if (ipkData > 3.50 && totalEarnedCredits >= 144 && (!checkNilai) && (checkNilaiTA == "A" || checkNilaiTA == "AB" || checkNilaiTA == "B")) {
+          status = "Cum Laude";
+        } else if (ipkData > 3.01 && totalSKSNilaiD <= 7 && totalSKSNilaiE == 0 && totalEarnedCredits >= 144){
+          status = "Sangat Memuaskan";
+        } else if (ipkData > 2.76 && totalSKSNilaiD <= 7 && totalSKSNilaiE == 0 && totalEarnedCredits >= 144){
+          status = "Memuaskan";
+        } else if (ipkData > 2.00 && totalSKSNilaiD <= 7 && totalSKSNilaiE == 0 && totalEarnedCredits >= 144){
+          status = "Cukup";
+        } else {
+          status = "Tidak Lulus";
+        }
+
+        filterMahasiswa[index] = {
+          ...filterMahasiswa[index],
+          nim_mahasiswa: filterMahasiswa[index].nim,
+          jumlah_sks: totalEarnedCredits,
+          nilaid: totalSKSNilaiD,
+          nilaie: totalSKSNilaiE,
+          nilai_ipk: ipkData,
+          status_kelulusan: status,
+        };
+
+        const data = filterMahasiswa[index];
+        const validasiFormData = new FormData()
+
+        for (const key in data) {
+          validasiFormData.append(key, data[key]);
+        }
+        try {
+          postValidasiMahasiswa(validasiFormData, {
+            onSuccess: () => {
+            },
+            onError: (error) => {
+              console.error(error)
+            },
+          });
+        } catch (error) {
+          console.error(error)
+        }
+        
+        await delay(300);  
       }
     } catch (error) {
       console.error('Error fetching transkrip data:', error);
     }
   };
 
-  const { mutateAsync: getMataKuliahByIdAsync } = useGetMataKuliahById();
-
-  const cobaTarik = async () => {
-    for (let i = 0; i <= 3; i++) {
-      try {
-        const testing = await getMataKuliahByIdAsync(i);
-        console.log(testing);
-      } catch (err) {
-        console.log(err);
-      }
-    }
-  };
-
   return (
     <section id="monitoring-mahasiswa" className="section-container">
-      <button
-        onClick={() => {
-          cobaTarik();
-        }}
-      >
-        coba tarik
-      </button>
       <div className="flex flex-col items-start lg:justify-between lg:items-center lg:flex-row space-y-2 lg:space-y-0">
         <p className="font-semibold text-lg">
           Validasi Mahasiswa
@@ -199,6 +327,7 @@ const ValidasiMahasiswa = () => {
                 <th className="px-4 py-3 font-semibold">
                   <p className="flex flex-row items-center">IPK</p>
                 </th>
+                
               </tr>
             </thead>
             <tbody>
@@ -248,6 +377,9 @@ const ValidasiMahasiswa = () => {
                 <th className="px-4 py-3 font-semibold">
                   <p className="flex flex-row items-center">IPK</p>
                 </th>
+                <th className="px-4 py-3 font-semibold">
+                  <p className="flex flex-row items-center">Status Lulus</p>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -260,11 +392,12 @@ const ValidasiMahasiswa = () => {
                   <td className="px-4 py-3">{mahasiswa.nama}</td>
                   <td className="px-4 py-3">{mahasiswa.nim}</td>
                   <td className="px-4 py-3">{mahasiswa.prodi_detail.name}</td>
-                  <td className="px-4 py-3">{mahasiswa.angkatan}</td>
-                  <td className="px-4 py-3">{mahasiswa.jumlahSKS}</td>
-                  <td className="px-4 py-3">{mahasiswa.nilaiD}</td>
-                  <td className="px-4 py-3">{mahasiswa.nilaiE}</td>
-                  <td className="px-4 py-3">{mahasiswa.ipk}</td>
+                  <td className="px-4 py-3 item-center">{mahasiswa.angkatan}</td>
+                  <td className="px-4 py-3 item-center">{mahasiswa.jumlah_sks} / 144</td>
+                  <td className="px-4 py-3 item-center">{mahasiswa.nilaid} SKS</td>
+                  <td className="px-4 py-3 item-center">{mahasiswa.nilaie} SKS</td>
+                  <td className="px-4 py-3 item-center">{mahasiswa.nilai_ipk}</td>
+                  <td className="px-4 py-3">{mahasiswa.status_kelulusan}</td>
                 </tr>
               ))}
             </tbody>

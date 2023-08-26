@@ -30,19 +30,6 @@ const postTranskripNilai = (data) => {
   });
 };
 
-const fetchData = async (nim) => {
-  // Fetch data logic here
-  const response = await fetch(`/api/transkrip/${nim}`);
-  const data = await response.json();
-  return data;
-};
-
-const getMataKuliahById = (id) => {
-  return request({
-    url: `/api-stem/matakuliah/${id}/`,
-  });
-};
-
 const deleteTranskripNilai = (data) => {
   return request({
     url: url + data + '/',
@@ -77,10 +64,6 @@ export const useTranskripNilaiDataByNIM = (nim, options) => {
   );
 };
 
-export const useTranskripNilaiDataByNIM2 = (nim) => {
-  return useMutation(['transkrip-nilai-by-nim', nim], () => fetchData(nim), {});
-};
-
 export const useMonitoringMahasiswaDataByNIM = (nim, options) => {
   return useQuery(
     ['monitoring-mahasiswa-by-nim', nim],
@@ -101,8 +84,8 @@ export const useMonitoringMahasiswaDataByNIM = (nim, options) => {
 //     });
 // };
 
-export const useGetMataKuliahById = () => {
-  return useMutation(getMataKuliahById);
+export const useTranskripNilaiDataByNIM2 = () => {
+  return useMutation(getTranskripNilaiByNIM);
 };
 
 export const usePostTranskripNilai = () => {
