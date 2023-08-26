@@ -75,6 +75,25 @@ class MataKuliah(models.Model):
 	sks_total = models.IntegerField(default=0, blank=True, null=True)
 	sks_praktikum = models.IntegerField(default=0, blank=True, null=True)
 	is_elective = models.BooleanField(default=False, blank=True, null=True)
+	LIST_SEMESTER = (
+			('1', '1'),
+			('SP1', 'SP1'),
+			('2', '2'),
+			('SP2', 'SP2'),
+			('3', '3'),
+			('SP3', 'SP3'),
+			('4', '4'),
+			('SP4', 'SP4'),
+			('5', '5'),
+			('SP5', 'SP5'),
+			('6', '6'),
+			('SP6', 'SP6'),
+			('7', '7'),
+			('SP7', 'SP7'),
+			('8', '8'),
+			('SP8', 'SP8'),
+	)
+	semester = models.CharField(max_length=100, choices=LIST_SEMESTER, null=True, blank=True)
 
 	def __str__(self) -> str:
 		return '{} ({})'.format(self.name, self.kode)
@@ -283,7 +302,7 @@ class PenugasanPengajaran(models.Model):
 			null=True,
 	)
 	def __str__(self) -> str:
-		return '{} - {}'.format(self.dosen_pengampu.inisial, self.mata_kuliah.name)
+		return '{}'.format(self.mata_kuliah.name)
 
 class PenugasanPengabdian(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)
@@ -354,7 +373,7 @@ class DokumenPembelajaran(models.Model):
 		super().delete(*args, **kwargs)
 
 	def __str__(self) -> str:
-		return '{}-{}'.format(self.penugasanPengajaranId.dosen_pengampu.name, self.penugasanPengajaranId.mata_kuliah.name)
+		return '{}'.format(self.penugasanPengajaranId.mata_kuliah.name)
 
 class RiwayatDokumenPembelajaran(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)
