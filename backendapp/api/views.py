@@ -712,8 +712,22 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
 
         programstudi, created = models.ProgramStudi.objects.get_or_create(name=name_prody, kode_sap=program_study)
 
+        try:
+            programstudi = models.ProgramStudi.objects.get(kode_sap=program_study)
+        except models.DataMahasiswa.DoesNotExist:
+            programstudi = models.ProgramStudi.objects.create(name=name_prody, kode_sap=program_study)
+
         # # Check if DataMahasiswa already exists
-        datamahasiswa, created= models.DataMahasiswa.objects.get_or_create(nama=nama_mahasiswa, nim=nim_mahasiswa, angkatan=angkatan, prodi=programstudi)
+
+        try:
+            datamahasiswa = models.DataMahasiswa.objects.get(nim=nim_mahasiswa)
+        except models.DataMahasiswa.DoesNotExist:
+            datamahasiswa = models.DataMahasiswa.objects.create(
+                nama=nama_mahasiswa,
+                nim=nim_mahasiswa,
+                angkatan=angkatan,
+                prodi=programstudi)
+    
 
         subject = data_dict.get('Subject')
         subject_short = data_dict.get('Subject Short')
