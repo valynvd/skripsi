@@ -78,6 +78,12 @@ const SuratPenugasanForm = () => {
   const [openModal, setOpenModal] = useState(false);
   const [openModalPenelitian, setOpenModalPenelitian] = useState(false);
   const [openModalPengabdian, setOpenModalPengabdian] = useState(false);
+  const semesterName = {
+    Odd: 'Ganjil',
+    Even: 'Genap',
+    'Odd Short': 'Pendek Ganjil',
+    'Even Short': 'Pendek Genap',
+  };
 
   const { mutate: postSuratPenugasan, isLoading: postSuratPenugasanLoading } =
     usePostSuratPenugasan();
@@ -106,13 +112,6 @@ const SuratPenugasanForm = () => {
   });
   const { data: dataCycle, isSuccess: dataCycleSuccess } = useCycleData({
     select: (response) => {
-      const semesterName = {
-        Odd: 'Ganjil',
-        Even: 'Genap',
-        'Odd Short': 'Pendek Ganjil',
-        'Even Short': 'Pendek Genap',
-      };
-
       const formatUserData = response.data.map(
         ({ id, start_year, end_year, semester }) => {
           return {
@@ -641,12 +640,22 @@ const SuratPenugasanForm = () => {
       });
     };
     doc.setFontSize(12);
+
+    console.log(suratPenugasanData);
     titleText('SURAT KEPUTUSAN', 1);
     titleText('DEKAN SEKOLAH STEM – UNIVERSITAS PRASETIYA MULYA', 2);
-    titleText('NOMOR 0/4/11.01.1/0674/09/2021', 3);
+    titleText(
+      `NOMOR 0/4/11.01.1/0674/09/${suratPenugasanData.cycle_detail?.start_year}`,
+      3
+    );
     titleText('TENTANG', 4);
     titleText(
-      'PENUGASAN PENGAJARAN SEMESTER GANJIL TAHUN AKADEMIK 2021/2022',
+      `PENUGASAN PENGAJARAN SEMESTER ${
+        semesterName[suratPenugasanData.cycle_detail?.semester] &&
+        semesterName[suratPenugasanData.cycle_detail?.semester].toUpperCase()
+      } TAHUN AKADEMIK ${suratPenugasanData.cycle_detail?.start_year}/${
+        suratPenugasanData.cycle_detail?.end_year
+      }`,
       5
     );
     titleText('SEKOLAH STEM – UNIVERSITAS PRASETIYA MULYA', 6);
@@ -658,7 +667,7 @@ const SuratPenugasanForm = () => {
     doc.setFont('Times', 'normal');
     bulletList(
       'a.',
-      'Bahwa untuk menunjang kelancaran pendidikan Program Sarjana (S1) Sekolah STEM Universitas Prasetiya Mulya, perlu ditetapkan penugasan pengajaran semester ganjil tahun akademik 2021/2022',
+      `Bahwa untuk menunjang kelancaran pendidikan Program Sarjana (S1) Sekolah STEM Universitas Prasetiya Mulya, perlu ditetapkan penugasan pengajaran semester ganjil tahun akademik ${suratPenugasanData.cycle_detail?.start_year}/${suratPenugasanData.cycle_detail?.end_year}`,
       91
     );
     bulletList(
@@ -702,7 +711,7 @@ const SuratPenugasanForm = () => {
     doc.setFont('Times', 'normal');
     bulletList(
       '1.',
-      'Menugaskan kepada nama-nama Faculty Member di dalam lampiran Surat Keputusan ini untuk bertindak dan bertanggung jawab sebagai Dosen Pengampu Mata Kuliah Program Sarjana (S1) Sekolah STEM Universitas Prasetiya Mulya untuk Semester Ganjil Tahun Akademik 2021/2022.',
+      `Menugaskan kepada nama-nama Faculty Member di dalam lampiran Surat Keputusan ini untuk bertindak dan bertanggung jawab sebagai Dosen Pengampu Mata Kuliah Program Sarjana (S1) Sekolah STEM Universitas Prasetiya Mulya untuk Semester Ganjil Tahun Akademik ${suratPenugasanData.cycle_detail?.start_year}/${suratPenugasanData.cycle_detail?.end_year}.`,
       211.5
     );
 
@@ -885,15 +894,16 @@ const SuratPenugasanForm = () => {
         let itemData = [
           '',
           {
-            content: item.mata_kuliah_detail.name,
+            content: item.mata_kuliah_detail?.name || 'Tidak ada',
             styles: { valign: 'middle' },
           },
           {
-            content: item.mata_kuliah_detail.kode,
+            content: item.mata_kuliah_detail?.kode || 'Tidak ada',
             styles: { valign: 'middle', halign: 'center' },
           },
           {
-            content: item.dosen_pengampu_detail.prodi_detail.name,
+            content:
+              item.dosen_pengampu_detail?.prodi_detail?.name || 'Tidak ada',
             styles: { valign: 'middle', halign: 'center' },
           },
           {
@@ -901,11 +911,11 @@ const SuratPenugasanForm = () => {
             styles: { valign: 'middle', halign: 'center' },
           },
           {
-            content: item.mata_kuliah_detail.sks_total,
+            content: item.mata_kuliah_detail?.sks_total || 'Tidak ada',
             styles: { valign: 'middle', halign: 'center' },
           },
           {
-            content: item.sks_realisasi,
+            content: item.sks_realisasi || 'Tidak ada',
             styles: { valign: 'middle', halign: 'center' },
           },
           {
@@ -1042,6 +1052,12 @@ const SuratPenugasanForm = () => {
       },
       showHead: 'everyPage',
       margin: { right: 10, vertical: 30, left: 15.5 },
+      didParseCell: function (cell) {
+        if (cell.cell?.raw?.content === 'Tidak ada') {
+          cell.cell.styles.fontStyle = 'bold';
+          cell.cell.styles.textColor = [255, 0, 0];
+        }
+      },
       didDrawPage: function (data) {
         // Header
         doc.addImage(

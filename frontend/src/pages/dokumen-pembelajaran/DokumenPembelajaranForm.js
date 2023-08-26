@@ -420,7 +420,7 @@ const DokumenPembelajaranForm = () => {
               <div className="flex flex-col items-start lg:justify-between lg:items-center lg:flex-row space-y-2 lg:space-y-0">
                 <p className="font-semibold text-lg">Riwayat Perubahan RPS</p>
                 <div className="flex space-x-4">
-                  <PrimaryButton
+                  {/* <PrimaryButton
                     onClick={() => {
                       navigate(
                         `/pelaksanaan-pendidikan/dokumen-pembelajaran/${id}/rps`,
@@ -429,7 +429,7 @@ const DokumenPembelajaranForm = () => {
                     }}
                   >
                     Buat RPS
-                  </PrimaryButton>
+                  </PrimaryButton> */}
                   <PrimaryButton
                     icon={<BiPlusCircle size={22} />}
                     onClick={() => {

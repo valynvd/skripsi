@@ -21,7 +21,7 @@ const Cycle = () => {
   return (
     <section id="cycle" className="section-container">
       <ModalDelete
-        title="Siklus"
+        title="Periode"
         isOpen={openModalDelete}
         setIsOpen={setOpenModalDelete}
         deleteFunc={() =>
@@ -34,13 +34,13 @@ const Cycle = () => {
         }
       />
       <div className="flex flex-col items-start lg:justify-between lg:items-center lg:flex-row space-y-2 lg:space-y-0">
-        <p className="font-semibold text-lg">Daftar Siklus</p>
+        <p className="font-semibold text-lg">Daftar Periode</p>
         {userRole.admin && (
           <PrimaryButton
             icon={<BiPlusCircle size={22} />}
             link="/data-master/cycle/form"
           >
-            Buat Siklus
+            Buat Periode
           </PrimaryButton>
         )}
       </div>

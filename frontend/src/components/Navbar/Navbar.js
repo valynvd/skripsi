@@ -166,13 +166,18 @@ const Navbar = () => {
                     allowedRoles: userRole.admin,
                   },
                   {
-                    title: 'Siklus',
+                    title: 'Periode',
                     url: '/cycle',
                     allowedRoles: userRole.admin,
                   },
                   {
                     title: 'Kriteria',
                     url: '/kriteria',
+                    allowedRoles: userRole.admin,
+                  },
+                  {
+                    title: 'Program Studi',
+                    url: '/program-studi',
                     allowedRoles: userRole.admin,
                   },
                   {

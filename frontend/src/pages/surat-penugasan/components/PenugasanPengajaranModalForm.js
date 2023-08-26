@@ -79,9 +79,11 @@ const PenugasanPengajaranModalForm = ({
   const { data: dataMataKuliah, isSuccess: mataKuliahDataSuccess } =
     useMataKuliahData({
       select: (response) => {
-        const formatMataKuliahData = response.data.map(({ id, name }) => {
-          return { value: id, label: name };
-        });
+        const formatMataKuliahData = response.data.map(
+          ({ id, name, semester }) => {
+            return { value: id, label: name + ' - Semester ' + semester };
+          }
+        );
 
         return formatMataKuliahData;
       },

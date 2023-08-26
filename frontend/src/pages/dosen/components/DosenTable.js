@@ -3,6 +3,7 @@ import Table from '../../../components/Table';
 import { useNavigate } from 'react-router-dom';
 import { EditIcon, DeleteIcon } from '../../../components/IconButton';
 import { useCheckRole } from '../../../hooks/useCheckRole';
+import TableIfNull from '../../../components/TableIfNull';
 
 const Dosen = ({ setOpenModalDelete, setSelectedItem, ...options }) => {
   const navigate = useNavigate();
@@ -26,8 +27,14 @@ const Dosen = ({ setOpenModalDelete, setSelectedItem, ...options }) => {
       accessor: 'prodi_detail.name',
     },
     {
+      Header: 'NIDN',
+      accessor: 'nidn',
+      Cell: ({ value }) => (value ? value : <TableIfNull />),
+    },
+    {
       Header: 'NIK',
       accessor: 'nik',
+      Cell: ({ value }) => (value ? value : <TableIfNull />),
     },
     {
       Header: 'Aksi',

@@ -5,20 +5,19 @@ import { PrimaryButton } from '../../components/PrimaryButton';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { AlertError } from '../../components/Alert';
 import EditButton from '../../components/EditButton';
-import CRUDropdownInput from '../../components/CRUDropdownInput';
 import {
-  useCycleById,
-  usePatchCycle,
-  usePostCycle,
-} from '../../hooks/useCycle';
+  useProgramStudiById,
+  usePatchProgramStudi,
+  usePostProgramStudi,
+} from '../../hooks/useProgramStudi';
 import CancelButton from '../../components/CancelButton';
 import BreadCrumbs from '../../components/BreadCrumbs';
 
-const CycleForm = () => {
+const ProgramStudiForm = () => {
   const [errorMessage, setErrorMessage] = useState();
   const { id } = useParams();
   const { state } = useLocation();
-  const [cycleData, setCycleData] = useState(state);
+  const [programstudiData, setProgramStudiData] = useState(state);
   const [editable, setEditable] = useState(true);
   const navigate = useNavigate();
 
@@ -26,7 +25,6 @@ const CycleForm = () => {
     register,
     handleSubmit,
     reset,
-    control,
     formState: { errors, dirtyFields },
   } = useForm({
     defaultValues: {
@@ -36,37 +34,39 @@ const CycleForm = () => {
     },
   });
 
-  const { data: updatedCycleData } = useCycleById(id, {
-    enabled: !!id && !cycleData,
+  const { data: updatedProgramStudiData } = useProgramStudiById(id, {
+    enabled: !!id && !programstudiData,
   });
 
   useEffect(() => {
     if (id) {
       if (state) {
         reset(state);
-      } else if (updatedCycleData) {
-        setCycleData(updatedCycleData.data);
-        reset(updatedCycleData.data);
+      } else if (updatedProgramStudiData) {
+        setProgramStudiData(updatedProgramStudiData.data);
+        reset(updatedProgramStudiData.data);
       }
       setEditable(false);
     }
-  }, [updatedCycleData, state, reset, id]);
+  }, [updatedProgramStudiData, state, reset, id]);
 
-  const { mutate: postCycle, isLoading: postCycleLoading } = usePostCycle();
-  const { mutate: patchCycle, isLoading: patchCycleLoading } = usePatchCycle();
+  const { mutate: postProgramStudi, isLoading: postProgramStudiLoading } =
+    usePostProgramStudi();
+  const { mutate: patchProgramStudi, isLoading: patchProgramStudiLoading } =
+    usePatchProgramStudi();
 
   const onSubmit = (data) => {
-    const cycleFormData = new FormData();
+    const programstudiFormData = new FormData();
 
     Object.keys(dirtyFields).forEach((key) => {
       if (dirtyFields[key]) {
-        cycleFormData.append(key, data[key]);
+        programstudiFormData.append(key, data[key]);
       }
     });
 
     if (id) {
-      patchCycle(
-        { data: cycleFormData, id: id },
+      patchProgramStudi(
+        { data: programstudiFormData, id: id },
         {
           onSuccess: () => {
             setEditable(false);
@@ -80,9 +80,9 @@ const CycleForm = () => {
         }
       );
     } else {
-      postCycle(cycleFormData, {
+      postProgramStudi(programstudiFormData, {
         onSuccess: () => {
-          navigate('/data-master/cycle');
+          navigate('/data-master/program-studi');
           setEditable(false);
         },
         onError: (err) => {
@@ -96,46 +96,40 @@ const CycleForm = () => {
   };
 
   return (
-    <section id="dosen-form" className="section-container">
+    <section id="program-studi-form" className="section-container">
       <p className="text-lg font-semibold">
         <BreadCrumbs
           links={[
-            { name: 'Daftar Periode', link: '/data-master/cycle' },
+            {
+              name: 'Daftar Program Studi',
+              link: '/data-master/program-studi',
+            },
             { name: id ? 'Detail' : 'Buat' },
           ]}
         />
-        {id ? 'Detail' : 'Buat'} Periode
+        {id ? 'Detail' : 'Buat'} Program Studi
       </p>
       <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4">
         <CRUInput
           register={register}
-          name="Mulai Tahun"
+          name="nama"
           required
-          type="number"
           errors={errors}
-          registeredName="start_year"
+          registeredName="name"
           isDisabled={!editable}
         />
         <CRUInput
           register={register}
-          name="Akhir Tahun"
-          required
-          type="number"
+          name="kode"
           errors={errors}
-          registeredName="end_year"
+          registeredName="kode"
           isDisabled={!editable}
         />
-        <CRUDropdownInput
-          control={control}
-          name="Semester"
-          registeredName="semester"
-          required
-          options={[
-            { value: 'Odd', label: 'Ganjil' },
-            { value: 'Odd Short', label: 'Pendek Ganjil' },
-            { value: 'Even', label: 'Genap' },
-            { value: 'Even Short', label: 'Pendek Genap' },
-          ]}
+        <CRUInput
+          register={register}
+          name="kode SAP"
+          errors={errors}
+          registeredName="kode_sap"
           isDisabled={!editable}
         />
 
@@ -155,14 +149,17 @@ const CycleForm = () => {
               <EditButton
                 className={`!text-base`}
                 type="submit"
-                isLoading={patchCycleLoading}
+                isLoading={patchProgramStudiLoading}
                 name="Update"
               />
             )}
             {editable && <CancelButton onClick={() => setEditable(false)} />}
           </div>
         ) : (
-          <PrimaryButton className={`!mt-8`} isLoading={postCycleLoading}>
+          <PrimaryButton
+            className={`!mt-8`}
+            isLoading={postProgramStudiLoading}
+          >
             Buat
           </PrimaryButton>
         )}
@@ -171,4 +168,4 @@ const CycleForm = () => {
   );
 };
 
-export default CycleForm;
+export default ProgramStudiForm;

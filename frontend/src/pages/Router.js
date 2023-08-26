@@ -68,6 +68,8 @@ import DokumenAkreditasiForm from './dokumen-akreditasi/DokumenAkreditasiForm';
 import PenugasanPengajaranImportExcel from './penugasan-pengajaran/PenugasanPengajaranImportExcel';
 import SimulasiMatriks from './simulasi-matriks/SimulasiMatriks';
 import SimulasiMatriksForm from './simulasi-matriks/SimulasiMatriksForm';
+import ProgramStudi from './program-studi/ProgramStudi';
+import ProgramStudiForm from './program-studi/ProgramStudiForm';
 
 const Router = () => {
   return (
@@ -174,6 +176,11 @@ const Router = () => {
                 <Route index element={<PoinPenilaian />} />
                 <Route path="form" element={<PoinPenilaianForm />} />
                 <Route path=":id" element={<PoinPenilaianForm />} />
+              </Route>
+              <Route path="program-studi">
+                <Route index element={<ProgramStudi />} />
+                <Route path="form" element={<ProgramStudiForm />} />
+                <Route path=":id" element={<ProgramStudiForm />} />
               </Route>
             </Route>
             <Route

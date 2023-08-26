@@ -29,6 +29,12 @@ const patchProgramStudi = ({ data, id }) => {
   });
 };
 
+const getProgramStudiById = (id) => {
+  return request({
+    url: `/api-stem/programstudi/${id}/`,
+  });
+};
+
 const getProgramStudi = () => {
   return request({
     url: url,
@@ -37,6 +43,13 @@ const getProgramStudi = () => {
 
 export const useProgramStudiData = (options) => {
   return useQuery('program-studi', getProgramStudi, {
+    refetchOnWindowFocus: false,
+    ...options,
+  });
+};
+
+export const useProgramStudiById = (id, options) => {
+  return useQuery(['program-studi-by-id', id], () => getProgramStudiById(id), {
     refetchOnWindowFocus: false,
     ...options,
   });

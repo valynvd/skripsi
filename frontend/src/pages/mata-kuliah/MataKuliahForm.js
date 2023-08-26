@@ -1,5 +1,7 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
+import Select from 'react-select';
 import CRUInput from '../../components/CRUInput';
 import { PrimaryButton } from '../../components/PrimaryButton';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
@@ -14,6 +16,7 @@ import {
 } from '../../hooks/useMataKuliah';
 import CancelButton from '../../components/CancelButton';
 import BreadCrumbs from '../../components/BreadCrumbs';
+import { primary400 } from '../../utils/colors';
 
 const MataKuliahForm = () => {
   const [errorMessage, setErrorMessage] = useState();
@@ -48,10 +51,20 @@ const MataKuliahForm = () => {
   useEffect(() => {
     if (id) {
       if (state) {
-        reset(state);
+        reset({
+          ...state,
+          kurikulum: state.kurikulum_detail.map((item) => {
+            return { value: item.id, label: item.name };
+          }),
+        });
       } else if (updatedMataKuliahData) {
         setMataKuliahData(updatedMataKuliahData.data);
-        reset(updatedMataKuliahData.data);
+        reset({
+          ...updatedMataKuliahData.data,
+          kurikulum: updatedMataKuliahData.data.kurikulum_detail.map((item) => {
+            return { value: item.id, label: item.name };
+          }),
+        });
       }
       setEditable(false);
     }
@@ -76,8 +89,14 @@ const MataKuliahForm = () => {
     const mataKuliahFormData = new FormData();
 
     Object.keys(dirtyFields).forEach((key) => {
-      if (dirtyFields[key]) {
-        mataKuliahFormData.append(key, data[key]);
+      if (key === 'kurikulum') {
+        data[key].forEach((item) => {
+          mataKuliahFormData.append(key, item.value);
+        });
+      } else {
+        if (dirtyFields[key]) {
+          mataKuliahFormData.append(key, data[key]);
+        }
       }
     });
 
@@ -124,14 +143,67 @@ const MataKuliahForm = () => {
         {id ? 'Detail' : 'Buat'} Mata Kuliah
       </p>
       <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4">
-        <CRUDropdownInput
+        <Controller
+          // rules={{ required: required ? `${name} harus diisi` : false }}
+          control={control}
+          name="kurikulum"
+          render={({ field, fieldState: { error } }) => (
+            <>
+              <div>
+                <p className="mb-1">Kurikulum</p>
+                <Select
+                  // isClearable={isClearable}
+                  isDisabled={!editable}
+                  placeholder="pilih..."
+                  theme={(theme) => ({
+                    ...theme,
+                    colors: {
+                      ...theme.colors,
+                      primary: primary400,
+                      primary25: '#fde3e4',
+                      primary50: '#fbd0d2',
+                    },
+                  })}
+                  classNamePrefix="react-select"
+                  styles={{
+                    control: (base) => ({
+                      ...base,
+                      boxShadow: 'none',
+                    }),
+                  }}
+                  classNames={{
+                    control: (state) =>
+                      `!px-0.5 !text-red-400 !py-0.5 ${
+                        error ? '!border-primary-400' : ''
+                      } ${
+                        state.isFocused
+                          ? '!border-primary-400'
+                          : '!border-gray-200'
+                      } ${!editable && '!bg-grayDisabled-400'}`,
+                  }}
+                  inputRef={field.ref}
+                  isMulti
+                  options={kurikulumDataSuccess ? kurikulumData : []}
+                  value={field.value}
+                  onChange={field.onChange}
+                />
+                {error && (
+                  <p className="mt-1 text-sm text-primary-400">
+                    {error.message}
+                  </p>
+                )}
+              </div>
+            </>
+          )}
+        />
+        {/* <CRUDropdownInput
           control={control}
           name="Kurikulum"
           registeredName="kurikulum"
           required
           isDisabled={!editable}
           options={kurikulumDataSuccess ? kurikulumData : []}
-        />
+        /> */}
         <CRUInput
           register={register}
           name="Nama"

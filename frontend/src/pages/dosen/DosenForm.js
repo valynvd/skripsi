@@ -214,7 +214,24 @@ const DosenForm = () => {
           });
         },
         onError: (err) => {
-          setErrorMessage(err.message);
+          console.log(err.response.data.password);
+          const passwordError = {
+            'The password is too similar to the email.':
+              'Password terlalu mirip dengan email.',
+            'This password is too short. It must contain at least 8 characters.':
+              'Password terlalu pendek. Password harus melebihi 8 karatker.',
+            'This password is too common.': 'Password terlalu umum',
+          };
+
+          if (err.response?.data?.password) {
+            setErrorMessage(
+              err.response.data.password.map((item, index) => {
+                return <p key={index}>- {passwordError[item]}</p>;
+              })
+            );
+          } else {
+            setErrorMessage(err.message);
+          }
           setTimeout(() => {
             setErrorMessage();
           }, 5000);
@@ -253,6 +270,7 @@ const DosenForm = () => {
           register={register}
           name="Email"
           required
+          type="email"
           errors={errors}
           registeredName="email"
           isDisabled={!editable}
@@ -268,7 +286,6 @@ const DosenForm = () => {
         <CRUInput
           register={register}
           name="NIDN"
-          required
           errors={errors}
           registeredName="nidn"
           isDisabled={!editable}
@@ -276,7 +293,6 @@ const DosenForm = () => {
         <CRUInput
           register={register}
           name="NIK"
-          required
           errors={errors}
           registeredName="nik"
           isDisabled={!editable}
@@ -342,6 +358,7 @@ const DosenForm = () => {
         />
         <CRUDropdownInput
           control={control}
+          required
           name="Program Studi"
           registeredName="prodi"
           options={programStudiDataSuccess ? dataProgramStudi : []}

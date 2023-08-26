@@ -5,7 +5,11 @@ import { EditIcon, DeleteIcon } from '../../../components/IconButton';
 import { useCheckRole } from '../../../hooks/useCheckRole';
 import TableIfNull from '../../../components/TableIfNull';
 
-const Kurikulum = ({ setOpenModalDelete, setSelectedItem, ...options }) => {
+const ProgramStudiTable = ({
+  setOpenModalDelete,
+  setSelectedItem,
+  ...options
+}) => {
   const navigate = useNavigate();
   const userRole = useCheckRole();
 
@@ -15,40 +19,14 @@ const Kurikulum = ({ setOpenModalDelete, setSelectedItem, ...options }) => {
       accessor: 'name',
     },
     {
-      Header: 'File Panduan Kurikulum',
-      accessor: 'file_panduan_kurikulum',
-      Cell: ({ value }) => {
-        return value ? (
-          <a
-            href={value}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-block max-w-[12rem] text-primary-400 overflow-ellipsis overflow-hidden whitespace-nowrap"
-          >
-            {value}
-          </a>
-        ) : (
-          <TableIfNull />
-        );
-      },
+      Header: 'Kode',
+      accessor: 'kode',
+      Cell: ({ value }) => (value ? value : <TableIfNull value={value} />),
     },
     {
-      Header: 'File Pendukung',
-      accessor: 'file_pendukung',
-      Cell: ({ value }) => {
-        return value ? (
-          <a
-            href={value}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-block max-w-[12rem] text-primary-400 overflow-ellipsis overflow-hidden whitespace-nowrap"
-          >
-            {value}
-          </a>
-        ) : (
-          <TableIfNull />
-        );
-      },
+      Header: 'Kode SAP',
+      accessor: 'kode_sap',
+      Cell: ({ value }) => (value ? value : <TableIfNull value={value} />),
     },
     {
       Header: 'Aksi',
@@ -61,7 +39,7 @@ const Kurikulum = ({ setOpenModalDelete, setSelectedItem, ...options }) => {
           <div className="flex flex-row space-x-2">
             <EditIcon
               onClick={() => {
-                navigate(`/data-master/kurikulum/${value.id}`, {
+                navigate(`/data-master/program-studi/${value.id}`, {
                   state: value,
                 });
               }}
@@ -83,4 +61,4 @@ const Kurikulum = ({ setOpenModalDelete, setSelectedItem, ...options }) => {
   return <Table {...options} userRole={userRole} columns={columns} />;
 };
 
-export default Kurikulum;
+export default ProgramStudiTable;

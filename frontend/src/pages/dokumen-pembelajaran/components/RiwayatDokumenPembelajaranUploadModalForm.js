@@ -98,7 +98,11 @@ const RiwayatDokumenPembelajaranUploadModalForm = ({
           setOpenModalUpload(false);
         },
         onError: (err) => {
-          setErrorMessage(err.message);
+          if (err.response?.data) {
+            setErrorMessage(err.response.data);
+          } else {
+            setErrorMessage(err.message);
+          }
           setTimeout(() => {
             setErrorMessage();
           }, 5000);
