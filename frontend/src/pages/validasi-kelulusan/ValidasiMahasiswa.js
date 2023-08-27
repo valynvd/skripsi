@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Fragment } from 'react';
 import { useCheckRole } from '../../hooks/useCheckRole';
 import { PrimaryButton } from '../../components/PrimaryButton';
 import { AiOutlineSearch } from 'react-icons/ai';
@@ -9,6 +9,8 @@ import {
   useTranskripNilaiDataByNIM2,
 } from '../../hooks/useTranskripNilai';
 import FilterInput from '../../components/FitlerInput';
+import ProgressBar from '@ramonak/react-progress-bar';
+import { Dialog, Transition } from '@headlessui/react';
 import { useForm } from 'react-hook-form';
 import { useDataMahasiswaData } from '../../hooks/useDataMahasiswa';
 import { usePostValidasiMahasiswa } from '../../hooks/useValidasiMahasiswa';
@@ -23,6 +25,9 @@ const ValidasiMahasiswa = () => {
   const [dataMahasiswa, setDataMahasiswa] = useState([]);
   const [filterMahasiswa, setFilterMahasiswa] = useState([]);
   const [transkripData, setTranskripData] = useState([]);
+
+  const [progress, setProgress] = useState(0);
+  const [open, setOpen] = useState(false);
 
   const navigate = useNavigate();
   const { control, watch, setValue } = useForm({
@@ -217,6 +222,11 @@ const ValidasiMahasiswa = () => {
         try {
           postValidasiMahasiswa(validasiFormData, {
             onSuccess: () => {
+              const newProgress = ((index + 1) / filterMahasiswa.length) * 100;
+              if (newProgress == 100.0) {
+                setOpen(true);
+              }
+              setProgress(newProgress.toFixed(2));
             },
             onError: (error) => {
               console.error(error)
@@ -233,8 +243,62 @@ const ValidasiMahasiswa = () => {
     }
   };
 
+  const handleToClose = () => {
+    setOpen(false);
+    setProgress('');
+    setSelectedAngkatan('')
+    setSelectedProdi('')
+
+  };
+
   return (
     <section id="monitoring-mahasiswa" className="section-container">
+      <Transition
+        show={open}
+        as={Fragment}
+      >
+        <Dialog onClose={() => setOpen(false)} className={`relative z-100`}>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <div className="fixed inset-0 bg-black/30" />
+          </Transition.Child>
+          <Transition.Child
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0 scale-95"
+            enterTo="opacity-100 scale-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100 scale-100"
+            leaveTo="opacity-0 scale-95"
+          >
+            <div className="fixed inset-0">
+              <div className="flex min-h-full items-center justify-center p-4">
+                <Dialog.Panel className="bg-white p-5 rounded-xl shadow-lg flex flex-col items-center justify-center text-center">
+                  <Dialog.Title className="text-xl font-bold text-black-800">
+                    Berhasil
+                  </Dialog.Title>
+                  <p className="text-gray-600 mt-2 max-w-md">
+                    Validasi Mahasiswa {selectedProdi} {selectedAngkatan} Berhasil
+                  </p>
+                  <PrimaryButton
+                    className={`!mt-8 !mb-5`}
+                    onClick={handleToClose}
+                  >
+                    Tutup
+                  </PrimaryButton>
+                </Dialog.Panel>
+              </div>
+            </div>
+          </Transition.Child>
+        </Dialog>
+      </Transition>
       <div className="flex flex-col items-start lg:justify-between lg:items-center lg:flex-row space-y-2 lg:space-y-0">
         <p className="font-semibold text-lg">
           Validasi Mahasiswa
@@ -294,7 +358,7 @@ const ValidasiMahasiswa = () => {
         </select>
         <PrimaryButton onClick={onAudit}>Grup Audit</PrimaryButton>
       </div>
-
+      {progress ? <ProgressBar completed={progress} /> : null}
       {nim ? (
         <div className="overflow-x-auto">
           <table className="w-full mt-6">
