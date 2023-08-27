@@ -8,10 +8,10 @@ import {
     useGlobalFilter,
     useSortBy,
 } from 'react-table'; 
-import { AiOutlineSearch } from 'react-icons/ai';
-import FilterInput from '../../../components/FitlerInput';
+// import { AiOutlineSearch } from 'react-icons/ai';
+// import FilterInput from '../../../components/FitlerInput';
 import { useForm } from 'react-hook-form';
-import { useProgramStudiData } from '../../../hooks/useProdi';
+// import { useProgramStudiData } from '../../../hooks/useProdi';
 import { RxTriangleUp, RxTriangleDown } from 'react-icons/rx';
 import { useNavigate } from 'react-router-dom';
 import { ClipLoader } from 'react-spinners';
@@ -103,24 +103,24 @@ const MonitoringMahasiswaTable = ({
           return 'Unknown Session Type';
         }
       };
-    const { control, watch, setValue } = useForm({
+    const { watch } = useForm({
         defaultValues: {},
     })
     const prodiWatch = watch('prodi');
 
-    const { data: dataProgramStudi, isSuccess: dataProgramStudiSuccess } =
-    useProgramStudiData({
-      select: (response) => {
-        const formatUserData = response.data.map(({ id, name, kode }) => {
-          return {
-            value: id,
-            label: `${name} (${kode})`,
-          };
-        });
+    // const { data: dataProgramStudi, isSuccess: dataProgramStudiSuccess } =
+    // useProgramStudiData({
+    //   select: (response) => {
+    //     const formatUserData = response.data.map(({ id, name, kode }) => {
+    //       return {
+    //         value: id,
+    //         label: `${name} (${kode})`,
+    //       };
+    //     });
 
-        return formatUserData;
-      },
-    });
+    //     return formatUserData;
+    //   },
+    // });
     
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const memoColumns = useMemo(() => columns, [userRole]);
@@ -146,7 +146,6 @@ const MonitoringMahasiswaTable = ({
         previousPage,
         canNextPage,
         canPreviousPage,
-        setGlobalFilter,
         gotoPage,
         pageOptions,
         state,
@@ -158,11 +157,11 @@ const MonitoringMahasiswaTable = ({
         usePagination
     );
     
-    const { pageIndex, globalFilter } = state;
+    const { pageIndex } = state;
 
     return(
         <>
-            <div>
+            {/* <div>
                 <form className="flex gap-4 flex-wrap items-center mb-4">
                     <div className="relative w-[]20rem">
                         <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -190,7 +189,7 @@ const MonitoringMahasiswaTable = ({
                         options={dataProgramStudiSuccess ? dataProgramStudi : []}
                     />
                 </form>
-            </div>
+            </div> */}
             <div className="overflow-x-auto">
                 <table {...getTableProps()} className="w-full">
                 <thead className="bg-primary-400/[0.03] whitespace-nowrap rounded-xl">

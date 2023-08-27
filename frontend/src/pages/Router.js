@@ -43,7 +43,6 @@ import GrupMahasiswa from './grup-mahasiswa/GrupMahasiswa';
 import MahasiswaMember from './grup-mahasiswa/MahasiswaMember';
 import DataMahasiswa from './mahasiswa/DataMahasiswa';
 import DataMahasiswaForm from './mahasiswa/DataMahasiswaForm';
-import MonitoringMahasiswa from './monitoring-mahasiswa/MonitoringMahasiswa';
 import ValidasiMahasiswa from './validasi-kelulusan/ValidasiMahasiswa';
 import ValidasiMahasiswaByNIM from './validasi-kelulusan/ValidasiMahasiswaByNIM';
 import DegreeAuditKelulusan from './degreeaudit-kelulusan/DegreeAuditKelulusan';
@@ -70,6 +69,8 @@ import SimulasiMatriks from './simulasi-matriks/SimulasiMatriks';
 import SimulasiMatriksForm from './simulasi-matriks/SimulasiMatriksForm';
 import ProgramStudi from './program-studi/ProgramStudi';
 import ProgramStudiForm from './program-studi/ProgramStudiForm';
+import MonitoringMahasiswa1 from './monitoring-mahasiswa/MonitoringMahasiswa1';
+import MonitoringMahasiswaByNIM from './monitoring-mahasiswa/MonitoringMahasiswaByNIM';
 
 const Router = () => {
   return (
@@ -337,7 +338,8 @@ const Router = () => {
 
           <Route path="degreeaudit" element={<Outlet />}>
             <Route path="monitoring-akademik">
-              <Route index element={<MonitoringMahasiswa />} />
+              <Route index element={<MonitoringMahasiswa1 />} />
+              <Route path=":nim" element={<MonitoringMahasiswaByNIM />} />
               <Route
                 path="import"
                 element={<MonitoringMahasiswaImportExcel />}
