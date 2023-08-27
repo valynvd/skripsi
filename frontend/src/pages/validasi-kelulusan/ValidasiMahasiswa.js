@@ -183,7 +183,7 @@ const ValidasiMahasiswa = () => {
         
         // Check Nilai TA
         const checkNilaiTA = responseData.data.reduce((gradeSymbol, transkripData) => {
-          if (transkripData.mata_kuliah_detail.name === "Final Project") {
+          if (transkripData.mata_kuliah_detail.name == "Final Project" || transkripData.mata_kuliah_detail.name == "Final Project II") {
             return transkripData.grade_symbol; 
           }
           return gradeSymbol; 
@@ -285,7 +285,7 @@ const ValidasiMahasiswa = () => {
                     Berhasil
                   </Dialog.Title>
                   <p className="text-gray-600 mt-2 max-w-md">
-                    Validasi Mahasiswa {selectedProdi} {selectedAngkatan} Berhasil
+                    Validasi Mahasiswa Berhasil
                   </p>
                   <PrimaryButton
                     className={`!mt-8 !mb-5`}
