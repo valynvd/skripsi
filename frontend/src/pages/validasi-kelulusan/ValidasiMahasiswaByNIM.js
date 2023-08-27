@@ -147,7 +147,7 @@ const ValidasiMahasiswaByNIM = () => {
     setNilaiIpk(ipkData);
 
     const checkNilaiTA = transkripData.reduce((gradeSymbol, transkripData) => {
-      if (transkripData.mata_kuliah_detail.name === "Final Project") {
+      if (transkripData.mata_kuliah_detail.name == "Final Project" || transkripData.mata_kuliah_detail.name == "Final Project II") {
         return transkripData.grade_symbol; // Return the gradeSymbol for "Final Project"
       }
       return gradeSymbol; // Return the accumulated gradeSymbol
