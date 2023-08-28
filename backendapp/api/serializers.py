@@ -199,7 +199,7 @@ class AssignMahasiswatoGrupSerializers(serializers.ModelSerializer):
 
   class Meta:
       model = models.AssignMahasiswatoGrup
-      model = models.AssignMahasiswatoGrup
+      fields = '__all__'
 
 class MonitoringMahasiswaSerializers(serializers.ModelSerializer):
   # nama_mahasiswa = serializers.CharField(write_only=True)

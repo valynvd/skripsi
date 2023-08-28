@@ -613,6 +613,52 @@ class GrupMahasiswaViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.GrupMahasiswaSerializers
     queryset = models.GrupMahasiswa.objects.all()
 
+    def create(self, request, *args, **kwargs):
+        convert_to = json.dumps(request.data, indent=4)
+        data_dict = json.loads(convert_to)
+
+        nama_mahasiswa = data_dict.get('nama_mahasiswa')
+        nim_mahasiswa = data_dict.get('nim_mahasiswa')
+        angkatan = data_dict.get('angkatan')
+        telephone_mahasiswa = data_dict.get('telephone')
+        email = data_dict.get('email')
+        email_universitas = data_dict.get('email_universitas')
+
+
+
+        name_prody = data_dict.get('nama_prody')
+
+        try:
+            programstudi = models.ProgramStudi.objects.get(name=name_prody)
+        except models.DataMahasiswa.DoesNotExist:
+            programstudi, created = models.ProgramStudi.objects.create(name=name_prody)
+
+        try:
+            datamahasiswa = models.DataMahasiswa.objects.get(nim=nim_mahasiswa)
+            datamahasiswa.telephone = telephone_mahasiswa
+            datamahasiswa.email = email
+            datamahasiswa.email_universitas = email_universitas
+            datamahasiswa.save()
+        except models.DataMahasiswa.DoesNotExist:
+            datamahasiswa = models.DataMahasiswa.objects.create(
+                nama=nama_mahasiswa,
+                nim=nim_mahasiswa,
+                angkatan=angkatan,
+                prodi=programstudi,
+                telephone=telephone_mahasiswa,
+                email=email,
+                email_universitas=email_universitas)
+            
+        nama_grup = data_dict.get('nama_grup')
+            
+        grup_mahasiswa, created = models.GrupMahasiswa.objects.get_or_create(namagrup=nama_grup)
+
+        assigntogrup, created = models.AssignMahasiswatoGrup.objects.get_or_create(nama_mahasiswa=datamahasiswa, nama_grup=grup_mahasiswa)
+
+        serializer = self.get_serializer(instance=assigntogrup)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
     def get_permissions(self):
         if self.action in ['list','retrieve']:
             self.permission_classes = [AllowAny]
@@ -710,12 +756,12 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
         elif name_prody == "Food Technology" :
             kode = "FBT"
 
-        programstudi, created = models.ProgramStudi.objects.get_or_create(name=name_prody, kode_sap=program_study)
+        # programstudi, created = models.ProgramStudi.objects.get_or_create(name=name_prody, kode_sap=program_study)
 
         try:
             programstudi = models.ProgramStudi.objects.get(kode_sap=program_study)
         except models.DataMahasiswa.DoesNotExist:
-            programstudi = models.ProgramStudi.objects.create(name=name_prody, kode_sap=program_study)
+            programstudi, created = models.ProgramStudi.objects.create(name=name_prody, kode_sap=program_study)
 
         # # Check if DataMahasiswa already exists
 
