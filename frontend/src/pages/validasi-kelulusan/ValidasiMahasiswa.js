@@ -49,7 +49,7 @@ const ValidasiMahasiswa = () => {
   }, [isLoadingMahasiswa, responseData]);
 
   useEffect(() => {
-    if (selectedProdi || selectedAngkatan) {
+    if (selectedProdi && selectedAngkatan) {
       const filteredMahasiswa = dataMahasiswa.filter(
         (mahasiswa) => mahasiswa.prodi == selectedProdi
       );
@@ -58,7 +58,13 @@ const ValidasiMahasiswa = () => {
       );
       console.log(filteredMahasiswa);
       setFilterMahasiswa(filteredByAngkatan);
-    } else {
+    } else if (selectedAngkatan){
+      const filteredByAngkatan = dataMahasiswa.filter(
+        (mahasiswa) => mahasiswa.angkatan === selectedAngkatan
+      );
+      console.log(dataMahasiswa);
+      setFilterMahasiswa(filteredByAngkatan); }
+      else {
       setFilterMahasiswa(dataMahasiswa);
     }
   }, [selectedProdi, selectedAngkatan, dataMahasiswa]);

@@ -162,23 +162,23 @@ const DegreeAuditKelulusanTable = ({
         usePagination
     );
     const handleExport = () => {
-        const filterToExcel = rows.map(({ values }) => {
+        const filterToExcel = rows.map(({ original }) => {
             const filteredItem = {
-              'Nama Mahasiswa': values['mahasiswa_detail.nama'],
-              'NIM Mahasiswa': values['mahasiswa_detail.nim'],
-              'Jurusan': values['mahasiswa_detail.prodi_detail.name'],
-              'Angkatan': values['mahasiswa_detail.angkatan'],
-              'Jumlah SKS Lulus': values['jumlah_sks'],
-              'Jumlah Nilai D (SKS)': values['nilaid'],
-              'Jumlah Nilai E (SKS)': values['nilaie'],
-              'IPK': values['nilai_ipk'],
-              'Status Kelulusan': values['status_kelulusan'],
+                'Nama Mahasiswa': original.mahasiswa_detail.nama,
+                'NIM Mahasiswa': original.mahasiswa_detail.nim,
+                'Jurusan': original.mahasiswa_detail.prodi_detail.name,
+                'Angkatan': original.mahasiswa_detail.angkatan,
+                'Jumlah SKS Lulus': original.jumlah_sks,
+                'Jumlah Nilai D (SKS)': original.nilaid,
+                'Jumlah Nilai E (SKS)': original.nilaie,
+                'IPK': original.nilai_ipk,
+                'Status Kelulusan': original.status_kelulusan,
             };
         
             // Apply conditional formatting to Jumlah SKS Lulus column
-            if (values['jumlah_sks'] < 144) {
+            if (original.jumlah_sks < 144) {
               filteredItem['Jumlah SKS Lulus'] = {
-                v: values['jumlah_sks'],
+                v: original.jumlah_sks,
                 s: {
                     fill: {
                       bgColor: { rgb: 'FF0000' } // Red background color
