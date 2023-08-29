@@ -782,7 +782,7 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
         academic_session = data_dict.get('Academic Session')
 
         try:
-            matakuliah, created = models.MataKuliah.objects.get(kode = subject_short)
+            matakuliah = models.MataKuliah.objects.get(kode = subject_short)
         except:
             matakuliah, created = models.MataKuliah.objects.create(
                 name = subject,
