@@ -197,13 +197,13 @@ const ValidasiMahasiswa = () => {
 
         let status = "";
 
-        if (ipkData > 3.50 && totalEarnedCredits >= 144 && (!checkNilai) && (checkNilaiTA == "A" || checkNilaiTA == "AB" || checkNilaiTA == "B")) {
+        if (parseFloat(ipkData) > 3.50&& totalSKSNilaiD <= 7 && totalSKSNilaiE == 0 && totalEarnedCredits >= 144 && !checkNilai && (checkNilaiTA == "A" || checkNilaiTA == "AB" || checkNilaiTA == "B")) {
           status = "Cum Laude";
-        } else if (ipkData > 3.01 && totalSKSNilaiD <= 7 && totalSKSNilaiE == 0 && totalEarnedCredits >= 144){
+        } else if (ipkData > 3.00 && totalSKSNilaiD <= 7 && totalSKSNilaiE == 0 && totalEarnedCredits >= 144 && checkNilaiTA){
           status = "Sangat Memuaskan";
-        } else if (ipkData > 2.76 && totalSKSNilaiD <= 7 && totalSKSNilaiE == 0 && totalEarnedCredits >= 144){
+        } else if (ipkData > 2.75 && totalSKSNilaiD <= 7 && totalSKSNilaiE == 0 && totalEarnedCredits >= 144 && checkNilaiTA){
           status = "Memuaskan";
-        } else if (ipkData > 2.00 && totalSKSNilaiD <= 7 && totalSKSNilaiE == 0 && totalEarnedCredits >= 144){
+        } else if (ipkData >= 2.00 && totalSKSNilaiD <= 7 && totalSKSNilaiE == 0 && totalEarnedCredits >= 144 && checkNilaiTA){
           status = "Cukup";
         } else {
           status = "Tidak Lulus";

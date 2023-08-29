@@ -81,13 +81,22 @@ const ValidasiMahasiswaByNIM = () => {
     setNgulangNilai(checkNilai);
 
   
+    // const totalSKS = transkripData.reduce((totalCredits, getdata) => {
+    //   return totalCredits + parseInt(getdata.earned_credits);
+    // }, 0);
+    // console.log('Total SKS:', totalSKS);
+    // const totalEarnedCredits = totalSKS.toString();
+
     const totalSKS = transkripData.reduce((totalCredits, getdata) => {
-      if (!['E'].includes(getdata.grade_symbol)) {
-        return totalCredits + parseInt(getdata.earned_credits);
-      }
-      return totalCredits;
+      const currentCredits = parseInt(getdata.earned_credits);
+      const updatedTotal = totalCredits + currentCredits;
+      console.log ('Matkul:', getdata.mata_kuliah_detail.name )
+      console.log('Current Total SKS:', updatedTotal); // Log the current totalSKS value
+      return updatedTotal;
     }, 0);
-    const totalEarnedCredits = totalSKS.toString();
+
+    const totalEarnedCredits = totalSKS.toString()
+    
     setJumlahSks(totalEarnedCredits);
   
     const uniqueTahunAkademik = Array.from(
@@ -152,7 +161,7 @@ const ValidasiMahasiswaByNIM = () => {
 
     let status = "";
 
-    if (parseFloat(ipkData) > 3.50 && totalEarnedCredits >= 144 && !checkNilai && (checkNilaiTA == "A" || checkNilaiTA == "AB" || checkNilaiTA == "B")) {
+    if (parseFloat(ipkData) > 3.50&& totalSKSNilaiD <= 7 && totalSKSNilaiE == 0 && totalEarnedCredits >= 144 && !checkNilai && (checkNilaiTA == "A" || checkNilaiTA == "AB" || checkNilaiTA == "B")) {
       console.log(ngulangNilai)
       status = "Cum Laude";
       setStatusKelulusan(status);
