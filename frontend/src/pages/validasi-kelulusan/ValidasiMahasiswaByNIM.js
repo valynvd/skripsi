@@ -76,14 +76,9 @@ const ValidasiMahasiswaByNIM = () => {
     const totalSKSNilaiE = calculateTotalCreditsE(transkripData, 'E').toString();
     setNilaiE(totalSKSNilaiE);
 
-    const checkNilai = result.reduce((fixResult, resultData) => {
-      if (['D', 'E'].includes(resultData.grade_symbol)){
-        return fixResult = true;
-      }
-      return fixResult;
-    }, false);    
-    console.log(checkNilai)
-    setNgulangNilai(checkNilai)
+    const checkNilai = result.some(resultData => ['D', 'E'].includes(resultData.grade_symbol));
+    console.log(checkNilai);
+    setNgulangNilai(checkNilai);
 
   
     const totalSKS = transkripData.reduce((totalCredits, getdata) => {
@@ -122,7 +117,7 @@ const ValidasiMahasiswaByNIM = () => {
             A: 4.0, AB: 3.5, B: 3.0, BC: 2.5, C: 2.0, D: 1.0, E: 0.0
           };
           ips += gradeValues[transkripData.grade_symbol] * parseInt(transkripData.earned_credits);
-          sks += parseInt(transkripData.earned_credits);
+          sks += parseInt(transkripData.mata_kuliah_detail.sks_total);
         });
   
         ipsResults.push({
@@ -157,7 +152,8 @@ const ValidasiMahasiswaByNIM = () => {
 
     let status = "";
 
-    if (parseFloat(ipkData) > 3.50 && totalEarnedCredits >= 144 && (ngulangNilai == false) && (checkNilaiTA == "A" || checkNilaiTA == "AB" || checkNilaiTA == "B")) {
+    if (parseFloat(ipkData) > 3.50 && totalEarnedCredits >= 144 && !checkNilai && (checkNilaiTA == "A" || checkNilaiTA == "AB" || checkNilaiTA == "B")) {
+      console.log(ngulangNilai)
       status = "Cum Laude";
       setStatusKelulusan(status);
     } else if (ipkData > 3.00 && totalSKSNilaiD <= 7 && totalSKSNilaiE == 0 && totalEarnedCredits >= 144 && checkNilaiTA){
