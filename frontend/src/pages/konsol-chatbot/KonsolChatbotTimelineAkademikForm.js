@@ -13,6 +13,7 @@ import {
 } from '../../hooks/useKonsolChatbotTimelineAkademik';
 import CancelButton from '../../components/CancelButton';
 import BreadCrumbs from '../../components/BreadCrumbs';
+import CRUTextAreaInput from '../../components/CRUTextAreaInput';
 
 const KonsolChatbotTimelineAkademikForm = () => {
   const [errorMessage, setErrorMessage] = useState();
@@ -104,7 +105,7 @@ const KonsolChatbotTimelineAkademikForm = () => {
         {id ? 'Detail' : 'Buat'} Pertanyaan Timeline Akademik
       </p>
       <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4">
-        <CRUInput
+        <CRUTextAreaInput
           register={register}
           name="Pertanyaan"
           required
@@ -112,7 +113,7 @@ const KonsolChatbotTimelineAkademikForm = () => {
           registeredName="pertanyaan"
           isDisabled={!editable}
         />
-        <CRUInput
+        <CRUTextAreaInput
           register={register}
           name="Jawaban"
           required

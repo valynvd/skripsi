@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import CRUInput from '../../components/CRUInput';
 import { PrimaryButton } from '../../components/PrimaryButton';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { AlertError } from '../../components/Alert';
@@ -12,6 +11,7 @@ import {
 } from '../../hooks/useKonsolChatbotSeputarLMS';
 import CancelButton from '../../components/CancelButton';
 import BreadCrumbs from '../../components/BreadCrumbs';
+import CRUTextAreaInput from '../../components/CRUTextAreaInput';
 
 const KonsolChatbotSeputarLMSForm = () => {
   const [errorMessage, setErrorMessage] = useState();
@@ -103,7 +103,7 @@ const KonsolChatbotSeputarLMSForm = () => {
         {id ? 'Detail' : 'Buat'} Pertanyaan Seputar LMS
       </p>
       <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4">
-        <CRUInput
+        <CRUTextAreaInput
           register={register}
           name="Pertanyaan"
           required
@@ -111,7 +111,7 @@ const KonsolChatbotSeputarLMSForm = () => {
           registeredName="pertanyaan"
           isDisabled={!editable}
         />
-        <CRUInput
+        <CRUTextAreaInput
           register={register}
           name="Jawaban"
           required
