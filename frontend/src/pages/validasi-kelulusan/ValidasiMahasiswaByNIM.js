@@ -406,6 +406,7 @@ const ValidasiMahasiswaByNIM = () => {
         <table id="table-nilaid" className="w-full mt-10">
           <thead className="bg-primary-400/[0.03] whitespace-nowrap rounded-xl">
             <tr>
+              <th className="px-4 py-3 font-semibold">Kode Mata Kuliah</th>
               <th className="px-4 py-3 font-semibold">Mata Kuliah</th>
               <th className="px-4 py-3 font-semibold">Sesi Akademik</th>
               <th className="px-4 py-3 font-semibold">SKS</th>
@@ -526,6 +527,9 @@ const ValidasiMahasiswaByNIM = () => {
                       ? " Even Short"
                       : " Unknown Session Type"}</th>
                   <th className="px-4 py-3 font-semibold">
+                    
+                  </th>
+                  <th className="px-4 py-3 font-semibold">
                     Total SKS : {getData.sks}
                   </th>
                   <th className="px-4 py-3 font-semibold">
@@ -535,6 +539,7 @@ const ValidasiMahasiswaByNIM = () => {
               </thead>
               <thead className="bg-primary-400/[0.03] whitespace-nowrap rounded-xl">
                 <tr>
+                  <th className="px-4 py-3 font-semibold">Kode Mata Kuliah</th>
                   <th className="px-4 py-3 font-semibold">Mata Kuliah</th>
                   <th className="px-4 py-3 font-semibold">SKS</th>
                   <th className="px-4 py-3 font-semibold">Nilai</th>
@@ -546,6 +551,9 @@ const ValidasiMahasiswaByNIM = () => {
                   getdata.academic_session === getData.academicSession) // Use === for comparison
                   .map((filteredData, index) => (
                     <tr key={index} className="bg-white border-b text-gray-600">
+                      <td className={`px-4 py-3 text-center ${filteredData.grade_symbol == "D" ? 'bg-yellow-500' : '' || filteredData.grade_symbol == "E" ? 'bg-red-500 text-white' : ''}`}>
+                          {filteredData.mata_kuliah_detail.kode}
+                      </td>
                       <td className={`px-4 py-3 ${filteredData.grade_symbol == "D" ? 'bg-yellow-500' : '' || filteredData.grade_symbol == "E" ? 'bg-red-500 text-white' : ''}`}>
                           {filteredData.mata_kuliah_detail.name}
                       </td>
@@ -553,7 +561,6 @@ const ValidasiMahasiswaByNIM = () => {
                           {filteredData.mata_kuliah_detail.sks_total}
                       </td>
                       <td className={`px-4 py-3 text-center ${filteredData.grade_symbol == "D" ? 'bg-yellow-500' : '' || filteredData.grade_symbol == "E" ? 'bg-red-500 text-white' : ''}`}>
-                        
                           {filteredData.grade_symbol}
                      
                       </td>

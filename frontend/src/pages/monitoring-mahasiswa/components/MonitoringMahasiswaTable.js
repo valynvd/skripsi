@@ -43,6 +43,10 @@ const MonitoringMahasiswaTable = ({
             accessor:'mahasiswa_detail.angkatan'
         },
         {
+            Header:'Kode Mata Kuliah',
+            accessor:'mata_kuliah_detail.kode'
+        },
+        {
             Header:'Mata Kuliah',
             accessor:'mata_kuliah_detail.name'
         },

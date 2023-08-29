@@ -69,7 +69,7 @@ const MonitoringMahasiswaByNIM = () => {
         </div>
         <PrimaryButton 
           onClick={() => {
-              navigate(`degreeaudit/monitoring-akademik/${nim1}`);
+              navigate(`/degreeaudit/monitoring-akademik/${nim1}`);
             }}>
             Cari
           </PrimaryButton>
