@@ -768,7 +768,7 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
         try:
             datamahasiswa = models.DataMahasiswa.objects.get(nim=nim_mahasiswa)
         except models.DataMahasiswa.DoesNotExist:
-            datamahasiswa = models.DataMahasiswa.objects.create(
+            datamahasiswa, created = models.DataMahasiswa.objects.create(
                 nama=nama_mahasiswa,
                 nim=nim_mahasiswa,
                 angkatan=angkatan,
@@ -781,11 +781,14 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
         academic_year = data_dict.get('Academic Year')
         academic_session = data_dict.get('Academic Session')
 
-        matakuliah, created = models.MataKuliah.objects.get_or_create(
-            name = subject,
-            kode = subject_short,
-            sks_total = graded_credits
-        )
+        try:
+            matakuliah, created = models.MataKuliah.objects.get(kode = subject_short)
+        except:
+            matakuliah, created = models.MataKuliah.objects.create(
+                name = subject,
+                kode = subject_short,
+                sks_total = graded_credits
+            )
 
         st_object_type = data_dict.get('Object type')
         st_objid = data_dict.get('ST Objid')
