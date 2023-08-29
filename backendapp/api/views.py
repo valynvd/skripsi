@@ -760,7 +760,7 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
 
         try:
             programstudi = models.ProgramStudi.objects.get(kode_sap=program_study)
-        except models.DataMahasiswa.DoesNotExist:
+        except models.ProgramStudi.DoesNotExist:
             programstudi, created = models.ProgramStudi.objects.create(name=name_prody, kode_sap=program_study)
 
         # # Check if DataMahasiswa already exists
@@ -783,7 +783,7 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
 
         try:
             matakuliah = models.MataKuliah.objects.get(kode = subject_short)
-        except:
+        except models.MataKuliah.DoesNotExist:
             matakuliah, created = models.MataKuliah.objects.create(
                 name = subject,
                 kode = subject_short,
