@@ -835,30 +835,37 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
 
             
             if (get_transkrip_nilai.grade_symbol == "AB" and grade_symbol == "A"):
+                get_transkrip_nilai.earned_credits = earned_credits
                 get_transkrip_nilai.grade_symbol = grade_symbol
                 get_transkrip_nilai.save()
 
             elif (get_transkrip_nilai.grade_symbol == "B" and (grade_symbol == "A" or grade_symbol == "AB")) :
+                get_transkrip_nilai.earned_credits = earned_credits
                 get_transkrip_nilai.grade_symbol = grade_symbol
                 get_transkrip_nilai.save()
 
             elif (get_transkrip_nilai.grade_symbol == "BC" and (grade_symbol == "A" or grade_symbol == "AB" or grade_symbol == "B")):
+                get_transkrip_nilai.earned_credits = earned_credits
                 get_transkrip_nilai.grade_symbol = grade_symbol
                 get_transkrip_nilai.save()
 
             elif (get_transkrip_nilai.grade_symbol == "C" and (grade_symbol == "A" or grade_symbol == "AB" or grade_symbol == "B" or grade_symbol == "BC")):
+                get_transkrip_nilai.earned_credits = earned_credits
                 get_transkrip_nilai.grade_symbol = grade_symbol
                 get_transkrip_nilai.save()
 
             elif (get_transkrip_nilai.grade_symbol == "D" and (grade_symbol == "A" or grade_symbol == "AB" or grade_symbol == "B" or grade_symbol == "BC" or grade_symbol == "C")):
+                get_transkrip_nilai.earned_credits = earned_credits
                 get_transkrip_nilai.grade_symbol = grade_symbol
                 get_transkrip_nilai.save()
 
             elif (get_transkrip_nilai.grade_symbol == "E" and (grade_symbol == "A" or grade_symbol == "AB" or grade_symbol == "B" or grade_symbol == "BC" or grade_symbol == "C" or grade_symbol == "D")):
+                get_transkrip_nilai.earned_credits = earned_credits
                 get_transkrip_nilai.grade_symbol = grade_symbol
                 get_transkrip_nilai.save()
 
             elif (get_transkrip_nilai.grade_symbol == "T" and (grade_symbol == "A" or grade_symbol == "AB" or grade_symbol == "B" or grade_symbol == "BC" or grade_symbol == "C" or grade_symbol == "D" or grade_symbol == "E")):
+                get_transkrip_nilai.earned_credits = earned_credits
                 get_transkrip_nilai.grade_symbol = grade_symbol
                 get_transkrip_nilai.save()
 
