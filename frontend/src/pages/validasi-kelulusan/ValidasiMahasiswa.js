@@ -182,10 +182,11 @@ const ValidasiMahasiswa = () => {
 
         // Hitung IPK
         const calculateIPK = (ipsData) => {
-          const totalIPS = ipsData.reduce((sum, dataIPS) => sum + parseFloat(dataIPS.ips), 0);
-          return (totalIPS / ipsData.length).toFixed(2);
+          const totalIPS = ipsData.reduce((sum, dataIPS) => sum + parseFloat(dataIPS.ips * dataIPS.sks), 0);
+          return (totalIPS / totalSKS).toFixed(2);
         };
         const ipkData = calculateIPK(ipsData);
+
         
         // Check Nilai TA
         const checkNilaiTA = responseData.data.reduce((gradeSymbol, transkripData) => {

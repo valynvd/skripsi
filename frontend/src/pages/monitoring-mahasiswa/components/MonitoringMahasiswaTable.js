@@ -15,6 +15,8 @@ import { useForm } from 'react-hook-form';
 import { RxTriangleUp, RxTriangleDown } from 'react-icons/rx';
 import { useNavigate } from 'react-router-dom';
 import { ClipLoader } from 'react-spinners';
+import { ExportPrimaryButton } from '../../../components/PrimaryButton';
+import { utils, writeFile } from 'xlsx';
 
 
 const MonitoringMahasiswaTable = ({
@@ -153,13 +155,54 @@ const MonitoringMahasiswaTable = ({
         gotoPage,
         pageOptions,
         state,
-        // rows,
+        rows,
     } = useTable(
         { columns: memoColumns, data: memoData },
         useGlobalFilter,
         useSortBy,
         usePagination
     );
+    const handleExport = () => {
+        const filterToExcel = rows.map(({ original }) => {
+            const filteredItem = {
+                'Nama Mahasiswa': original.mahasiswa_detail.nama,
+                'NIM Mahasiswa': original.mahasiswa_detail.nim,
+                'Jurusan': original.mahasiswa_detail.prodi_detail.name,
+                'Angkatan': original.mahasiswa_detail.angkatan,
+                'Kode Mata Kuliah': original.mata_kuliah_detail.kode,
+                'Mata Kuliah': original.mata_kuliah_detail.name,
+                'Earned Credits': original.earned_credits,
+                'Graded Credits': original.mata_kuliah_detail.sks_total,
+                'Academic Year': original.academic_year,
+                'Academic Session': original.academic_session,
+                'Nilai' : original.grade_symbol,
+            };
+        
+            // Apply conditional formatting to Jumlah SKS Lulus column
+            if (original.jumlah_sks < 144) {
+              filteredItem['Jumlah SKS Lulus'] = {
+                v: original.jumlah_sks,
+                s: {
+                    fill: {
+                      bgColor: { rgb: 'FF0000' } // Red background color
+                    },
+                    font: {
+                      color: { rgb: 'FFFFFF' } // White text color
+                    }
+                  }, // Red background, white text
+              };
+            }
+        
+            return filteredItem;
+        });
+        
+        const wb = utils.book_new();
+        const ws = utils.json_to_sheet(filterToExcel);
+    
+        utils.book_append_sheet(wb, ws, `${filterToExcel[0]['Nama Mahasiswa']}`);
+    
+        writeFile(wb, `Academic Result ${filterToExcel[0]['Nama Mahasiswa']}.xlsx`);
+      };
     
     const { pageIndex } = state;
 
@@ -194,6 +237,7 @@ const MonitoringMahasiswaTable = ({
                     />
                 </form>
             </div> */}
+            <ExportPrimaryButton onClick={handleExport} />
             <div className="overflow-x-auto">
                 <table {...getTableProps()} className="w-full">
                 <thead className="bg-primary-400/[0.03] whitespace-nowrap rounded-xl">

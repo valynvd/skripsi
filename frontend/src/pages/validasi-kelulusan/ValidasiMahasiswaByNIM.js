@@ -11,6 +11,8 @@ import { usePostValidasiMahasiswa } from '../../hooks/useValidasiMahasiswa';
 import jsPDF from 'jspdf';
 import { RxTriangleUp, RxTriangleRight } from 'react-icons/rx';
 import autoTable from 'jspdf-autotable';
+import { ExportPrimaryButton } from '../../components/PrimaryButton';
+import { utils, writeFile } from 'xlsx';
 
 const ValidasiMahasiswaByNIM = () => {
   const userRole = useCheckRole();
@@ -47,7 +49,7 @@ const ValidasiMahasiswaByNIM = () => {
     if(isLoadingResult == false) {
       setTranskripData(responseData.data);
       setResult(responseResult.data);
-      console.log(responseData.data)
+      
     }
   }, [isLoadingResult, isLoadingTranskrip])
 
@@ -144,8 +146,8 @@ const ValidasiMahasiswaByNIM = () => {
     setIpsSemester(ipsData);
   
     const calculateIPK = (ipsData) => {
-      const totalIPS = ipsData.reduce((sum, dataIPS) => sum + parseFloat(dataIPS.ips), 0);
-      return (totalIPS / ipsData.length).toFixed(2);
+      const totalIPS = ipsData.reduce((sum, dataIPS) => sum + parseFloat(dataIPS.ips * dataIPS.sks), 0);
+      return (totalIPS / totalSKS).toFixed(2);
     };
     const ipkData = calculateIPK(ipsData);
     setNilaiIpk(ipkData);
@@ -261,6 +263,32 @@ const ValidasiMahasiswaByNIM = () => {
     
   }; 
 
+  const handleExportExcel = () => {
+    const filterToExcel = transkripData.map((data) => {
+      const filteredItem = {
+        'Nama Mahasiswa': data.mahasiswa_detail.nama,
+        'NIM Mahasiswa': data.mahasiswa_detail.nim,
+        'Jurusan': data.mahasiswa_detail.prodi_detail.name,
+        'Angkatan': data.mahasiswa_detail.angkatan,
+        'Kode Mata Kuliah': data.mata_kuliah_detail.kode,
+        'Mata Kuliah': data.mata_kuliah_detail.name,
+        'Earned Credits': data.earned_credits,
+        'Graded Credits': data.mata_kuliah_detail.sks_total,
+        'Academic Year': data.academic_year,
+        'Academic Session': data.academic_session,
+        'Nilai' : data.grade_symbol,
+      }
+      return filteredItem;
+    });
+
+    const wb = utils.book_new();
+    const ws = utils.json_to_sheet(filterToExcel);
+
+    utils.book_append_sheet(wb, ws, `${filterToExcel[0]['Nama Mahasiswa']}`);
+
+    writeFile(wb, `Validasi Mahasiswa ${filterToExcel[0]['Nama Mahasiswa']}.xlsx`);
+  };
+
   return (
     <section id="monitoring-mahasiswa" className="section-container">
       <div className="flex flex-col items-start lg:justify-between lg:items-center lg:flex-row space-y-2 lg:space-y-0">
@@ -277,6 +305,7 @@ const ValidasiMahasiswaByNIM = () => {
         >
           Export to PDF
         </PrimaryButton>
+        <ExportPrimaryButton onClick={handleExportExcel} />
       </div>
 
       <form  className="flex gap-4 flex-wrap items-center mb-4 mt-10">
