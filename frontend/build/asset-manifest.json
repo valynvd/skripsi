@@ -1,0 +1,27 @@
+{
+  "files": {
+    "main.css": "/static/css/main.6143db0e.css",
+    "main.js": "/static/js/main.aaf69ba6.js",
+    "static/js/498.8c7f5c60.chunk.js": "/static/js/498.8c7f5c60.chunk.js",
+    "static/js/703.dd222d96.chunk.js": "/static/js/703.dd222d96.chunk.js",
+    "static/js/513.7037378c.chunk.js": "/static/js/513.7037378c.chunk.js",
+    "static/js/787.cda612ba.chunk.js": "/static/js/787.cda612ba.chunk.js",
+    "static/media/prasmul-logo-default.png": "/static/media/prasmul-logo-default.e50c408c98bf963dbf70.png",
+    "static/media/prof-yudi-sign-penelitian.png": "/static/media/prof-yudi-sign-penelitian.d5d4d5d19215d3cd7970.png",
+    "static/media/prasmul-logo-white.png": "/static/media/prasmul-logo-white.4f2c7838ae13a89925f5.png",
+    "static/media/prof-yudi-sign-pengajaran.png": "/static/media/prof-yudi-sign-pengajaran.1f07e53e92dccb49a09a.png",
+    "static/media/login-image.png": "/static/media/login-image.19ac1286e8b5afdfbdc5.png",
+    "static/media/prasmul-logo-red.png": "/static/media/prasmul-logo-red.763bac7dd6fe6a877b6e.png",
+    "index.html": "/index.html",
+    "main.6143db0e.css.map": "/static/css/main.6143db0e.css.map",
+    "main.aaf69ba6.js.map": "/static/js/main.aaf69ba6.js.map",
+    "498.8c7f5c60.chunk.js.map": "/static/js/498.8c7f5c60.chunk.js.map",
+    "703.dd222d96.chunk.js.map": "/static/js/703.dd222d96.chunk.js.map",
+    "513.7037378c.chunk.js.map": "/static/js/513.7037378c.chunk.js.map",
+    "787.cda612ba.chunk.js.map": "/static/js/787.cda612ba.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.6143db0e.css",
+    "static/js/main.aaf69ba6.js"
+  ]
+}
