@@ -160,13 +160,13 @@ const ValidasiMahasiswaByNIM = () => {
     if (parseFloat(ipkData) > 3.50 && totalEarnedCredits >= 144 && (ngulangNilai == false) && (checkNilaiTA == "A" || checkNilaiTA == "AB" || checkNilaiTA == "B")) {
       status = "Cum Laude";
       setStatusKelulusan(status);
-    } else if (ipkData > 3.01 && totalSKSNilaiD <= 7 && totalSKSNilaiE == 0 && totalEarnedCredits >= 144 && checkNilaiTA){
+    } else if (ipkData > 3.00 && totalSKSNilaiD <= 7 && totalSKSNilaiE == 0 && totalEarnedCredits >= 144 && checkNilaiTA){
       status = "Sangat Memuaskan";
       setStatusKelulusan(status);
-    } else if (ipkData > 2.76 && totalSKSNilaiD <= 7 && totalSKSNilaiE == 0 && totalEarnedCredits >= 144 && checkNilaiTA){
+    } else if (ipkData > 2.75 && totalSKSNilaiD <= 7 && totalSKSNilaiE == 0 && totalEarnedCredits >= 144 && checkNilaiTA){
       status = "Memuaskan";
       setStatusKelulusan(status);
-    } else if (ipkData > 2.00 && totalSKSNilaiD <= 7 && totalSKSNilaiE == 0 && totalEarnedCredits >= 144 && checkNilaiTA){
+    } else if (ipkData >= 2.00 && totalSKSNilaiD <= 7 && totalSKSNilaiE == 0 && totalEarnedCredits >= 144 && checkNilaiTA){
       status = "Cukup";
       setStatusKelulusan(status);
     } else {
