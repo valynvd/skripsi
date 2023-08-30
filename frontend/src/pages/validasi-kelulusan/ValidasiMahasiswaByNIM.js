@@ -231,20 +231,31 @@ const ValidasiMahasiswaByNIM = () => {
   const handleExport = () => {
     const doc = new jsPDF();
 
+    const pageSize = doc.internal.pageSize;
+    const pageWidth = pageSize.width;
+    const pageHeight = pageSize.height;
+
+
+    doc.setFontSize(16);
+    doc.text("Hasil Degree Audit Mahasiswa - SIMANTAP", 105, 25, { align: "center" });
+
+    let startY = 30;
+
     const mainTable = document.getElementById('id-table');
     if (mainTable) {
-      doc.autoTable({ html: mainTable });
+      doc.autoTable({ html: mainTable, startY: startY });
+      startY = doc.autoTable.previous.finalY + 10;
     }
 
     ipsSemester.forEach((getData, tableIndex) => {
       const ipsTable = document.getElementById(`ips-table${tableIndex}`);
       if (ipsTable) {
-        doc.autoTable({
-          html: ipsTable,
-          theme: 'striped',
-          startY: tableIndex === 0 ? 50 : doc.autoTable.previous.finalY + 10,
-          styles: { fontSize: 10 },
-        });
+          doc.autoTable({
+              html: ipsTable,
+              theme: 'striped',
+              startY: tableIndex === 0 ? startY : doc.autoTable.previous.finalY + 10,
+              styles: { fontSize: 10 },
+          });
       }
     });
 
