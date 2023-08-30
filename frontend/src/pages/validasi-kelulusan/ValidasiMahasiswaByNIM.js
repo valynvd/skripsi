@@ -97,6 +97,14 @@ const ValidasiMahasiswaByNIM = () => {
       return updatedTotal;
     }, 0);
 
+    const AkumulatifSKS = transkripData.reduce((totalCredits, getdata) => {
+      const currentCredits = parseInt(getdata.mata_kuliah_detail.sks_total);
+      const updatedTotal = totalCredits + currentCredits;
+      console.log ('Matkul:', getdata.mata_kuliah_detail.name )
+      console.log('Current Total SKS:', updatedTotal); // Log the current totalSKS value
+      return updatedTotal;
+    }, 0);
+
     const totalEarnedCredits = totalSKS.toString()
     
     setJumlahSks(totalEarnedCredits);
@@ -147,7 +155,7 @@ const ValidasiMahasiswaByNIM = () => {
   
     const calculateIPK = (ipsData) => {
       const totalIPS = ipsData.reduce((sum, dataIPS) => sum + parseFloat(dataIPS.ips * dataIPS.sks), 0);
-      return (totalIPS / totalSKS).toFixed(2);
+      return (totalIPS / AkumulatifSKS).toFixed(2);
     };
     const ipkData = calculateIPK(ipsData);
     setNilaiIpk(ipkData);

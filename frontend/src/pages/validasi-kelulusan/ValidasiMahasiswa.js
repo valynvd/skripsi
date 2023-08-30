@@ -127,13 +127,26 @@ const ValidasiMahasiswa = () => {
         }, false); 
 
         // Hitung SKS lulus
+        // const totalSKS = responseData.data.reduce((totalCredits, getdata) => {
+        //   if (!['E'].includes(getdata.grade_symbol)) {
+        //     return totalCredits + parseInt(getdata.earned_credits);
+        //   }
+        //   return totalCredits;
+        // }, 0);
+        // const totalEarnedCredits = totalSKS.toString();
+
         const totalSKS = responseData.data.reduce((totalCredits, getdata) => {
-          if (!['E'].includes(getdata.grade_symbol)) {
-            return totalCredits + parseInt(getdata.earned_credits);
-          }
-          return totalCredits;
+          const currentCredits = parseInt(getdata.earned_credits);
+          const updatedTotal = totalCredits + currentCredits;
+          return updatedTotal;
         }, 0);
         const totalEarnedCredits = totalSKS.toString();
+
+        const AkumulatifSKS = responseData.data.reduce((totalCredits, getdata) => {
+          const currentCredits = parseInt(getdata.mata_kuliah_detail.sks_total);
+          const updatedTotal = totalCredits + currentCredits;
+          return updatedTotal;
+        }, 0);
 
         // Pisah tiap tahun untuk hitung IPS
         const uniqueTahunAkademik = Array.from(
@@ -183,7 +196,7 @@ const ValidasiMahasiswa = () => {
         // Hitung IPK
         const calculateIPK = (ipsData) => {
           const totalIPS = ipsData.reduce((sum, dataIPS) => sum + parseFloat(dataIPS.ips * dataIPS.sks), 0);
-          return (totalIPS / totalSKS).toFixed(2);
+          return (totalIPS / AkumulatifSKS).toFixed(2);
         };
         const ipkData = calculateIPK(ipsData);
 
