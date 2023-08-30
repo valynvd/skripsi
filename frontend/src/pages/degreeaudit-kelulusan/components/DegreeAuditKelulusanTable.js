@@ -178,6 +178,7 @@ const DegreeAuditKelulusanTable = ({
                 'Jumlah Nilai E (SKS)': original.nilaie,
                 'IPK': original.nilai_ipk,
                 'Status Kelulusan': original.status_kelulusan,
+                'Keterangan': original.keterangan_lulus,
             };
         
             // Apply conditional formatting to Jumlah SKS Lulus column
