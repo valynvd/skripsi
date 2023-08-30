@@ -223,6 +223,13 @@ const ValidasiMahasiswa = () => {
           status = "Tidak Lulus";
         }
 
+        let keterangan_lulus = "";
+        if (!checkNilai) {
+          keterangan_lulus = "Aman"
+        } else if (checkNilai){
+          keterangan_lulus = "Pernah Mengulang"
+        }
+
         filterMahasiswa[index] = {
           ...filterMahasiswa[index],
           nim_mahasiswa: filterMahasiswa[index].nim,
@@ -231,6 +238,7 @@ const ValidasiMahasiswa = () => {
           nilaie: totalSKSNilaiE,
           nilai_ipk: ipkData,
           status_kelulusan: status,
+          keterangan_lulus: keterangan_lulus,
         };
 
         const data = filterMahasiswa[index];

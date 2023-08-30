@@ -189,6 +189,13 @@ const ValidasiMahasiswaByNIM = () => {
       setStatusKelulusan(status);
     }
 
+    let keterangan_lulus = "";
+    if (!checkNilai) {
+      keterangan_lulus = "Aman"
+    } else if (checkNilai){
+      keterangan_lulus = "Pernah Mengulang"
+    }
+
     const dataValidasi = []
 
     dataValidasi.push({
@@ -198,6 +205,7 @@ const ValidasiMahasiswaByNIM = () => {
       nilaid: totalSKSNilaiD,
       status_kelulusan: status,
       nilai_ipk: ipkData,
+      keterangan_lulus: keterangan_lulus,
     })
 
     setReadyAudit(true)

@@ -74,6 +74,10 @@ const DegreeAuditKelulusanTable = ({
             accessor:'status_kelulusan'
         },
         {
+            Header:'Keterangan Kelulusan',
+            accessor:'keterangan_lulus'
+        },
+        {
             Header:'Aksi',
             Cell: ({
                 cell: {
