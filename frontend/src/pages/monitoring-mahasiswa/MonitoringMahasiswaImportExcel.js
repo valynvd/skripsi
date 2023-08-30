@@ -89,7 +89,7 @@ const MonitoringMahasiswaImportExcel = () => {
         }
         setProgress(newProgress.toFixed(2));
     }
-
+    console.log(getResponseData)
     setResponseData(getResponseData);
   };
 
@@ -344,14 +344,14 @@ const MonitoringMahasiswaImportExcel = () => {
                   .filter((getdata) => {
                     return (
                       (namamahasiswa === '' ||
-                        (getdata.nama_mahasiswa
+                        (getdata.mahasiswa_detail.nama
                           .toLowerCase()
                           .includes(namamahasiswa.toLowerCase()))
                         ) &&
                       (nim === '' ||
-                        (getdata.nim_mahasiswa.toString().includes(nim))) &&
+                        (getdata.mahasiswa_detail.nim.toString().includes(nim))) &&
                       (prodi === '' ||
-                        (getdata.name_prody
+                        (getdata.mahasiswa_detail.prodi_detail.name
                           .toLowerCase()
                           .includes(prodi.toLowerCase())) 
                         )
@@ -381,20 +381,20 @@ const MonitoringMahasiswaImportExcel = () => {
                       </td>
                       <td className="px-4 py-3">{index + 1}</td>
                       <td className="px-4 py-3">
-                        {filteredData.nama_mahasiswa}
+                        {filteredData.mahasiswa_detail.nama}
                         {/* {filteredData.mahasiswa_detail['nama']} */}
                       </td>
                       <td className="px-4 py-3">
-                        {filteredData.nim_mahasiswa}
+                        {filteredData.mahasiswa_detail.nim}
                         {/* {filteredData.mahasiswa_detail.nim} */}
                       </td>
-                      <td className="px-4 py-3">{filteredData.name_prody}
+                      <td className="px-4 py-3">{filteredData.mahasiswa_detail.prodi_detail.name}
                         {/* {filteredData.mahasiswa_detail.prodi_detail.name} */}
                       </td>
-                      <td className="px-4 py-3">{filteredData.angkatan}
+                      <td className="px-4 py-3">{filteredData.mahasiswa_detail.angkatan}
                         {/* {filteredData.mahasiswa_detail.angkatan} */}
                         </td>
-                      <td className="px-4 py-3">{filteredData.subject}
+                      <td className="px-4 py-3">{filteredData.mata_kuliah_detail.name}
                         {/* {filteredData.mata_kuliah_detail.name} */}
                         </td>
                       <td className="px-4 py-3">
