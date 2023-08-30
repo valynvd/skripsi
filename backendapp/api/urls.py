@@ -99,6 +99,7 @@ urlpatterns = [
   path('datamahasiswabyprodi/<prodiId>/', views.DataMahasiswaByProdiViewSet.as_view()),
   # monitoringmahasiswa
   path('monitoringmahasiswabynim/<monitoringMahasiswaNIM>/', views.MonitoringMahasiswaByNIMViewSet.as_view()),
+  path('monitoringmahasiswabymatakuliah/<monitoringMahasiswaKodeMataKuliah>/', views.MonitoringMahasiswaByKodeMatakuliahViewSet.as_view()),
   # validasimahasiswa
   path('validasimahasiswabynim/<validasiMahasiswaNIM>/', views.ValidasiMahasiswaByNIMViewSet.as_view()),
   # transkripnilai

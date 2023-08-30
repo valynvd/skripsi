@@ -758,10 +758,10 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
 
         # programstudi, created = models.ProgramStudi.objects.get_or_create(name=name_prody, kode_sap=program_study)
 
-        try:
-            programstudi = models.ProgramStudi.objects.get(kode_sap=program_study)
-        except models.ProgramStudi.DoesNotExist:
-            programstudi, created = models.ProgramStudi.objects.create(name=name_prody, kode_sap=program_study)
+        # try:
+        programstudi = models.ProgramStudi.objects.get(kode_sap=program_study)
+        # except models.ProgramStudi.DoesNotExist:
+        #     programstudi, created = models.ProgramStudi.objects.create(name=name_prody, kode_sap=program_study)
 
         # # Check if DataMahasiswa already exists
 
@@ -832,7 +832,6 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
                 mahasiswa = datamahasiswa,
                 mata_kuliah = matakuliah,
             )
-
             
             if (get_transkrip_nilai.grade_symbol == "AB" and grade_symbol == "A"):
                 get_transkrip_nilai.earned_credits = earned_credits
@@ -905,6 +904,23 @@ class MonitoringMahasiswaByNIMViewSet(generics.ListAPIView):
     def get(self, request, *args, **kwargs):
         MonitoringMahasiswaByNIM = models.MonitoringMahasiswa.objects.filter(mahasiswa__nim=self.kwargs['monitoringMahasiswaNIM'])
         serializer = self.get_serializer(MonitoringMahasiswaByNIM, many=True)
+
+        return Response(serializer.data)
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+    
+class MonitoringMahasiswaByKodeMatakuliahViewSet(generics.ListAPIView):
+    serializer_class = serializers.MonitoringMahasiswaSerializers
+    queryset = models.MonitoringMahasiswa.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        MonitoringMahasiswaByKodeMataKuliah = models.MonitoringMahasiswa.objects.filter(mata_kuliah__kode=self.kwargs['monitoringMahasiswaKodeMataKuliah'])
+        serializer = self.get_serializer(MonitoringMahasiswaByKodeMataKuliah, many=True)
 
         return Response(serializer.data)
 
