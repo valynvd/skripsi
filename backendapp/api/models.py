@@ -528,6 +528,11 @@ class ValidasiMahasiswa(models.Model):
 	)
 	status_kelulusan = models.CharField(max_length=100, choices=LIST_STATUS, blank=True, null=True)
 	nilai_ipk = models.CharField(max_length=100, blank=True, null=True)
+	LIST_KETERANGAN = (
+		('Aman', 'Aman'),
+		('Pernah Mengulang', 'Pernah Mengulang' ),
+	)
+	keterangan_lulus = models.CharField(max_length=100, choices=LIST_KETERANGAN, blank=True, null=True)
 	
 	def __str__(self) -> str:
 		return '{} - {}'.format(self.mahasiswa.nama, self.status_kelulusan)

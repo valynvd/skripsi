@@ -959,6 +959,7 @@ class ValidasiMahasiswaViewSet(viewsets.ModelViewSet):
         nilaiD = data_dict.get('nilaid')
         status_kelulusan = data_dict.get('status_kelulusan')
         nilaiIPK = data_dict.get('nilai_ipk')
+        keterangan_lulus = data_dict.get('keterangan_lulus')
 
         if (status_kelulusan == "") :
             None
@@ -972,6 +973,7 @@ class ValidasiMahasiswaViewSet(viewsets.ModelViewSet):
                 get_validasi.nilaie = nilaiE
                 get_validasi.nilai_ipk = nilaiIPK
                 get_validasi.status_kelulusan = status_kelulusan
+                get_validasi.keterangan_lulus = keterangan_lulus
                 get_validasi.save()
 
                 serializer = self.get_serializer(instance=get_validasi)
@@ -984,6 +986,7 @@ class ValidasiMahasiswaViewSet(viewsets.ModelViewSet):
                     nilaid = nilaiD,
                     status_kelulusan = status_kelulusan,
                     nilai_ipk = nilaiIPK,
+                    keterangan_lulus = keterangan_lulus
                 )   
             serializer = self.get_serializer(instance=validasi)
             headers = self.get_success_headers(serializer.data)
