@@ -11,7 +11,16 @@ const MataKuliah = ({ setOpenModalDelete, setSelectedItem, ...options }) => {
   const columns = [
     {
       Header: 'Nama',
-      accessor: 'name',
+      // accessor: 'name',
+      Cell: ({row}) => (
+        <a 
+            href={`/degreeaudit/monitoring-akademik/matkul/${row.original.kode}`} 
+            target="_blank" 
+            rel="noopener noreferrer"
+        >
+            {row.original.name}
+        </a>
+      )
     },
     {
       Header: 'Kode',

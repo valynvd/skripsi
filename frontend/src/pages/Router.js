@@ -71,6 +71,7 @@ import ProgramStudi from './program-studi/ProgramStudi';
 import ProgramStudiForm from './program-studi/ProgramStudiForm';
 import MonitoringMahasiswa1 from './monitoring-mahasiswa/MonitoringMahasiswa1';
 import MonitoringMahasiswaByNIM from './monitoring-mahasiswa/MonitoringMahasiswaByNIM';
+import MonitoringMahasiswaByKodeMatkul from './monitoring-mahasiswa/MonitoringMahasiswaByKodeMatkul';
 
 const Router = () => {
   return (
@@ -340,6 +341,7 @@ const Router = () => {
             <Route path="monitoring-akademik">
               <Route index element={<MonitoringMahasiswa1 />} />
               <Route path=":nim" element={<MonitoringMahasiswaByNIM />} />
+              <Route path="matkul/:kodematkul" element={<MonitoringMahasiswaByKodeMatkul />} />
               <Route
                 path="import"
                 element={<MonitoringMahasiswaImportExcel />}

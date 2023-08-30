@@ -15,6 +15,12 @@ const getMonitoringMahasiswaByNIM = (nim) => {
   });
 };
 
+const getMonitoringMahasiswaByKodeMataKuliah = (kodematkul) => {
+  return request({
+    url: `/api-stem/monitoringmahasiswabymatakuliah/${kodematkul}/`,
+  });
+};
+
 const postMonitoringMahasiswa = (data) => {
     return request({
       url: url,
@@ -49,6 +55,13 @@ export const useMonitoringMahasiswaData = (options) => {
 
 export const useMonitoringMahasiswaDataByNIM = (nim, options) => {
     return useQuery(['monitoring-mahasiswa-by-nim', nim], () => getMonitoringMahasiswaByNIM(nim), {
+      refetchOnWindowFocus: false,
+      ...options,
+    });
+  };
+
+  export const useMonitoringMahasiswaDataByKodeMataKuliah = (kodematkul, options) => {
+    return useQuery(['monitoring-mahasiswa-by-kodematkul', kodematkul], () => getMonitoringMahasiswaByKodeMataKuliah(kodematkul), {
       refetchOnWindowFocus: false,
       ...options,
     });
