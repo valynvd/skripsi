@@ -211,7 +211,7 @@ const ValidasiMahasiswa = () => {
 
         let status = "";
 
-        if (parseFloat(ipkData) > 3.50&& totalSKSNilaiD <= 7 && totalSKSNilaiE == 0 && totalEarnedCredits >= 144 && !checkNilai && (checkNilaiTA == "A" || checkNilaiTA == "AB" || checkNilaiTA == "B")) {
+        if (parseFloat(ipkData) > 3.50 && totalSKSNilaiD == 0 && totalSKSNilaiE == 0 && totalEarnedCredits >= 144 && !checkNilai && (checkNilaiTA == "A" || checkNilaiTA == "AB" || checkNilaiTA == "B")) {
           status = "Cum Laude";
         } else if (ipkData > 3.00 && totalSKSNilaiD <= 7 && totalSKSNilaiE == 0 && totalEarnedCredits >= 144 && checkNilaiTA){
           status = "Sangat Memuaskan";
