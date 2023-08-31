@@ -78,9 +78,14 @@ const ValidasiMahasiswaByNIM = () => {
     const totalSKSNilaiE = calculateTotalCreditsE(transkripData, 'E').toString();
     setNilaiE(totalSKSNilaiE);
 
-    const checkNilai = result.some(resultData => ['D', 'E'].includes(resultData.grade_symbol));
-    console.log(checkNilai);
-    setNgulangNilai(checkNilai);
+    const checkDuplicateData = result.some((resultData, index, self) => {
+      // Use your own criteria to determine if data is duplicated
+      return self.findIndex(item => 
+          item.mata_kuliah === resultData.mata_kuliah 
+      ) !== index;
+    });
+    console.log(checkDuplicateData);
+    setNgulangNilai(checkDuplicateData);
 
   
     // const totalSKS = transkripData.reduce((totalCredits, getdata) => {
@@ -171,7 +176,7 @@ const ValidasiMahasiswaByNIM = () => {
 
     let status = "";
 
-    if (parseFloat(ipkData) > 3.50&& totalSKSNilaiD <= 7 && totalSKSNilaiE == 0 && totalEarnedCredits >= 144 && !checkNilai && (checkNilaiTA == "A" || checkNilaiTA == "AB" || checkNilaiTA == "B")) {
+    if (parseFloat(ipkData) > 3.50&& totalSKSNilaiD <= 7 && totalSKSNilaiE == 0 && totalEarnedCredits >= 144 && !checkDuplicateData && (checkNilaiTA == "A" || checkNilaiTA == "AB" || checkNilaiTA == "B")) {
       console.log(ngulangNilai)
       status = "Cum Laude";
       setStatusKelulusan(status);
@@ -190,9 +195,9 @@ const ValidasiMahasiswaByNIM = () => {
     }
 
     let keterangan_lulus = "";
-    if (!checkNilai) {
+    if (!checkDuplicateData) {
       keterangan_lulus = "Aman"
-    } else if (checkNilai){
+    } else if (checkDuplicateData){
       keterangan_lulus = "Pernah Mengulang"
     }
 
