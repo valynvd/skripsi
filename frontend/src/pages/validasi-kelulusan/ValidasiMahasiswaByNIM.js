@@ -176,7 +176,7 @@ const ValidasiMahasiswaByNIM = () => {
 
     let status = "";
 
-    if (parseFloat(ipkData) > 3.50&& totalSKSNilaiD <= 7 && totalSKSNilaiE == 0 && totalEarnedCredits >= 144 && !checkDuplicateData && (checkNilaiTA == "A" || checkNilaiTA == "AB" || checkNilaiTA == "B")) {
+    if (parseFloat(ipkData) > 3.50 && totalSKSNilaiD == 0 && totalSKSNilaiE == 0 && totalEarnedCredits >= 144 && !checkDuplicateData && (checkNilaiTA == "A" || checkNilaiTA == "AB" || checkNilaiTA == "B")) {
       console.log(ngulangNilai)
       status = "Cum Laude";
       setStatusKelulusan(status);
