@@ -30,7 +30,7 @@ const DegreeAuditKelulusanTable = ({
     const columns = [
         { 
             Header:'Nama Mahasiswa',
-            // accessor:'mahasiswa_detail.nama',
+            accessor:'mahasiswa_detail.nama',
             Cell: ({ row }) => (
                 <a 
                     href={`/degreeaudit/validasi-kelulusan/${row.original.mahasiswa_detail.nim}`} 
