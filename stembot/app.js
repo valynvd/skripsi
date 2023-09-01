@@ -347,9 +347,13 @@ io.on('connection', (socket) => {
 const WhatsappBroadcast = async (phonenumbers, socket) => {
     for (let i = 0; i < phonenumbers.phonenumbers.length; i++) {
         const number = phonenumbers.phonenumbers[i];
+        const sanitized_number = number.value.toString().replace(/[- )(]/g, "");
+        const final_number = `628${sanitized_number.substring(sanitized_number.length - 10)}`;
+
         const percent = ((i+1)/phonenumbers.phonenumbers.length)*100
         try{
-            const number_details = await client.getNumberId(number.value);
+            const number_details = await client.getNumberId(final_number);
+            console.log(number_details)
             if (phonenumbers.media){
                 const media = await MessageMedia.fromUrl(phonenumbers.media);
                 await chat.sendMessage(number_details._serialized, media)
