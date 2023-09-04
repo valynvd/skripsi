@@ -294,7 +294,7 @@ const DegreeAuditKelulusanTable = ({
                         return (
                         <tr
                             {...row.getRowProps()}
-                            className="bg-white border-b text-gray-600" 
+                            className="bg-white border-b text-gray-600 border-black" 
                         >
                             {row.cells.map((cell) => {
                             return (

@@ -104,7 +104,7 @@ const Table = ({ loading, data, columns, userRole, hiddenColumns = [] }) => {
                 return (
                   <tr
                     {...row.getRowProps()}
-                    className="bg-white border-b text-gray-600"
+                    className="bg-white border-b-2 text-gray-600"
                   >
                     {row.cells.map((cell) => {
                       return (
