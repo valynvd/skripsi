@@ -160,10 +160,12 @@ const ValidasiMahasiswaByNIM = () => {
   
     const calculateIPK = (ipsData) => {
       const totalIPS = ipsData.reduce((sum, dataIPS) => sum + parseFloat(dataIPS.ips * dataIPS.sks), 0);
-      return (totalIPS / AkumulatifSKS).toFixed(2);
+      return (totalIPS / AkumulatifSKS);
     };
     const ipkData = calculateIPK(ipsData);
-    setNilaiIpk(ipkData);
+    const twoDigitAfterDecimal = ipkData.toString().match(/\d+\.\d{2}/)
+    console.log(twoDigitAfterDecimal)
+    setNilaiIpk(parseFloat(twoDigitAfterDecimal));
 
     const checkNilaiTA = transkripData.reduce((gradeSymbol, transkripData) => {
       if (transkripData.mata_kuliah_detail.name == "Final Project" || transkripData.mata_kuliah_detail.name == "Final Project II") {
