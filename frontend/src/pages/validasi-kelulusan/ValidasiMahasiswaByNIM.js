@@ -147,7 +147,7 @@ const ValidasiMahasiswaByNIM = () => {
         ipsResults.push({
           academicYear: academicData.academicYear,
           academicSession: academicData.academicSession,
-          ips: (ips / sks).toFixed(2),
+          ips: (ips / sks),
           sks: sks,
         });
       });
@@ -162,10 +162,10 @@ const ValidasiMahasiswaByNIM = () => {
       const totalIPS = ipsData.reduce((sum, dataIPS) => sum + parseFloat(dataIPS.ips * dataIPS.sks), 0);
       return (totalIPS / AkumulatifSKS);
     };
-    const ipkData = calculateIPK(ipsData);
-    const twoDigitAfterDecimal = ipkData.toString().match(/\d+\.\d{2}/)
-    console.log(twoDigitAfterDecimal)
-    setNilaiIpk(parseFloat(twoDigitAfterDecimal));
+    const ipkData = calculateIPK(ipsData).toFixed(2);
+    // const twoDigitAfterDecimal = ipkData.toString().match(/\d+\.\d{2}/)
+    console.log(ipkData)
+    setNilaiIpk(ipkData);
 
     const checkNilaiTA = transkripData.reduce((gradeSymbol, transkripData) => {
       if (transkripData.mata_kuliah_detail.name == "Final Project" || transkripData.mata_kuliah_detail.name == "Final Project II") {
@@ -601,7 +601,7 @@ const ValidasiMahasiswaByNIM = () => {
                     Total SKS : {getData.sks}
                   </th>
                   <th className="px-4 py-3 font-semibold">
-                    IPS : {getData.ips}
+                    IPS : {getData.ips.toFixed(2)}
                   </th>
                 </tr>
               </thead>
