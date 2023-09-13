@@ -182,7 +182,7 @@ const ValidasiMahasiswa = () => {
             ipsResults.push({
               academicYear: academicData.academicYear,
               academicSession: academicData.academicSession,
-              ips: (ips / sks).toFixed(2),
+              ips: (ips / sks),
               sks: sks,
             });
           });
