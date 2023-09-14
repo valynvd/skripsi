@@ -15,6 +15,7 @@ from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from backendapp import settings
 import json
+from django.db.models import Q
 
 class KurikulumViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.KurikulumSerializers
@@ -806,26 +807,38 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
         credit_type = data_dict.get('Credit Type')
         mentor = data_dict.get('Mentor')
 
-        monitoring_mahasiswa, created = models.MonitoringMahasiswa.objects.get_or_create(
-            st_object_type = st_object_type,
-            st_objid = st_objid,
-            mahasiswa = datamahasiswa,
-            student_id = student_id,
-            appraisal_type = appraisal_type,
-            sm_object_type = sm_object_type,
-            sm_objid = sm_objid,
-            mata_kuliah = matakuliah,
-            event_package_objid = event_package_objid,
-            event_package_short = event_package_short,
-            event_package_text = event_package_text,
-            grade_symbol = grade_symbol,
-            earned_credits = earned_credits,
-            credit_type = credit_type,
-            prodi = programstudi,
-            mentor = mentor,
-            academic_session = academic_session,
-            academic_year = academic_year,
-        )
+        try :
+            get_monitoring_mahasiswa = models.MonitoringMahasiswa.objects.get(
+                mahasiswa = datamahasiswa,
+                mata_kuliah = matakuliah,
+            )
+
+            if(get_monitoring_mahasiswa.grade_symbol == ""):
+                get_monitoring_mahasiswa.earned_credits = earned_credits,
+                get_monitoring_mahasiswa.grade_symbol = grade_symbol,
+                get_monitoring_mahasiswa.save()
+
+        except models.MonitoringMahasiswa.DoesNotExist:
+            monitoring_mahasiswa, created = models.MonitoringMahasiswa.objects.get_or_create(
+                st_object_type = st_object_type,
+                st_objid = st_objid,
+                mahasiswa = datamahasiswa,
+                student_id = student_id,
+                appraisal_type = appraisal_type,
+                sm_object_type = sm_object_type,
+                sm_objid = sm_objid,
+                mata_kuliah = matakuliah,
+                event_package_objid = event_package_objid,
+                event_package_short = event_package_short,
+                event_package_text = event_package_text,
+                grade_symbol = grade_symbol,
+                earned_credits = earned_credits,
+                credit_type = credit_type,
+                prodi = programstudi,
+                mentor = mentor,
+                academic_session = academic_session,
+                academic_year = academic_year,
+            )
 
         try :
             get_transkrip_nilai = models.TranskripNilai.objects.get(
@@ -926,6 +939,40 @@ class MonitoringMahasiswaByKodeMatakuliahViewSet(generics.ListAPIView):
     def get(self, request, *args, **kwargs):
         MonitoringMahasiswaByKodeMataKuliah = models.MonitoringMahasiswa.objects.filter(mata_kuliah__kode=self.kwargs['monitoringMahasiswaKodeMataKuliah'])
         serializer = self.get_serializer(MonitoringMahasiswaByKodeMataKuliah, many=True)
+
+        return Response(serializer.data)
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+    
+class MonitoringMahasiswaByNoGradedViewSet(generics.ListAPIView):
+    serializer_class = serializers.MonitoringMahasiswaSerializers
+    queryset = models.MonitoringMahasiswa.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        MonitoringMahasiswaByNoGraded = models.MonitoringMahasiswa.objects.filter(grade_symbol="T")
+        serializer = self.get_serializer(MonitoringMahasiswaByNoGraded, many=True)
+
+        return Response(serializer.data)
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAuthenticated]
+        return super(self.__class__, self).get_permissions()
+    
+class MonitoringMahasiswaByNoGradedKodeMataKuliahViewSet(generics.ListAPIView):
+    serializer_class = serializers.MonitoringMahasiswaSerializers
+    queryset = models.MonitoringMahasiswa.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        MonitoringMahasiswaByNoGradedKodeMataKuliah = models.MonitoringMahasiswa.objects.filter(Q(grade_symbol="T") & Q(mata_kuliah__kode=self.kwargs['monitoringMahasiswaKodeMataKuliah']))
+        serializer = self.get_serializer(MonitoringMahasiswaByNoGradedKodeMataKuliah, many=True)
 
         return Response(serializer.data)
 
