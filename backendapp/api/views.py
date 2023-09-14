@@ -799,7 +799,7 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
         event_package_objid = data_dict.get('Event Package Objid')
         event_package_short = data_dict.get('Event Package Short')
         event_package_text = data_dict.get('Event Package Text')
-        if (data_dict.get('Grade symbol') == None):
+        if (data_dict.get('Grade symbol') == ""):
             grade_symbol = "T"
         else :
             grade_symbol = data_dict.get('Grade symbol')
