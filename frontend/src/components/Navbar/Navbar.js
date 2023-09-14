@@ -233,6 +233,11 @@ const Navbar = () => {
                     url: '/monitoring-akademik',
                     allowedRoles: userRole.admin,
                   },
+                  {
+                    title: 'Validasi Mata Kuliah',
+                    url: '/validasi-mata-kuliah',
+                    allowedRoles: userRole.admin,
+                  },
                 ]}
                 icon={<MdCheckCircle size={22} />}
               />

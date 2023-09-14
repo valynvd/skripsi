@@ -72,6 +72,8 @@ import ProgramStudiForm from './program-studi/ProgramStudiForm';
 import MonitoringMahasiswa1 from './monitoring-mahasiswa/MonitoringMahasiswa1';
 import MonitoringMahasiswaByNIM from './monitoring-mahasiswa/MonitoringMahasiswaByNIM';
 import MonitoringMahasiswaByKodeMatkul from './monitoring-mahasiswa/MonitoringMahasiswaByKodeMatkul';
+import ValidasiMataKuliah from './validasi-matakuliah/ValidasiMataKuliah';
+import ValidasiMataKuliahDetails from './validasi-matakuliah/ValidasiMataKuliahDetails';
 
 const Router = () => {
   return (
@@ -354,6 +356,10 @@ const Router = () => {
             <Route path="validasi-kelulusan">
               <Route index element={<ValidasiMahasiswa />} />
               <Route path=":nim" element={<ValidasiMahasiswaByNIM />} />
+            </Route>
+            <Route path="validasi-mata-kuliah">
+              <Route index element={<ValidasiMataKuliah />} />
+              <Route path="matkul/:kodematkul" element={<ValidasiMataKuliahDetails />} />
             </Route>
           </Route>
         </Route>

@@ -21,6 +21,18 @@ const getMonitoringMahasiswaByKodeMataKuliah = (kodematkul) => {
   });
 };
 
+const getMonitoringMahasiswaByNoGraded = () => {
+  return request({
+    url: `/api-stem/monitoringmahasiswabynograded/`,
+  });
+};
+
+const getMonitoringMahasiswaByNoGradedKodeMataKuliah = (kodematkul) => {
+  return request({
+    url: `/api-stem/monitoringmahasiswabynogradedkodematakuliah/${kodematkul}/`,
+  });
+};
+
 const postMonitoringMahasiswa = (data) => {
     return request({
       url: url,
@@ -53,15 +65,29 @@ export const useMonitoringMahasiswaData = (options) => {
     });
 };
 
+export const useMonitoringMahasiswaDataByNoGraded = (options) => {
+  return useQuery('monitoring-mahasiswa-by-nograded', getMonitoringMahasiswaByNoGraded, {
+    refetchOnWindowFocus: false,
+    ...options,
+  });
+};
+
 export const useMonitoringMahasiswaDataByNIM = (nim, options) => {
-    return useQuery(['monitoring-mahasiswa-by-nim', nim], () => getMonitoringMahasiswaByNIM(nim), {
+  return useQuery(['monitoring-mahasiswa-by-nim', nim], () => getMonitoringMahasiswaByNIM(nim), {
+    refetchOnWindowFocus: false,
+    ...options,
+  });
+};
+
+  export const useMonitoringMahasiswaDataByKodeMataKuliah = (kodematkul, options) => {
+    return useQuery(['monitoring-mahasiswa-by-kodematkul', kodematkul], () => getMonitoringMahasiswaByKodeMataKuliah(kodematkul), {
       refetchOnWindowFocus: false,
       ...options,
     });
   };
 
-  export const useMonitoringMahasiswaDataByKodeMataKuliah = (kodematkul, options) => {
-    return useQuery(['monitoring-mahasiswa-by-kodematkul', kodematkul], () => getMonitoringMahasiswaByKodeMataKuliah(kodematkul), {
+  export const useMonitoringMahasiswaDataByNoGradedKodeMataKuliah = (kodematkul, options) => {
+    return useQuery(['monitoring-mahasiswa-by-nograded-kodematkul', kodematkul], () => getMonitoringMahasiswaByNoGradedKodeMataKuliah(kodematkul), {
       refetchOnWindowFocus: false,
       ...options,
     });

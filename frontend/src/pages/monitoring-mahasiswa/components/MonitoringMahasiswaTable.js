@@ -96,7 +96,6 @@ const MonitoringMahasiswaTable = ({
         }
     ];
     const renderAcademicSession = academicSession => {
-        // Perform your conditional rendering based on the academic_session value
         if (academicSession === '10') {
           return 'Odd';
         } else if (academicSession === '20') {
