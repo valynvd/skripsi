@@ -868,6 +868,11 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
                 get_transkrip_nilai.grade_symbol = grade_symbol
                 get_transkrip_nilai.save()
 
+            elif (get_transkrip_nilai.grade_symbol == "" and (grade_symbol == "A" or grade_symbol == "AB" or grade_symbol == "B" or grade_symbol == "BC" or grade_symbol == "C" or grade_symbol == "D" or grade_symbol == "E" or grade_symbol == "T")):
+                get_transkrip_nilai.earned_credits = earned_credits
+                get_transkrip_nilai.grade_symbol = grade_symbol
+                get_transkrip_nilai.save()
+
             serializer = self.get_serializer(instance=get_transkrip_nilai)
             return Response(serializer.data, status=status.HTTP_200_OK)
 

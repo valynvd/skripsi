@@ -54,7 +54,7 @@ const MonitoringMahasiswaTable = ({
         },
         {
             Header:'SKS',
-            accessor:'earned_credits'
+            accessor:'mata_kuliah_detail.sks_total'
         },
         {
             Header:'Academic Session',

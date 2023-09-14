@@ -381,8 +381,8 @@ const MonitoringMahasiswaImportExcel = () => {
                       </td>
                       <td className="px-4 py-3">{index + 1}</td>
                       <td className="px-4 py-3">
-                        {filteredData.mahasiswa_detail.nama}
-                        {/* {filteredData.mahasiswa_detail['nama']} */}
+                        {/* {filteredData.mahasiswa_detail.nama} */}
+                        {filteredData.mahasiswa_detail['nama']}
                       </td>
                       <td className="px-4 py-3">
                         {filteredData.mahasiswa_detail.nim}
