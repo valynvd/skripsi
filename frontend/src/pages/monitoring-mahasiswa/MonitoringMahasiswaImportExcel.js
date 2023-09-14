@@ -434,7 +434,7 @@ const MonitoringMahasiswaImportExcel = () => {
                       <td className="px-4 py-3">
                         {filteredData['Graded Credits']}
                       </td>
-                      <td className="px-4 py-3">{filteredData['Grade symbol']}</td>
+                      <td className="px-4 py-3">{filteredData['Grade symbol'] || "T"}</td>
                     </tr>
                   ))}
           </tbody>

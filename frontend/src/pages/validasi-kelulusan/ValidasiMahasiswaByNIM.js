@@ -138,7 +138,7 @@ const ValidasiMahasiswaByNIM = () => {
   
         filteredGrades.forEach((transkripData) => {
           const gradeValues = {
-            A: 4.0, AB: 3.5, B: 3.0, BC: 2.5, C: 2.0, D: 1.0, E: 0.0
+            A: 4.0, AB: 3.5, B: 3.0, BC: 2.5, C: 2.0, D: 1.0, E: 0.0, T: 0.0
           };
           ips += gradeValues[transkripData.grade_symbol] * parseInt(transkripData.earned_credits);
           sks += parseInt(transkripData.mata_kuliah_detail.sks_total);
@@ -619,16 +619,16 @@ const ValidasiMahasiswaByNIM = () => {
                   getdata.academic_session === getData.academicSession) // Use === for comparison
                   .map((filteredData, index) => (
                     <tr key={index} className="bg-white border-b text-gray-600">
-                      <td className={`px-4 py-3 text-center ${filteredData.grade_symbol == "D" ? 'bg-yellow-500' : '' || filteredData.grade_symbol == "E" ? 'bg-red-500 text-white' : ''}`}>
+                      <td className={`px-4 py-3 text-center ${filteredData.grade_symbol == "D" ? 'bg-yellow-500' : '' || filteredData.grade_symbol == "E" ? 'bg-red-500 text-white' : '' || filteredData.grade_symbol == "T" ? 'bg-gray-500 text-white' : ''}`}>
                           {filteredData.mata_kuliah_detail.kode}
                       </td>
-                      <td className={`px-4 py-3 ${filteredData.grade_symbol == "D" ? 'bg-yellow-500' : '' || filteredData.grade_symbol == "E" ? 'bg-red-500 text-white' : ''}`}>
+                      <td className={`px-4 py-3 ${filteredData.grade_symbol == "D" ? 'bg-yellow-500' : '' || filteredData.grade_symbol == "E" ? 'bg-red-500 text-white' : '' || filteredData.grade_symbol == "T" ? 'bg-gray-500 text-white' : ''}`}>
                           {filteredData.mata_kuliah_detail.name}
                       </td>
-                      <td className={`px-4 py-3 text-center ${filteredData.grade_symbol == "D" ? 'bg-yellow-500' : '' || filteredData.grade_symbol == "E" ? 'bg-red-500 text-white ' : ''}`}>
+                      <td className={`px-4 py-3 text-center ${filteredData.grade_symbol == "D" ? 'bg-yellow-500' : '' || filteredData.grade_symbol == "E" ? 'bg-red-500 text-white ' : '' || filteredData.grade_symbol == "T" ? 'bg-gray-500 text-white' : ''}`}>
                           {filteredData.mata_kuliah_detail.sks_total}
                       </td>
-                      <td className={`px-4 py-3 text-center ${filteredData.grade_symbol == "D" ? 'bg-yellow-500' : '' || filteredData.grade_symbol == "E" ? 'bg-red-500 text-white' : ''}`}>
+                      <td className={`px-4 py-3 text-center ${filteredData.grade_symbol == "D" ? 'bg-yellow-500' : '' || filteredData.grade_symbol == "E" ? 'bg-red-500 text-white' : '' || filteredData.grade_symbol == "T" ? 'bg-gray-500 text-white' : ''}`}>
                           {filteredData.grade_symbol}
                      
                       </td>
