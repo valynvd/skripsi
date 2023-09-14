@@ -254,78 +254,78 @@ const DegreeAuditKelulusanTable = ({
             </div>
             <div className="overflow-x-auto">
                 <table {...getTableProps()} className="w-full">
-                <thead className="bg-primary-400/[0.03] whitespace-nowrap rounded-xl">
-                    {headerGroups.map((headerGroup) => (
-                    <tr {...headerGroup.getHeaderGroupProps()}>
-                        {headerGroup.headers.map((column) => (
-                        <th
-                            className="px-4 py-3 font-semibold"
-                            {...column.getHeaderProps(column.getSortByToggleProps())}
-                        >
-                            <div className="flex flex-row items-center">
-                            {column.render('Header')}
-                            {column.isSorted ? (
-                                column.isSortedDesc ? (
-                                <RxTriangleDown
-                                    size={20}
-                                    color="gray"
-                                    className="inline ml-1"
-                                />
+                    <thead className="bg-primary-400/[0.03] whitespace-nowrap rounded-xl">
+                        {headerGroups.map((headerGroup) => (
+                        <tr {...headerGroup.getHeaderGroupProps()}>
+                            {headerGroup.headers.map((column) => (
+                            <th
+                                className="px-4 py-3 font-semibold"
+                                {...column.getHeaderProps(column.getSortByToggleProps())}
+                            >
+                                <div className="flex flex-row items-center">
+                                {column.render('Header')}
+                                {column.isSorted ? (
+                                    column.isSortedDesc ? (
+                                    <RxTriangleDown
+                                        size={20}
+                                        color="gray"
+                                        className="inline ml-1"
+                                    />
+                                    ) : (
+                                    <RxTriangleUp
+                                        size={20}
+                                        color="gray"
+                                        className="inline ml-1"
+                                    />
+                                    )
                                 ) : (
-                                <RxTriangleUp
-                                    size={20}
-                                    color="gray"
-                                    className="inline ml-1"
-                                />
-                                )
-                            ) : (
-                                ''
-                            )}
-                            </div>
-                        </th>
+                                    ''
+                                )}
+                                </div>
+                            </th>
+                            ))}
+                        </tr>
                         ))}
-                    </tr>
-                    ))}
-                </thead>
-                {!loading && (
-                    <tbody {...getTableBodyProps()}>
-                    {page.map((row) => {
-                        prepareRow(row);
-                        return (
-                        <tr
-                            {...row.getRowProps()}
-                            className="bg-white border-b text-gray-600 border-black" 
-                        >
-                            {row.cells.map((cell) => {
+                    </thead>
+                    {!loading && (
+                        <tbody {...getTableBodyProps()}>
+                        {page.map((row) => {
+                            prepareRow(row);
                             return (
-                                <td {...cell.getCellProps()} className={`px-4 py-3 ${
-                                        cell.column.id === 'jumlah_sks' && cell.value < 144 ? 
-                                            'bg-red-500 text-white text-center' : '' || 
-                                        cell.column.id === 'nilaid' && cell.value >= 7 ? 
-                                            'bg-red-500 text-white text-center' : '' || 
-                                        cell.column.id === 'nilaie' && cell.value >= 1 ? 
-                                            'bg-red-500 text-white text-center' : '' ||
-                                        cell.column.id === 'jumlah_sks' || cell.column.id === 'nilaid' || cell.column.id === 'mahasiswa_detail.angkatan' || cell.column.id === 'nilai_ipk'||  cell.column.id === 'nilaie' ? 'text-center' : ''}`}>
-                                        
-                                    {cell.render('Cell')}
-                                </td>
+                            <tr
+                                {...row.getRowProps()}
+                                className="bg-white border-b text-gray-600 border-black" 
+                            >
+                                {row.cells.map((cell) => {
+                                return (
+                                    <td {...cell.getCellProps()} className={`px-4 py-3 ${
+                                            cell.column.id === 'jumlah_sks' && cell.value < 144 ? 
+                                                'bg-red-500 text-white text-center' : '' || 
+                                            cell.column.id === 'nilaid' && cell.value >= 7 ? 
+                                                'bg-red-500 text-white text-center' : '' || 
+                                            cell.column.id === 'nilaie' && cell.value >= 1 ? 
+                                                'bg-red-500 text-white text-center' : '' ||
+                                            cell.column.id === 'jumlah_sks' || cell.column.id === 'nilaid' || cell.column.id === 'mahasiswa_detail.angkatan' || cell.column.id === 'nilai_ipk'||  cell.column.id === 'nilaie' ? 'text-center' : ''}`}>
+                                            
+                                        {cell.render('Cell')}
+                                    </td>
+                                );
+                                })}
+                            </tr>
                             );
-                            })}
-                        </tr>
-                        );
-                    })}
-                    {memoData.length === 0 && (
-                        <tr>
-                        <td
-                            colSpan={`${memoColumns.length}`}
-                            className="w-full text-center p-3.5 border border-gray-200 text-gray-400"
-                        >
-                            Data tidak ditemukan...
-                        </td>
-                        </tr>
+                        })}
+                        {memoData.length === 0 && (
+                            <tr>
+                            <td
+                                colSpan={`${memoColumns.length}`}
+                                className="w-full text-center p-3.5 border border-gray-200 text-gray-400"
+                            >
+                                Data tidak ditemukan...
+                            </td>
+                            </tr>
+                        )}
+                        </tbody>
                     )}
-                    </tbody>
-                )}
                 </table>
             </div>
             <Pagination

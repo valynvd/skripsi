@@ -11,7 +11,7 @@ import { useCheckRole } from '../../hooks/useCheckRole';
 
 const MataKuliah = () => {
   const {
-    data: response,
+    data: responseData,
     isLoading,
     refetch: mataKuliahDataRefetch,
   } = useMataKuliahData();
@@ -51,7 +51,7 @@ const MataKuliah = () => {
           setSelectedItem={setSelectedItem}
           setOpenModalDelete={setOpenModalDelete}
           loading={isLoading}
-          data={response?.data ?? []}
+          data={responseData?.data ?? []}
         />
       </div>
     </section>
