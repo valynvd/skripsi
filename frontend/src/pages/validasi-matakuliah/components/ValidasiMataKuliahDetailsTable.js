@@ -11,8 +11,8 @@ import { AiOutlineSearch } from 'react-icons/ai';
 import { RxTriangleUp, RxTriangleDown } from 'react-icons/rx';
 // import { useNavigate } from 'react-router-dom';
 // import { EditIcon, DeleteIcon } from '../../../components/IconButton';
-// import { ExportPrimaryButton } from '../../../components/PrimaryButton';
-// import { utils, writeFile } from 'xlsx';
+import { ExportPrimaryButton } from '../../../components/PrimaryButton';
+import { utils, writeFile } from 'xlsx';
 
 const ValidasiMataKuliahTable = ({ 
   userRole,
@@ -83,21 +83,27 @@ const ValidasiMataKuliahTable = ({
     return filteredData;
 }, [data]);
 
-  // const handleExport = () => {
-  //   const filterToExcel = rows.map(({ original }) => ({
-  //     'Kode Mata Kuliah': original.kode,
-  //     'Mata Kuliah': original.name,
-  //     'SKS Total': original.sks_total,
-  //     'SKS Praktikum': original.sks_praktikum,
-  //   }));
+  const handleExport = () => {
+    const filterToExcel = rows.map(({ original }) => ({
+      'Nama Mahasiswa': original.mahasiswa_detail.nama,
+      'NIM': original.mahasiswa_detail.nim,
+      'Jurusan': original.mahasiswa_detail.prodi_detail.name,
+      'Angkatan': original.mahasiswa_detail.angkatan,
+      'Kode Mata Kuliah': original.mata_kuliah_detail.kode,
+      'Mata Kuliah': original.mata_kuliah_detail.name,
+      'SKS Total': original.mata_kuliah_detail.sks_total,
+      'Academic Year': original.academic_year,
+      'Academic Session': original.academic_session,
+      'Nilai': original.grade_symbol,
+    }));
   
-  //   const wb = utils.book_new();
-  //   const ws = utils.json_to_sheet(filterToExcel);
+    const wb = utils.book_new();
+    const ws = utils.json_to_sheet(filterToExcel);
   
-  //   utils.book_append_sheet(wb, ws, 'Mata Kuliah');
+    utils.book_append_sheet(wb, ws, `${filterToExcel[0]['Mata Kuliah']}`);
   
-  //   writeFile(wb, 'List Mata Kuliah STEM.xlsx');
-  // };
+    writeFile(wb, `List Mahasiswa No Grade Mata Kuliah ${filterToExcel[0]['Mata Kuliah']}.xlsx`);
+  };
 
   const {
     getTableProps,
@@ -113,6 +119,7 @@ const ValidasiMataKuliahTable = ({
     gotoPage,
     pageOptions,
     state,
+    rows,
   } = useTable(
     { columns: memoColumns, data: memoData },
     useGlobalFilter,
@@ -139,6 +146,7 @@ const ValidasiMataKuliahTable = ({
               onChange={(e) => setGlobalFilter(e.target.value)}
             />
           </div>
+          <ExportPrimaryButton onClick={handleExport} />
         </form>
       </div>
       <div className="overflow-x-auto">

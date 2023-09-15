@@ -11,8 +11,8 @@ import { AiOutlineSearch } from 'react-icons/ai';
 import { RxTriangleUp, RxTriangleDown } from 'react-icons/rx';
 // import { useNavigate } from 'react-router-dom';
 // import { EditIcon, DeleteIcon } from '../../../components/IconButton';
-// import { ExportPrimaryButton } from '../../../components/PrimaryButton';
-// import { utils, writeFile } from 'xlsx';
+import { ExportPrimaryButton } from '../../../components/PrimaryButton';
+import { utils, writeFile } from 'xlsx';
 
 const ValidasiMataKuliahTable = ({ 
   userRole,
@@ -98,21 +98,23 @@ const ValidasiMataKuliahTable = ({
     return Object.values(counts);
   }, [data]);
 
-  // const handleExport = () => {
-  //   const filterToExcel = rows.map(({ original }) => ({
-  //     'Kode Mata Kuliah': original.kode,
-  //     'Mata Kuliah': original.name,
-  //     'SKS Total': original.sks_total,
-  //     'SKS Praktikum': original.sks_praktikum,
-  //   }));
+  const handleExport = () => {
+    const filterToExcel = rows.map(({ original }) => ({
+      'Academic Year': original.academic_year,
+      'Academic Session': original.academic_session,
+      'Kode Mata Kuliah': original.kode_mata_kuliah,
+      'Mata Kuliah': original.mata_kuliah,
+      'Jumlah SKS': original.sks,
+      'Total': original.count,
+    }));
   
-  //   const wb = utils.book_new();
-  //   const ws = utils.json_to_sheet(filterToExcel);
+    const wb = utils.book_new();
+    const ws = utils.json_to_sheet(filterToExcel);
   
-  //   utils.book_append_sheet(wb, ws, 'Mata Kuliah');
+    utils.book_append_sheet(wb, ws, 'Mata Kuliah');
   
-  //   writeFile(wb, 'List Mata Kuliah STEM.xlsx');
-  // };
+    writeFile(wb, 'List Mata Kuliah STEM Yang Belum Di Nilai.xlsx');
+  };
 
   const {
     getTableProps,
@@ -128,6 +130,7 @@ const ValidasiMataKuliahTable = ({
     gotoPage,
     pageOptions,
     state,
+    rows,
   } = useTable(
     { columns: memoColumns, data: memoData },
     useGlobalFilter,
@@ -154,6 +157,7 @@ const ValidasiMataKuliahTable = ({
               onChange={(e) => setGlobalFilter(e.target.value)}
             />
           </div>
+          <ExportPrimaryButton onClick={handleExport} />
         </form>
       </div>
       <div className="overflow-x-auto">
