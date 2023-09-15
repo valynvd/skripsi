@@ -817,6 +817,28 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
                 get_monitoring_mahasiswa.earned_credits = earned_credits,
                 get_monitoring_mahasiswa.grade_symbol = grade_symbol,
                 get_monitoring_mahasiswa.save()
+            
+            else:
+                monitoring_mahasiswa, created = models.MonitoringMahasiswa.objects.get_or_create(
+                    st_object_type = st_object_type,
+                    st_objid = st_objid,
+                    mahasiswa = datamahasiswa,
+                    student_id = student_id,
+                    appraisal_type = appraisal_type,
+                    sm_object_type = sm_object_type,
+                    sm_objid = sm_objid,
+                    mata_kuliah = matakuliah,
+                    event_package_objid = event_package_objid,
+                    event_package_short = event_package_short,
+                    event_package_text = event_package_text,
+                    grade_symbol = grade_symbol,
+                    earned_credits = earned_credits,
+                    credit_type = credit_type,
+                    prodi = programstudi,
+                    mentor = mentor,
+                    academic_session = academic_session,
+                    academic_year = academic_year,
+                )
 
         except models.MonitoringMahasiswa.DoesNotExist:
             monitoring_mahasiswa, created = models.MonitoringMahasiswa.objects.get_or_create(
