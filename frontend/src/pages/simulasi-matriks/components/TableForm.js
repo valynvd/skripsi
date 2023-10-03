@@ -22,8 +22,9 @@ import {
   usePatchRiwayatPoinPenilaian,
   usePostRiwayatPoinPenilaian,
 } from '../../../hooks/useRiwayatPoinPenilaian';
+import DetailModal from '../../matriks-penilaian/components/DetailModal';
 
-const TableForm = ({ simulasiMatriksData }) => {
+const TableForm = ({ simulasiMatriksData, setSimulateData, setRadarData }) => {
   const [criteriaState, setCriteriaState] = useState();
   const [selectedPoinPenilaian, setSelectedPoinPenilaian] = useState();
   const [answerData, setAnswerData] = useState();
@@ -39,6 +40,7 @@ const TableForm = ({ simulasiMatriksData }) => {
   const [openModal, setOpenModal] = useState(false);
   const [poinPenilaianLoading, setPoinPenilaianLoading] = useState({});
   const [dokumenPendukungList, setDokumenPendukungList] = useState([]);
+  const [riwayatData, setRiwayatData] = useState();
 
   const { data: matriksPenilaianData, refetch: matriksPenilaianDataRefetch } =
     useKriteriaByDokumenAkreditasiAndSimulasiMatriks(
@@ -53,19 +55,19 @@ const TableForm = ({ simulasiMatriksData }) => {
   const { mutate: patchRiwayatPoinPenilaian } = usePatchRiwayatPoinPenilaian();
   const { mutate: postRiwayatPoinPenilaian } = usePostRiwayatPoinPenilaian();
 
-  const {
-    handleSubmit,
-    reset,
-    control,
-    formState: { errors, dirtyFields },
-  } = useForm({});
+  // const {
+  //   handleSubmit,
+  //   reset,
+  //   control,
+  //   formState: { errors, dirtyFields },
+  // } = useForm({});
 
-  const onSubmit = (values) => {
+  const onSubmit = () => {
     let filteredValues = [];
     let countMaxScore = 0;
 
-    for (const id in values) {
-      const item = values[id];
+    for (const id in answerData) {
+      const item = answerData[id];
       countMaxScore += item.max_score;
     }
 
@@ -86,16 +88,17 @@ const TableForm = ({ simulasiMatriksData }) => {
       weight_percent: 0,
     };
 
-    for (const id in values) {
-      const item = values[id];
+    // eslint-disable-next-line no-unreachable
+    for (const id in answerData) {
+      const item = answerData[id];
 
       totalSimulation.total += 1;
-      totalSimulation.mark_counted += (item.value / 4) * item.max_score;
+      totalSimulation.mark_counted += (item.score / 4) * item.max_score;
       totalSimulation.weight_percent += (item.max_score / countMaxScore) * 100;
 
       if (item.description === formattedObject.name) {
-        formattedObject['mark'] += item.value;
-        formattedObject['mark_counted'] += (item.value / 4) * item.max_score;
+        formattedObject['mark'] += item.score;
+        formattedObject['mark_counted'] += (item.score / 4) * item.max_score;
         formattedObject['max_score'] += item.max_score;
         formattedObject['weight_percent'] +=
           (item.max_score / countMaxScore) * 100;
@@ -104,14 +107,14 @@ const TableForm = ({ simulasiMatriksData }) => {
         formattedObject['number'] = item.item_number;
         formattedObject['name'] = item.description;
         formattedObject['total'] = 1;
-        formattedObject['mark'] = item.value;
-        formattedObject['mark_counted'] = (item.value / 4) * item.max_score;
+        formattedObject['mark'] = item.score;
+        formattedObject['mark_counted'] = (item.score / 4) * item.max_score;
         formattedObject['max_score'] = item.max_score;
         formattedObject['weight_percent'] =
           (item.max_score / countMaxScore) * 100;
       }
 
-      if (formattedObject.name !== values[Number(id) + 1]?.description) {
+      if (formattedObject.name !== answerData[Number(id) + 1]?.description) {
         filteredValues.push({ ...formattedObject });
       }
     }
@@ -127,8 +130,9 @@ const TableForm = ({ simulasiMatriksData }) => {
       }
     });
 
-    // setRadarData({ label: radarLabels, data: radarData });
-    // setSimulateData(filteredValues);
+    // eslint-disable-next-line no-unreachable
+    setRadarData({ label: radarLabels, data: radarData });
+    setSimulateData(filteredValues);
   };
 
   const timeoutCounter = useRef({});
@@ -168,14 +172,17 @@ const TableForm = ({ simulasiMatriksData }) => {
         setPoinPenilaianLoading((prev) => {
           let copyPoinPenilaianLoading = { ...prev };
 
-          copyPoinPenilaianLoading[selectedPoinPenilaian.id] = 'loading';
+          copyPoinPenilaianLoading[selectedPoinPenilaian.order_number] =
+            'loading';
           return copyPoinPenilaianLoading;
         });
 
-        if (answerData[selectedPoinPenilaian.id].riwayatId) {
+        // if (answerData[selectedPoinPenilaian.id].riwayatId) {
+        if (riwayatData[selectedPoinPenilaian.id]) {
           patchRiwayatPoinPenilaian(
             {
-              id: answerData[selectedPoinPenilaian.id].riwayatId,
+              // id: answerData[selectedPoinPenilaian.id].riwayatId,
+              id: riwayatData[selectedPoinPenilaian.id],
               data: riwayatPoinPenilaianFormData,
             },
             {
@@ -183,7 +190,7 @@ const TableForm = ({ simulasiMatriksData }) => {
                 setPoinPenilaianLoading((prev) => {
                   let copyPoinPenilaianLoading = { ...prev };
 
-                  copyPoinPenilaianLoading[selectedPoinPenilaian.id] =
+                  copyPoinPenilaianLoading[selectedPoinPenilaian.order_number] =
                     'updated';
                   return copyPoinPenilaianLoading;
                 });
@@ -191,8 +198,9 @@ const TableForm = ({ simulasiMatriksData }) => {
                   setPoinPenilaianLoading((prev) => {
                     let copyPoinPenilaianLoading = { ...prev };
 
-                    copyPoinPenilaianLoading[selectedPoinPenilaian.id] =
-                      'stale';
+                    copyPoinPenilaianLoading[
+                      selectedPoinPenilaian.order_number
+                    ] = 'stale';
                     return copyPoinPenilaianLoading;
                   });
                 }, 2000);
@@ -205,14 +213,16 @@ const TableForm = ({ simulasiMatriksData }) => {
               setPoinPenilaianLoading((prev) => {
                 let copyPoinPenilaianLoading = { ...prev };
 
-                copyPoinPenilaianLoading[selectedPoinPenilaian.id] = 'updated';
+                copyPoinPenilaianLoading[selectedPoinPenilaian.order_number] =
+                  'updated';
                 return copyPoinPenilaianLoading;
               });
               setTimeout(() => {
                 setPoinPenilaianLoading((prev) => {
                   let copyPoinPenilaianLoading = { ...prev };
 
-                  copyPoinPenilaianLoading[selectedPoinPenilaian.id] = 'stale';
+                  copyPoinPenilaianLoading[selectedPoinPenilaian.order_number] =
+                    'stale';
                   return copyPoinPenilaianLoading;
                 });
               }, 2000);
@@ -242,26 +252,29 @@ const TableForm = ({ simulasiMatriksData }) => {
       }
 
       const formatAnswerData = {};
+      const formatRiwayatData = {};
 
       matriksPenilaianData.forEach((item) => {
         item.poin_penilaian_detail.forEach((item2) => {
           if (item2.riwayat_poin_penilaian_detail.length === 0) {
-            formatAnswerData[item2.id] = {
+            formatAnswerData[item2.order_number] = {
               max_score: item2.max_score,
               item_number: item2.item_number,
-              description: item2.description,
-              riwayatId: false,
+              description: item.deskripsi ? item.deskripsi : item2.element,
+              id: item2.id,
+              // riwayatId: false,
               dokumenPendukung: [],
               score: 0,
             };
           } else {
             item2.riwayat_poin_penilaian_detail.forEach((item3) => {
-              formatAnswerData[item2.id] = {
+              formatAnswerData[item2.order_number] = {
                 ...item3,
+                id: item2.id,
                 max_score: item2.max_score,
                 item_number: item2.item_number,
-                description: item2.description,
-                riwayatId: item3.id,
+                description: item.deskripsi ? item.deskripsi : item2.element,
+                // riwayatId: item3.id,
                 dokumenPendukung: [
                   ...item3.dokumen_pendukung_surat_penugasan_detail.map(
                     (item3) => {
@@ -283,11 +296,14 @@ const TableForm = ({ simulasiMatriksData }) => {
                   }),
                 ],
               };
+
+              formatRiwayatData[item2.order_number] = item3.id;
             });
           }
         });
       });
 
+      setRiwayatData(formatRiwayatData);
       setAnswerData(formatAnswerData);
       setCriteriaState(formatCriteriaState);
     }
@@ -344,12 +360,21 @@ const TableForm = ({ simulasiMatriksData }) => {
     </div>
   );
 
-  useEffect(() => {
-    console.log(matriksPenilaianData);
-  }, [matriksPenilaianData]);
+  const semesterName = {
+    Odd: 'Ganjil',
+    'Odd Short': 'Pendek Ganjil',
+    Even: 'Genap',
+    'Even Short': 'Pendek Genap',
+  };
 
   return (
     <>
+      <DetailModal
+        openModal2={openModal2}
+        setOpenModal2={setOpenModal2}
+        selectedDokumenPendukung2={selectedDokumenPendukung2}
+        semesterName={semesterName}
+      />
       <AddModal
         dokumenPendukungList={dokumenPendukungList}
         pointId={pointId}
@@ -365,7 +390,7 @@ const TableForm = ({ simulasiMatriksData }) => {
         setAnswerData={setAnswerData}
       />
       <section className="section-container mt-4">
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form>
           <table className="w-full mt-5">
             <thead className="table table-fixed w-full relative">
               <tr>
@@ -488,40 +513,29 @@ const TableForm = ({ simulasiMatriksData }) => {
                               </TooltipInfo>
                             </div>
                           </TableTd>
-                          <Controller
-                            control={control}
-                            name={`${item2.order_number}`}
-                            render={({ field }) => {
-                              return (
-                                <>
-                                  <td className="border-gray-300 border-t border-r p-3 w-[10%]">
-                                    <input
-                                      type="number"
-                                      {...field}
-                                      className={`accent-primary-400 focus:outline-none w-full mt-1 rounded-lg px-3 py-2 focus:border-primary-400 border-[1px] ${
-                                        false && '!border-primary-400'
-                                      }`}
-                                      onChange={(e) => {
-                                        field.onChange({
-                                          ...field.value,
-                                          value: e.target.value,
-                                        });
-                                        setSelectedPoinPenilaian(item2);
-                                        setAnswerData((prev) => {
-                                          let copyCounter = { ...prev };
-                                          copyCounter[item2.id] = {
-                                            ...copyCounter[item2.id],
-                                            score: e.target.value,
-                                          };
-                                          return copyCounter;
-                                        });
-                                        setPointId(item2.id);
-                                      }}
-                                      value={answerData[item2.id].score || ''}
-                                    />
-                                  </td>
-                                  <td className="border-gray-300 border-t border-r p-3 w-[20%] space-y-3">
-                                    {/* {answerData[item2.id]?.dokumenPendukung.map(
+                          <td className="border-gray-300 border-t border-r p-3 w-[10%]">
+                            <input
+                              type="number"
+                              className={`accent-primary-400 focus:outline-none w-full mt-1 rounded-lg px-3 py-2 focus:border-primary-400 border-[1px] ${
+                                false && '!border-primary-400'
+                              }`}
+                              onChange={(e) => {
+                                setSelectedPoinPenilaian(item2);
+                                setAnswerData((prev) => {
+                                  let copyCounter = { ...prev };
+                                  copyCounter[item2.order_number] = {
+                                    ...copyCounter[item2.order_number],
+                                    score: e.target.value,
+                                  };
+                                  return copyCounter;
+                                });
+                                setPointId(item2.id);
+                              }}
+                              value={answerData[item2.order_number].score || ''}
+                            />
+                          </td>
+                          <td className="border-gray-300 border-t border-r p-3 w-[20%] space-y-3">
+                            {/* {answerData[item2.order_number]?.dokumenPendukung.map(
                                       (item3) => {
                                         return (
                                           <div
@@ -542,18 +556,18 @@ const TableForm = ({ simulasiMatriksData }) => {
                                                 {item3.label}
                                               </p>
                                             </button>
-                                            {matriksEdit[item2.id] && (
+                                            {matriksEdit[item2.order_number] && (
                                               <DeleteIcon
                                                 className="shrink-0"
                                                 onClick={() => {
                                                   setSelectedPoinPenilaian(item2);
                                                   setAnswerData((prev) => {
                                                     let copyCounter = { ...prev };
-                                                    copyCounter[item2.id] = {
-                                                      ...copyCounter[item2.id],
+                                                    copyCounter[item2.order_number] = {
+                                                      ...copyCounter[item2.order_number],
                                                       dokumenPendukung:
                                                         copyCounter[
-                                                          item2.id
+                                                          item2.order_number
                                                         ].dokumenPendukung.filter(
                                                           (item) =>
                                                             item.value !==
@@ -562,12 +576,12 @@ const TableForm = ({ simulasiMatriksData }) => {
                                                     };
                                                     return copyCounter;
                                                   });
-                                                  setPointId(item2.id);
+                                                  setPointId(item2.order_number);
                                                   // setDocumentLoading((prev) => {
                                                   //   let dupeDocumentLoading = {
                                                   //     ...prev,
                                                   //   };
-                                                  //   dupeDocumentLoading[item2.id] =
+                                                  //   dupeDocumentLoading[item2.order_number] =
                                                   //     'loading';
                                                   //   return dupeDocumentLoading;
                                                   // });
@@ -579,7 +593,7 @@ const TableForm = ({ simulasiMatriksData }) => {
                                                   //           (item) => item !== item3.id
                                                   //         ),
                                                   //     },
-                                                  //     id: item2.id,
+                                                  //     id: item2.order_number,
                                                   //   },
                                                   //   {
                                                   //     onSuccess: () => {
@@ -587,7 +601,7 @@ const TableForm = ({ simulasiMatriksData }) => {
                                                   //         let dupeDocumentLoading = {
                                                   //           ...prev,
                                                   //         };
-                                                  //         dupeDocumentLoading[item2.id] =
+                                                  //         dupeDocumentLoading[item2.order_number] =
                                                   //           'updated';
                                                   //         return dupeDocumentLoading;
                                                   //       });
@@ -602,65 +616,59 @@ const TableForm = ({ simulasiMatriksData }) => {
                                         );
                                       }
                                     )} */}
-                                    <div className="flex space-x-2">
-                                      {matriksEdit[item2.id] ? (
-                                        <CancelButton
-                                          onClick={() => {
-                                            setMatriksEdit((prev) => {
-                                              const changeMatriksEdit = {
-                                                ...prev,
-                                              };
-                                              changeMatriksEdit[
-                                                item2.id
-                                              ] = false;
-                                              return changeMatriksEdit;
-                                            });
-                                          }}
-                                        />
-                                      ) : (
-                                        answerData[item2.id]?.dokumenPendukung
-                                          .length !== 0 && (
-                                          <EditButton
-                                            onClick={() => {
-                                              setMatriksEdit((prev) => {
-                                                const changeMatriksEdit = {
-                                                  ...prev,
-                                                };
-                                                changeMatriksEdit[
-                                                  item2.id
-                                                ] = true;
-                                                return changeMatriksEdit;
-                                              });
-                                            }}
-                                            name="Edit"
-                                            className="text-base"
-                                          />
-                                        )
-                                      )}
-                                      <PrimaryButton
-                                        onClick={() => {
-                                          setSelectedDokumenPendukung(false);
-                                          setSelectedPoinPenilaian(item2);
-                                          setOpenModal((prev) => !prev);
-                                        }}
-                                        type="button"
-                                        icon={<BiPlusCircle size={22} />}
-                                      >
-                                        Tambah
-                                      </PrimaryButton>
-                                    </div>
-                                  </td>
-                                </>
-                              );
-                            }}
-                          />
+                            <div className="flex space-x-2">
+                              {matriksEdit[item2.order_number] ? (
+                                <CancelButton
+                                  onClick={() => {
+                                    setMatriksEdit((prev) => {
+                                      const changeMatriksEdit = {
+                                        ...prev,
+                                      };
+                                      changeMatriksEdit[
+                                        item2.order_number
+                                      ] = false;
+                                      return changeMatriksEdit;
+                                    });
+                                  }}
+                                />
+                              ) : (
+                                answerData[item2.order_number]?.dokumenPendukung
+                                  .length !== 0 && (
+                                  <EditButton
+                                    onClick={() => {
+                                      setMatriksEdit((prev) => {
+                                        const changeMatriksEdit = {
+                                          ...prev,
+                                        };
+                                        changeMatriksEdit[
+                                          item2.order_number
+                                        ] = true;
+                                        return changeMatriksEdit;
+                                      });
+                                    }}
+                                    name="Edit"
+                                    className="text-base"
+                                  />
+                                )
+                              )}
+                              <PrimaryButton
+                                onClick={() => {
+                                  setSelectedDokumenPendukung(false);
+                                  setSelectedPoinPenilaian(item2);
+                                  setOpenModal((prev) => !prev);
+                                }}
+                                type="button"
+                                icon={<BiPlusCircle size={22} />}
+                              >
+                                Tambah
+                              </PrimaryButton>
+                            </div>
+                          </td>
                           <TableTd className="w-40 border-r-0">
-                            {poinPenilaianLoading[item2.id] === 'loading' && (
-                              <LoadingInfo />
-                            )}
-                            {poinPenilaianLoading[item2.id] === 'updated' && (
-                              <UpdatedInfo />
-                            )}
+                            {poinPenilaianLoading[item2.order_number] ===
+                              'loading' && <LoadingInfo />}
+                            {poinPenilaianLoading[item2.order_number] ===
+                              'updated' && <UpdatedInfo />}
                           </TableTd>
                         </tr>
                       ))}
@@ -718,182 +726,160 @@ const TableForm = ({ simulasiMatriksData }) => {
                               </TooltipInfo>
                             </div>
                           </TableTd>
-                          <Controller
-                            control={control}
-                            name={`${item2.order_number}`}
-                            render={({ field }) => {
+                          <td className="border-gray-300 border-t border-r p-3 w-[10%]">
+                            <input
+                              type="number"
+                              className={`accent-primary-400 focus:outline-none w-full mt-1 rounded-lg px-3 py-2 focus:border-primary-400 border-[1px] ${
+                                false && '!border-primary-400'
+                              }`}
+                              onChange={(e) => {
+                                setSelectedPoinPenilaian(item2);
+                                setAnswerData((prev) => {
+                                  let copyCounter = { ...prev };
+                                  copyCounter[item2.order_number] = {
+                                    ...copyCounter[item2.order_number],
+                                    score: e.target.value,
+                                  };
+                                  return copyCounter;
+                                });
+                                setPointId(item2.order_number);
+                              }}
+                              value={answerData[item2.order_number].score || ''}
+                            />
+                          </td>
+                          <td className="border-gray-300 border-t border-r p-3 w-[20%] space-y-3">
+                            {answerData[
+                              item2.order_number
+                            ]?.dokumenPendukung.map((item3) => {
                               return (
-                                <>
-                                  <td className="border-gray-300 border-t border-r p-3 w-[10%]">
-                                    <input
-                                      type="number"
-                                      {...field}
-                                      className={`accent-primary-400 focus:outline-none w-full mt-1 rounded-lg px-3 py-2 focus:border-primary-400 border-[1px] ${
-                                        false && '!border-primary-400'
-                                      }`}
-                                      onChange={(e) => {
-                                        field.onChange({
-                                          ...field.value,
-                                          value: e.target.value,
-                                        });
+                                <div
+                                  key={item3.id}
+                                  className="w-full flex flex-row items-center space-x-2"
+                                >
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setSelectedDokumenPendukung2(item3);
+                                      setOpenModal2((prev) => !prev);
+                                    }}
+                                    className=" bg-gray-700 hover:bg-gray-800 duration-200 transition-all px-4 py-1 border border-gray-700 rounded-full cursor-pointer"
+                                  >
+                                    <p className="overflow-hidden break-all overflow-ellipsisfont-medium line-clamp-1 text-white">
+                                      {item3.label}
+                                    </p>
+                                  </button>
+                                  {matriksEdit[item2.order_number] && (
+                                    <DeleteIcon
+                                      className="shrink-0"
+                                      onClick={() => {
                                         setSelectedPoinPenilaian(item2);
                                         setAnswerData((prev) => {
-                                          let copyCounter = { ...prev };
-                                          copyCounter[item2.id] = {
-                                            ...copyCounter[item2.id],
-                                            score: e.target.value,
+                                          let copyCounter = {
+                                            ...prev,
+                                          };
+                                          copyCounter[item2.order_number] = {
+                                            ...copyCounter[item2.order_number],
+                                            dokumenPendukung: copyCounter[
+                                              item2.order_number
+                                            ].dokumenPendukung.filter(
+                                              (item) =>
+                                                item.value !== item3.value
+                                            ),
                                           };
                                           return copyCounter;
                                         });
-                                        setPointId(item2.id);
+                                        setPointId(item2.order_number);
+                                        // setDocumentLoading((prev) => {
+                                        //   let dupeDocumentLoading = {
+                                        //     ...prev,
+                                        //   };
+                                        //   dupeDocumentLoading[item2.order_number] =
+                                        //     'loading';
+                                        //   return dupeDocumentLoading;
+                                        // });
+                                        // patchPoinPenilaian(
+                                        //   {
+                                        //     data: {
+                                        //       dokumenPendukungSuratPenugasan:
+                                        //         item2.dokumenPendukungSuratPenugasan.filter(
+                                        //           (item) => item !== item3.id
+                                        //         ),
+                                        //     },
+                                        //     id: item2.order_number,
+                                        //   },
+                                        //   {
+                                        //     onSuccess: () => {
+                                        //       setDocumentLoading((prev) => {
+                                        //         let dupeDocumentLoading = {
+                                        //           ...prev,
+                                        //         };
+                                        //         dupeDocumentLoading[item2.order_number] =
+                                        //           'updated';
+                                        //         return dupeDocumentLoading;
+                                        //       });
+                                        //       kriteriaRefetch();
+                                        //     },
+                                        //   }
+                                        // );
                                       }}
-                                      value={answerData[item2.id].score || ''}
                                     />
-                                  </td>
-                                  <td className="border-gray-300 border-t border-r p-3 w-[20%] space-y-3">
-                                    {answerData[item2.id]?.dokumenPendukung.map(
-                                      (item3) => {
-                                        return (
-                                          <div
-                                            key={item3.id}
-                                            className="w-full flex flex-row items-center space-x-2"
-                                          >
-                                            <button
-                                              type="button"
-                                              onClick={() => {
-                                                setSelectedDokumenPendukung2(
-                                                  item3
-                                                );
-                                                setOpenModal2((prev) => !prev);
-                                              }}
-                                              className=" bg-gray-700 hover:bg-gray-800 duration-200 transition-all px-4 py-1 border border-gray-700 rounded-full cursor-pointer"
-                                            >
-                                              <p className="overflow-hidden break-all overflow-ellipsisfont-medium line-clamp-1 text-white">
-                                                {item3.label}
-                                              </p>
-                                            </button>
-                                            {matriksEdit[item2.id] && (
-                                              <DeleteIcon
-                                                className="shrink-0"
-                                                onClick={() => {
-                                                  setSelectedPoinPenilaian(
-                                                    item2
-                                                  );
-                                                  setAnswerData((prev) => {
-                                                    let copyCounter = {
-                                                      ...prev,
-                                                    };
-                                                    copyCounter[item2.id] = {
-                                                      ...copyCounter[item2.id],
-                                                      dokumenPendukung:
-                                                        copyCounter[
-                                                          item2.id
-                                                        ].dokumenPendukung.filter(
-                                                          (item) =>
-                                                            item.value !==
-                                                            item3.value
-                                                        ),
-                                                    };
-                                                    return copyCounter;
-                                                  });
-                                                  setPointId(item2.id);
-                                                  // setDocumentLoading((prev) => {
-                                                  //   let dupeDocumentLoading = {
-                                                  //     ...prev,
-                                                  //   };
-                                                  //   dupeDocumentLoading[item2.id] =
-                                                  //     'loading';
-                                                  //   return dupeDocumentLoading;
-                                                  // });
-                                                  // patchPoinPenilaian(
-                                                  //   {
-                                                  //     data: {
-                                                  //       dokumenPendukungSuratPenugasan:
-                                                  //         item2.dokumenPendukungSuratPenugasan.filter(
-                                                  //           (item) => item !== item3.id
-                                                  //         ),
-                                                  //     },
-                                                  //     id: item2.id,
-                                                  //   },
-                                                  //   {
-                                                  //     onSuccess: () => {
-                                                  //       setDocumentLoading((prev) => {
-                                                  //         let dupeDocumentLoading = {
-                                                  //           ...prev,
-                                                  //         };
-                                                  //         dupeDocumentLoading[item2.id] =
-                                                  //           'updated';
-                                                  //         return dupeDocumentLoading;
-                                                  //       });
-                                                  //       kriteriaRefetch();
-                                                  //     },
-                                                  //   }
-                                                  // );
-                                                }}
-                                              />
-                                            )}
-                                          </div>
-                                        );
-                                      }
-                                    )}
-                                    <div className="flex space-x-2">
-                                      {matriksEdit[item2.id] ? (
-                                        <CancelButton
-                                          onClick={() => {
-                                            setMatriksEdit((prev) => {
-                                              const changeMatriksEdit = {
-                                                ...prev,
-                                              };
-                                              changeMatriksEdit[
-                                                item2.id
-                                              ] = false;
-                                              return changeMatriksEdit;
-                                            });
-                                          }}
-                                        />
-                                      ) : // answerData[item2.id]?.dokumenPendukung
-                                      //   .length !== 0 && (
-                                      //   <EditButton
-                                      //     onClick={() => {
-                                      //       setMatriksEdit((prev) => {
-                                      //         const changeMatriksEdit = {
-                                      //           ...prev,
-                                      //         };
-                                      //         changeMatriksEdit[
-                                      //           item2.id
-                                      //         ] = true;
-                                      //         return changeMatriksEdit;
-                                      //       });
-                                      //     }}
-                                      //     name="Edit"
-                                      //     className="text-base"
-                                      //   />
-                                      // )
-                                      null}
-                                      <PrimaryButton
-                                        onClick={() => {
-                                          setSelectedDokumenPendukung(false);
-                                          setSelectedPoinPenilaian(item2);
-                                          setOpenModal((prev) => !prev);
-                                        }}
-                                        type="button"
-                                        icon={<BiPlusCircle size={22} />}
-                                      >
-                                        Tambah
-                                      </PrimaryButton>
-                                    </div>
-                                  </td>
-                                </>
+                                  )}
+                                </div>
                               );
-                            }}
-                          />
+                            })}
+                            <div className="flex space-x-2">
+                              {matriksEdit[item2.order_number] ? (
+                                <CancelButton
+                                  onClick={() => {
+                                    setMatriksEdit((prev) => {
+                                      const changeMatriksEdit = {
+                                        ...prev,
+                                      };
+                                      changeMatriksEdit[
+                                        item2.order_number
+                                      ] = false;
+                                      return changeMatriksEdit;
+                                    });
+                                  }}
+                                />
+                              ) : (
+                                answerData[item2.order_number]?.dokumenPendukung
+                                  .length !== 0 && (
+                                  <EditButton
+                                    onClick={() => {
+                                      setMatriksEdit((prev) => {
+                                        const changeMatriksEdit = {
+                                          ...prev,
+                                        };
+                                        changeMatriksEdit[
+                                          item2.order_number
+                                        ] = true;
+                                        return changeMatriksEdit;
+                                      });
+                                    }}
+                                    name="Edit"
+                                    className="text-base"
+                                  />
+                                )
+                              )}
+                              <PrimaryButton
+                                onClick={() => {
+                                  setSelectedDokumenPendukung(false);
+                                  setSelectedPoinPenilaian(item2);
+                                  setOpenModal((prev) => !prev);
+                                }}
+                                type="button"
+                                icon={<BiPlusCircle size={22} />}
+                              >
+                                Tambah
+                              </PrimaryButton>
+                            </div>
+                          </td>
                           <TableTd className="w-40 border-r-0">
-                            {poinPenilaianLoading[item2.id] === 'loading' && (
-                              <LoadingInfo />
-                            )}
-                            {poinPenilaianLoading[item2.id] === 'updated' && (
-                              <UpdatedInfo />
-                            )}
+                            {poinPenilaianLoading[item2.order_number] ===
+                              'loading' && <LoadingInfo />}
+                            {poinPenilaianLoading[item2.order_number] ===
+                              'updated' && <UpdatedInfo />}
                           </TableTd>
                         </tr>
                       ))}
@@ -903,6 +889,15 @@ const TableForm = ({ simulasiMatriksData }) => {
                 return matriksList;
               })}
           </table>
+          <PrimaryButton
+            className="mt-4 ml-auto"
+            type="button"
+            onClick={() => {
+              onSubmit();
+            }}
+          >
+            Simulasi
+          </PrimaryButton>
         </form>
       </section>
     </>

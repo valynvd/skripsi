@@ -25,6 +25,7 @@ const Dosen = ({ setOpenModalDelete, setSelectedItem, ...options }) => {
     {
       Header: 'Prodi',
       accessor: 'prodi_detail.name',
+      Cell: ({ value }) => (value ? value : <TableIfNull />),
     },
     {
       Header: 'NIDN',

@@ -57,8 +57,8 @@ class ProgramStudi(models.Model):
 class Kurikulum(models.Model):
 	programStudiId = models.ForeignKey(ProgramStudi, on_delete=models.SET_NULL, blank=True, null=True)
 	name = models.CharField(max_length=100)
-	file_panduan_kurikulum = models.FileField(upload_to='kurikulum/', blank=True, null=True)
-	file_pendukung = models.FileField(upload_to='kurikulum_pendukung/', blank=True, null=True)
+	file_panduan_kurikulum = UniqueNameFileField(upload_to='kurikulum/', blank=True, null=True)
+	file_pendukung = UniqueNameFileField(upload_to='kurikulum_pendukung/', blank=True, null=True)
 	created_at = models.DateTimeField(default=timezone.now)
 	def __str__(self) -> str:
 		return '{}'.format(self.name)
@@ -365,12 +365,12 @@ class DokumenPembelajaran(models.Model):
 			blank=True,
 			null=True,
 	)
-	rubrik = UniqueNameFileField(upload_to='evaluasi/rubrik/', blank=True, null=True)
+	# rubrik = UniqueNameFileField(upload_to='evaluasi/rubrik/', blank=True, null=True)
 	notes  = models.TextField(blank=True, null=True)
 
-	def delete(self, *args, **kwargs):
-		self.rubrik.delete()
-		super().delete(*args, **kwargs)
+	# def delete(self, *args, **kwargs):
+	# 	self.rubrik.delete()
+	# 	super().delete(*args, **kwargs)
 
 	def __str__(self) -> str:
 		return '{}'.format(self.penugasanPengajaranId.mata_kuliah.name)

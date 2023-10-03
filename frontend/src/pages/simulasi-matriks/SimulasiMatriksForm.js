@@ -181,7 +181,11 @@ const SimulasiMatriksForm = () => {
         </form>
       </section>
 
-      <TableForm simulasiMatriksData={simulasiMatriksData} />
+      <TableForm
+        simulasiMatriksData={simulasiMatriksData}
+        setRadarData={setRadarData}
+        setSimulateData={setSimulateData}
+      />
 
       {radarData && simulateData && (
         <TableSimulate simulateData={simulateData} radarData={radarData} />
