@@ -74,8 +74,10 @@ const DosenForm = () => {
           phone: state.user_detail?.phone,
           email: state.user_detail?.email,
           jabatan_fungsional: state.user_detail?.jabatan_fungsional,
+          prodi: state.prodi ? state.prodi : 'Tidak ada',
         });
       } else if (updatedDosenData) {
+        console.log(updatedDosenData);
         setDosenData(updatedDosenData.data);
         reset({
           ...updatedDosenData.data,
@@ -85,6 +87,9 @@ const DosenForm = () => {
           email: updatedDosenData.data.user_detail?.email,
           jabatan_fungsional:
             updatedDosenData.data.user_detail?.jabatan_fungsional,
+          prodi: updatedDosenData.data.prodi
+            ? updatedDosenData.data.prodi_detail
+            : 'Tidak ada',
         });
       }
       setEditable(false);
@@ -146,7 +151,11 @@ const DosenForm = () => {
       dosenFormData.append('inisial', data.inisial);
     }
     if (dirtyFields.prodi) {
-      dosenFormData.append('prodi', data.prodi);
+      if (data.prodi === 'Tidak ada') {
+        dosenFormData.append('prodi', '');
+      } else {
+        dosenFormData.append('prodi', data.prodi);
+      }
     }
 
     if (id) {
@@ -358,10 +367,17 @@ const DosenForm = () => {
         />
         <CRUDropdownInput
           control={control}
-          required
           name="Program Studi"
           registeredName="prodi"
-          options={programStudiDataSuccess ? dataProgramStudi : []}
+          required
+          options={
+            programStudiDataSuccess
+              ? [
+                  { value: 'Tidak ada', label: 'Tidak ada' },
+                  ...dataProgramStudi,
+                ]
+              : [{ value: 'Tidak ada', label: 'Tidak ada' }]
+          }
           isDisabled={!editable}
         />
         {!id ? (
