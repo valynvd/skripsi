@@ -758,19 +758,12 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
         elif name_prody == "Food Technology" :
             kode = "FBT"
 
-        # programstudi, created = models.ProgramStudi.objects.get_or_create(name=name_prody, kode_sap=program_study)
-
-        # try:
         programstudi = models.ProgramStudi.objects.get(kode_sap=program_study)
-        # except models.ProgramStudi.DoesNotExist:
-        #     programstudi, created = models.ProgramStudi.objects.create(name=name_prody, kode_sap=program_study)
-
-        # # Check if DataMahasiswa already exists
 
         try:
             datamahasiswa = models.DataMahasiswa.objects.get(nim=nim_mahasiswa)
         except models.DataMahasiswa.DoesNotExist:
-            datamahasiswa, created = models.DataMahasiswa.objects.create(
+            datamahasiswa, created = models.DataMahasiswa.objects.get_or_create(
                 nama=nama_mahasiswa,
                 nim=nim_mahasiswa,
                 angkatan=angkatan,
@@ -782,14 +775,16 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
         graded_credits = data_dict.get('Graded Credits')
         academic_year = data_dict.get('Academic Year')
         academic_session = data_dict.get('Academic Session')
+        sm_objid = data_dict.get('SM Objid')
 
         try:
             matakuliah = models.MataKuliah.objects.get(kode = subject_short)
         except models.MataKuliah.DoesNotExist:
-            matakuliah, created = models.MataKuliah.objects.create(
+            matakuliah, created = models.MataKuliah.objects.get_or_create(
                 name = subject,
                 kode = subject_short,
-                sks_total = graded_credits
+                sks_total = graded_credits,
+                sm_objid = sm_objid
             )
 
         st_object_type = data_dict.get('Object type')
