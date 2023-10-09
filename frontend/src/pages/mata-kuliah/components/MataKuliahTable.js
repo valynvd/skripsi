@@ -42,6 +42,10 @@ const MataKuliahTable = ({
       accessor: 'kode',
     },
     {
+      Header: 'SM Objid',
+      accessor: 'sm_objid',
+    },
+    {
       Header: 'SKS Total',
       accessor: 'sks_total',
     },
