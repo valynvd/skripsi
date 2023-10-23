@@ -13,6 +13,7 @@ import { RxTriangleUp, RxTriangleDown } from 'react-icons/rx';
 // import { EditIcon, DeleteIcon } from '../../../components/IconButton';
 import { ExportPrimaryButton } from '../../../components/PrimaryButton';
 import { utils, writeFile } from 'xlsx';
+import { ClipLoader } from 'react-spinners';
 
 const ValidasiMataKuliahTable = ({ 
   userRole,
@@ -195,7 +196,8 @@ const ValidasiMataKuliahTable = ({
               </tr>
             ))}
           </thead>
-          <tbody {...getTableBodyProps()}>
+          {!loading ? (
+            <tbody {...getTableBodyProps()}>
             {page.map((row) => {
               prepareRow(row);
               return (
@@ -214,6 +216,10 @@ const ValidasiMataKuliahTable = ({
               );
             })}
           </tbody>
+          ) : (
+            <ClipLoader color="#ff0000"/>
+          )}
+          
         </table>
       </div>
       <Pagination

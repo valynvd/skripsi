@@ -46,8 +46,11 @@ const MonitoringMahasiswaImportExcel = () => {
     const excelsheet = excelfile.Sheets[excelfile.SheetNames[0]];
     const exceljson = xlsx.utils.sheet_to_json(excelsheet);
 
-    setExcelData(exceljson);
-    console.log(exceljson)
+    const specificPrograms = ["50000632", "50000633", "50000634", "50000636", "50000635", "50000631"];
+    const filteredExcelData = exceljson.filter((row) => specificPrograms.includes(row["Program of study"]));
+
+    setExcelData(filteredExcelData);
+    console.log(filteredExcelData)
   };
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 

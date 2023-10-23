@@ -72,6 +72,7 @@ class MataKuliah(models.Model):
 	capaianPembelajar = models.ManyToManyField(CapaianPembelajar ,blank=True)
 	name = models.CharField(max_length=100, blank=True, null=True)
 	kode = models.CharField(max_length=8, blank=True, null=True)
+	sm_objid = models.CharField(max_length=100, blank=True, null=True)
 	sks_total = models.IntegerField(default=0, blank=True, null=True)
 	sks_praktikum = models.IntegerField(default=0, blank=True, null=True)
 	is_elective = models.BooleanField(default=False, blank=True, null=True)
