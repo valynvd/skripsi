@@ -127,7 +127,6 @@ class PenugasanPenelitianByDosenViewSet(generics.ListAPIView):
         return Response(serializer.data)
 
     def get_permissions(self):
-        print(self)
         if self.request.method == 'GET':
             self.permission_classes = [AllowAny]
         else:
@@ -156,7 +155,6 @@ class PublikasiKaryaByDosenViewSet(generics.ListAPIView):
         return Response(serializer.data)
 
     def get_permissions(self):
-        print(self)
         if self.request.method == 'GET':
             self.permission_classes = [AllowAny]
         else:
@@ -174,7 +172,6 @@ class PublikasiKaryaByProdiViewSet(generics.ListAPIView):
         return Response(serializer.data)
 
     def get_permissions(self):
-        print(self)
         if self.request.method == 'GET':
             self.permission_classes = [AllowAny]
         else:
@@ -202,7 +199,6 @@ class PatenHKIByDosenViewSet(generics.ListAPIView):
         return Response(serializer.data)
 
     def get_permissions(self):
-        print(self)
         if self.request.method == 'GET':
             self.permission_classes = [AllowAny]
         else:
@@ -220,7 +216,6 @@ class PatenHKIByProdiViewSet(generics.ListAPIView):
         return Response(serializer.data)
 
     def get_permissions(self):
-        print(self)
         if self.request.method == 'GET':
             self.permission_classes = [AllowAny]
         else:
@@ -250,7 +245,6 @@ class PenugasanPengabdianByProdiViewSet(generics.ListAPIView):
         return Response(serializer.data)
 
     def get_permissions(self):
-        print(self)
         if self.request.method == 'GET':
             self.permission_classes = [AllowAny]
         else:
@@ -268,7 +262,6 @@ class PenugasanPengabdianByDosenViewSet(generics.ListAPIView):
         return Response(serializer.data)
 
     def get_permissions(self):
-        print(self)
         if self.request.method == 'GET':
             self.permission_classes = [AllowAny]
         else:
@@ -348,7 +341,6 @@ class PenugasanPengajaranByExcelViewSet(viewsets.ModelViewSet):
             dosen_fm, created = models.Dosen.objects.get_or_create(
                 name=nama_dosen_split[i], nik=nik_dosen_split[i], inisial=inisial_split[i]  
             )
-            print(dosen_fm)
             penugasan_pengajaran, created = models.PenugasanPengajaran.objects.get_or_create(
                 sks_realisasi=graded_credits, dosen_pengampu=dosen_fm, mata_kuliah=matakuliah, surat_penugasan=suratpenugasan
             )
@@ -387,7 +379,6 @@ class DokumenPembelajaranByDosenViewSet(generics.ListAPIView):
         return Response(serializer.data)
 
     def get_permissions(self):
-        print(self)
         if self.request.method == 'GET':
             self.permission_classes = [AllowAny]
         else:
@@ -405,7 +396,6 @@ class DokumenPembelajaranByProdiViewSet(generics.ListAPIView):
         return Response(serializer.data)
 
     def get_permissions(self):
-        print(self)
         if self.request.method == 'GET':
             self.permission_classes = [AllowAny]
         else:
@@ -530,7 +520,6 @@ class PenugasanPenelitianByProdiViewSet(generics.ListAPIView):
         return Response(serializer.data)
 
     def get_permissions(self):
-        print(self)
         if self.request.method == 'GET':
             self.permission_classes = [AllowAny]
         else:

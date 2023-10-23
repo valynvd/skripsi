@@ -121,7 +121,6 @@ class DokumenPembelajaranSerializers(serializers.ModelSerializer):
   def get_rps_status(self, obj):
     riwayatDokumenPembelajaranByDokumenPembelajaran = models.RiwayatDokumenPembelajaran.objects.filter(dokumenPembelajaranId = obj.id, type="rps")
 
-    print(riwayatDokumenPembelajaranByDokumenPembelajaran)
     if(len(riwayatDokumenPembelajaranByDokumenPembelajaran) == 0):
       return 'empty'
 
@@ -133,7 +132,6 @@ class DokumenPembelajaranSerializers(serializers.ModelSerializer):
   def get_rubrik_status(self, obj):
     riwayatDokumenPembelajaranByDokumenPembelajaran = models.RiwayatDokumenPembelajaran.objects.filter(dokumenPembelajaranId = obj.id, type="rubrik")
 
-    print(riwayatDokumenPembelajaranByDokumenPembelajaran)
     if(len(riwayatDokumenPembelajaranByDokumenPembelajaran) == 0):
       return 'empty'
 
