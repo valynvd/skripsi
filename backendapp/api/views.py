@@ -796,6 +796,8 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
             get_monitoring_mahasiswa = models.MonitoringMahasiswa.objects.get(
                 mahasiswa = datamahasiswa,
                 mata_kuliah = matakuliah,
+                academic_session = academic_session,
+                academic_year = academic_year,
             )
 
             if(get_monitoring_mahasiswa.grade_symbol == "T"):
