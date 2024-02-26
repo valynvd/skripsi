@@ -798,7 +798,7 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
                 mata_kuliah = matakuliah,
             )
 
-            if(get_monitoring_mahasiswa.grade_symbol == ""):
+            if(get_monitoring_mahasiswa.grade_symbol == "T"):
                 get_monitoring_mahasiswa.earned_credits = earned_credits,
                 get_monitoring_mahasiswa.grade_symbol = grade_symbol,
                 get_monitoring_mahasiswa.save()
