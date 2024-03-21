@@ -16,7 +16,7 @@ const Home = () => {
           <h3 className="text-xl font-semibold pb-4">Dashboard</h3>
           <p className="pt-4">
             Selamat datang di dashboard Sistem Managemen Tata Kelola Pendidikan
-            Tinggi (SIMANTAP)
+            Tinggi (SIMANTAP) Prasetiya Mulya
           </p>
         </div>
       </section>
