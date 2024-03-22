@@ -17,4 +17,3 @@ admin.site.register(models.File)
 admin.site.register(models.RiwayatPoinPenilaian)
 admin.site.register(models.Kriteria, KriteriaAdmin)
 
-admin.site.register(models.TestModel)

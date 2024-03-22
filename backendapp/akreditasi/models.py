@@ -133,5 +133,4 @@ class FileFolder(models.Model):
     def __str__(self) -> str:
         return '{}-{}'.format(self.matrix, self.nama)
     
-class TestModel(models.Model):
-    bebas = models.CharField(max_length=200, blank=True, null=True)
+    
