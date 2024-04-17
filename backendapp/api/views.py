@@ -725,8 +725,8 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
         angkatan = data_dict.get('Angkatan')
 
         # get subject
-       
-
+        # kode_sap = data_dict.get('Program of study')
+        
         # get credit
         earned_credits = data_dict.get('Earned Credits')
 
@@ -747,7 +747,15 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
         elif name_prody == "Food Technology" :
             kode = "FBT"
 
-        programstudi = models.ProgramStudi.objects.get(kode_sap=program_study)
+        # programstudi = models.ProgramStudi.objects.get(kode_sap=program_study)
+        try:
+            programstudi = models.ProgramStudi.objects.get(kode_sap=program_study)
+        except models.ProgramStudi.DoesNotExist:
+            programstudi, created = models.ProgramStudi.objects.get_or_create(
+                name = name_prody,
+                kode = kode,
+                kode_sap = program_study
+            )
 
         try:
             datamahasiswa = models.DataMahasiswa.objects.get(nim=nim_mahasiswa)

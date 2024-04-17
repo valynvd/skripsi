@@ -50,7 +50,7 @@ const MonitoringMahasiswaImportExcel = () => {
     const filteredExcelData = exceljson.filter((row) => specificPrograms.includes(row["Program of study"]));
 
     setExcelData(filteredExcelData);
-    console.log(filteredExcelData)
+    console.log("Filtered Data", filteredExcelData)
   };
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -92,7 +92,7 @@ const MonitoringMahasiswaImportExcel = () => {
         }
         setProgress(newProgress.toFixed(2));
     }
-    console.log(getResponseData)
+    console.log("Get Respons Data", getResponseData)
     setResponseData(getResponseData);
   };
 
