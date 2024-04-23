@@ -3,11 +3,25 @@ import { useQuery, useMutation } from 'react-query';
 
 const url = '/api-stem/validasimahasiswa/';
 
+// const getValidasiMahasiswa = () => {
+//     return request({
+//         url: url,
+//     });
+// };
 const getValidasiMahasiswa = () => {
-    return request({
-        url: url,
-    });
+  return request({
+      url: url,
+  })
+  .then(response => {
+      console.log("Response dari API:", response); // Tambahkan ini untuk memeriksa respons dari API
+      return response;
+  })
+  .catch(error => {
+      console.error("Error:", error);
+      throw error;
+  });
 };
+
 
 const getValidasiMahasiswaById = (id) => {
     return request({
@@ -47,7 +61,7 @@ const patchValidasiMahasiswa = ({ data, id }) => {
 }; 
 
 export const useValidasiMahasiswaData = (options) => {
-    return useQuery('data-master', getValidasiMahasiswa, {
+    return useQuery('validasi-mahasiswa', getValidasiMahasiswa, {
       refetchOnWindowFocus: false,
       ...options,
     });

@@ -18,6 +18,8 @@ import {
   TooltipError,
 } from '../../components/Tooltip';
 
+import ClipLoader from "react-spinners/ClipLoader";
+
 const MonitoringMahasiswaImportExcel = () => {
   const [errorMessage, setErrorMessage] = useState();
   const [open, setOpen] = useState(false);
@@ -39,7 +41,12 @@ const MonitoringMahasiswaImportExcel = () => {
   const [nilaiIpk, setNilaiIpk] = useState('');
   const navigate = useNavigate();
 
+  const [excelRead, setExcelRead] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+
   const readExcel = async (e) => {
+    setLoading(true)
     const file = e.target.files[0];
     const data = await file.arrayBuffer(file);
     const excelfile = xlsx.read(data);
@@ -50,7 +57,9 @@ const MonitoringMahasiswaImportExcel = () => {
     const filteredExcelData = exceljson.filter((row) => specificPrograms.includes(row["Program of study"]));
 
     setExcelData(filteredExcelData);
-    console.log("Filtered Data", filteredExcelData)
+    console.log("Filtered Data Monitoring", filteredExcelData)
+    setExcelRead(true);
+    setLoading(false)
   };
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -179,11 +188,13 @@ const MonitoringMahasiswaImportExcel = () => {
           <AlertError className="inline-block">{errorMessage}</AlertError>
         ) : (
           <PrimaryButton
-            className={`!mt-8 !mb-5`}
+            className={`!mt-8 !mb-5 ${!excelRead && '!bg-gray-200 !border-gray-400 !text-gray-500 cursor-not-allowed'}`}
+            // className={'!mt-8 !mb-5'}
             onClick={onSubmit}
-            disabled={postMonitoringMahasiswaLoading}
+            // disabled={postMonitoringMahasiswaLoading}
+            disabled={!excelRead || postMonitoringMahasiswaLoading}
           >
-            Simpan Data
+            Simpan ke Database
           </PrimaryButton>
         )}
 
@@ -342,7 +353,11 @@ const MonitoringMahasiswaImportExcel = () => {
             </tr>
           </thead>
           <tbody>
-            {responseData
+            {loading ? (
+              <div>
+                  <ClipLoader color={'hsla(357, 85%, 52%, 1)'} size={50} />
+              </div>
+            ) : (responseData
               ? responseData
                   .filter((getdata) => {
                     return (
@@ -439,7 +454,8 @@ const MonitoringMahasiswaImportExcel = () => {
                       </td>
                       <td className="px-4 py-3">{filteredData['Grade symbol'] || "T"}</td>
                     </tr>
-                  ))}
+                  )))
+            }
           </tbody>
         </table>
       </div>

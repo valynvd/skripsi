@@ -21,7 +21,9 @@ const DegreeAuditKelulusan = () => {
     useValidasiMahasiswaData({
       enabled: !!userRole.admin,
     });
-
+  
+  console.log("Response Data ===", responseData)
+  
   return (
     <section id="degreeaudit-kelulusan" className="section-container">
       <ModalDelete

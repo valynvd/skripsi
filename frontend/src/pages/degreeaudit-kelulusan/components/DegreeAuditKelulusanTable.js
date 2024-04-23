@@ -17,6 +17,9 @@ import { useNavigate } from 'react-router-dom';
 import { ExportPrimaryButton } from '../../../components/PrimaryButton';
 import { utils, writeFile } from 'xlsx';
 
+import ClipLoader from "react-spinners/ClipLoader";
+
+
 
 const DegreeAuditKelulusanTable = ({
     setOpenModalDelete,
@@ -25,6 +28,7 @@ const DegreeAuditKelulusanTable = ({
     loading,
     data,
 }) => {
+    console.log("Cek Load Data =====", data)
     const navigate = useNavigate();
     const [selectedAngkatan, setSelectedAngkatan] = useState('');
     const columns = [
@@ -108,6 +112,8 @@ const DegreeAuditKelulusanTable = ({
         defaultValues: {},
     })
     const uniqueAngkatanValues = [...new Set(data.map(item => item.mahasiswa_detail.angkatan))];
+    console.log("Angkatan ===", uniqueAngkatanValues)
+    console.log("Selected Angkatan ===", selectedAngkatan);
 
     const prodiWatch = watch('prodi');
 
@@ -120,7 +126,8 @@ const DegreeAuditKelulusanTable = ({
             label: `${name} (${kode})`,
           };
         });
-
+        
+        console.log("Data Program Studi:", formatUserData);
         return formatUserData;
       },
     });
@@ -129,6 +136,7 @@ const DegreeAuditKelulusanTable = ({
     const memoColumns = useMemo(() => columns, [userRole]);
     const memoData = useMemo(() => {
         let filteredData = [...data];
+        console.log("Data ====", filteredData)
         if (prodiWatch) {
             filteredData = filteredData.filter(
               (item) =>
@@ -145,6 +153,7 @@ const DegreeAuditKelulusanTable = ({
         return filteredData;
     }, [data, prodiWatch, selectedAngkatan]);
     
+    console.log("Memo Data", memoData)
     const {
         getTableProps,
         getTableBodyProps,
@@ -166,6 +175,7 @@ const DegreeAuditKelulusanTable = ({
         useSortBy,
         usePagination
     );
+    console.log("Rows", rows)
     const handleExport = () => {
         const filterToExcel = rows.map(({ original }) => {
             const filteredItem = {
@@ -198,6 +208,7 @@ const DegreeAuditKelulusanTable = ({
         
             return filteredItem;
         });
+        console.log("Filter Excel", filterToExcel)
         
         const wb = utils.book_new();
         const ws = utils.json_to_sheet(filterToExcel);
@@ -245,14 +256,19 @@ const DegreeAuditKelulusanTable = ({
                         className="border border-gray-300 focus:border-primary-400 text-gray-900 text-sm rounded-lg focus:ring-turquoise-normal focus:border-turquoise-normal focus-visible:outline-none block w-40 p-2.5"
                     >
                         <option value="">Semua Angkatan</option>
-                        {uniqueAngkatanValues.map(angkatan => (
+                        {data && data.length > 0 && uniqueAngkatanValues.map(angkatan => (
                             <option key={angkatan} value={angkatan}>{angkatan}</option>
                         ))}
                     </select>
                     <ExportPrimaryButton onClick={handleExport} />
                 </form>
             </div>
-            <div className="overflow-x-auto">
+            {loading ? (
+                <div>
+                <ClipLoader color={'hsla(357, 85%, 52%, 1)'} size={50} />
+            </div>
+            ) : (
+                <div className="overflow-x-auto">
                 <table {...getTableProps()} className="w-full">
                     <thead className="bg-primary-400/[0.03] whitespace-nowrap rounded-xl">
                         {headerGroups.map((headerGroup) => (
@@ -291,7 +307,7 @@ const DegreeAuditKelulusanTable = ({
                         <tbody {...getTableBodyProps()}>
                         {page.map((row) => {
                             prepareRow(row);
-                            return (
+                            return (    
                             <tr
                                 {...row.getRowProps()}
                                 className="bg-white border-b text-gray-600 border-black" 
@@ -328,6 +344,7 @@ const DegreeAuditKelulusanTable = ({
                     )}
                 </table>
             </div>
+            )}
             <Pagination
                 initialPagesArray={pageOptions}
                 goToPage={gotoPage}
