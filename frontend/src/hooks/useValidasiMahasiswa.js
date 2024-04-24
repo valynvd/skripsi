@@ -61,7 +61,8 @@ const patchValidasiMahasiswa = ({ data, id }) => {
 }; 
 
 export const useValidasiMahasiswaData = (options) => {
-    return useQuery('validasi-mahasiswa', getValidasiMahasiswa, {
+    // return useQuery('data-master', getValidasiMahasiswa, {
+      return useQuery('validasi-mahasiswa', getValidasiMahasiswa, {
       refetchOnWindowFocus: false,
       ...options,
     });

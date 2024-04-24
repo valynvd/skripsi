@@ -47,7 +47,8 @@ const patchTranskripNilai = ({ data, id }) => {
 };
 
 export const useTranskripNilaiData = (options) => {
-  return useQuery('data-master', getTranskripNilai, {
+  return useQuery('transkrip-nilai', getTranskripNilai, {
+  // return useQuery('data-master', getTranskripNilai, {
     refetchOnWindowFocus: false,
     ...options,
   });

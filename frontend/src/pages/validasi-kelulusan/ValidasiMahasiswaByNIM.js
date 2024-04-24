@@ -45,13 +45,24 @@ const ValidasiMahasiswaByNIM = () => {
   const {mutate: postValidasiMahasiswa, isLoading: postValidasiMahasiswaLoading} = 
     usePostValidasiMahasiswa();
 
-  useEffect(()=> {
-    if(isLoadingResult == false) {
-      setTranskripData(responseData.data);
-      setResult(responseResult.data);
+  console.log("Val Response Data", responseData)
+  console.log("Val Response Result", responseResult)
+  // useEffect(()=> {
+  //   if(isLoadingResult == false) {
+  //     setTranskripData(responseData.data);
+  //     setResult(responseResult.data);
       
+  //   }
+  // }, [isLoadingResult, isLoadingTranskrip])
+  useEffect(() => {
+    if (!isLoadingResult && responseData) {
+      setTranskripData(responseData.data);
     }
-  }, [isLoadingResult, isLoadingTranskrip])
+    if (!isLoadingTranskrip && responseResult) {
+      setResult(responseResult.data);
+    }
+  }, [isLoadingResult, isLoadingTranskrip, responseData, responseResult]);
+  
 
   useEffect(() => {
     const calculateTotalCreditsD = (transkripData, gradeSymbol) => {
@@ -164,7 +175,7 @@ const ValidasiMahasiswaByNIM = () => {
     };
     const ipkData = calculateIPK(ipsData).toFixed(2);
     // const twoDigitAfterDecimal = ipkData.toString().match(/\d+\.\d{2}/)
-    console.log(ipkData)
+    console.log("IPK Data = ",ipkData)
     setNilaiIpk(ipkData);
 
     const checkNilaiTA = transkripData.reduce((gradeSymbol, transkripData) => {
@@ -216,6 +227,7 @@ const ValidasiMahasiswaByNIM = () => {
     })
 
     setReadyAudit(true)
+    console.log("Data Validasi = ", dataValidasi)
     setValidasi(dataValidasi);
       
   }, [transkripData])

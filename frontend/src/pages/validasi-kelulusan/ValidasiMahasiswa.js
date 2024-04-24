@@ -41,6 +41,8 @@ const ValidasiMahasiswa = () => {
 
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+  console.log("Response Data ===", responseData)
+
   useEffect(() => {
     if (isLoadingMahasiswa === false) {
       setDataMahasiswa(responseData.data);
