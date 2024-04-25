@@ -774,8 +774,18 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
         academic_session = data_dict.get('Academic Session')
         sm_objid = data_dict.get('SM Objid')
 
+        # try:
+        #     matakuliah = models.MataKuliah.objects.get(kode = subject_short)
+        # except models.MataKuliah.DoesNotExist:
+        #     matakuliah, created = models.MataKuliah.objects.get_or_create(
+        #         name = subject,
+        #         kode = subject_short,
+        #         sks_total = graded_credits,
+        #         sm_objid = sm_objid
+        #     )
+
         try:
-            matakuliah = models.MataKuliah.objects.get(kode = subject_short)
+            matakuliah = models.MataKuliah.objects.get(kode=subject_short)
         except models.MataKuliah.DoesNotExist:
             matakuliah, created = models.MataKuliah.objects.get_or_create(
                 name = subject,
@@ -783,6 +793,11 @@ class MonitoringMahasiswaViewSet(viewsets.ModelViewSet):
                 sks_total = graded_credits,
                 sm_objid = sm_objid
             )
+        except models.MataKuliah.MultipleObjectsReturned:
+            matakuliah = models.MataKuliah.objects.filter(kode=subject_short).order_by('created_at').first()
+
+
+
 
         st_object_type = data_dict.get('Object type')
         st_objid = data_dict.get('ST Objid')

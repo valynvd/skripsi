@@ -376,6 +376,8 @@ const MonitoringMahasiswaImportExcel = () => {
                     );
                   })
                   .map((filteredData, index) => (
+                    console.log("Filter Data di Map ===========", filteredData),
+                    console.log("FIlter Data Mahasiswa Detail di map ===========", filteredData.mahasiswa_detail),
                     <tr
                       key={index}
                       className={`border-b text-gray-600 ${
@@ -399,20 +401,20 @@ const MonitoringMahasiswaImportExcel = () => {
                       </td>
                       <td className="px-4 py-3">{index + 1}</td>
                       <td className="px-4 py-3">
-                        {/* {filteredData.mahasiswa_detail.nama} */}
-                        {filteredData.mahasiswa_detail['nama']}
+                        {filteredData.mahasiswa_detail?.nama}
+                        {/* {filteredData.mahasiswa_detail['nama']} */}
                       </td>
                       <td className="px-4 py-3">
-                        {filteredData.mahasiswa_detail.nim}
+                        {filteredData.mahasiswa_detail?.nim}
                         {/* {filteredData.mahasiswa_detail.nim} */}
                       </td>
-                      <td className="px-4 py-3">{filteredData.mahasiswa_detail.prodi_detail.name}
+                      <td className="px-4 py-3">{filteredData.mahasiswa_detail?.prodi_detail.name}
                         {/* {filteredData.mahasiswa_detail.prodi_detail.name} */}
                       </td>
-                      <td className="px-4 py-3">{filteredData.mahasiswa_detail.angkatan}
+                      <td className="px-4 py-3">{filteredData.mahasiswa_detail?.angkatan}
                         {/* {filteredData.mahasiswa_detail.angkatan} */}
                         </td>
-                      <td className="px-4 py-3">{filteredData.mata_kuliah_detail.name}
+                      <td className="px-4 py-3">{filteredData.mata_kuliah_detail?.name}
                         {/* {filteredData.mata_kuliah_detail.name} */}
                         </td>
                       <td className="px-4 py-3">
