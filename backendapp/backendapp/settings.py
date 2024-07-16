@@ -27,7 +27,8 @@ SECRET_KEY = 'django-insecure-zvt0qg13#8#ct2tv!s@rr9ii%_#2ibt78fs0y)!#kx0e@0x&gp
 DEBUG = True
 # DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+# ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['kuliah.prasetiyamulya.ac.id']
 
 
 MODE = 'LIVE'
@@ -202,3 +203,18 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'prasmulnextgen@gmail.com' # password: nextgen2021
 EMAIL_HOST_PASSWORD = 'xkszecrbkezyntcj'
+
+# Mengaktifkan HTTPS hanya dengan cookie
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+
+# Menetapkan kebijakan keamanan konten (Content Security Policy)
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Menetapkan header HSTS (HTTP Strict Transport Security)
+SECURE_HSTS_SECONDS = 31536000  # 1 tahun
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
+# Mencegah pemuatan situs dari iframe
+X_FRAME_OPTIONS = 'DENY'
