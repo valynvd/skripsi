@@ -343,7 +343,10 @@ const Router = () => {
             <Route path="monitoring-akademik">
               <Route index element={<MonitoringMahasiswa1 />} />
               <Route path=":nim" element={<MonitoringMahasiswaByNIM />} />
-              <Route path="matkul/:kodematkul" element={<MonitoringMahasiswaByKodeMatkul />} />
+              <Route
+                path="matkul/:kodematkul"
+                element={<MonitoringMahasiswaByKodeMatkul />}
+              />
               <Route
                 path="import"
                 element={<MonitoringMahasiswaImportExcel />}
@@ -359,7 +362,10 @@ const Router = () => {
             </Route>
             <Route path="validasi-mata-kuliah">
               <Route index element={<ValidasiMataKuliah />} />
-              <Route path="matkul/:kodematkul" element={<ValidasiMataKuliahDetails />} />
+              <Route
+                path="matkul/:kodematkul"
+                element={<ValidasiMataKuliahDetails />}
+              />
             </Route>
           </Route>
         </Route>

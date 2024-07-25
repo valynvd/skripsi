@@ -85,16 +85,23 @@ const MonitoringMahasiswaImportExcel = () => {
         transkripNilaiFormData.append(key, data[key]);
       }
 
+      // try {
+      //   await postMonitoringMahasiswa(monitoringMahasiswaFormData, {
+      //     onSuccess: (res) => {
+      //       getResponseData.push(res.data);
+      //     },
+      //   });
+      //   await delay(50);
+      // } catch (err) {
+      //   getResponseData.push(err.response.data);
+      // }
       try {
-        await postMonitoringMahasiswa(monitoringMahasiswaFormData, {
-          onSuccess: (res) => {
-            getResponseData.push(res.data);
-          },
-        });
-        await delay(50);
+        const response = await postMonitoringMahasiswa(monitoringMahasiswaFormData);
+        getResponseData.push({ ...response.data, status: 'success' });
       } catch (err) {
-        getResponseData.push(err.response.data);
+        getResponseData.push({ ...err.response.data, ...data, status: 'error' });
       }
+      
       const newProgress = ((index + 1) / excelData.length) * 100;
         if (newProgress == 100.0) {
           setOpen(true);
@@ -377,12 +384,14 @@ const MonitoringMahasiswaImportExcel = () => {
                   })
                   .map((filteredData, index) => (
                     console.log("Filter Data di Map ===========", filteredData),
-                    console.log("FIlter Data Mahasiswa Detail di map ===========", filteredData.mahasiswa_detail),
+                    console.log("Filter Data Mahasiswa Detail di map ===========", filteredData.mahasiswa_detail),
+                    console.log("Status", filteredData.status),
                     <tr
                       key={index}
                       className={`border-b text-gray-600 ${
                         filteredData
-                          ? filteredData.error
+                          // ? filteredData.error
+                          ? filteredData.status === "error"
                             ? 'bg-red-50'
                             : 'bg-green-50'
                           : 'bg-white'

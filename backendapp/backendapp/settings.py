@@ -27,8 +27,8 @@ SECRET_KEY = 'django-insecure-zvt0qg13#8#ct2tv!s@rr9ii%_#2ibt78fs0y)!#kx0e@0x&gp
 DEBUG = True
 # DEBUG = False
 
-# ALLOWED_HOSTS = ['*']
-ALLOWED_HOSTS = ['kuliah.prasetiyamulya.ac.id']
+ALLOWED_HOSTS = ['*']
+# ALLOWED_HOSTS = ['kuliah.prasetiyamulya.ac.id']
 
 
 MODE = 'LIVE'
