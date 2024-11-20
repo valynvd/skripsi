@@ -7,6 +7,8 @@ from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from backendapp import settings
 import os, uuid
+from django.core.exceptions import ValidationError
+from api.validation import validate_file_extension
 
 class UniqueNameFileField(models.FileField):
     def generate_filename(self, instance, filename):
@@ -32,36 +34,68 @@ def password_reset_token_created(sender, instance, reset_password_token, *args, 
 
     send_mail(subject, email_description, settings.EMAIL_HOST_USER, [email], fail_silently=False)
 
-class CapaianPembelajar(models.Model):
-	LIST_ASPECT = (
-		('sikap', 'sikap'),
-		('pengetahuan', 'pengetahuan'),
-		('keterampilan umum', 'keterampilan umum'),
-		('keterampilan khusus', 'keterampilan khusus'),
-	)
-	aspect = models.CharField(max_length=100, choices=LIST_ASPECT)
-	number = models.IntegerField()	
-	description = models.TextField(null=True, blank=True)
-
-	def __str__(self) -> str:
-		return '{}-{}'.format(self.aspect, self.number)
-
 class ProgramStudi(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)
 	name = models.CharField(max_length=100, blank=True, null=True)
 	kode = models.CharField(max_length=8, blank=True, null=True)
 	kode_sap = models.CharField(max_length=100, blank=True, null=True)
+
 	def __str__(self) -> str:
 		return '{}({})'.format(self.name, self.kode)
+	
+class BahanKajian(models.Model):
+	created_at = models.DateTimeField(default=timezone.now)
+	prodi = models.ForeignKey(ProgramStudi, on_delete=models.CASCADE, blank=True, null=True)
+	kode = models.CharField(max_length=100, blank=True, null=True)
+	deskripsi = models.TextField(null=True, blank=True)
+	LIST_KATEGORI = (
+		('Wajib', 'Wajib'),
+		('Opsional', 'Opsional'),
+	)
+	kategori = models.CharField(max_length=100, choices=LIST_KATEGORI, null=True, blank=True)
+	referensi = models.CharField(max_length=100, blank=True, null=True)
+
+	def __str__(self) -> str:
+		return '{}-{}'.format(self.prodi.kode, self.kode )
+
+class CapaianPembelajaran(models.Model):
+	created_at = models.DateTimeField(default=timezone.now)
+	prodi = models.ForeignKey(ProgramStudi, on_delete=models.CASCADE, blank=True, null=True)
+	bahan_kajian = models.ForeignKey(BahanKajian, on_delete=models.CASCADE, blank=True, null=True)
+	kode = models.CharField(max_length=100, blank=True, null=True)
+	LIST_ASPECT = (
+		('Sikap', 'Sikap'),
+		('Pengetahuan', 'Pengetahuan'),
+		('Keterampilan umum', 'Keterampilan umum'),
+		('Keterampilan khusus', 'Keterampilan khusus'),
+	)
+	aspect = models.CharField(max_length=100, choices=LIST_ASPECT, null=True, blank=True)
+	deskripsi = models.TextField(null=True, blank=True)
+
+	def __str__(self) -> str:
+		# return '{}-{}'.format(self.bahan_kajian.prodi.name, self.kode)
+		return '{}-{}'.format(self.prodi.name, self.kode)
 
 class Kurikulum(models.Model):
-	programStudiId = models.ForeignKey(ProgramStudi, on_delete=models.SET_NULL, blank=True, null=True)
+	prodi = models.ForeignKey(ProgramStudi, on_delete=models.CASCADE, blank=True, null=True)
+	# programStudiId = models.ForeignKey(ProgramStudi, on_delete=models.SET_NULL, blank=True, null=True)
+	# prodi = models.ForeignKey(ProgramStudi, on_delete=models.CASCADE, blank=True, null=True)
 	name = models.CharField(max_length=100)
-	file_panduan_kurikulum = UniqueNameFileField(upload_to='kurikulum/', blank=True, null=True)
-	file_pendukung = UniqueNameFileField(upload_to='kurikulum_pendukung/', blank=True, null=True)
+	file_panduan_kurikulum = UniqueNameFileField(upload_to='kurikulum/', blank=True, null=True, validators=[validate_file_extension])
+	file_pendukung = UniqueNameFileField(upload_to='kurikulum_pendukung/', blank=True, null=True, validators=[validate_file_extension])
 	created_at = models.DateTimeField(default=timezone.now)
+
 	def __str__(self) -> str:
 		return '{}'.format(self.name)
+
+class CapaianPembelajaranMataKuliah(models.Model):
+	created_at = models.DateTimeField(default=timezone.now)
+	cpl = models.ForeignKey(CapaianPembelajaran, on_delete=models.CASCADE, blank=True, null=True)
+	kode = models.CharField(max_length=100, blank=True, null=True)
+	deskripsi = models.TextField(null=True, blank=True)
+
+	def __str__(self) -> str:
+		return '{} ({})'.format(self.kode, self.cpl.kode)
 
 class MataKuliah(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)
@@ -69,30 +103,43 @@ class MataKuliah(models.Model):
 			Kurikulum,
 			blank=True,
 	)
-	capaianPembelajar = models.ManyToManyField(CapaianPembelajar ,blank=True)
 	name = models.CharField(max_length=100, blank=True, null=True)
 	kode = models.CharField(max_length=8, blank=True, null=True)
 	sm_objid = models.CharField(max_length=100, blank=True, null=True)
 	sks_total = models.IntegerField(default=0, blank=True, null=True)
 	sks_praktikum = models.IntegerField(default=0, blank=True, null=True)
 	is_elective = models.BooleanField(default=False, blank=True, null=True)
+
+	prodi = models.ForeignKey(ProgramStudi, on_delete=models.CASCADE, blank=True, null=True)
 	LIST_SEMESTER = (
-			('1', '1'),
-			('SP1', 'SP1'),
-			('2', '2'),
-			('SP2', 'SP2'),
-			('3', '3'),
-			('SP3', 'SP3'),
-			('4', '4'),
-			('SP4', 'SP4'),
-			('5', '5'),
-			('SP5', 'SP5'),
-			('6', '6'),
-			('SP6', 'SP6'),
-			('7', '7'),
-			('SP7', 'SP7'),
-			('8', '8'),
-			('SP8', 'SP8'),
+		('1', '1'),
+		('SP1', 'SP1'),	
+		('2', '2'),
+		('SP2', 'SP2'),
+		('3', '3'),
+		('SP3', 'SP3'),
+		('4', '4'),
+		('SP4', 'SP4'),
+		('5', '5'),
+		('SP5', 'SP5'),
+		('6', '6'),
+		('SP6', 'SP6'),
+		('7', '7'),
+		('SP7', 'SP7'),
+		('8', '8'),
+		('SP8', 'SP8'),
+		('9', '9'),
+		('SP9', 'SP9'),
+		('10', '10'),
+		('SP10', 'SP10'),
+		('11', '11'),
+		('SP11', 'SP11'),
+		('12', '12'),
+		('SP12', 'SP12'),
+		('13', '13'),
+		('SP13', 'SP13'),
+		('14', '14'),
+		# ('SP14', 'SP14'),
 	)
 	semester = models.CharField(max_length=100, choices=LIST_SEMESTER, null=True, blank=True)
 
@@ -172,7 +219,7 @@ class Cycle(models.Model):
 class SuratPenugasan(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)
 	judul = models.CharField(max_length=100)
-	files = UniqueNameFileField(upload_to='suratpenugasan/', blank=True, null=True)
+	files = UniqueNameFileField(upload_to='suratpenugasan/', blank=True, null=True, validators=[validate_file_extension])
 	approved = models.BooleanField(default=False)
 	cycle = models.ForeignKey(
 			Cycle,
@@ -198,7 +245,7 @@ class PublikasiKarya(models.Model):
 	dosen_pengampu = models.ForeignKey(Dosen, on_delete=models.SET_NULL, blank=True, null=True)
 	title = models.CharField(max_length=100)
 	description = models.TextField(blank=True, null=True)
-	file = UniqueNameFileField(upload_to='evaluasi/publikasi_karya/', blank=True, null=True)
+	file = UniqueNameFileField(upload_to='evaluasi/publikasi_karya/', blank=True, null=True, validators=[validate_file_extension])
 
 	def __str__(self) -> str:
 		return '{}'.format(self.title)
@@ -208,7 +255,7 @@ class PatenHKI(models.Model):
 	dosen_pengampu = models.ForeignKey(Dosen, on_delete=models.SET_NULL, blank=True, null=True)
 	title = models.CharField(max_length=100)
 	description = models.TextField(blank=True, null=True)
-	file = UniqueNameFileField(upload_to='evaluasi/paten/', blank=True, null=True)
+	file = UniqueNameFileField(upload_to='evaluasi/paten/', blank=True, null=True, validators=[validate_file_extension])
 
 	def __str__(self) -> str:
 		return '{}'.format(self.title)
@@ -234,7 +281,7 @@ class Pembicara(models.Model):
 	organizer = models.CharField(max_length=100)
 	start_date = models.DateField(blank=True, null=True)
 	language = models.CharField(max_length=20, blank=True, null=True)
-	file = UniqueNameFileField(upload_to='evaluasi/pembicara/', blank=True, null=True)
+	file = UniqueNameFileField(upload_to='evaluasi/pembicara/', blank=True, null=True, validators=[validate_file_extension])
 
 	def __str__(self) -> str:
 		return '{}'.format(self.title)
@@ -247,7 +294,7 @@ class PengelolaJurnal(models.Model):
 	assignment_letter_number = models.IntegerField()
 	start_date = models.DateField(blank=True, null=True)
 	end_date = models.DateField(blank=True, null=True)
-	file = UniqueNameFileField(upload_to='evaluasi/pengelola_jurnal/', blank=True, null=True)
+	file = UniqueNameFileField(upload_to='evaluasi/pengelola_jurnal/', blank=True, null=True, validators=[validate_file_extension])
 
 	def __str__(self) -> str:
 		return '{}'.format(self.role)
@@ -274,7 +321,7 @@ class RiwayatJabatanStruktural(models.Model):
 	start_date = models.DateField(blank=True, null=True)
 	end_date = models.DateField(blank=True, null=True)
 	location = models.TextField(blank=True, null=True)
-	file = UniqueNameFileField(upload_to='evaluasi/riwayat_jabatan_struktural/', blank=True, null=True)
+	file = UniqueNameFileField(upload_to='evaluasi/riwayat_jabatan_struktural/', blank=True, null=True, validators=[validate_file_extension])
 
 	def __str__(self) -> str:
 		return '{}'.format(self.position_title)
@@ -326,7 +373,7 @@ class PenugasanPengabdian(models.Model):
 	dikti_total_fund = models.FloatField(blank=True, null=True)
 	college_total_fund = models.FloatField(blank=True, null=True)
 	other_institution_total_fund = models.FloatField(blank=True, null=True)
-	file = UniqueNameFileField(upload_to='evaluasi/pengabdian/', blank=True, null=True)
+	file = UniqueNameFileField(upload_to='evaluasi/pengabdian/', blank=True, null=True, validators=[validate_file_extension])
 
 	def __str__(self) -> str:
 		return '{}'.format(self.title)
@@ -352,7 +399,7 @@ class PenugasanPenelitian(models.Model):
 	dikti_total_fund = models.FloatField(blank=True, null=True)
 	college_total_fund = models.FloatField(blank=True, null=True)
 	other_institution_total_fund = models.FloatField(blank=True, null=True)
-	file = UniqueNameFileField(upload_to='evaluasi/penelitian/', blank=True, null=True)
+	file = UniqueNameFileField(upload_to='evaluasi/penelitian/', blank=True, null=True, validators=[validate_file_extension])
 
 	def __str__(self) -> str:
 		return '{}'.format(self.title)
@@ -383,8 +430,8 @@ class RiwayatDokumenPembelajaran(models.Model):
 			DokumenPembelajaran,
 			on_delete=models.CASCADE,
 	)
-	initial_document = UniqueNameFileField(upload_to='evaluasi/initial_document/', blank=True, null=True)
-	revised_document = UniqueNameFileField(upload_to='evaluasi/revised_document/', blank=True, null=True)
+	initial_document = UniqueNameFileField(upload_to='evaluasi/initial_document/', blank=True, null=True, validators=[validate_file_extension])
+	revised_document = UniqueNameFileField(upload_to='evaluasi/revised_document/', blank=True, null=True, validators=[validate_file_extension])
 	LIST_STATUS = (
 			('waiting review', 'waiting review'),
 			('revision', 'revision'),
@@ -441,11 +488,13 @@ class GrupMahasiswa(models.Model):
 class DataMahasiswa(models.Model):
 	nim = models.CharField(blank=True, null=True, max_length=50)
 	nama = models.CharField(blank=True, null=True, max_length=100)
+	mahasiswa_id = models.CharField(blank=True, null=True, max_length=50)
 	angkatan = models.CharField(blank=True, null=True, max_length=100)
 	prodi = models.ForeignKey(ProgramStudi, on_delete=models.CASCADE, blank=True, null=True)
 	telephone = models.CharField(blank=True, null=True, max_length=20)
 	email = models.CharField(blank=True, null=True, max_length=100)
 	email_universitas = models.CharField(blank=True, null=True, max_length=100)
+	image = models.ImageField(blank=True, null=True)
 
 	def __str__(self) -> str:
 		return '{}-{}'.format(self.nama, self.prodi)
@@ -558,3 +607,135 @@ class TranskripNilai(models.Model):
 
 	def __str__(self) -> str:
 		return '{} - {}'.format(self.mahasiswa.nama, self.mata_kuliah.name)
+	
+class ProfilLulusan(models.Model):
+    created_at = models.DateTimeField(default=timezone.now)
+    prodi = models.ForeignKey(ProgramStudi, on_delete=models.CASCADE, blank=True, null=True)
+    kode = models.CharField(max_length=100, blank=True, null=True)
+    profil = models.CharField(max_length=100, blank=True, null=True)
+    deskripsi = models.TextField(blank=True, null=True)
+
+    def __str__(self) -> str:
+        return '{} - {}'.format(self.kode, self.prodi)
+
+class Penilaian(models.Model) :
+	LIST_PENILAIAN = [
+		('UAS', 'UAS'),
+		('UTS', 'UTS'),
+		('Teaching Assessment', 'Teaching Assessment'),
+		('Project', 'Project'),
+		('Quiz', 'Quiz'),
+	]
+	# implementasi_kurikulum = models.ForeignKey(ImplementasiKurikulum, on_delete=models.CASCADE, blank=True, null=True)
+	mata_kuliah = models.ForeignKey(MataKuliah, on_delete=models.CASCADE, blank=True, null=True)
+	nama_penilaian = models.CharField(max_length=100, choices=LIST_PENILAIAN, null=True, blank=True)
+	cpmks = models.ManyToManyField(CapaianPembelajaranMataKuliah, blank=True)
+
+
+	def __str__(self) -> str:
+		return '{}-{}'.format(self.mata_kuliah, self.nama_penilaian)
+	
+class NilaiMahasiswa(models.Model):
+	mahasiswa = models.ForeignKey(DataMahasiswa, on_delete=models.CASCADE, blank=True, null=True)
+	mata_kuliah = models.ForeignKey(MataKuliah, on_delete=models.CASCADE, blank=True, null=True)
+	earned_credits = models.CharField(blank=True, null=True, max_length=100)
+	academic_year = models.CharField(max_length=20, null=True, blank=True)
+	academic_session = models.CharField(max_length=20, null=True, blank=True)
+	penilaian = models.ForeignKey(Penilaian, on_delete=models.CASCADE, null=True, blank=True)
+	nilai_penilaian = models.FloatField(default=0.0)
+	bobot = models.FloatField(default=0.0)
+
+	def __str__(self) -> str:
+		return '{} - {} - {}'.format(self.mahasiswa.nama, self.mata_kuliah.name, self.penilaian.nama_penilaian)
+
+class FinalGradeNilaiMahasiswa(models.Model):
+	nilai_mahasiswa = models.ManyToManyField(NilaiMahasiswa, blank=True)
+	final_grade = models.CharField(max_length=10, null=True, blank=True)
+
+	def __str__(self) -> str:
+		return '{}'.format(self.final_grade)
+
+# class NomorSuratKeputusan(models.Model): 
+# 	prodi = models.ForeignKey(ProgramStudi,on_delete=models.CASCADE, blank=True, null=True)
+# 	no_surat_keputusan = models.CharField(max_length=100, blank=True, null=True)
+# 	no_surat_pendirian = models.CharField(max_length=100, blank=True, null=True)
+# 	no_surat_akreditasi_perguruan_tinggi = models.CharField(max_length=100, blank=True, null=True)
+
+# 	def __str__(self) -> str:
+# 		return '{} - {}'.format(self.prodi.name, self.no_surat_keputusan)
+
+class SettingsParameterSurat(models.Model):
+	LIST_PARAMETER = [
+			('No. Surat Keputusan Pendirian Perguruan Tinggi', 'No. Surat Keputusan Pendirian Perguruan Tinggi'),
+			('No. Surat Keputusan Akreditasi Perguruan Tinggi', 'No. Surat Keputusan Akreditasi Perguruan Tinggi'),
+			('No. Surat Keputusan Akreditasi Program Studi', 'No. Surat Keputusan Akreditasi Program Studi'),
+			('Tanggal Pengesahan Kelulusan', 'Tanggal Pengesahan Kelulusan'),
+	]
+	created_at = models.DateTimeField(default=timezone.now)
+	parameter = models.CharField(max_length=100, choices=LIST_PARAMETER, null=True, blank=True)
+	nilai_parameter_char = models.CharField(max_length=200, blank=True, null=True)
+	nilai_parameter_date = models.DateField(blank=True, null=True)
+	prodi = models.ManyToManyField(ProgramStudi, blank=True)
+
+	def clean(self):
+		if self.parameter in ['No. Surat Keputusan Pendirian Perguruan Tinggi', 'No. Surat Keputusan Akreditasi Perguruan Tinggi', 'No. Surat Keputusan Akreditasi Program Studi']:
+			if not self.nilai_parameter_char:
+				raise ValidationError('nilai_parameter_char harus diisi untuk parameter ini.')
+			if self.nilai_parameter_date:
+				raise ValidationError('nilai_parameter_date tidak boleh diisi untuk parameter ini.')
+		elif self.parameter == 'Tanggal Pengesahan Kelulusan':
+			if not self.nilai_parameter_date:
+				raise ValidationError('nilai_parameter_date harus diisi untuk parameter ini.')
+			if self.nilai_parameter_char:
+					raise ValidationError('nilai_parameter_char tidak boleh diisi untuk parameter ini.')
+
+	def __str__(self) -> str:
+		return '{}'.format(self.parameter)
+
+class SuratKeteranganPendampingIjazah(models.Model):
+	mahasiswa = models.ForeignKey(DataMahasiswa, on_delete=models.CASCADE, blank=True, null=True)
+	tempat_lahir = models.CharField(max_length=100, blank=True, null=True)
+	tanggal_lahir = models.DateField(blank=True, null=True)
+	tanggal_masuk = models.DateField(blank=True, null=True)
+	tanggal_kelulusan = models.DateField(blank=True, null=True)
+	no_ijazah = models.IntegerField(default=0, blank=True, null=True)
+	lama_studi = models.IntegerField(default=8, blank=True, null=True)
+	
+	def __str__(self) -> str:
+		return '{} - {}'.format(self.mahasiswa.nama, self.no_ijazah)
+
+class SuratPenugasanSekre(models.Model):
+	nomor_surat = models.CharField(max_length=100, null=True, blank=True)
+	pelaksana = models.TextField(null=True, blank=True)
+	agenda = models.TextField(null=True, blank=True)
+	tanggal_kegiatan = models.DateField(null=True, blank=True)
+	waktu_mulai_kegiatan = models.TimeField(null=True, blank=True)
+	waktu_selesai_kegiatan = models.TimeField(null=True, blank=True)
+	tempat_kegiatan = models.CharField(max_length=250, blank=True, null=True)
+	tanggal_surat = models.DateField(null=True, blank=True)
+	ditugaskan = models.ManyToManyField(Dosen, blank=True)
+
+	def __str__(self) -> str:
+		return '{} - {}'.format(self.nomor_surat, self.tanggal_kegiatan)
+
+	@property
+	def hari(self):
+		return self.tanggal_kegiatan.strftime('%A') 
+
+	def get_hari_display(self):
+		hari_indonesia = {
+				'Monday': 'Senin',
+				'Tuesday': 'Selasa',
+				'Wednesday': 'Rabu',
+				'Thursday': 'Kamis',
+				'Friday': 'Jumat',
+				'Saturday': 'Sabtu',
+				'Sunday': 'Minggu',
+		}
+		return hari_indonesia.get(self.hari, 'Unknown')
+	
+	def clean(self):
+		# Validasi agar waktu_mulai_kegiatan tidak lebih dari waktu_selesai_kegiatan
+		if self.waktu_mulai_kegiatan and self.waktu_selesai_kegiatan:
+			if self.waktu_mulai_kegiatan >= self.waktu_selesai_kegiatan:
+				raise ValidationError('Waktu mulai kegiatan harus lebih awal dari waktu selesai kegiatan.')

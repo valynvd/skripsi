@@ -24,11 +24,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-zvt0qg13#8#ct2tv!s@rr9ii%_#2ibt78fs0y)!#kx0e@0x&gp'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-# DEBUG = False
+# DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['*']
-# ALLOWED_HOSTS = ['kuliah.prasetiyamulya.ac.id']
+# ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['api-simantap.prasetiyamulya.ac.id', '18.136.94.40', '127.0.0.1']
 
 
 MODE = 'LIVE'
@@ -83,6 +83,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'csp.middleware.CSPMiddleware',
+    'backendapp.permissions.PermissionsPolicyMiddleware',
 ]
 
 ROOT_URLCONF = 'backendapp.urls'
@@ -209,12 +211,29 @@ SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 
 # Menetapkan kebijakan keamanan konten (Content Security Policy)
-SECURE_CONTENT_TYPE_NOSNIFF = True
+# SECURE_CONTENT_TYPE_NOSNIFF = True
 
 # Menetapkan header HSTS (HTTP Strict Transport Security)
+# SECURE_HSTS_SECONDS = 31536000  # 1 tahun
+# SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+# SECURE_HSTS_PRELOAD = True
+
+# Mencegah pemuatan situs dari iframe
+# X_FRAME_OPTIONS = 'DENY'
+
+X_FRAME_OPTIONS = "ALLOW-FROM proktor.amanin.id"
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
 SECURE_HSTS_SECONDS = 31536000  # 1 tahun
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 
-# Mencegah pemuatan situs dari iframe
-X_FRAME_OPTIONS = 'DENY'
+CSP_DEFAULT_SRC = ("'self'",)
+CSP_SCRIPT_SRC = ("'self'", "https://cdn.jsdelivr.net")
+CSP_STYLE_SRC = ("'self'", "https://fonts.googleapis.com")
+CSP_IMG_SRC = ("'self'", "https://images.example.com")
+CSP_FONT_SRC = ("'self'", "https://fonts.gstatic.com")
+CSP_CONNECT_SRC = ("'self'", "https://api-simantap.prasetiyamulya.ac.id")
+CSP_FRAME_SRC = ("'none'",)
+CSP_OBJECT_SRC = ("'none'",)
+CSP_REPORT_URI = "/csp-violation-report-endpoint/"

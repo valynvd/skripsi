@@ -44,7 +44,7 @@ router.register('broadcastpesan', views.BroadCastPesanViewSet)
 router.register('konsolchatbot', views.KonsolChatbotViewSet)
 router.register('assignmahasiswatogrup', views.AssignMahasiswatoGrupViewSet)
 router.register('monitoringmahasiswa', views.MonitoringMahasiswaViewSet)
-router.register('capaianpembelajar', views.CapaianPembelajarViewSet)
+router.register('capaianpembelajaran', views.CapaianPembelajaranViewSet)
 router.register('validasimahasiswa', views.ValidasiMahasiswaViewSet)
 router.register('transkripnilai', views.TranskripNilaiViewSet)
 #Akreditasi
@@ -55,6 +55,29 @@ router.register('riwayatpoinpenilaian', views_akreditasi.RiwayatPoinPenilaianVie
 router.register('file', views_akreditasi.FileViewSet)
 router.register('dokumenakreditasi', views_akreditasi.DokumenAkreditasiViewSet)
 router.register('simulasimatriks', views_akreditasi.SimulasiMatriksViewSet)
+
+# Kurikulum OBE
+router.register('profillulusan', views.ProfilLulusanViewSet)
+
+# Capaian Pembelajaran
+# router.register('capaianpembelajar', views.CapaianPembelajarViewSet)
+
+# CPMK
+router.register('cpmk', views.CapaianPembelajaranMataKuliahViewSet)
+
+router.register('penilaian', views.PenilaianViewSet)
+# router.register('nilaimahasiswa', views.NilaiMahasiswaViewSet)
+
+# Nilai Detail Mahasiswa
+router.register('nilaimahasiswa', views.NilaiMahasiswaViewSet)
+
+router.register('bahankajian', views.BahanKajianViewSet)
+
+router.register('suratketeranganpendampingijazah', views.SuratKeteranganPendampingIjazahViewSet)
+
+router.register('settings-surat', views.SettingsParameterSuratViews)
+
+router.register('suratpenugasansekre', views.SuratPenugasanSekreViewSet)
 
 urlpatterns = [
   path('', include(router.urls)),
@@ -106,4 +129,23 @@ urlpatterns = [
   path('validasimahasiswabynim/<validasiMahasiswaNIM>/', views.ValidasiMahasiswaByNIMViewSet.as_view()),
   # transkripnilai
   path('transkripnilaibynim/<transkripNilaiNIM>/', views.TranskripNilaiaByNIMViewSet.as_view()),
+
+  # profillulusan
+  path('profillulusanbyprodi/<prodiId>/', views.ProfilLulusanByProdiViewSet.as_view()),
+
+  # capaianpembelajaran
+  path('capaianpembelajaranbyprodi/<prodiId>/', views.CapaianPembelajaranByProdiViewSet.as_view()),
+
+  # cpmk
+  path('cpmkbyprodi/<prodiId>/', views.CapaianPembelajaranMataKuliahByProdiViewSet.as_view()),
+
+  # nilaimahasiswa
+  path('nilaimahasiswabynim/<nilaiMahasiswaNIM>/', views.NilaiMahasiswaByNIMViewSet.as_view()),
+  path('nilaimahasiswabymatakuliah/<nilaiMahasiswaKodeMataKuliah>/', views.NilaiMahasiswaByKodeMatakuliahViewSet.as_view()),
+
+  path('suratketeranganpendampingijazah/update_by_nim/<str:nim>/', views.SuratKeteranganPendampingIjazahViewSet.as_view({'patch': 'update_by_nim'})),
+  path('suratketeranganpendampingijazahbynim/<skpiByNIM>/', views.SuratKeteranganPendampingIjazahByNIMViewSet.as_view()),
+
+  path('bahankajianbyprodi/<prodiId>/', views.BahanKajianByProdiViewSet.as_view()),
+
 ]
