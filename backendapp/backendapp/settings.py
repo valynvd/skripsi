@@ -87,6 +87,9 @@ MIDDLEWARE = [
     'backendapp.permissions.PermissionsPolicyMiddleware',
 ]
 
+
+X_FRAME_OPTIONS = "ALLOW-FROM proktor.amanin.id"
+
 ROOT_URLCONF = 'backendapp.urls'
 
 TEMPLATES = [
@@ -221,6 +224,8 @@ CSRF_COOKIE_SECURE = True
 # Mencegah pemuatan situs dari iframe
 # X_FRAME_OPTIONS = 'DENY'
 
+CORS_ORIGIN_ALLOW_ALL = True
+
 X_FRAME_OPTIONS = "ALLOW-FROM proktor.amanin.id"
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
@@ -228,12 +233,26 @@ SECURE_HSTS_SECONDS = 31536000  # 1 tahun
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 
-CSP_DEFAULT_SRC = ("'self'",)
-CSP_SCRIPT_SRC = ("'self'", "https://cdn.jsdelivr.net")
-CSP_STYLE_SRC = ("'self'", "https://fonts.googleapis.com")
-CSP_IMG_SRC = ("'self'", "https://images.example.com")
-CSP_FONT_SRC = ("'self'", "https://fonts.gstatic.com")
-CSP_CONNECT_SRC = ("'self'", "https://api-simantap.prasetiyamulya.ac.id")
-CSP_FRAME_SRC = ("'none'",)
-CSP_OBJECT_SRC = ("'none'",)
-CSP_REPORT_URI = "/csp-violation-report-endpoint/"
+
+CSP_DEFAULT_SRC = ["'self'"]  # Default policy
+CSP_SCRIPT_SRC = [
+    "'self'",  # Allow scripts from the same origin
+    "https://stem.prasetiyamulya.ac.id",  # Your trusted domain
+    "https://api-simantap.prasetiyamulya.ac.id",  # Your trusted domain
+    "https://maxcdn.bootstrapcdn.com",  # Your trusted Bootstrap CDN
+    "https://code.jquery.com",  # Allow jQuery CDN
+    "https://cdn.jsdelivr.net",  # Allow jsDelivr CDN for Popper.js
+    "https://stackpath.bootstrapcdn.com",  # Allow Bootstrap 4 CDN
+    "'unsafe-inline'"  # Allow inline styles (be cautious with this)
+]  # Allow specific scripts
+CSP_STYLE_SRC = [
+    "'self'",  # Allow styles from the same origin
+    "https://stem.prasetiyamulya.ac.id",
+    "https://api-simantap.prasetiyamulya.ac.id",
+    "https://maxcdn.bootstrapcdn.com",  # Bootstrap
+    "https://code.jquery.com",  # jQuery
+    "'unsafe-inline'"  # Allow inline styles (be cautious with this)
+]  # Allow specific styles
+CSP_IMG_SRC = ["'self'", "https://stem.prasetiyamulya.ac.id", "https://api-simantap.prasetiyamulya.ac.id"]  # Allow specific images
+CSP_FONT_SRC = ["'self'", "https://stem.prasetiyamulya.ac.id", "https://api-simantap.prasetiyamulya.ac.id"]  # Allow specific fonts
+CSP_CONNECT_SRC = ["'self'", "https://stem.prasetiyamulya.ac.id", "https://api-simantap.prasetiyamulya.ac.id"]  # Allow API calls
