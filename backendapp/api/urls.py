@@ -143,6 +143,10 @@ urlpatterns = [
   path('nilaimahasiswabynim/<nilaiMahasiswaNIM>/', views.NilaiMahasiswaByNIMViewSet.as_view()),
   path('nilaimahasiswabymatakuliah/<nilaiMahasiswaKodeMataKuliah>/', views.NilaiMahasiswaByKodeMatakuliahViewSet.as_view()),
 
+  # recap skpi
+  path('skpirecapbyidprodi/<idProdi>/', views.SkpiRecapByIdProdiViewSet.as_view()),
+
+
   path('suratketeranganpendampingijazah/update_by_nim/<str:nim>/', views.SuratKeteranganPendampingIjazahViewSet.as_view({'patch': 'update_by_nim'})),
   path('suratketeranganpendampingijazahbynim/<skpiByNIM>/', views.SuratKeteranganPendampingIjazahByNIMViewSet.as_view()),
 

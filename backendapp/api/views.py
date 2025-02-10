@@ -1842,6 +1842,73 @@ class NilaiMahasiswaByNIMViewSet(generics.ListAPIView):
             self.permission_classes = [IsAuthenticated]
         return super(self.__class__, self).get_permissions()
     
+class SkpiRecapByIdProdiViewSet(generics.ListAPIView):
+    serializer_class = serializers.NilaiMahasiswaSerializers
+    queryset = models.NilaiMahasiswa.objects.all()
+
+    def get(self, request, idProdi, *args, **kwargs):
+        search = self.request.GET.get('search', None)
+        angkatan = self.request.GET.get('angkatan', None)
+        # print('idprodi', idProdi)
+        
+        NilaiMahasiswaByProdi = models.NilaiMahasiswa.objects.filter(mahasiswa__prodi__id=idProdi)
+        if search and search !='undefined':
+            NilaiMahasiswaByProdi = NilaiMahasiswaByProdi.filter(mahasiswa__nama__icontains=search)
+        if angkatan and angkatan !='undefined':
+            NilaiMahasiswaByProdi = NilaiMahasiswaByProdi.filter(mahasiswa__angkatan=angkatan)
+        # serializer = self.get_serializer(NilaiMahasiswaByProdi, many=True)
+        
+        unique_code = []
+        skpi_mahasiswa = []
+
+        CplByIdProdi = models.CapaianPembelajaran.objects.filter(prodi__id=idProdi)
+        for cpl in CplByIdProdi:
+            unique_code.append({
+                'code': cpl.kode
+            })
+
+        # unique_id_mahasiswa = NilaiMahasiswaByProdi.filter(mahasiswa__nim='23201810001').values_list('mahasiswa', flat=True).distinct()
+        unique_id_mahasiswa = NilaiMahasiswaByProdi.values_list('mahasiswa', flat=True).distinct()
+        for id_mahasiswa in unique_id_mahasiswa:
+            mahasiswa = models.DataMahasiswa.objects.get(id=id_mahasiswa)
+            serializer_mahasiswa = serializers.DataMahasiswaSerializers(mahasiswa, many=False)
+
+            cpls = []
+            for cpl in CplByIdProdi:
+                total_score = 0
+                unique_nilai_id = []
+                NilaiMahasiswa = models.NilaiMahasiswa.objects.filter(
+                    mahasiswa__id=id_mahasiswa
+                ).filter(penilaian__cpmks__cpl__kode=cpl.kode)
+                for nilai in NilaiMahasiswa:
+                    if nilai.id not in unique_nilai_id:
+                        unique_nilai_id.append(nilai.id)
+                
+                nilai_mahasiswa2 = models.NilaiMahasiswa.objects.filter(id__in=unique_nilai_id)
+                # Hitung total bobot
+                total_bobot = nilai_mahasiswa2.aggregate(total_bobot=Sum('bobot'))['total_bobot']
+                for nilai_mhs in nilai_mahasiswa2:
+                    bobot = nilai_mhs.bobot
+                    nilai_cpl = nilai_mhs.nilai_penilaian
+                    score = (nilai_cpl*bobot)/total_bobot
+                    total_score += score
+
+                cpls.append({
+                    'cpl_kode': cpl.kode,
+                    'total_score': total_score
+                })
+
+            skpi_mahasiswa.append({
+                'mahasiswa_detail': serializer_mahasiswa.data,
+                'cpmks': cpls
+            })
+
+
+        resp = skpi_mahasiswa
+        return Response(resp)
+
+    
+    
 class NilaiMahasiswaByKodeMatakuliahViewSet(generics.ListAPIView):
     serializer_class = serializers.NilaiMahasiswaSerializers
     queryset = models.NilaiMahasiswa.objects.all()
