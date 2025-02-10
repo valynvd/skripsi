@@ -18,6 +18,7 @@ import json
 from django.db.models import Q
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.decorators import action
+from django.db.models import Sum
 
 class ProgramStudiViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.ProgramStudiSerializers
