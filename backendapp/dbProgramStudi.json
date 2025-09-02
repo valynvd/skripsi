@@ -1,0 +1,62 @@
+[
+{
+  "model": "api.programstudi",
+  "pk": 1,
+  "fields": {
+    "created_at": "2024-08-12T07:42:59.844Z",
+    "name": "Software Engineering",
+    "kode": "SE",
+    "kode_sap": "50000635"
+  }
+},
+{
+  "model": "api.programstudi",
+  "pk": 2,
+  "fields": {
+    "created_at": "2024-08-12T08:40:15.856Z",
+    "name": "Mathematics",
+    "kode": "BM",
+    "kode_sap": "50000632"
+  }
+},
+{
+  "model": "api.programstudi",
+  "pk": 3,
+  "fields": {
+    "created_at": "2024-08-12T08:48:54.907Z",
+    "name": "Food Technology",
+    "kode": "FBT",
+    "kode_sap": "50000633"
+  }
+},
+{
+  "model": "api.programstudi",
+  "pk": 4,
+  "fields": {
+    "created_at": "2024-08-12T08:51:58.967Z",
+    "name": "Renewable Energy Engineering",
+    "kode": "REE",
+    "kode_sap": "50000634"
+  }
+},
+{
+  "model": "api.programstudi",
+  "pk": 5,
+  "fields": {
+    "created_at": "2024-08-12T08:52:38.682Z",
+    "name": "Computer Systems Engineering",
+    "kode": "CSE",
+    "kode_sap": "50000636"
+  }
+},
+{
+  "model": "api.programstudi",
+  "pk": 6,
+  "fields": {
+    "created_at": "2024-08-12T08:53:37.971Z",
+    "name": "Product Design Engineering",
+    "kode": "PDE",
+    "kode_sap": "50000631"
+  }
+}
+]

@@ -1,0 +1,46 @@
+[
+{
+  "model": "account.customuser",
+  "pk": "62fe3dea-2682-4729-9cc0-ed6d47e0047a",
+  "fields": {
+    "password": "pbkdf2_sha256$260000$I1wHkenxK1guRUpMDCePUB$vQ14MAKp8lyfsnbgU/2tNcH8tF5aJL4pC4S3RaGNsFA=",
+    "last_login": "2025-08-15T10:16:50.922Z",
+    "is_superuser": true,
+    "created_at": "2025-08-15T10:06:46.395Z",
+    "updated_at": "2025-08-15T10:08:21.550Z",
+    "email": "iyung@gmail.com",
+    "fullname": "iyung",
+    "phone": "00",
+    "photo": "",
+    "role": "Superadmin",
+    "jabatan": "Tidak ada",
+    "jabatan_fungsional": "Belum ada",
+    "is_staff": true,
+    "is_active": true,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "account.customuser",
+  "pk": "9da6416d-c7a9-4ed7-80fb-7d053ff2a747",
+  "fields": {
+    "password": "pbkdf2_sha256$260000$tJfASTcNX0ng8Oc3zwyLGE$K9pkyonqA9jFjtT9ntXr00BWPpMISugFSsDgSuxlFG0=",
+    "last_login": "2025-08-01T12:06:54.449Z",
+    "is_superuser": true,
+    "created_at": "2024-08-12T07:40:14.828Z",
+    "updated_at": "2024-08-12T07:41:56.930Z",
+    "email": "admin@gmail.com",
+    "fullname": "Admin",
+    "phone": "123456",
+    "photo": "",
+    "role": "Superadmin",
+    "jabatan": "Tidak ada",
+    "jabatan_fungsional": "Belum ada",
+    "is_staff": true,
+    "is_active": true,
+    "groups": [],
+    "user_permissions": []
+  }
+}
+]
