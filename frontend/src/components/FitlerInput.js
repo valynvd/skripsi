@@ -15,6 +15,8 @@ const FilterInput = ({
   isClearable = false,
   clearFunc,
   placeholder = '',
+  value,
+  onChange,
 }) => {
   return (
     <div>
@@ -64,6 +66,7 @@ const FilterInput = ({
                   clearFunc();
                 } else {
                   field.onChange(val.value);
+                  onChange && onChange(val.value);
                 }
               }}
             />

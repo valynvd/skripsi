@@ -6,7 +6,10 @@ import ModalDelete from '../../components/ModalDelete';
 import { PrimaryButton } from '../../components/PrimaryButton';
 import { AiOutlineSearch } from 'react-icons/ai';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useDeleteMonitoringMahasiswa, useMonitoringMahasiswaDataByKodeMataKuliah } from '../../hooks/useMonitoringMahasiswa';
+import {
+  useDeleteMonitoringMahasiswa,
+  useMonitoringMahasiswaDataByKodeMataKuliah,
+} from '../../hooks/useMonitoringMahasiswa';
 import MonitoringMahasiswaTable from './components/MonitoringMahasiswaTable';
 import { useQueryClient } from 'react-query';
 
@@ -17,15 +20,18 @@ const MonitoringMahasiswaByKodeMatkul = () => {
   const [openModalDelete, setOpenModalDelete] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const queryClient = useQueryClient();
-  const { data: responseData, isLoading, refetch: dataMahasiswaRefetch } = useMonitoringMahasiswaDataByKodeMataKuliah(kodematkul);
+  const {
+    data: responseData,
+    isLoading,
+    refetch: dataMahasiswaRefetch,
+  } = useMonitoringMahasiswaDataByKodeMataKuliah(kodematkul);
   const { mutate: deleteMonitoringMahasiswa } = useDeleteMonitoringMahasiswa();
-  
-  const navigate = useNavigate();
 
+  const navigate = useNavigate();
 
   return (
     <section id="monitoring-mahasiswa" className="section-container">
-       <ModalDelete
+      <ModalDelete
         title="Monitoring Mahasiswa"
         isOpen={openModalDelete}
         setIsOpen={setOpenModalDelete}
@@ -48,16 +54,17 @@ const MonitoringMahasiswaByKodeMatkul = () => {
         </p>
         <PrimaryButton
           icon={<BiPlusCircle size={22} />}
-          link="/degreeaudit/monitoring-akademik/import"
+          link="/kurikulum-obe/monitoring-akademik/import"
+          // link="/degreeaudit/monitoring-akademik/import"
         >
           Import Excel
         </PrimaryButton>
       </div>
 
-      <form  className="flex gap-4 flex-wrap items-center mb-4 mt-10">
+      <form className="flex gap-4 flex-wrap items-center mb-4 mt-10">
         <div className="relative w-[]20rem">
           <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-              <AiOutlineSearch size={20} color="gray" />
+            <AiOutlineSearch size={20} color="gray" />
           </div>
           <input
             type="text"
@@ -67,12 +74,14 @@ const MonitoringMahasiswaByKodeMatkul = () => {
             onChange={(e) => setNim(e.target.value)}
           />
         </div>
-        <PrimaryButton 
+        <PrimaryButton
           onClick={() => {
-              navigate(`/degreeaudit/monitoring-akademik/${nim1}`);
-            }}>
-            Cari
-          </PrimaryButton>
+            navigate(`/kurikulum-obe/monitoring-akademik/${nim1}`);
+            // navigate(`/degreeaudit/monitoring-akademik/${nim1}`);
+          }}
+        >
+          Cari
+        </PrimaryButton>
       </form>
 
       <div className="mt-8 w-full rounded-t-lg">
@@ -83,7 +92,6 @@ const MonitoringMahasiswaByKodeMatkul = () => {
           setSelectedItem={setSelectedItem}
         />
       </div>
-      
     </section>
   );
 };

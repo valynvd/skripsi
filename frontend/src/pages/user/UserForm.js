@@ -107,7 +107,13 @@ const UserForm = () => {
             setEditable(false);
           },
           onError: (err) => {
-            setErrorMessage(err.message);
+            const backendErrors = err.response?.data?.password;
+            if (backendErrors) {
+              setErrorMessage(backendErrors.join(' '));
+            } else {
+              setErrorMessage(err.message);
+            }
+            // setErrorMessage(err.message);
             setTimeout(() => {
               setErrorMessage();
             }, 5000);
@@ -120,7 +126,13 @@ const UserForm = () => {
           navigate('/data-master/user');
         },
         onError: (err) => {
-          setErrorMessage(err.message);
+          // setErrorMessage(err.message);
+          const backendErrors = err.response?.data?.password;
+          if (backendErrors) {
+            setErrorMessage(backendErrors.join(' '));
+          } else {
+            setErrorMessage(err.message);
+          }
           setTimeout(() => {
             setErrorMessage();
           }, 5000);
@@ -219,6 +231,16 @@ const UserForm = () => {
             required
             errors={errors}
             registeredName="password"
+            rules={{
+              required: 'Password is required',
+              minLength: {
+                value: 8,
+                message: 'Password harus minimal 8 karakter',
+              },
+              validate: (value) =>
+                !['admin123', 'password'].includes(value) ||
+                'Password terlalu umum',
+            }}
           />
         ) : null}
         {errorMessage ? (

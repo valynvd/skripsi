@@ -74,6 +74,31 @@ import MonitoringMahasiswaByNIM from './monitoring-mahasiswa/MonitoringMahasiswa
 import MonitoringMahasiswaByKodeMatkul from './monitoring-mahasiswa/MonitoringMahasiswaByKodeMatkul';
 import ValidasiMataKuliah from './validasi-matakuliah/ValidasiMataKuliah';
 import ValidasiMataKuliahDetails from './validasi-matakuliah/ValidasiMataKuliahDetails';
+// import DashboardKurikulumOBE from './kurikulum-obe/DashboardKurikulumOBE';
+import DataCapaianPembelajaran from './capaian-pembelajaran/DataCapaianPembelajaran';
+import DataProfilLulusan from './profil-lulusan/DataProfilLulusan';
+import DataProfilLulusanForm from './profil-lulusan/DataProfilLulusanForm';
+import DataCapaianPembelajaranForm from './capaian-pembelajaran/DataCapaianPembelajaranForm';
+import PemetaanCplCpmkMk from './pemetaan/PemetaanCplCpmkMk';
+import PemetaanMkCpmkCpl from './pemetaan/PemetaanMkCpmkCpl';
+import CpMataKuliah from './cp-mata-kuliah/CpMataKuliah';
+import CpMataKuliahForm from './cp-mata-kuliah/CpMataKuliahForm';
+import PemetaanPenliaian from './pemetaan/PemetaanPenilaian';
+import NilaiMahasiswa1 from './nilai-mahasiswa/NilaiMahasiswa1';
+import NilaiMahasiswaImportExcel from './nilai-mahasiswa/NilaiMahasiswaImportExcel';
+import NilaiMahasiswaByNIM from './nilai-mahasiswa/NilaiMahasiswaByNIM';
+import NilaiMahasiswaByKodeMatkul from './nilai-mahasiswa/NilaiMahasiswaByKodeMatkul';
+import SKPIPage from './validasi-kelulusan/SKPIPage';
+import CPLDetail from './skpi/CPLDetail';
+import PemetaanKurikulumMK from './pemetaan/PemetaanKurikulumMK';
+import SettingsSurat from './settings-surat/SettingsSurat';
+import SettingsSuratForm from './settings-surat/SettingsSuratForms';
+import BahanKajian from './bahan-kajian/BahanKajian';
+import BahanKajianForm from './bahan-kajian/BahanKajianForm';
+import SuratPenugasanSekre from './surat-penugasan-sekre/SuratPenugasanSekre';
+import SuratPenugasanSekreForm from './surat-penugasan-sekre/SuratPenugasanSekreForm';
+import ExportSuratPenugasanSekre from './surat-penugasan-sekre/ExportSuratPenugasanSekre';
+import SkpiRecap from './skpi-recap/SkpiRecap';
 
 const Router = () => {
   return (
@@ -99,6 +124,14 @@ const Router = () => {
               <Route path=":id" element={<PatenHKIForm />} />
             </Route>
           </Route>
+
+          {/* <Route path="pelaksanaan-pengabdian">
+            <Route path="penugasan-pengabdian">
+            <Route index element={<PenugasanPengabdian />} />
+            <Route path="form" element={<PenugasanPengabdianForm />} />
+            <Route path=":id" element={<PenugasanPengabdianForm />} />
+            </Route>
+          </Route> */}
 
           <Route path="pelaksanaan-pengabdian/penugasan-pengabdian">
             <Route index element={<PenugasanPengabdian />} />
@@ -144,7 +177,9 @@ const Router = () => {
           <Route path="data-master" element={<Outlet />}>
             <Route
               element={
-                <RequireAuthWithRoles allowedRoles={['Admin', 'Superadmin']} />
+                <RequireAuthWithRoles
+                  allowedRoles={['Admin', 'Superadmin', 'Faculty Member']}
+                />
               }
             >
               <Route path="cycle">
@@ -185,6 +220,20 @@ const Router = () => {
                 <Route index element={<ProgramStudi />} />
                 <Route path="form" element={<ProgramStudiForm />} />
                 <Route path=":id" element={<ProgramStudiForm />} />
+              </Route>
+              <Route path="settings-surat">
+                <Route index element={<SettingsSurat />} />
+                <Route path="form" element={<SettingsSuratForm />} />
+                <Route path=":id" element={<SettingsSuratForm />} />
+              </Route>
+              <Route path="penugasan">
+                <Route index element={<SuratPenugasanSekre />} />
+                <Route path="form" element={<SuratPenugasanSekreForm />} />
+                <Route path=":id" element={<SuratPenugasanSekreForm />} />
+                <Route
+                  path="export/:id"
+                  element={<ExportSuratPenugasanSekre />}
+                />
               </Route>
             </Route>
             <Route
@@ -340,7 +389,7 @@ const Router = () => {
           </Route>
 
           <Route path="degreeaudit" element={<Outlet />}>
-            <Route path="monitoring-akademik">
+            {/* <Route path="monitoring-akademik">
               <Route index element={<MonitoringMahasiswa1 />} />
               <Route path=":nim" element={<MonitoringMahasiswaByNIM />} />
               <Route
@@ -351,7 +400,7 @@ const Router = () => {
                 path="import"
                 element={<MonitoringMahasiswaImportExcel />}
               />
-            </Route>
+            </Route> */}
             <Route path="degreeaudit-kelulusan">
               <Route index element={<DegreeAuditKelulusan />} />
               <Route path=":id" element={<DegreeAuditKelulusanForm />} />
@@ -365,6 +414,72 @@ const Router = () => {
               <Route
                 path="matkul/:kodematkul"
                 element={<ValidasiMataKuliahDetails />}
+              />
+            </Route>
+            <Route path="skpi/:nim" element={<SKPIPage />} />
+            <Route
+              path="skpi/:nim/cpl-detail/:cplCode"
+              element={<CPLDetail />}
+            />
+            <Route path="skpirecap" element={<SkpiRecap />} />
+          </Route>
+
+          {/* Route path untuk Kurikulum OBE */}
+          <Route path="kurikulum-obe" element={<Outlet />}>
+            {/* <Route path="dashboard">
+              <Route index element={<DashboardKurikulumOBE />} />
+            </Route> */}
+            <Route path="profil-lulusan">
+              <Route index element={<DataProfilLulusan />} />
+              <Route path="form" element={<DataProfilLulusanForm />} />
+              <Route path=":id" element={<DataProfilLulusanForm />} />
+            </Route>
+            <Route path="bahan-kajian">
+              <Route index element={<BahanKajian />} />
+              <Route path="form" element={<BahanKajianForm />} />
+              <Route path=":id" element={<BahanKajianForm />} />
+            </Route>
+            <Route path="capaian-pembelajaran">
+              <Route index element={<DataCapaianPembelajaran />} />
+              <Route path="form" element={<DataCapaianPembelajaranForm />} />
+              <Route path=":id" element={<DataCapaianPembelajaranForm />} />
+            </Route>
+            <Route path="cpmk">
+              <Route index element={<CpMataKuliah />} />
+              <Route path="form" element={<CpMataKuliahForm />} />
+              <Route path=":id" element={<CpMataKuliahForm />} />
+            </Route>
+            <Route path="pemetaan-kurikulum-mk">
+              <Route index element={<PemetaanKurikulumMK />} />
+            </Route>
+            <Route path="pemetaan-cpl-cpmk-mk">
+              <Route index element={<PemetaanCplCpmkMk />} />
+            </Route>
+            <Route path="pemetaan-mk-cpl-cpmk">
+              <Route index element={<PemetaanMkCpmkCpl />} />
+            </Route>
+            <Route path="pemetaan-penilaian">
+              <Route index element={<PemetaanPenliaian />} />
+            </Route>
+            <Route path="nilai-detail">
+              <Route index element={<NilaiMahasiswa1 />} />
+              <Route path=":nim" element={<NilaiMahasiswaByNIM />} />
+              <Route
+                path="matkul/:kodematkul"
+                element={<NilaiMahasiswaByKodeMatkul />}
+              />
+              <Route path="import" element={<NilaiMahasiswaImportExcel />} />
+            </Route>
+            <Route path="monitoring-akademik">
+              <Route index element={<MonitoringMahasiswa1 />} />
+              <Route path=":nim" element={<MonitoringMahasiswaByNIM />} />
+              <Route
+                path="matkul/:kodematkul"
+                element={<MonitoringMahasiswaByKodeMatkul />}
+              />
+              <Route
+                path="import"
+                element={<MonitoringMahasiswaImportExcel />}
               />
             </Route>
           </Route>

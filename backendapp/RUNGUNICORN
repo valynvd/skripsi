@@ -1,1 +1,1 @@
-gunicorn backendapp.wsgi:application --bind localhost:7777 -w 3 --timeout 200 --error-logfile=./20201219.err.log &
+gunicorn serverapp.wsgi:application --bind localhost:9999 -w 3 --timeout 200 --error-logfile=./20201219.err.log &

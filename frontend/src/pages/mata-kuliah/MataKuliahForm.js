@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
-import { Controller, useForm } from 'react-hook-form';
-import Select from 'react-select';
+import { Controller, useForm, useFieldArray } from 'react-hook-form';
+import Select, { components } from 'react-select';
 import CRUInput from '../../components/CRUInput';
 import { PrimaryButton } from '../../components/PrimaryButton';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
@@ -17,12 +17,38 @@ import {
 import CancelButton from '../../components/CancelButton';
 import BreadCrumbs from '../../components/BreadCrumbs';
 import { primary400 } from '../../utils/colors';
+import { useCpmkData } from '../../hooks/useCpMataKuliah';
+import { FaMinus } from 'react-icons/fa';
+import { useProgramStudiData } from '../../hooks/useProdi';
+
+const PENILAIAN_CHOICES = [
+  { value: 'UAS', label: 'UAS' },
+  { value: 'UTS', label: 'UTS' },
+  { value: 'Teaching Assessment', label: 'Teaching Assessment' },
+  { value: 'Project', label: 'Project' },
+  { value: 'Quiz', label: 'Quiz' },
+];
+
+const defaultKomponenPenilaian = [
+  { nama_komponen: PENILAIAN_CHOICES[0], cpmk: [] },
+  { nama_komponen: PENILAIAN_CHOICES[1], cpmk: [] },
+  { nama_komponen: PENILAIAN_CHOICES[2], cpmk: [] },
+];
+
+const SingleValue = ({ children, ...props }) => {
+  const code = props.data.label.split(' - ')[0];
+  return <components.SingleValue {...props}>{code}</components.SingleValue>;
+};
+
+const MultiValue = ({ children, ...props }) => {
+  const code = props.data.label.split(' - ')[0];
+  return <components.MultiValue {...props}>{code}</components.MultiValue>;
+};
 
 const MataKuliahForm = () => {
   const [errorMessage, setErrorMessage] = useState();
   const { id } = useParams();
   const { state } = useLocation();
-  const [mataKuliahData, setMataKuliahData] = useState(state);
   const [editable, setEditable] = useState(true);
   const navigate = useNavigate();
 
@@ -35,45 +61,48 @@ const MataKuliahForm = () => {
   } = useForm({
     defaultValues: {
       kurikulum: null,
+      prodi: null,
       name: null,
       kode: null,
       sks_total: null,
       sks_praktikum: null,
       is_elective: null,
       semester: null,
+      komponen_nilai: defaultKomponenPenilaian,
     },
   });
 
-  const { data: updatedMataKuliahData } = useMataKuliahById(id, {
-    enabled: !!id && !mataKuliahData,
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'komponen_nilai',
   });
 
-  useEffect(() => {
-    if (id) {
-      if (state) {
-        reset({
-          ...state,
-          kurikulum: state.kurikulum_detail.map((item) => {
-            return { value: item.id, label: item.name };
-          }),
-        });
-      } else if (updatedMataKuliahData) {
-        setMataKuliahData(updatedMataKuliahData.data);
-        reset({
-          ...updatedMataKuliahData.data,
-          kurikulum: updatedMataKuliahData.data.kurikulum_detail.map((item) => {
-            return { value: item.id, label: item.name };
-          }),
-        });
-      }
-      setEditable(false);
-    }
-  }, [updatedMataKuliahData, state, reset, id]);
+  const { data: updatedMataKuliahData } = useMataKuliahById(id, {
+    enabled: !!id,
+  });
 
-  const { mutate: postMataKuliah, isLoading: postMataKuliahLoading } =
-    usePostMataKuliah();
-  const { mutate: patchMataKuliah, isLoading: patchMataKuliahLoading } =
-    usePatchMataKuliah();
+  const { data: cpmkData, isSuccess: cpmkDataSuccess } = useCpmkData({
+    select: (response) => {
+      const formatCpmk = response.data.map(({ id, kode, deskripsi }) => {
+        return { value: id, label: `${kode} - ${deskripsi}` };
+      });
+      return formatCpmk;
+    },
+  });
+
+  const { data: dataProgramStudi, isSuccess: dataProgramStudiSuccess } =
+    useProgramStudiData({
+      select: (response) => {
+        const formatUserData = response.data.map(({ id, name }) => {
+          return {
+            value: id,
+            label: name,
+          };
+        });
+
+        return formatUserData;
+      },
+    });
 
   const { data: kurikulumData, isSuccess: kurikulumDataSuccess } =
     useKurikulumData({
@@ -85,47 +114,110 @@ const MataKuliahForm = () => {
       },
     });
 
-  const onSubmit = (data) => {
-    const mataKuliahFormData = new FormData();
+  const { mutate: postMataKuliah, isLoading: postMataKuliahLoading } =
+    usePostMataKuliah();
 
-    Object.keys(dirtyFields).forEach((key) => {
-      if (key === 'kurikulum') {
-        data[key].forEach((item) => {
-          mataKuliahFormData.append(key, item.value);
-        });
-      } else {
-        if (dirtyFields[key]) {
-          mataKuliahFormData.append(key, data[key]);
-        }
-      }
-    });
+  const { mutate: patchMataKuliah, isLoading: patchMataKuliahLoading } =
+    usePatchMataKuliah();
+
+  useEffect(() => {
+    if (updatedMataKuliahData) {
+      console.log('Fetched Mata Kuliah Data:', updatedMataKuliahData);
+
+      const kurikulum = updatedMataKuliahData.data.kurikulum_detail || [];
+      const prodi = updatedMataKuliahData.data.prodi_detail || {};
+      const mataKuliah = updatedMataKuliahData.data || {};
+      const komponenPenilaian = updatedMataKuliahData.data.penilaian_set || [];
+      const cpmkDetails = updatedMataKuliahData.data.cpmk_detail || [];
+
+      console.log('Kurikulum:', kurikulum);
+      console.log('Prodi:', prodi);
+      console.log('mataKuliah:', mataKuliah);
+      console.log('komponenPenilaian:', komponenPenilaian);
+      console.log('CPMK Details:', cpmkDetails);
+
+      reset({
+        kurikulum: kurikulum.map((k) => ({
+          value: k.id,
+          label: k.name,
+        })),
+        prodi: {
+          value: prodi.id,
+          label: prodi.name,
+        },
+        name: mataKuliah.name,
+        kode: mataKuliah.kode,
+        sks_total: mataKuliah.sks_total,
+        sks_praktikum: mataKuliah.sks_praktikum,
+        is_elective: mataKuliah.is_elective,
+        semester: updatedMataKuliahData.data.semester,
+        komponen_nilai: komponenPenilaian.map((kn) => ({
+          nama_komponen: {
+            value: kn.nama_penilaian,
+            label: kn.nama_penilaian,
+          },
+          cpmk: kn.cpmks
+            .map((cpmkId) => {
+              const cpmk = cpmkDetails.find((c) => c.id === cpmkId);
+              return cpmk
+                ? {
+                    value: cpmk.id,
+                    label: `${cpmk.kode} - ${cpmk.deskripsi}`,
+                  }
+                : null;
+            })
+            .filter(Boolean),
+        })),
+      });
+
+      setEditable(false);
+    }
+  }, [updatedMataKuliahData, reset]);
+
+  const onSubmit = (data) => {
+    const formattedData = {
+      kurikulum: data.kurikulum ? data.kurikulum.map((k) => k.value) : [],
+      prodi: data.prodi ? data.prodi.value : null,
+      name: data.name,
+      kode: data.kode,
+      sks_total: data.sks_total,
+      sks_praktikum: data.sks_praktikum,
+      is_elective:
+        data.is_elective !== undefined ? Boolean(data.is_elective) : false,
+      semester: data.semester,
+      penilaian_set: data.komponen_nilai
+        ? data.komponen_nilai.map((kn) => ({
+            nama_penilaian: kn.nama_komponen ? kn.nama_komponen.value : '',
+            cpmks: kn.cpmk ? kn.cpmk.map((c) => c.value) : [],
+          }))
+        : [],
+    };
+
+    console.log('Formatted Data JSON:', JSON.stringify(formattedData, null, 2)); // Debugging
+    console.log('Formatted Data:', formattedData); // Debugging
 
     if (id) {
       patchMataKuliah(
-        { data: mataKuliahFormData, id: id },
+        { id, data: formattedData },
         {
           onSuccess: () => {
-            setEditable(false);
+            navigate('/data-master/mata-kuliah');
           },
-          onError: (err) => {
-            setErrorMessage(err.message);
-            setTimeout(() => {
-              setErrorMessage();
-            }, 5000);
+          onError: (error) => {
+            console.log('Error updating Mata Kuliah:', error.response.data);
+            setErrorMessage(error.response.data);
           },
         }
       );
     } else {
-      postMataKuliah(mataKuliahFormData, {
-        onSuccess: () => {
+      postMataKuliah(formattedData, {
+        onSuccess: (response) => {
+          console.log('Create Success:', response);
           navigate('/data-master/mata-kuliah');
-          setEditable(false);
         },
-        onError: (err) => {
-          setErrorMessage(err.message);
-          setTimeout(() => {
-            setErrorMessage();
-          }, 5000);
+        onError: (error) => {
+          console.log('Error creating Mata Kuliah:', error.response.data);
+          setErrorMessage(error.response.data);
         },
       });
     }
@@ -196,17 +288,59 @@ const MataKuliahForm = () => {
             </>
           )}
         />
-        {/* <CRUDropdownInput
+        <Controller
           control={control}
-          name="Kurikulum"
-          registeredName="kurikulum"
-          required
-          isDisabled={!editable}
-          options={kurikulumDataSuccess ? kurikulumData : []}
-        /> */}
+          name="prodi"
+          render={({ field, fieldState: { error } }) => (
+            <>
+              <div>
+                <p className="mb-1">Program Studi</p>
+                <Select
+                  isDisabled={!editable}
+                  placeholder="pilih..."
+                  theme={(theme) => ({
+                    ...theme,
+                    colors: {
+                      ...theme.colors,
+                      primary: primary400,
+                      primary25: '#fde3e4',
+                      primary50: '#fbd0d2',
+                    },
+                  })}
+                  classNamePrefix="react-select"
+                  styles={{
+                    control: (base) => ({
+                      ...base,
+                      boxShadow: 'none',
+                    }),
+                  }}
+                  classNames={{
+                    control: (state) =>
+                      `!px-0.5 !text-red-400 !py-0.5 ${
+                        error ? '!border-primary-400' : ''
+                      } ${
+                        state.isFocused
+                          ? '!border-primary-400'
+                          : '!border-gray-200'
+                      } ${!editable && '!bg-grayDisabled-400'}`,
+                  }}
+                  inputRef={field.ref}
+                  options={dataProgramStudiSuccess ? dataProgramStudi : []}
+                  value={field.value}
+                  onChange={field.onChange}
+                />
+                {error && (
+                  <p className="mt-1 text-sm text-primary-400">
+                    {error.message}
+                  </p>
+                )}
+              </div>
+            </>
+          )}
+        />
         <CRUInput
           register={register}
-          name="Nama"
+          name="Nama Mata Kuliah"
           required
           errors={errors}
           registeredName="name"
@@ -245,6 +379,7 @@ const MataKuliahForm = () => {
           errors={errors}
           registeredName="is_elective"
           isDisabled={!editable}
+          defaultChecked={false}
         />
         <CRUDropdownInput
           control={control}
@@ -272,6 +407,140 @@ const MataKuliahForm = () => {
           isDisabled={!editable}
         />
 
+        <div className="flex items-center justify-between mt-8">
+          <h3 className="mt-8 text-lg font-bold">Komponen Penilaian</h3>
+          <PrimaryButton
+            type="button"
+            onClick={() => {
+              if (editable) {
+                append({ nama_komponen: '', cpmk: [] });
+              }
+            }}
+            className={`mt-4 ${
+              editable ? '' : 'bg-gray-400 cursor-not-allowed'
+            }`}
+            disabled={!editable}
+          >
+            Tambah Komponen Nilai
+          </PrimaryButton>
+        </div>
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead>
+            <tr>
+              <th className="py-2">Nama Komponen</th>
+              <th className="py-2">CPMK</th>
+              <th className="py-2">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {fields.length > 0 ? (
+              fields.map((field, index) => (
+                <tr key={field.id} className="border-b gap-4">
+                  <td className="py-2">
+                    <Controller
+                      control={control}
+                      name={`komponen_nilai.${index}.nama_komponen`}
+                      render={({ field }) => (
+                        <Select
+                          {...field}
+                          options={PENILAIAN_CHOICES}
+                          isDisabled={!editable}
+                          defaultValue={field.value}
+                          placeholder="pilih..."
+                          theme={(theme) => ({
+                            ...theme,
+                            colors: {
+                              ...theme.colors,
+                              primary: primary400,
+                              primary25: '#fde3e4',
+                              primary50: '#fbd0d2',
+                            },
+                          })}
+                        />
+                      )}
+                    />
+                  </td>
+                  <td className="py-2">
+                    <Controller
+                      control={control}
+                      name={`komponen_nilai[${index}].cpmk`}
+                      render={({ field }) => (
+                        <div>
+                          <Select
+                            components={{ SingleValue, MultiValue }}
+                            isDisabled={!editable}
+                            isMulti
+                            placeholder="pilih cpmk..."
+                            theme={(theme) => ({
+                              ...theme,
+                              colors: {
+                                ...theme.colors,
+                                primary: primary400,
+                                primary25: '#fde3e4',
+                                primary50: '#fbd0d2',
+                              },
+                            })}
+                            classNamePrefix="react-select"
+                            styles={{
+                              control: (base) => ({
+                                ...base,
+                                boxShadow: 'none',
+                                maxHeight: 100,
+                                overflowY: 'scroll',
+                              }),
+                            }}
+                            classNames={{
+                              control: (state) =>
+                                `!px-0.5 !text-red-400 !py-0.5 ${
+                                  errors?.komponen_nilai?.[index]?.cpmk
+                                    ? '!border-primary-400'
+                                    : ''
+                                } ${
+                                  state.isFocused
+                                    ? '!border-primary-400'
+                                    : '!border-gray-200'
+                                } ${!editable && '!bg-grayDisabled-400'}`,
+                            }}
+                            inputRef={field.ref}
+                            options={cpmkDataSuccess ? cpmkData : []}
+                            value={field.value}
+                            onChange={field.onChange}
+                          />
+                          {errors?.komponen_nilai?.[index]?.cpmk && (
+                            <p className="mt-1 text-sm text-primary-400">
+                              {errors.komponen_nilai[index].cpmk.message}
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    />
+                  </td>
+
+                  <td className="py-2">
+                    <PrimaryButton
+                      type="button"
+                      onClick={() => {
+                        if (editable) {
+                          remove(index);
+                        }
+                      }}
+                      className={`ml-2`}
+                    >
+                      <FaMinus />
+                    </PrimaryButton>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="4" className="text-center py-4">
+                  Tidak ada komponen penilaian.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+
         {errorMessage ? (
           <AlertError className="inline-block">{errorMessage}</AlertError>
         ) : null}
@@ -288,8 +557,8 @@ const MataKuliahForm = () => {
               <EditButton
                 className={`!text-base`}
                 type="submit"
-                isLoading={patchMataKuliahLoading}
-                name="Update"
+                isLoading={postMataKuliahLoading || patchMataKuliahLoading}
+                name="Simpan"
               />
             )}
             {editable && <CancelButton onClick={() => setEditable(false)} />}

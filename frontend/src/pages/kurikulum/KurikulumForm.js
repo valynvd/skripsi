@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import CRUInput from '../../components/CRUInput';
 import { PrimaryButton } from '../../components/PrimaryButton';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
@@ -14,6 +14,9 @@ import {
 import CancelButton from '../../components/CancelButton';
 import BreadCrumbs from '../../components/BreadCrumbs';
 import CRUFileInput from '../../components/CRUFileInput';
+import { useProgramStudiData } from '../../hooks/useProdi';
+import Select, { components } from 'react-select';
+import { primary400 } from '../../utils/colors';
 
 const KurikulumForm = () => {
   const [errorMessage, setErrorMessage] = useState();
@@ -32,6 +35,7 @@ const KurikulumForm = () => {
     defaultValues: {
       kurikulum: null,
       name: null,
+      prodi: null,
       kode: null,
       sks_total: null,
       sks_praktikum: null,
@@ -40,24 +44,53 @@ const KurikulumForm = () => {
     },
   });
 
+  const { data: dataProgramStudi, isSuccess: dataProgramStudiSuccess } =
+    useProgramStudiData({
+      select: (response) => {
+        const formatUserData = response.data.map(({ id, name }) => {
+          return {
+            value: id,
+            label: name,
+          };
+        });
+
+        return formatUserData;
+      },
+    });
+
   const { data: updatedKurikulumData } = useKurikulumById(id, {
     enabled: !!id && !kurikulumData,
   });
 
-  useEffect(() => {
-    if (id) {
-      if (state) {
-        reset({ ...state, semester: parseInt(state.semester) });
-      } else if (updatedKurikulumData) {
-        setKurikulumData(updatedKurikulumData.data);
-        reset({
-          ...updatedKurikulumData.data,
-          semester: parseInt(updatedKurikulumData.data.semester),
-        });
+  useEffect(
+    () => {
+      if (id) {
+        if (state) {
+          reset({
+            ...state,
+            semester: parseInt(state.semester),
+            prodi: dataProgramStudiSuccess
+              ? dataProgramStudi.find((prodi) => prodi.value === state.prodi)
+              : null,
+          });
+        } else if (updatedKurikulumData) {
+          setKurikulumData(updatedKurikulumData.data);
+          reset({
+            ...updatedKurikulumData.data,
+            semester: parseInt(updatedKurikulumData.data.semester),
+            prodi: dataProgramStudiSuccess
+              ? dataProgramStudi.find(
+                  (prodi) => prodi.value === updatedKurikulumData.data.prodi
+                )
+              : null,
+          });
+        }
+        setEditable(false);
       }
-      setEditable(false);
-    }
-  }, [updatedKurikulumData, state, reset, id]);
+    },
+    [updatedKurikulumData, state, reset, id],
+    dataProgramStudi
+  );
 
   const { mutate: postKurikulum, isLoading: postKurikulumLoading } =
     usePostKurikulum();
@@ -69,9 +102,18 @@ const KurikulumForm = () => {
   const onSubmit = (data) => {
     const kurikulumFormData = new FormData();
 
+    // Object.keys(dirtyFields).forEach((key) => {
+    //   if (dirtyFields[key]) {
+    //     kurikulumFormData.append(key, data[key]);
+    //   }
+    // });
     Object.keys(dirtyFields).forEach((key) => {
       if (dirtyFields[key]) {
-        kurikulumFormData.append(key, data[key]);
+        if (key === 'prodi' && data[key]) {
+          kurikulumFormData.append(key, data[key].value); // send the primary key
+        } else {
+          kurikulumFormData.append(key, data[key]);
+        }
       }
     });
 
@@ -124,6 +166,56 @@ const KurikulumForm = () => {
           errors={errors}
           registeredName="name"
           isDisabled={!editable}
+        />
+        <Controller
+          control={control}
+          name="prodi"
+          render={({ field, fieldState: { error } }) => (
+            <>
+              <div>
+                <p className="mb-1">Program Studi</p>
+                <Select
+                  isDisabled={!editable}
+                  placeholder="pilih..."
+                  theme={(theme) => ({
+                    ...theme,
+                    colors: {
+                      ...theme.colors,
+                      primary: primary400,
+                      primary25: '#fde3e4',
+                      primary50: '#fbd0d2',
+                    },
+                  })}
+                  classNamePrefix="react-select"
+                  styles={{
+                    control: (base) => ({
+                      ...base,
+                      boxShadow: 'none',
+                    }),
+                  }}
+                  classNames={{
+                    control: (state) =>
+                      `!px-0.5 !text-red-400 !py-0.5 ${
+                        error ? '!border-primary-400' : ''
+                      } ${
+                        state.isFocused
+                          ? '!border-primary-400'
+                          : '!border-gray-200'
+                      } ${!editable && '!bg-grayDisabled-400'}`,
+                  }}
+                  inputRef={field.ref}
+                  options={dataProgramStudiSuccess ? dataProgramStudi : []}
+                  value={field.value}
+                  onChange={field.onChange}
+                />
+                {error && (
+                  <p className="mt-1 text-sm text-primary-400">
+                    {error.message}
+                  </p>
+                )}
+              </div>
+            </>
+          )}
         />
         <CRUFileInput
           control={control}

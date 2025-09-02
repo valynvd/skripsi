@@ -8,7 +8,6 @@ from django.core.mail import send_mail
 from backendapp import settings
 import os, uuid
 from django.core.exceptions import ValidationError
-from api.validation import validate_file_extension
 
 class UniqueNameFileField(models.FileField):
     def generate_filename(self, instance, filename):
@@ -81,8 +80,8 @@ class Kurikulum(models.Model):
 	# programStudiId = models.ForeignKey(ProgramStudi, on_delete=models.SET_NULL, blank=True, null=True)
 	# prodi = models.ForeignKey(ProgramStudi, on_delete=models.CASCADE, blank=True, null=True)
 	name = models.CharField(max_length=100)
-	file_panduan_kurikulum = UniqueNameFileField(upload_to='kurikulum/', blank=True, null=True, validators=[validate_file_extension])
-	file_pendukung = UniqueNameFileField(upload_to='kurikulum_pendukung/', blank=True, null=True, validators=[validate_file_extension])
+	file_panduan_kurikulum = UniqueNameFileField(upload_to='kurikulum/', blank=True, null=True)
+	file_pendukung = UniqueNameFileField(upload_to='kurikulum_pendukung/', blank=True, null=True)
 	created_at = models.DateTimeField(default=timezone.now)
 
 	def __str__(self) -> str:
@@ -219,7 +218,7 @@ class Cycle(models.Model):
 class SuratPenugasan(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)
 	judul = models.CharField(max_length=100)
-	files = UniqueNameFileField(upload_to='suratpenugasan/', blank=True, null=True, validators=[validate_file_extension])
+	files = UniqueNameFileField(upload_to='suratpenugasan/', blank=True, null=True)
 	approved = models.BooleanField(default=False)
 	cycle = models.ForeignKey(
 			Cycle,
@@ -245,7 +244,7 @@ class PublikasiKarya(models.Model):
 	dosen_pengampu = models.ForeignKey(Dosen, on_delete=models.SET_NULL, blank=True, null=True)
 	title = models.CharField(max_length=100)
 	description = models.TextField(blank=True, null=True)
-	file = UniqueNameFileField(upload_to='evaluasi/publikasi_karya/', blank=True, null=True, validators=[validate_file_extension])
+	file = UniqueNameFileField(upload_to='evaluasi/publikasi_karya/', blank=True, null=True)
 
 	def __str__(self) -> str:
 		return '{}'.format(self.title)
@@ -255,7 +254,7 @@ class PatenHKI(models.Model):
 	dosen_pengampu = models.ForeignKey(Dosen, on_delete=models.SET_NULL, blank=True, null=True)
 	title = models.CharField(max_length=100)
 	description = models.TextField(blank=True, null=True)
-	file = UniqueNameFileField(upload_to='evaluasi/paten/', blank=True, null=True, validators=[validate_file_extension])
+	file = UniqueNameFileField(upload_to='evaluasi/paten/', blank=True, null=True)
 
 	def __str__(self) -> str:
 		return '{}'.format(self.title)
@@ -281,7 +280,7 @@ class Pembicara(models.Model):
 	organizer = models.CharField(max_length=100)
 	start_date = models.DateField(blank=True, null=True)
 	language = models.CharField(max_length=20, blank=True, null=True)
-	file = UniqueNameFileField(upload_to='evaluasi/pembicara/', blank=True, null=True, validators=[validate_file_extension])
+	file = UniqueNameFileField(upload_to='evaluasi/pembicara/', blank=True, null=True)
 
 	def __str__(self) -> str:
 		return '{}'.format(self.title)
@@ -294,7 +293,7 @@ class PengelolaJurnal(models.Model):
 	assignment_letter_number = models.IntegerField()
 	start_date = models.DateField(blank=True, null=True)
 	end_date = models.DateField(blank=True, null=True)
-	file = UniqueNameFileField(upload_to='evaluasi/pengelola_jurnal/', blank=True, null=True, validators=[validate_file_extension])
+	file = UniqueNameFileField(upload_to='evaluasi/pengelola_jurnal/', blank=True, null=True)
 
 	def __str__(self) -> str:
 		return '{}'.format(self.role)
@@ -321,7 +320,7 @@ class RiwayatJabatanStruktural(models.Model):
 	start_date = models.DateField(blank=True, null=True)
 	end_date = models.DateField(blank=True, null=True)
 	location = models.TextField(blank=True, null=True)
-	file = UniqueNameFileField(upload_to='evaluasi/riwayat_jabatan_struktural/', blank=True, null=True, validators=[validate_file_extension])
+	file = UniqueNameFileField(upload_to='evaluasi/riwayat_jabatan_struktural/', blank=True, null=True)
 
 	def __str__(self) -> str:
 		return '{}'.format(self.position_title)
@@ -373,7 +372,7 @@ class PenugasanPengabdian(models.Model):
 	dikti_total_fund = models.FloatField(blank=True, null=True)
 	college_total_fund = models.FloatField(blank=True, null=True)
 	other_institution_total_fund = models.FloatField(blank=True, null=True)
-	file = UniqueNameFileField(upload_to='evaluasi/pengabdian/', blank=True, null=True, validators=[validate_file_extension])
+	file = UniqueNameFileField(upload_to='evaluasi/pengabdian/', blank=True, null=True)
 
 	def __str__(self) -> str:
 		return '{}'.format(self.title)
@@ -399,7 +398,7 @@ class PenugasanPenelitian(models.Model):
 	dikti_total_fund = models.FloatField(blank=True, null=True)
 	college_total_fund = models.FloatField(blank=True, null=True)
 	other_institution_total_fund = models.FloatField(blank=True, null=True)
-	file = UniqueNameFileField(upload_to='evaluasi/penelitian/', blank=True, null=True, validators=[validate_file_extension])
+	file = UniqueNameFileField(upload_to='evaluasi/penelitian/', blank=True, null=True)
 
 	def __str__(self) -> str:
 		return '{}'.format(self.title)
@@ -430,8 +429,8 @@ class RiwayatDokumenPembelajaran(models.Model):
 			DokumenPembelajaran,
 			on_delete=models.CASCADE,
 	)
-	initial_document = UniqueNameFileField(upload_to='evaluasi/initial_document/', blank=True, null=True, validators=[validate_file_extension])
-	revised_document = UniqueNameFileField(upload_to='evaluasi/revised_document/', blank=True, null=True, validators=[validate_file_extension])
+	initial_document = UniqueNameFileField(upload_to='evaluasi/initial_document/', blank=True, null=True)
+	revised_document = UniqueNameFileField(upload_to='evaluasi/revised_document/', blank=True, null=True)
 	LIST_STATUS = (
 			('waiting review', 'waiting review'),
 			('revision', 'revision'),

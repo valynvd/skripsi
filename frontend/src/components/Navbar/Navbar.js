@@ -15,6 +15,7 @@ import useOther from '../../hooks/useOther';
 import { useCheckRole } from '../../hooks/useCheckRole';
 import NavigationDropdownLink from './NavigationDropdownLink';
 import { GoBeaker } from 'react-icons/go';
+import { FaUniversity } from 'react-icons/fa';
 
 const Navbar = () => {
   const userRole = useCheckRole();
@@ -185,6 +186,16 @@ const Navbar = () => {
                     url: '/poin-penilaian',
                     allowedRoles: userRole.admin,
                   },
+                  {
+                    title: 'Settings Surat',
+                    url: '/settings-surat',
+                    allowedRoles: userRole.admin,
+                  },
+                  {
+                    title: 'Penugasan',
+                    url: '/penugasan',
+                    allowedRoles: userRole.admin,
+                  },
                 ]}
                 icon={<BsClipboardData size={22} />}
               />
@@ -228,14 +239,19 @@ const Navbar = () => {
                     url: '/degreeaudit-kelulusan',
                     allowedRoles: userRole.admin,
                   },
-                  {
-                    title: 'Monitoring Akademik',
-                    url: '/monitoring-akademik',
-                    allowedRoles: userRole.admin,
-                  },
+                  // {
+                  //   title: 'Monitoring Akademik',
+                  //   url: '/monitoring-akademik',
+                  //   allowedRoles: userRole.admin,
+                  // },
                   {
                     title: 'Validasi Mata Kuliah',
                     url: '/validasi-mata-kuliah',
+                    allowedRoles: userRole.admin,
+                  },
+                  {
+                    title: 'Rekap SKPI',
+                    url: '/skpirecap',
                     allowedRoles: userRole.admin,
                   },
                 ]}
@@ -266,6 +282,67 @@ const Navbar = () => {
               },
             ]}
             icon={<MdWorkspacePremium size={22} />}
+          />
+
+          {/* Kurikulum OBE */}
+          <NavigationDropdownLink
+            title="Kurikulum OBE"
+            url="/kurikulum-obe"
+            setDropdownActive={setDropdownActive}
+            dropdownActive={dropdownActive}
+            childrenUrl={[
+              // {
+              //   title: 'Dashboard',
+              //   url: '/dashboard',
+              //   allowedRoles: userRole.admin,
+              // },
+              {
+                title: 'Profil Lulusan',
+                url: '/profil-lulusan',
+                allowedRoles: userRole.admin,
+              },
+              {
+                title: 'Bahan Kajian',
+                url: '/bahan-kajian',
+                allowedRoles: userRole.admin,
+              },
+              {
+                title: 'CPL',
+                url: '/capaian-pembelajaran',
+                allowedRoles: userRole.admin,
+              },
+              {
+                title: 'CP Mata Kuliah',
+                url: '/cpmk',
+                allowedRoles: userRole.admin,
+              },
+              {
+                title: 'Pemetaan Kurikulum-MK',
+                url: '/pemetaan-kurikulum-mk',
+                allowedRoles: userRole.admin,
+              },
+              {
+                title: 'Pemetaan CPL-CPMK-MK',
+                url: '/pemetaan-cpl-cpmk-mk',
+                allowedRoles: userRole.admin,
+              },
+              {
+                title: 'Pemetaan MK-CPL-CPMK',
+                url: '/pemetaan-mk-cpl-cpmk',
+                allowedRoles: userRole.admin,
+              },
+              {
+                title: 'Pemetaan Penilaian',
+                url: '/pemetaan-penilaian',
+                allowedRoles: userRole.admin,
+              },
+              {
+                title: 'Nilai Detail',
+                url: '/nilai-detail',
+                allowedRoles: userRole.admin,
+              },
+            ]}
+            icon={<FaUniversity size={22} />}
           />
         </div>
       </nav>

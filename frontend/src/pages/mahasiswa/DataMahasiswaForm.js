@@ -9,7 +9,7 @@ import EditButton from '../../components/EditButton';
 import {
   usePostDataMahasiswa,
   usePatchDataMahasiswa,
-  useDataMahasiswaById
+  useDataMahasiswaById,
 } from '../../hooks/useDataMahasiswa';
 import CancelButton from '../../components/CancelButton';
 import BreadCrumbs from '../../components/BreadCrumbs';
@@ -34,6 +34,7 @@ const DataMahasiswaForm = () => {
     defaultValues: {
       nama: null,
       nim: null,
+      mahasiswa_id: null,
       angkatan: null,
       prodi: null,
       telephone: null,
@@ -58,7 +59,7 @@ const DataMahasiswaForm = () => {
     }
   }, [updatedDataMahasiswaData, state, reset, id]);
 
-  const { mutate: postDataMahasiswa, isLoading: postDataMahasiswaLoading} =
+  const { mutate: postDataMahasiswa, isLoading: postDataMahasiswaLoading } =
     usePostDataMahasiswa();
   const { mutate: patchDataMahasiswa, isLoading: patchDataMahasiswaLoading } =
     usePatchDataMahasiswa();
@@ -79,7 +80,7 @@ const DataMahasiswaForm = () => {
 
   const onSubmit = (data) => {
     const dataMahasiswaFormData = new FormData();
-    
+
     Object.keys(dirtyFields).forEach((key) => {
       if (dirtyFields[key]) {
         dataMahasiswaFormData.append(key, data[key]);
@@ -146,6 +147,14 @@ const DataMahasiswaForm = () => {
         />
         <CRUInput
           register={register}
+          name="Student Id"
+          required
+          errors={errors}
+          registeredName="mahasiswa_id"
+          isDisabled={!editable}
+        />
+        <CRUInput
+          register={register}
           name="Angkatan"
           required
           errors={errors}
@@ -153,21 +162,21 @@ const DataMahasiswaForm = () => {
           isDisabled={!editable}
         />
         <CRUDropdownInput
-            control={control}
-            name="Prodi"
-            registeredName="prodi"
-            defaultValue={
-              dataMahasiswaData?.prodi
+          control={control}
+          name="Prodi"
+          registeredName="prodi"
+          defaultValue={
+            dataMahasiswaData?.prodi
               ? {
                   value: dataMahasiswaData.prodi.id,
                   label: dataMahasiswaData.prodi.name,
-              }
+                }
               : null
-            }
-            options={dataProgramStudiSuccess ? dataProgramStudi : []}
-            required
-            isDisabled={!editable}
-          />
+          }
+          options={dataProgramStudiSuccess ? dataProgramStudi : []}
+          required
+          isDisabled={!editable}
+        />
         <CRUInput
           register={register}
           name="Nomor Telepon"
@@ -216,7 +225,10 @@ const DataMahasiswaForm = () => {
             {editable && <CancelButton onClick={() => setEditable(false)} />}
           </div>
         ) : (
-          <PrimaryButton className={`!mt-8`} isLoading={postDataMahasiswaLoading}>
+          <PrimaryButton
+            className={`!mt-8`}
+            isLoading={postDataMahasiswaLoading}
+          >
             Buat
           </PrimaryButton>
         )}

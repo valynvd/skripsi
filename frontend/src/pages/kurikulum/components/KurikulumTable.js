@@ -15,6 +15,10 @@ const Kurikulum = ({ setOpenModalDelete, setSelectedItem, ...options }) => {
       accessor: 'name',
     },
     {
+      Header: 'Program Studi',
+      accessor: 'prodi_detail.name',
+    },
+    {
       Header: 'File Panduan Kurikulum',
       accessor: 'file_panduan_kurikulum',
       Cell: ({ value }) => {

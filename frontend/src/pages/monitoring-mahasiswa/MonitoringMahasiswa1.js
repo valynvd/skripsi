@@ -21,7 +21,8 @@ const MonitoringMahasiswa1 = () => {
         </p>
         <PrimaryButton
           icon={<BiPlusCircle size={22} />}
-          link="/degreeaudit/monitoring-akademik/import"
+          link="/kurikulum-obe/monitoring-akademik/import"
+          // link="/degreeaudit/monitoring-akademik/import"
         >
           Import Excel
         </PrimaryButton>
@@ -42,7 +43,8 @@ const MonitoringMahasiswa1 = () => {
         </div>
         <PrimaryButton
           onClick={async () => {
-            navigate(`/degreeaudit/monitoring-akademik/${nim}`, {
+            navigate(`/kurikulum-obe/monitoring-akademik/${nim}`, {
+              // navigate(`/degreeaudit/monitoring-akademik/${nim}`, {
               state: nim,
             });
           }}
@@ -50,10 +52,10 @@ const MonitoringMahasiswa1 = () => {
           Cari
         </PrimaryButton>
       </form>
-        <p>
-          Anda dapat melihat hasil akademik mahasiswa dengan mencari melalui NIM Mahasiswa
-        </p>
-     
+      <p>
+        Anda dapat melihat hasil akademik mahasiswa dengan mencari melalui NIM
+        Mahasiswa
+      </p>
     </section>
   );
 };

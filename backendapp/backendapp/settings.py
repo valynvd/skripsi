@@ -24,11 +24,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-zvt0qg13#8#ct2tv!s@rr9ii%_#2ibt78fs0y)!#kx0e@0x&gp'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True
-DEBUG = False
+DEBUG = True
+# DEBUG = False
 
-# ALLOWED_HOSTS = ['*']
-ALLOWED_HOSTS = ['api-simantap.prasetiyamulya.ac.id', '18.136.94.40', '127.0.0.1']
+ALLOWED_HOSTS = ['*']
+# ALLOWED_HOSTS = ['kuliah.prasetiyamulya.ac.id']
 
 
 MODE = 'LIVE'
@@ -83,12 +83,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-    'csp.middleware.CSPMiddleware',
-    'backendapp.permissions.PermissionsPolicyMiddleware',
 ]
-
-
-X_FRAME_OPTIONS = "ALLOW-FROM proktor.amanin.id"
 
 ROOT_URLCONF = 'backendapp.urls'
 
@@ -214,45 +209,12 @@ SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 
 # Menetapkan kebijakan keamanan konten (Content Security Policy)
-# SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
 
 # Menetapkan header HSTS (HTTP Strict Transport Security)
-# SECURE_HSTS_SECONDS = 31536000  # 1 tahun
-# SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-# SECURE_HSTS_PRELOAD = True
-
-# Mencegah pemuatan situs dari iframe
-# X_FRAME_OPTIONS = 'DENY'
-
-CORS_ORIGIN_ALLOW_ALL = True
-
-X_FRAME_OPTIONS = "ALLOW-FROM proktor.amanin.id"
-SECURE_CONTENT_TYPE_NOSNIFF = True
-SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
 SECURE_HSTS_SECONDS = 31536000  # 1 tahun
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 
-
-CSP_DEFAULT_SRC = ["'self'"]  # Default policy
-CSP_SCRIPT_SRC = [
-    "'self'",  # Allow scripts from the same origin
-    "https://stem.prasetiyamulya.ac.id",  # Your trusted domain
-    "https://api-simantap.prasetiyamulya.ac.id",  # Your trusted domain
-    "https://maxcdn.bootstrapcdn.com",  # Your trusted Bootstrap CDN
-    "https://code.jquery.com",  # Allow jQuery CDN
-    "https://cdn.jsdelivr.net",  # Allow jsDelivr CDN for Popper.js
-    "https://stackpath.bootstrapcdn.com",  # Allow Bootstrap 4 CDN
-    "'unsafe-inline'"  # Allow inline styles (be cautious with this)
-]  # Allow specific scripts
-CSP_STYLE_SRC = [
-    "'self'",  # Allow styles from the same origin
-    "https://stem.prasetiyamulya.ac.id",
-    "https://api-simantap.prasetiyamulya.ac.id",
-    "https://maxcdn.bootstrapcdn.com",  # Bootstrap
-    "https://code.jquery.com",  # jQuery
-    "'unsafe-inline'"  # Allow inline styles (be cautious with this)
-]  # Allow specific styles
-CSP_IMG_SRC = ["'self'", "https://stem.prasetiyamulya.ac.id", "https://api-simantap.prasetiyamulya.ac.id"]  # Allow specific images
-CSP_FONT_SRC = ["'self'", "https://stem.prasetiyamulya.ac.id", "https://api-simantap.prasetiyamulya.ac.id"]  # Allow specific fonts
-CSP_CONNECT_SRC = ["'self'", "https://stem.prasetiyamulya.ac.id", "https://api-simantap.prasetiyamulya.ac.id"]  # Allow API calls
+# Mencegah pemuatan situs dari iframe
+X_FRAME_OPTIONS = 'DENY'

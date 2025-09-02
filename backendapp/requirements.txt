@@ -15,4 +15,3 @@ django-import-export==2.0.2
 xlwt
 gunicorn
 djangorestframework-recursive
-django-csp

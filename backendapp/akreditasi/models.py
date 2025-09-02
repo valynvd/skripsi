@@ -1,7 +1,6 @@
 from django.db import models
 from django.utils import timezone
 from api.models import Dosen, ProgramStudi, SuratPenugasan, UniqueNameFileField
-from api.validation import validate_file_extension
 
 # Create your models here.
 class DokumenAkreditasi(models.Model):
@@ -12,7 +11,7 @@ class DokumenAkreditasi(models.Model):
         null=True
 	)
     name = models.CharField(max_length=100)
-    file = UniqueNameFileField(upload_to='evaluasi/dokumen-akreditasi/', blank=True, null=True, validators=[validate_file_extension])
+    file = UniqueNameFileField(upload_to='evaluasi/dokumen-akreditasi/', blank=True, null=True)
 
 class SimulasiMatriks(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
@@ -41,7 +40,7 @@ class File(models.Model):
 	created_at = models.DateTimeField(default=timezone.now)
 	title = models.CharField(max_length=100)
 	description = models.TextField(blank=True, null=True)
-	file = UniqueNameFileField(upload_to='evaluasi/file/', blank=True, null=True, validators=[validate_file_extension])
+	file = UniqueNameFileField(upload_to='evaluasi/file/', blank=True, null=True)
 
 class PoinPenilaian(models.Model):
     kriteriaId = models.ForeignKey(
@@ -129,7 +128,7 @@ class FileFolder(models.Model):
         ('folder', 'folder'),
     )
     jenis = models.CharField(max_length=100, choices=JENIS, default='file')
-    files = models.FileField(upload_to='akreditasi/files/', blank=True, null=True, validators=[validate_file_extension])
+    files = models.FileField(upload_to='akreditasi/files/', blank=True, null=True)
 
     def __str__(self) -> str:
         return '{}-{}'.format(self.matrix, self.nama)

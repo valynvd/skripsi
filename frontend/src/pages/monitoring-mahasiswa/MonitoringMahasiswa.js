@@ -17,10 +17,13 @@ const MonitoringMahasiswa = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const queryClient = useQueryClient();
   const { mutate: deleteMonitoringMahasiswa } = useDeleteMonitoringMahasiswa();
-  const { data: responseData, isLoading, refetch: dataMahasiswaRefetch} =
-    useMonitoringMahasiswaData({
-      enabled: !!userRole.admin,
-    });
+  const {
+    data: responseData,
+    isLoading,
+    refetch: dataMahasiswaRefetch,
+  } = useMonitoringMahasiswaData({
+    enabled: !!userRole.admin,
+  });
 
   return (
     <section id="monitoring-mahasiswa" className="section-container">
@@ -45,14 +48,14 @@ const MonitoringMahasiswa = () => {
           Monitoring Mahasiswa
           {!userRole.admin}
         </p>
-        
+
         <PrimaryButton
           icon={<BiPlusCircle size={22} />}
-          link="/degreeaudit/monitoring-akademik/import"
+          link="/kurikulum-obe/monitoring-akademik/import"
+          // link="/degreeaudit/monitoring-akademik/import"
         >
           Import Excel
         </PrimaryButton>
-        
       </div>
       <div className="mt-8 w-full rounded-t-lg">
         <MonitoringMahasiswaTable

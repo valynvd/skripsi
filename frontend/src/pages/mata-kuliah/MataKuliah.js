@@ -8,14 +8,16 @@ import {
 } from '../../hooks/useMataKuliah';
 import ModalDelete from '../../components/ModalDelete';
 import { useCheckRole } from '../../hooks/useCheckRole';
+import ClipLoader from 'react-spinners/ClipLoader';
 
 const MataKuliah = () => {
   const {
     data: responseData,
     isLoading,
-    refetch: mataKuliahDataRefetch,
+    refetch: mataKuliahRefetch,
   } = useMataKuliahData();
   const { mutate: deleteMataKuliah } = useDeleteMataKuliah();
+
   const [openModalDelete, setOpenModalDelete] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const userRole = useCheckRole();
@@ -29,7 +31,7 @@ const MataKuliah = () => {
         deleteFunc={() =>
           deleteMataKuliah(selectedItem, {
             onSuccess: () => {
-              mataKuliahDataRefetch();
+              mataKuliahRefetch();
               setOpenModalDelete(false);
             },
           })
@@ -46,13 +48,32 @@ const MataKuliah = () => {
           </PrimaryButton>
         )}
       </div>
-      <div className="mt-8 w-full rounded-t-lg">
+      {/* <div className="mt-8 w-full rounded-t-lg">
         <MataKuliahTable
           setSelectedItem={setSelectedItem}
           setOpenModalDelete={setOpenModalDelete}
           loading={isLoading}
           data={responseData?.data ?? []}
         />
+      </div> */}
+      <div className="mt-8 w-full rounded-t-lg">
+        {isLoading ? (
+          <div className="flex flex-col items-center">
+            <ClipLoader color={'hsla(357, 85%, 52%, 1)'} size={50} />
+            <p className="mt-4">Loading data...</p>
+          </div>
+        ) : responseData?.data?.length > 0 ? (
+          <MataKuliahTable
+            setSelectedItem={setSelectedItem}
+            setOpenModalDelete={setOpenModalDelete}
+            loading={isLoading}
+            data={responseData.data}
+          />
+        ) : (
+          <div className="flex justify-center items-center py-8">
+            <p className="text-gray-500">Tidak ada data.</p>
+          </div>
+        )}
       </div>
     </section>
   );

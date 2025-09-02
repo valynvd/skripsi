@@ -1,12 +1,12 @@
 /* eslint-disable react/jsx-key */
-import React, { useMemo } from 'react'; 
+import React, { useMemo } from 'react';
 import Pagination from '../../../components/Pagination';
 import {
   useTable,
   usePagination,
   useGlobalFilter,
   useSortBy,
-} from 'react-table'; 
+} from 'react-table';
 import { AiOutlineSearch } from 'react-icons/ai';
 import { RxTriangleUp, RxTriangleDown } from 'react-icons/rx';
 // import { useNavigate } from 'react-router-dom';
@@ -15,11 +15,7 @@ import { ExportPrimaryButton } from '../../../components/PrimaryButton';
 import { utils, writeFile } from 'xlsx';
 import { ClipLoader } from 'react-spinners';
 
-const ValidasiMataKuliahTable = ({ 
-  userRole,
-  loading,
-  data,
-}) => {
+const ValidasiMataKuliahTable = ({ userRole, loading, data }) => {
   // const navigate = useNavigate();
 
   const columns = [
@@ -28,10 +24,11 @@ const ValidasiMataKuliahTable = ({
       accessor: 'academic_year',
       Cell: ({ row }) => (
         <div>
-          {row.original.academic_year} - {renderAcademicSession(row.original.academic_session)}
+          {row.original.academic_year} -{' '}
+          {renderAcademicSession(row.original.academic_session)}
         </div>
       ),
-    },    
+    },
     {
       Header: 'Kode Mata Kuliah',
       accessor: 'kode_mata_kuliah',
@@ -39,15 +36,15 @@ const ValidasiMataKuliahTable = ({
     {
       Header: 'Mata Kuliah',
       accessor: 'mata_kuliah',
-      Cell: ({row}) => (
-        <a 
-            href={`/degreeaudit/validasi-mata-kuliah/matkul/${row.original.kode_mata_kuliah}`} 
-            target="_blank" 
-            rel="noopener noreferrer"
+      Cell: ({ row }) => (
+        <a
+          href={`/degreeaudit/validasi-mata-kuliah/matkul/${row.original.kode_mata_kuliah}`}
+          target="_blank"
+          rel="noopener noreferrer"
         >
-            {row.original.mata_kuliah}
+          {row.original.mata_kuliah}
         </a>
-      )
+      ),
     },
     {
       Header: 'SKS',
@@ -58,7 +55,7 @@ const ValidasiMataKuliahTable = ({
       accessor: 'count',
     },
   ];
-  const renderAcademicSession = academicSession => {
+  const renderAcademicSession = (academicSession) => {
     if (academicSession === '10') {
       return 'Odd';
     } else if (academicSession === '20') {
@@ -106,14 +103,14 @@ const ValidasiMataKuliahTable = ({
       'Kode Mata Kuliah': original.kode_mata_kuliah,
       'Mata Kuliah': original.mata_kuliah,
       'Jumlah SKS': original.sks,
-      'Total': original.count,
+      Total: original.count,
     }));
-  
+
     const wb = utils.book_new();
     const ws = utils.json_to_sheet(filterToExcel);
-  
+
     utils.book_append_sheet(wb, ws, 'Mata Kuliah');
-  
+
     writeFile(wb, 'List Mata Kuliah STEM Yang Belum Di Nilai.xlsx');
   };
 
@@ -162,65 +159,65 @@ const ValidasiMataKuliahTable = ({
         </form>
       </div>
       <div className="overflow-x-auto">
-        <table {...getTableProps()} className="w-full">
-          <thead className="bg-primary-400/[0.03] whitespace-nowrap rounded-xl">
-            {headerGroups.map((headerGroup) => (
-              <tr {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map((column) => (
-                  <th
-                    className="px-4 py-3 font-semibold"
-                    {...column.getHeaderProps(column.getSortByToggleProps())}
-                  >
-                    <div className="flex flex-row items-center">
-                      {column.render('Header')}
-                      {column.isSorted ? (
-                        column.isSortedDesc ? (
-                          <RxTriangleDown
-                            size={20}
-                            color="gray"
-                            className="inline ml-1"
-                          />
+        {!loading ? (
+          <table {...getTableProps()} className="w-full">
+            <thead className="bg-primary-400/[0.03] whitespace-nowrap rounded-xl">
+              {headerGroups.map((headerGroup) => (
+                <tr {...headerGroup.getHeaderGroupProps()}>
+                  {headerGroup.headers.map((column) => (
+                    <th
+                      className="px-4 py-3 font-semibold"
+                      {...column.getHeaderProps(column.getSortByToggleProps())}
+                    >
+                      <div className="flex flex-row items-center">
+                        {column.render('Header')}
+                        {column.isSorted ? (
+                          column.isSortedDesc ? (
+                            <RxTriangleDown
+                              size={20}
+                              color="gray"
+                              className="inline ml-1"
+                            />
+                          ) : (
+                            <RxTriangleUp
+                              size={20}
+                              color="gray"
+                              className="inline ml-1"
+                            />
+                          )
                         ) : (
-                          <RxTriangleUp
-                            size={20}
-                            color="gray"
-                            className="inline ml-1"
-                          />
-                        )
-                      ) : (
-                        ''
-                      )}
-                    </div>
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          {!loading ? (
-            <tbody {...getTableBodyProps()}>
-            {page.map((row) => {
-              prepareRow(row);
-              return (
-                <tr
-                  {...row.getRowProps()}
-                  className="bg-white border-b text-gray-600 border-black"
-                >
-                  {row.cells.map((cell) => {
-                    return (
-                      <td {...cell.getCellProps()} className="px-4 py-3">
-                        {cell.render('Cell')}
-                      </td>
-                    );
-                  })}
+                          ''
+                        )}
+                      </div>
+                    </th>
+                  ))}
                 </tr>
-              );
-            })}
-          </tbody>
-          ) : (
-            <ClipLoader color="#ff0000"/>
-          )}
-          
-        </table>
+              ))}
+            </thead>
+
+            <tbody {...getTableBodyProps()}>
+              {page.map((row) => {
+                prepareRow(row);
+                return (
+                  <tr
+                    {...row.getRowProps()}
+                    className="bg-white border-b text-gray-600 border-black"
+                  >
+                    {row.cells.map((cell) => {
+                      return (
+                        <td {...cell.getCellProps()} className="px-4 py-3">
+                          {cell.render('Cell')}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        ) : (
+          <ClipLoader color="#ff0000" />
+        )}
       </div>
       <Pagination
         initialPagesArray={pageOptions}

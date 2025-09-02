@@ -18,7 +18,7 @@ import {
   TooltipError,
 } from '../../components/Tooltip';
 
-import ClipLoader from "react-spinners/ClipLoader";
+import ClipLoader from 'react-spinners/ClipLoader';
 
 const MonitoringMahasiswaImportExcel = () => {
   const [errorMessage, setErrorMessage] = useState();
@@ -44,22 +44,30 @@ const MonitoringMahasiswaImportExcel = () => {
   const [excelRead, setExcelRead] = useState(false);
   const [loading, setLoading] = useState(false);
 
-
   const readExcel = async (e) => {
-    setLoading(true)
+    setLoading(true);
     const file = e.target.files[0];
     const data = await file.arrayBuffer(file);
     const excelfile = xlsx.read(data);
     const excelsheet = excelfile.Sheets[excelfile.SheetNames[0]];
     const exceljson = xlsx.utils.sheet_to_json(excelsheet);
 
-    const specificPrograms = ["50000632", "50000633", "50000634", "50000636", "50000635", "50000631"];
-    const filteredExcelData = exceljson.filter((row) => specificPrograms.includes(row["Program of study"]));
+    const specificPrograms = [
+      '50000632',
+      '50000633',
+      '50000634',
+      '50000636',
+      '50000635',
+      '50000631',
+    ];
+    const filteredExcelData = exceljson.filter((row) =>
+      specificPrograms.includes(row['Program of study'])
+    );
 
     setExcelData(filteredExcelData);
-    console.log("Filtered Data Monitoring", filteredExcelData)
+    console.log('Filtered Data Monitoring', filteredExcelData);
     setExcelRead(true);
-    setLoading(false)
+    setLoading(false);
   };
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -78,11 +86,11 @@ const MonitoringMahasiswaImportExcel = () => {
     for (let index = 0; index < excelData.length; index++) {
       const data = excelData[index];
       const monitoringMahasiswaFormData = new FormData();
-      const transkripNilaiFormData = new FormData();
+      // const transkripNilaiFormData = new FormData();
 
       for (const key in data) {
         monitoringMahasiswaFormData.append(key, data[key]);
-        transkripNilaiFormData.append(key, data[key]);
+        // transkripNilaiFormData.append(key, data[key]);
       }
 
       // try {
@@ -92,23 +100,26 @@ const MonitoringMahasiswaImportExcel = () => {
       //     },
       //   });
       //   await delay(50);
-      // } catch (err) {
-      //   getResponseData.push(err.response.data);
-      // }
       try {
-        const response = await postMonitoringMahasiswa(monitoringMahasiswaFormData);
+        const response = await postMonitoringMahasiswa(
+          monitoringMahasiswaFormData
+        );
         getResponseData.push({ ...response.data, status: 'success' });
       } catch (err) {
-        getResponseData.push({ ...err.response.data, ...data, status: 'error' });
+        // getResponseData.push(err.response.data);
+        getResponseData.push({
+          ...err.response.data,
+          ...data,
+          status: 'error',
+        });
       }
-      
       const newProgress = ((index + 1) / excelData.length) * 100;
-        if (newProgress == 100.0) {
-          setOpen(true);
-        }
-        setProgress(newProgress.toFixed(2));
+      if (newProgress == 100.0) {
+        setOpen(true);
+      }
+      setProgress(newProgress.toFixed(2));
     }
-    console.log("Get Respons Data", getResponseData)
+    console.log('Get Respons Data', getResponseData);
     setResponseData(getResponseData);
   };
 
@@ -119,10 +130,7 @@ const MonitoringMahasiswaImportExcel = () => {
 
   return (
     <section id="datamahasiswa-form" className="section-container">
-      <Transition
-        show={open}
-        as={Fragment}
-      >
+      <Transition show={open} as={Fragment}>
         <Dialog onClose={() => setOpen(false)} className={`relative z-100`}>
           <Transition.Child
             as={Fragment}
@@ -170,7 +178,8 @@ const MonitoringMahasiswaImportExcel = () => {
           links={[
             {
               name: 'Mentoring Mahasiswa',
-              link: '/degreeaudit/monitoring-akademik',
+              link: '/kurikulum-obe/monitoring-akademik',
+              // link: '/degreeaudit/monitoring-akademik',
             },
             { name: 'Buat' },
           ]}
@@ -195,7 +204,10 @@ const MonitoringMahasiswaImportExcel = () => {
           <AlertError className="inline-block">{errorMessage}</AlertError>
         ) : (
           <PrimaryButton
-            className={`!mt-8 !mb-5 ${!excelRead && '!bg-gray-200 !border-gray-400 !text-gray-500 cursor-not-allowed'}`}
+            className={`!mt-8 !mb-5 ${
+              !excelRead &&
+              '!bg-gray-200 !border-gray-400 !text-gray-500 cursor-not-allowed'
+            }`}
             // className={'!mt-8 !mb-5'}
             onClick={onSubmit}
             // disabled={postMonitoringMahasiswaLoading}
@@ -362,111 +374,121 @@ const MonitoringMahasiswaImportExcel = () => {
           <tbody>
             {loading ? (
               <div>
-                  <ClipLoader color={'hsla(357, 85%, 52%, 1)'} size={50} />
+                <ClipLoader color={'hsla(357, 85%, 52%, 1)'} size={50} />
               </div>
-            ) : (responseData
-              ? responseData
-                  .filter((getdata) => {
-                    return (
-                      (namamahasiswa === '' ||
-                        (getdata.mahasiswa_detail.nama
-                          .toLowerCase()
-                          .includes(namamahasiswa.toLowerCase()))
-                        ) &&
-                      (nim === '' ||
-                        (getdata.mahasiswa_detail.nim.toString().includes(nim))) &&
-                      (prodi === '' ||
-                        (getdata.mahasiswa_detail.prodi_detail.name
-                          .toLowerCase()
-                          .includes(prodi.toLowerCase())) 
-                        )
-                    );
-                  })
-                  .map((filteredData, index) => (
-                    console.log("Filter Data di Map ===========", filteredData),
-                    console.log("Filter Data Mahasiswa Detail di map ===========", filteredData.mahasiswa_detail),
-                    console.log("Status", filteredData.status),
-                    <tr
-                      key={index}
-                      className={`border-b text-gray-600 ${
-                        filteredData
-                          // ? filteredData.error
-                          ? filteredData.status === "error"
-                            ? 'bg-red-50'
-                            : 'bg-green-50'
-                          : 'bg-white'
-                      }`}
-                    >
-                      <td className="px-4 py-3">
-                        {filteredData.error ? (
-                          <TooltipError>
-                            {filteredData.error_message}
-                          </TooltipError>
-                        ) : (
-                          <TooltipAccept2>
-                            Data berhasil diunggah
-                          </TooltipAccept2>
-                        )}
-                      </td>
-                      <td className="px-4 py-3">{index + 1}</td>
-                      <td className="px-4 py-3">
-                        {filteredData.mahasiswa_detail?.nama}
-                        {/* {filteredData.mahasiswa_detail['nama']} */}
-                      </td>
-                      <td className="px-4 py-3">
-                        {filteredData.mahasiswa_detail?.nim}
-                        {/* {filteredData.mahasiswa_detail.nim} */}
-                      </td>
-                      <td className="px-4 py-3">{filteredData.mahasiswa_detail?.prodi_detail.name}
-                        {/* {filteredData.mahasiswa_detail.prodi_detail.name} */}
-                      </td>
-                      <td className="px-4 py-3">{filteredData.mahasiswa_detail?.angkatan}
-                        {/* {filteredData.mahasiswa_detail.angkatan} */}
+            ) : responseData ? (
+              responseData
+                .filter((getdata) => {
+                  return (
+                    (namamahasiswa === '' ||
+                      getdata.mahasiswa_detail.nama
+                        .toLowerCase()
+                        .includes(namamahasiswa.toLowerCase())) &&
+                    (nim === '' ||
+                      getdata.mahasiswa_detail.nim.toString().includes(nim)) &&
+                    (prodi === '' ||
+                      getdata.mahasiswa_detail.prodi_detail.name
+                        .toLowerCase()
+                        .includes(prodi.toLowerCase()))
+                  );
+                })
+                .map(
+                  (filteredData, index) => (
+                    console.log('Filter Data di Map ===========', filteredData),
+                    console.log(
+                      'FIlter Data Mahasiswa Detail di map ===========',
+                      filteredData.mahasiswa_detail
+                    ),
+                    console.log('Status', filteredData.status),
+                    (
+                      <tr
+                        key={index}
+                        className={`border-b text-gray-600 ${
+                          filteredData
+                            ? // ? filteredData.error
+                              filteredData.status === 'error'
+                              ? 'bg-red-50'
+                              : 'bg-green-50'
+                            : 'bg-white'
+                        }`}
+                      >
+                        <td className="px-4 py-3">
+                          {filteredData.error ? (
+                            <TooltipError>
+                              {filteredData.error_message}
+                            </TooltipError>
+                          ) : (
+                            <TooltipAccept2>
+                              Data berhasil diunggah
+                            </TooltipAccept2>
+                          )}
                         </td>
-                      <td className="px-4 py-3">{filteredData.mata_kuliah_detail?.name}
-                        {/* {filteredData.mata_kuliah_detail.name} */}
+                        <td className="px-4 py-3">{index + 1}</td>
+                        <td className="px-4 py-3">
+                          {filteredData.mahasiswa_detail?.nama}
+                          {/* {filteredData.mahasiswa_detail['nama']} */}
                         </td>
-                      <td className="px-4 py-3">
-                        {filteredData.earned_credits}
-                      </td>
-                      <td className="px-4 py-3">{filteredData.grade_symbol}</td>
-                    </tr>
-                  ))
-              : excelData
-                  .filter((getdata) => {
-                    return (
-                      (namamahasiswa === '' ||
-                        getdata.Name
-                          .toLowerCase()
-                          .includes(namamahasiswa.toLowerCase())) &&
-                      (nim === '' ||
-                        getdata.NIM.toString().includes(nim)) &&
-                      (prodi === '' ||
-                        getdata['Program (Desc.)']
+                        <td className="px-4 py-3">
+                          {filteredData.mahasiswa_detail?.nim}
+                          {/* {filteredData.mahasiswa_detail.nim} */}
+                        </td>
+                        <td className="px-4 py-3">
+                          {filteredData.mahasiswa_detail?.prodi_detail.name}
+                          {/* {filteredData.mahasiswa_detail.prodi_detail.name} */}
+                        </td>
+                        <td className="px-4 py-3">
+                          {filteredData.mahasiswa_detail?.angkatan}
+                          {/* {filteredData.mahasiswa_detail.angkatan} */}
+                        </td>
+                        <td className="px-4 py-3">
+                          {filteredData.mata_kuliah_detail?.name}
+                          {/* {filteredData.mata_kuliah_detail.name} */}
+                        </td>
+                        <td className="px-4 py-3">
+                          {filteredData.earned_credits}
+                        </td>
+                        <td className="px-4 py-3">
+                          {filteredData.grade_symbol}
+                        </td>
+                      </tr>
+                    )
+                  )
+                )
+            ) : (
+              excelData
+                .filter((getdata) => {
+                  return (
+                    (namamahasiswa === '' ||
+                      getdata.Name.toLowerCase().includes(
+                        namamahasiswa.toLowerCase()
+                      )) &&
+                    (nim === '' || getdata.NIM.toString().includes(nim)) &&
+                    (prodi === '' ||
+                      getdata['Program (Desc.)']
 
-                          .toLowerCase()
-                          .includes(prodi.toLowerCase()))
-                    );
-                  })
-                  .map((filteredData, index) => (
-                    <tr key={index} className="bg-white border-b text-gray-600">
-                      <td className="px-4 py-3">{index + 1}</td>
-                      <td className="px-4 py-3">
-                        {filteredData.Name}
-                      </td>
-                      <td className="px-4 py-3">
-                        {filteredData.NIM}
-                      </td>
-                      <td className="px-4 py-3">{filteredData['Program (Desc.)']}</td>
-                      <td className="px-4 py-3">{filteredData.Angkatan}</td>
-                      <td className="px-4 py-3">{filteredData.Subject}</td>
-                      <td className="px-4 py-3">
-                        {filteredData['Graded Credits']}
-                      </td>
-                      <td className="px-4 py-3">{filteredData['Grade symbol'] || "T"}</td>
-                    </tr>
-                  )))
-            }
+                        .toLowerCase()
+                        .includes(prodi.toLowerCase()))
+                  );
+                })
+                .map((filteredData, index) => (
+                  <tr key={index} className="bg-white border-b text-gray-600">
+                    <td className="px-4 py-3">{index + 1}</td>
+                    <td className="px-4 py-3">{filteredData.Name}</td>
+                    <td className="px-4 py-3">{filteredData.NIM}</td>
+                    <td className="px-4 py-3">
+                      {filteredData['Program (Desc.)']}
+                    </td>
+                    <td className="px-4 py-3">{filteredData.Angkatan}</td>
+                    <td className="px-4 py-3">{filteredData.Subject}</td>
+                    <td className="px-4 py-3">
+                      {filteredData['Graded Credits']}
+                    </td>
+                    <td className="px-4 py-3">
+                      {filteredData['Grade symbol'] || 'T'}
+                    </td>
+                  </tr>
+                ))
+            )}
           </tbody>
         </table>
       </div>

@@ -15,8 +15,7 @@ const User = () => {
   const userRole = useCheckRole();
   const queryClient = useQueryClient();
 
-  useEffect(() => {
-  }, [response]);
+  useEffect(() => {}, [response]);
 
   return (
     <section id="user" className="section-container">
