@@ -107,9 +107,17 @@ const MataKuliahForm = () => {
   const { data: kurikulumData, isSuccess: kurikulumDataSuccess } =
     useKurikulumData({
       select: (response) => {
-        const formatKurikulum = response.data.map(({ id, name }) => {
-          return { value: id, label: name };
-        });
+        console.log('Raw kurikulum API response:', response);
+
+        const raw = Array.isArray(response.data)
+          ? response.data
+          : response.data.data;
+
+        const formatKurikulum = raw.map(({ id, name }) => ({
+          value: id,
+          label: name,
+        }));
+        console.log('Formatted kurikulum:', formatKurikulum);
         return formatKurikulum;
       },
     });

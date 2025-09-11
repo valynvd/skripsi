@@ -492,13 +492,16 @@ const ValidasiMahasiswaByNIM = () => {
           Audit
         </PrimaryButton>
       </form>
-        
 
       <div className="overflow-x-auto">
         {/* add spinner when fetch data */}
-      {isLoadingTranskrip && (
+        {isLoadingTranskrip && (
           <div className="flex justify-center items-center">
-            <ClipLoader size={50} color={'#123abc'} loading={isLoadingTranskrip} />
+            <ClipLoader
+              size={50}
+              color={'#123abc'}
+              loading={isLoadingTranskrip}
+            />
           </div>
         )}
         <table id="id-table" className="w-full mt-6">
@@ -829,9 +832,11 @@ const ValidasiMahasiswaByNIM = () => {
                             : ''
                         }`}
                       >
-                        {filteredData.mata_kuliah_detail.kurikulum_detail[0] &&
-                          filteredData.mata_kuliah_detail.kurikulum_detail[0]
-                            .name}
+                        {filteredData.mata_kuliah_detail.kurikulum_detail.map(
+                          (kurikulum) => (
+                            <div key={kurikulum.id}>{kurikulum.name}</div>
+                          )
+                        )}
                       </td>
                     </tr>
                   ))}
