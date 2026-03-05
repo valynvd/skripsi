@@ -125,3 +125,5 @@ typings/
 # local version cache
 .wwebjs_cache/
 backup/
+
+backendapp/venv/

@@ -80,9 +80,34 @@ class MataKuliahSerializers(serializers.ModelSerializer):
     prodi = data.get('prodi')
     semester = data.get('semester')
     sks_total = data.get('sks_total')
+    effective_prodi = prodi or (self.instance.prodi if self.instance else None)
+    effective_kurikulum = (
+      data.get('kurikulum')
+      if 'kurikulum' in data
+      else (self.instance.kurikulum.all() if self.instance else [])
+    )
     
     if self.instance is None and models.MataKuliah.objects.filter(kode=kode, prodi=prodi, semester=semester, sks_total=sks_total).exists():
         raise serializers.ValidationError({"non_field_errors": "Matakuliah dengan kombinasi kode, prodi, semester, dan sks yang sama sudah ada."})
+
+    if effective_kurikulum and not effective_prodi:
+      raise serializers.ValidationError({
+        "kurikulum": "Program studi wajib diisi jika kurikulum dipilih."
+      })
+
+    invalid_kurikulum = [
+      kurikulum.name
+      for kurikulum in effective_kurikulum
+      if kurikulum.prodi_id != effective_prodi.id
+    ] if effective_prodi else []
+
+    if invalid_kurikulum:
+      raise serializers.ValidationError({
+        "kurikulum": (
+          "Kurikulum tidak sesuai prodi mata kuliah: "
+          + ", ".join(invalid_kurikulum)
+        )
+      })
     return data
   
   def create(self, validated_data):
@@ -98,7 +123,7 @@ class MataKuliahSerializers(serializers.ModelSerializer):
 
   def update(self, instance, validated_data):
     
-    kurikulum_data = validated_data.pop('kurikulum', [])
+    kurikulum_data = validated_data.pop('kurikulum', None)
     penilaian_data = validated_data.pop('penilaian_set', [])   
     
     instance.name = validated_data.get('name', instance.name)
@@ -110,7 +135,8 @@ class MataKuliahSerializers(serializers.ModelSerializer):
     instance.prodi = validated_data.get('prodi', instance.prodi)
     instance.save()
 
-    instance.kurikulum.set(kurikulum_data)
+    if kurikulum_data is not None:
+      instance.kurikulum.set(kurikulum_data)
 
     # existing_penilaian_ids = [penilaian.id for penilaian in instance.penilaian_set.all()]
     # existing_penilaian_ids = [penilaian.id for penilaian in instance.penilaian_set.all()]
@@ -408,24 +434,47 @@ class FormCreateMataKuliahSerializer(serializers.Serializer):
     )
 
     def create_or_update(self, validated_data, instance=None):
-        kurikulum_data = validated_data.get('kurikulum', [])
+        kurikulum_data = validated_data.pop('kurikulum', None)
         prodi = validated_data.get('prodi', None)
         # komponen_penilaian_data = validated_data.get('komponen_penilaian', [])
         # semester = validated_data.get('semester', None)
         komponen_penilaian_data = validated_data.pop('komponen_penilaian', [])
         semester = validated_data.pop('semester', None)
 
+        effective_kurikulum = kurikulum_data if kurikulum_data is not None else []
+        if effective_kurikulum and not prodi:
+            raise serializers.ValidationError({
+                "kurikulum": "Program studi wajib diisi jika kurikulum dipilih."
+            })
+
+        invalid_kurikulum = [
+            kurikulum.name
+            for kurikulum in effective_kurikulum
+            if kurikulum.prodi_id != prodi.id
+        ] if prodi else []
+        if invalid_kurikulum:
+            raise serializers.ValidationError({
+                "kurikulum": (
+                    "Kurikulum tidak sesuai prodi mata kuliah: "
+                    + ", ".join(invalid_kurikulum)
+                )
+            })
+
         if instance is None:
             mata_kuliah, created = models.MataKuliah.objects.get_or_create(
-                name=validated_data['name'],
                 kode=validated_data['kode'],
+                prodi=prodi,
+                semester=semester,
                 defaults={
+                    'name': validated_data['name'],
                     'sks_total': validated_data['sks_total'],
                     'sks_praktikum': validated_data['sks_praktikum'],
-                    'is_elective': validated_data.get('is_elective', False)
+                    'is_elective': validated_data.get('is_elective', False),
+                    'prodi': prodi,
+                    'semester': semester,
                 }
             )
-            if created and kurikulum_data:
+            if kurikulum_data is not None:
                 mata_kuliah.kurikulum.set(kurikulum_data)
             mata_kuliah.save()
         else:
@@ -435,7 +484,8 @@ class FormCreateMataKuliahSerializer(serializers.Serializer):
             mata_kuliah.sks_total = validated_data.get('sks_total', mata_kuliah.sks_total)
             mata_kuliah.sks_praktikum = validated_data.get('sks_praktikum', mata_kuliah.sks_praktikum)
             mata_kuliah.is_elective = validated_data.get('is_elective', mata_kuliah.is_elective)
-            mata_kuliah.kurikulum.set(kurikulum_data)
+            if kurikulum_data is not None:
+                mata_kuliah.kurikulum.set(kurikulum_data)
             mata_kuliah.save()
 
         existing_penilaian_ids = [penilaian.id for penilaian in models.Penilaian.objects.filter(mata_kuliah=mata_kuliah)]

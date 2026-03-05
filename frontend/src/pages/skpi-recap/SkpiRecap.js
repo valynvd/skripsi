@@ -17,6 +17,7 @@ import FilterInput from '../../components/FitlerInput';
 import { useForm } from 'react-hook-form';
 import { ExportPrimaryButton } from '../../components/PrimaryButton';
 import { utils, writeFile } from 'xlsx';
+import { compareCplCodes, getCplDisplayCode } from '../../utils/cplDisplay';
 
 const SkpiRecap = () => {
   const userRole = useCheckRole();
@@ -94,155 +95,13 @@ const SkpiRecap = () => {
 
   // export excel
   const handleExport = () => {
-    // Mapping CPL-CSE dan CPL-FBT ke label baru
-    const cplCodeMap =
-      idProdi === 3
-        ? {
-            'CPL-FBT-S1': '3.A.1',
-            'CPL-FBT-S2': '3.A.2',
-            'CPL-FBT-S3': '3.A.3',
-            'CPL-FBT-S4': '3.A.4',
-            'CPL-FBT-S5': '3.A.5',
-            'CPL-FBT-S6': '3.A.6',
-            'CPL-FBT-KU1': '3.B.1',
-            'CPL-FBT-KU2': '3.B.2',
-            'CPL-FBT-KU3': '3.B.3',
-            'CPL-FBT-KU4': '3.B.4',
-            'CPL-FBT-P1': '3.C.1',
-            'CPL-FBT-P2': '3.C.2',
-            'CPL-FBT-P3': '3.C.3',
-            'CPL-FBT-KK1': '3.D.1',
-            'CPL-FBT-KK2': '3.D.2',
-            'CPL-FBT-KK3': '3.D.3',
-          }
-        : idProdi === 1
-        ? {
-            'CPL-SE-S1': '3.A.1',
-            'CPL-SE-S2': '3.A.2',
-            'CPL-SE-S3': '3.A.3',
-            'CPL-SE-S4': '3.A.4',
-            'CPL-SE-S5': '3.A.5',
-            'CPL-SE-S6': '3.A.6',
-            'CPL-SE-KU1': '3.B.1',
-            'CPL-SE-KU2': '3.B.2',
-            'CPL-SE-KU3': '3.B.3',
-            'CPL-SE-P1': '3.C.1',
-            'CPL-SE-P2': '3.C.2',
-            'CPL-SE-P3': '3.C.3',
-            'CPL-SE-P4': '3.C.4',
-            'CPL-SE-P5': '3.C.5',
-            'CPL-SE-P6': '3.C.6',
-            'CPL-SE-P7': '3.C.7',
-            'CPL-SE-P8': '3.C.8',
-            'CPL-SE-P9': '3.C.9',
-            'CPL-SE-KK1': '3.D.1',
-            'CPL-SE-KK2': '3.D.2',
-            'CPL-SE-KK3': '3.D.3',
-            'CPL-SE-KK4': '3.D.4',
-            'CPL-SE-KK5': '3.D.5',
-          }
-        : idProdi === 2
-        ? {
-            'CPL-BM-S1': '3.A.1',
-            'CPL-BM-S2': '3.A.2',
-            'CPL-BM-S3': '3.A.3',
-            'CPL-BM-S4': '3.A.4',
-            'CPL-BM-S5': '3.A.5',
-            'CPL-BM-S6': '3.A.6',
-            'CPL-BM-KU1': '3.B.1',
-            'CPL-BM-KU2': '3.B.2',
-            'CPL-BM-KU3': '3.B.3',
-            'CPL-BM-KU4': '3.B.4',
-            'CPL-BM-P1': '3.C.1',
-            'CPL-BM-P2': '3.C.2',
-            'CPL-BM-P3': '3.C.3',
-            'CPL-BM-P4': '3.C.4',
-            'CPL-BM-P5': '3.C.5',
-            'CPL-BM-KK1': '3.D.1',
-            'CPL-BM-KK2': '3.D.2',
-            'CPL-BM-KK3': '3.D.3',
-            'CPL-BM-KK4': '3.D.4',
-          }
-        : idProdi === 4
-        ? {
-            'CPL-REE-S1': '3.A.1',
-            'CPL-REE-S2': '3.A.2',
-            'CPL-REE-S3': '3.A.3',
-            'CPL-REE-S4': '3.A.4',
-            'CPL-REE-S5': '3.A.5',
-            'CPL-REE-S6': '3.A.6',
-            'CPL-REE-KU1': '3.B.1',
-            'CPL-REE-KU2': '3.B.2',
-            'CPL-REE-KU3': '3.B.3',
-            'CPL-REE-KU4': '3.B.4',
-            'CPL-REE-P1': '3.C.1',
-            'CPL-REE-P2': '3.C.2',
-            'CPL-REE-KK1': '3.D.1',
-            'CPL-REE-KK2': '3.D.2',
-            'CPL-REE-KK3': '3.D.3',
-            'CPL-REE-KK4': '3.D.4',
-          }
-        : idProdi === 5
-        ? {
-            'CPL-CSE-S1': '3.A.1',
-            'CPL-CSE-S2': '3.A.2',
-            'CPL-CSE-S3': '3.A.3',
-            'CPL-CSE-S4': '3.A.4',
-            'CPL-CSE-S5': '3.A.5',
-            'CPL-CSE-S6': '3.A.6',
-            'CPL-CSE-KU1': '3.B.1',
-            'CPL-CSE-KU2': '3.B.2',
-            'CPL-CSE-KU3': '3.B.3',
-            'CPL-CSE-KU4': '3.B.4',
-            'CPL-CSE-KU5': '3.B.5',
-            'CPL-CSE-KU6': '3.B.6',
-            'CPL-CSE-KU7': '3.B.7',
-            'CPL-CSE-KU8': '3.B.8',
-            'CPL-CSE-KU9': '3.B.9',
-            'CPL-CSE-P1': '3.C.1',
-            'CPL-CSE-P2': '3.C.2',
-            'CPL-CSE-P3': '3.C.3',
-            'CPL-CSE-KK1': '3.D.1',
-            'CPL-CSE-KK2': '3.D.2',
-          }
-        : idProdi === 5
-        ? {
-            'CPL-PDE-S1': '3.A.1',
-            'CPL-PDE-S2': '3.A.2',
-            'CPL-PDE-S3': '3.A.3',
-            'CPL-PDE-S4': '3.A.4',
-            'CPL-PDE-S5': '3.A.5',
-            'CPL-PDE-S6': '3.A.6',
-            'CPL-PDE-KU1': '3.B.1',
-            'CPL-PDE-KU2': '3.B.2',
-            'CPL-PDE-KU3': '3.B.3',
-            'CPL-PDE-KU4': '3.B.4',
-            'CPL-PDE-KU5': '3.B.5',
-            'CPL-PDE-KU6': '3.B.6',
-            'CPL-PDE-P1': '3.C.1',
-            'CPL-PDE-P2': '3.C.2',
-            'CPL-PDE-P3': '3.C.3',
-            'CPL-PDE-P4': '3.C.4',
-            'CPL-PDE-P5': '3.C.5',
-            'CPL-PDE-P6': '3.C.6',
-            'CPL-PDE-P7': '3.C.7',
-            'CPL-PDE-P8': '3.C.8',
-            'CPL-PDE-P9': '3.C.9',
-            'CPL-PDE-P10': '3.C.10',
-            'CPL-PDE-P11': '3.C.11',
-            'CPL-PDE-KK1': '3.D.1',
-            'CPL-PDE-KK2': '3.D.2',
-            'CPL-PDE-KK3': '3.D.3',
-            'CPL-PDE-KK4': '3.D.4',
-            'CPL-PDE-KK5': '3.D.5',
-            'CPL-PDE-KK6': '3.D.6',
-            'CPL-PDE-KK7': '3.D.7',
-            'CPL-PDE-KK8': '3.D.8',
-          }
-        : {};
-
-    // Ambil semua CPL dari mapping
-    const cplHeaders = Object.values(cplCodeMap);
+    const orderedCplCodes = Array.from(
+      new Set(
+        recaps.flatMap((item) =>
+          item?.cpmks?.map((cpmk) => cpmk.cpl_kode).filter(Boolean) ?? []
+        )
+      )
+    ).sort(compareCplCodes);
 
     const filterToExcel = recaps.map((item) => {
       const mahasiswa = item.mahasiswa_detail;
@@ -250,16 +109,17 @@ const SkpiRecap = () => {
 
       // Isi nilai CPL jika ada
       item.cpmks.forEach((cpmk) => {
-        const label = cplCodeMap[cpmk.cpl_kode] || cpmk.cpl_kode;
-        cplScores[label] = cpmk.total_score;
+        cplScores[cpmk.cpl_kode] = cpmk.total_score;
       });
 
       // Pastikan semua CPL muncul, yang tidak ada nilainya diberi "-"
       return {
         nim: mahasiswa.nim,
         nama: mahasiswa.nama,
-        ...cplHeaders.reduce((acc, code) => {
-          acc[code] = cplScores[code] !== undefined ? cplScores[code] : '-';
+        ...orderedCplCodes.reduce((acc, code) => {
+          const displayCode = getCplDisplayCode(code);
+          acc[displayCode] =
+            cplScores[code] !== undefined ? cplScores[code] : '-';
           return acc;
         }, {}),
       };

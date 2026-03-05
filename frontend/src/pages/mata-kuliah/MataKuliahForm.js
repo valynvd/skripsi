@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
-import React, { useState, useEffect } from 'react';
-import { Controller, useForm, useFieldArray } from 'react-hook-form';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Controller, useForm, useFieldArray, useWatch } from 'react-hook-form';
 import Select, { components } from 'react-select';
 import CRUInput from '../../components/CRUInput';
 import { PrimaryButton } from '../../components/PrimaryButton';
@@ -57,6 +57,8 @@ const MataKuliahForm = () => {
     handleSubmit,
     reset,
     control,
+    setValue,
+    getValues,
     formState: { errors, dirtyFields },
   } = useForm({
     defaultValues: {
@@ -113,14 +115,45 @@ const MataKuliahForm = () => {
           ? response.data
           : response.data.data;
 
-        const formatKurikulum = raw.map(({ id, name }) => ({
+        const formatKurikulum = raw.map(({ id, name, prodi, prodi_detail }) => ({
           value: id,
           label: name,
+          prodiId: prodi || prodi_detail?.id || null,
         }));
         console.log('Formatted kurikulum:', formatKurikulum);
         return formatKurikulum;
       },
     });
+
+  const selectedProdi = useWatch({
+    control,
+    name: 'prodi',
+  });
+
+  const filteredKurikulumOptions = useMemo(() => {
+    if (!kurikulumDataSuccess || !kurikulumData) {
+      return [];
+    }
+    const selectedProdiId = selectedProdi?.value;
+    if (!selectedProdiId) {
+      return kurikulumData;
+    }
+    return kurikulumData.filter((item) => item.prodiId === selectedProdiId);
+  }, [kurikulumDataSuccess, kurikulumData, selectedProdi]);
+
+  useEffect(() => {
+    const selectedProdiId = selectedProdi?.value;
+    if (!selectedProdiId) {
+      return;
+    }
+    const selectedKurikulum = getValues('kurikulum') || [];
+    const nextKurikulum = selectedKurikulum.filter(
+      (item) => item.prodiId === selectedProdiId
+    );
+    if (nextKurikulum.length !== selectedKurikulum.length) {
+      setValue('kurikulum', nextKurikulum);
+    }
+  }, [selectedProdi, setValue, getValues]);
 
   const { mutate: postMataKuliah, isLoading: postMataKuliahLoading } =
     usePostMataKuliah();
@@ -148,6 +181,7 @@ const MataKuliahForm = () => {
         kurikulum: kurikulum.map((k) => ({
           value: k.id,
           label: k.name,
+          prodiId: k.prodi || k.prodi_detail?.id || null,
         })),
         prodi: {
           value: prodi.id,
@@ -283,7 +317,7 @@ const MataKuliahForm = () => {
                   }}
                   inputRef={field.ref}
                   isMulti
-                  options={kurikulumDataSuccess ? kurikulumData : []}
+                  options={filteredKurikulumOptions}
                   value={field.value}
                   onChange={field.onChange}
                 />
