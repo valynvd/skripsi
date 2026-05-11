@@ -21,6 +21,7 @@ from django.db.models import Q
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.decorators import action
 from django.db.models import Sum
+import re
 
 LMS_OUTPUT_DIR = Path(settings.BASE_DIR).parent / 'lms' / 'output'
 
@@ -1456,7 +1457,109 @@ class NilaiMahasiswaViewSet(viewsets.ModelViewSet):
                 return value
         return default
 
+    def _normalize_prodi_info(self, prodi_value, prodi_mapping):
+        normalized = str(prodi_value or '').strip().lower().replace(' ', '')
+        if not normalized:
+            return None
+
+        for info in prodi_mapping.values():
+            kode = str(info['kode']).strip().lower().replace(' ', '')
+            name = str(info['name']).strip().lower().replace(' ', '')
+            kode_sap = str(info['kode_sap']).strip().lower().replace(' ', '')
+            aliases = {
+                kode,
+                name,
+                kode_sap,
+                f"s1{kode}",
+                f"s1{name}",
+            }
+            if normalized in aliases:
+                return info
+
+        return None
+
+    def _extract_year_value(self, value, fallback=''):
+        text = str(value or '').strip()
+        match = re.search(r'(19|20)\d{2}', text)
+        if match:
+            return match.group(0)
+        return str(fallback or '').strip()
+
     def create(self, request, *args, **kwargs):
+        def replace_nilai_mahasiswa(mahasiswa, mata_kuliah, penilaian, academic_year, academic_session, earned_credits, nilai_penilaian, bobot):
+            existing_qs = models.NilaiMahasiswa.objects.filter(
+                mahasiswa=mahasiswa,
+                mata_kuliah=mata_kuliah,
+                penilaian=penilaian,
+            ).order_by("-id")
+
+            if existing_qs.exists():
+                primary = existing_qs.first()
+                if existing_qs.count() > 1:
+                    existing_qs.exclude(id=primary.id).delete()
+                primary.earned_credits = earned_credits
+                primary.academic_year = academic_year
+                primary.academic_session = academic_session
+                primary.nilai_penilaian = nilai_penilaian
+                primary.bobot = bobot
+                primary.save()
+                return primary
+
+            return models.NilaiMahasiswa.objects.create(
+                mahasiswa=mahasiswa,
+                mata_kuliah=mata_kuliah,
+                penilaian=penilaian,
+                earned_credits=earned_credits,
+                academic_year=academic_year,
+                academic_session=academic_session,
+                nilai_penilaian=nilai_penilaian,
+                bobot=bobot,
+            )
+
+        def replace_monitoring_mahasiswa(payload):
+            existing_qs = models.MonitoringMahasiswa.objects.filter(
+                mahasiswa=payload["mahasiswa"],
+                mata_kuliah=payload["mata_kuliah"],
+                academic_session=payload["academic_session"],
+                academic_year=payload["academic_year"],
+            ).order_by("-id")
+
+            if existing_qs.exists():
+                primary = existing_qs.first()
+                if existing_qs.count() > 1:
+                    existing_qs.exclude(id=primary.id).delete()
+                for field, value in payload.items():
+                    setattr(primary, field, value)
+                primary.save()
+                return primary
+
+            return models.MonitoringMahasiswa.objects.create(**payload)
+
+        def replace_transkrip_nilai(mahasiswa, mata_kuliah, academic_year, academic_session, earned_credits, grade_symbol):
+            existing_qs = models.TranskripNilai.objects.filter(
+                mahasiswa=mahasiswa,
+                mata_kuliah=mata_kuliah,
+                academic_year=academic_year,
+                academic_session=academic_session,
+            ).order_by("-id")
+
+            if existing_qs.exists():
+                primary = existing_qs.first()
+                if existing_qs.count() > 1:
+                    existing_qs.exclude(id=primary.id).delete()
+                primary.earned_credits = earned_credits
+                primary.grade_symbol = grade_symbol
+                primary.save()
+                return primary
+
+            return models.TranskripNilai.objects.create(
+                mahasiswa=mahasiswa,
+                mata_kuliah=mata_kuliah,
+                academic_year=academic_year,
+                academic_session=academic_session,
+                earned_credits=earned_credits,
+                grade_symbol=grade_symbol,
+            )
 
         def convert_to_float(value):
             if isinstance(value, str):
@@ -1499,15 +1602,7 @@ class NilaiMahasiswaViewSet(viewsets.ModelViewSet):
         # prodi
         prodi_value = self._first_value(data_dict, ['Prodi', 'Program Studi', 'Jurusan'])
         if prodi_value:
-            prodi_info = next(
-                (
-                    info
-                    for info in prodi_mapping.values()
-                    if info['name'].lower() == str(prodi_value).strip().lower()
-                    or info['kode'].lower() == str(prodi_value).strip().lower()
-                ),
-                None,
-            )
+            prodi_info = self._normalize_prodi_info(prodi_value, prodi_mapping)
             if not prodi_info:
                 return Response({"error": "Program studi tidak dikenali"}, status=status.HTTP_400_BAD_REQUEST)
         else:
@@ -1544,7 +1639,10 @@ class NilaiMahasiswaViewSet(viewsets.ModelViewSet):
             
         subject = self._first_value(data_dict, ['Subject', 'Nama MK', 'Mata Kuliah'])
         subject_short = self._first_value(data_dict, ['Subject Short', 'Kode MK'])
-        graded_credits = self._first_value(data_dict, ['Graded Credits', 'SKS'])
+        graded_credits_raw = self._first_value(data_dict, ['Graded Credits', 'SKS'])
+        graded_credits = convert_to_float(graded_credits_raw) if graded_credits_raw != '' else 0.0
+        if graded_credits.is_integer():
+            graded_credits = int(graded_credits)
         academic_year = self._first_value(data_dict, ['Academic Year', 'Tahun Akademik'])
         academic_session = self._first_value(data_dict, ['Academic Session', 'Semester'])
         sm_objid = data_dict.get('SM Objid')
@@ -1557,7 +1655,10 @@ class NilaiMahasiswaViewSet(viewsets.ModelViewSet):
         event_package_objid = data_dict.get('EP Objid')
         event_package_short = data_dict.get('EP ID')
         event_package_text = data_dict.get('Event Package')
-        earned_credits = self._first_value(data_dict, ['Earned Credits', 'Graded Credits', 'SKS'])
+        earned_credits_raw = self._first_value(data_dict, ['Earned Credits', 'Graded Credits', 'SKS'])
+        earned_credits = convert_to_float(earned_credits_raw) if earned_credits_raw != '' else 0.0
+        if earned_credits.is_integer():
+            earned_credits = int(earned_credits)
         grade_symbol = self._first_value(data_dict, ['Final Marks', 'Final Grade', 'Grade', 'Nilai'])
         credit_type = data_dict.get('Credit Type')
         mentor = data_dict.get('Mentor')
@@ -1567,7 +1668,11 @@ class NilaiMahasiswaViewSet(viewsets.ModelViewSet):
         else:
             grade_symbol = grade_symbol
 
-        i_angkatan = int(str(angkatan).replace('SP', '')[:4])
+        angkatan_year = self._extract_year_value(angkatan, fallback=str(nim_mahasiswa)[4:8])
+        if not angkatan_year:
+            return Response({"error": "Angkatan tidak valid"}, status=status.HTTP_400_BAD_REQUEST)
+
+        i_angkatan = int(angkatan_year)
         i_academic_year = int(str(academic_year)[:4]) if academic_year else 0
         semester_count = (i_academic_year - i_angkatan) * 2
 
@@ -1730,224 +1835,76 @@ class NilaiMahasiswaViewSet(viewsets.ModelViewSet):
         # )
 
         # Nilai UAS
-        nilai_uas_obj, created = models.NilaiMahasiswa.objects.get_or_create(
+        nilai_uas_obj = replace_nilai_mahasiswa(
             mahasiswa=datamahasiswa,
             mata_kuliah=matakuliah,
             penilaian=penilaian_uas,
-            defaults={
-                'earned_credits': graded_credits,
-                'academic_year': academic_year,
-                'academic_session': academic_session,
-                'nilai_penilaian': nilai_uas,
-                'bobot': bobot_end_sem
-            }
+            academic_year=academic_year,
+            academic_session=academic_session,
+            earned_credits=graded_credits,
+            nilai_penilaian=nilai_uas,
+            bobot=bobot_end_sem,
         )
-        # if not created and nilai_uas_obj.nilai_penilaian < nilai_uas:
-        #     nilai_uas_obj.nilai_penilaian = nilai_uas
-        #     nilai_uas_obj.bobot = bobot_end_sem
-        #     nilai_uas_obj.save()
-        if not created:
-            if nilai_uas_obj.earned_credits == 0:
-                nilai_uas_obj.earned_credits = graded_credits
-            if nilai_uas_obj.nilai_penilaian < nilai_uas:
-                nilai_uas_obj.nilai_penilaian = nilai_uas
-                nilai_uas_obj.bobot = bobot_end_sem
-            nilai_uas_obj.save()
 
         # Nilai UTS
-        nilai_uts_obj, created = models.NilaiMahasiswa.objects.get_or_create(
+        nilai_uts_obj = replace_nilai_mahasiswa(
             mahasiswa=datamahasiswa,
             mata_kuliah=matakuliah,
             penilaian=penilaian_uts,
-            defaults={
-                'earned_credits': graded_credits,
-                'academic_year': academic_year,
-                'academic_session': academic_session,
-                'nilai_penilaian': nilai_uts,
-                'bobot': bobot_mid_sem
-            }
+            academic_year=academic_year,
+            academic_session=academic_session,
+            earned_credits=graded_credits,
+            nilai_penilaian=nilai_uts,
+            bobot=bobot_mid_sem,
         )
-        # if not created and nilai_uts_obj.nilai_penilaian < nilai_uts:
-        #     nilai_uts_obj.nilai_penilaian = nilai_uts
-        #     nilai_uts_obj.bobot = bobot_mid_sem
-        #     nilai_uts_obj.save()
-        if not created:
-            if nilai_uts_obj.earned_credits == 0:
-                nilai_uts_obj.earned_credits = graded_credits
-            if nilai_uts_obj.nilai_penilaian < nilai_uas:
-                nilai_uts_obj.nilai_penilaian = nilai_uas
-                nilai_uts_obj.bobot = bobot_end_sem
-            nilai_uts_obj.save()
 
         # Nilai Teaching Assessment
-        nilai_ta_obj, created = models.NilaiMahasiswa.objects.get_or_create(
+        nilai_ta_obj = replace_nilai_mahasiswa(
             mahasiswa=datamahasiswa,
             mata_kuliah=matakuliah,
             penilaian=penilaian_ta,
-            defaults={
-                'earned_credits': graded_credits,
-                'academic_year': academic_year,
-                'academic_session': academic_session,
-                'nilai_penilaian': nilai_ta,
-                'bobot': bobot_teaching
-            }
+            academic_year=academic_year,
+            academic_session=academic_session,
+            earned_credits=graded_credits,
+            nilai_penilaian=nilai_ta,
+            bobot=bobot_teaching,
         )
-        # if not created and nilai_ta_obj.nilai_penilaian < nilai_ta:
-        #     nilai_ta_obj.nilai_penilaian = nilai_ta
-        #     nilai_ta_obj.bobot = bobot_teaching
-        #     nilai_ta_obj.save()
-        if not created:
-            if nilai_ta_obj.earned_credits == 0:
-                nilai_ta_obj.earned_credits = graded_credits
-            if nilai_ta_obj.nilai_penilaian < nilai_uas:
-                nilai_ta_obj.nilai_penilaian = nilai_uas
-                nilai_ta_obj.bobot = bobot_end_sem
-            nilai_ta_obj.save()
             
         
-        try :
-            get_monitoring_mahasiswa = models.MonitoringMahasiswa.objects.get(
-                mahasiswa = datamahasiswa,
-                mata_kuliah = matakuliah,
-                academic_session = academic_session,
-                academic_year = academic_year,
-            )
+        monitoring_mahasiswa = replace_monitoring_mahasiswa(
+            {
+                "st_object_type": st_object_type,
+                "st_objid": st_objid,
+                "mahasiswa": datamahasiswa,
+                "student_id": student_id,
+                "appraisal_type": appraisal_type,
+                "sm_object_type": sm_object_type,
+                "sm_objid": sm_objid,
+                "mata_kuliah": matakuliah,
+                "event_package_objid": event_package_objid,
+                "event_package_short": event_package_short,
+                "event_package_text": event_package_text,
+                "grade_symbol": grade_symbol,
+                "earned_credits": earned_credits,
+                "credit_type": credit_type,
+                "prodi": programstudi,
+                "mentor": mentor,
+                "academic_session": academic_session,
+                "academic_year": academic_year,
+            }
+        )
 
-            # if get_monitoring_mahasiswa.earned_credits == 0:
-            #     get_monitoring_mahasiswa.earned_credits = earned_credits
-            #     get_monitoring_mahasiswa.save()
+        transkrip_nilai = replace_transkrip_nilai(
+            mahasiswa=datamahasiswa,
+            mata_kuliah=matakuliah,
+            academic_year=academic_year,
+            academic_session=academic_session,
+            earned_credits=earned_credits,
+            grade_symbol=grade_symbol,
+        )
 
-            # if(get_monitoring_mahasiswa.grade_symbol == "T"):
-            #     get_monitoring_mahasiswa.earned_credits = earned_credits,
-            #     get_monitoring_mahasiswa.grade_symbol = grade_symbol,
-            #     get_monitoring_mahasiswa.save()
-            if get_monitoring_mahasiswa.earned_credits == 0 or get_monitoring_mahasiswa.grade_symbol == "T":
-                get_monitoring_mahasiswa.earned_credits = earned_credits
-                get_monitoring_mahasiswa.grade_symbol = grade_symbol
-                get_monitoring_mahasiswa.save()
-
-            
-            # else:
-            #     monitoring_mahasiswa, created = models.MonitoringMahasiswa.objects.get_or_create(
-            #         st_object_type = st_object_type,
-            #         st_objid = st_objid,
-            #         mahasiswa = datamahasiswa,
-            #         student_id = student_id,
-            #         appraisal_type = appraisal_type,
-            #         sm_object_type = sm_object_type,
-            #         sm_objid = sm_objid,
-            #         mata_kuliah = matakuliah,
-            #         event_package_objid = event_package_objid,
-            #         event_package_short = event_package_short,
-            #         event_package_text = event_package_text,
-            #         grade_symbol = grade_symbol,
-            #         earned_credits = earned_credits,
-            #         credit_type = credit_type,
-            #         prodi = programstudi,
-            #         mentor = mentor,
-            #         academic_session = academic_session,
-            #         academic_year = academic_year,
-            #     )
-
-        except models.MonitoringMahasiswa.DoesNotExist:
-            monitoring_mahasiswa, created = models.MonitoringMahasiswa.objects.get_or_create(
-                st_object_type = st_object_type,
-                st_objid = st_objid,
-                mahasiswa = datamahasiswa,
-                student_id = student_id,
-                appraisal_type = appraisal_type,
-                sm_object_type = sm_object_type,
-                sm_objid = sm_objid,
-                mata_kuliah = matakuliah,
-                event_package_objid = event_package_objid,
-                event_package_short = event_package_short,
-                event_package_text = event_package_text,
-                grade_symbol = grade_symbol,
-                earned_credits = earned_credits,
-                credit_type = credit_type,
-                prodi = programstudi,
-                mentor = mentor,
-                academic_session = academic_session,
-                academic_year = academic_year,
-            )
-
-        try :
-            get_transkrip_nilai = models.TranskripNilai.objects.get(
-                mahasiswa = datamahasiswa,
-                mata_kuliah = matakuliah,
-            )
-            if get_transkrip_nilai.earned_credits == 0:
-                get_transkrip_nilai.earned_credits = earned_credits
-            
-            if (get_transkrip_nilai.grade_symbol == "AB" and grade_symbol == "A"):
-                get_transkrip_nilai.earned_credits = earned_credits
-                get_transkrip_nilai.grade_symbol = grade_symbol
-                get_transkrip_nilai.save()
-
-            elif (get_transkrip_nilai.grade_symbol == "B" and (grade_symbol == "A" or grade_symbol == "AB")) :
-                get_transkrip_nilai.earned_credits = earned_credits
-                get_transkrip_nilai.grade_symbol = grade_symbol
-                get_transkrip_nilai.save()
-
-            elif (get_transkrip_nilai.grade_symbol == "BC" and (grade_symbol == "A" or grade_symbol == "AB" or grade_symbol == "B")):
-                get_transkrip_nilai.earned_credits = earned_credits
-                get_transkrip_nilai.grade_symbol = grade_symbol
-                get_transkrip_nilai.save()
-
-            elif (get_transkrip_nilai.grade_symbol == "C" and (grade_symbol == "A" or grade_symbol == "AB" or grade_symbol == "B" or grade_symbol == "BC")):
-                get_transkrip_nilai.earned_credits = earned_credits
-                get_transkrip_nilai.grade_symbol = grade_symbol
-                get_transkrip_nilai.save()
-
-            elif (get_transkrip_nilai.grade_symbol == "D" and (grade_symbol == "A" or grade_symbol == "AB" or grade_symbol == "B" or grade_symbol == "BC" or grade_symbol == "C")):
-                get_transkrip_nilai.earned_credits = earned_credits
-                get_transkrip_nilai.grade_symbol = grade_symbol
-                get_transkrip_nilai.save()
-
-            elif (get_transkrip_nilai.grade_symbol == "E" and (grade_symbol == "A" or grade_symbol == "AB" or grade_symbol == "B" or grade_symbol == "BC" or grade_symbol == "C" or grade_symbol == "D")):
-                get_transkrip_nilai.earned_credits = earned_credits
-                get_transkrip_nilai.grade_symbol = grade_symbol
-                get_transkrip_nilai.save()
-
-            elif (get_transkrip_nilai.grade_symbol == "T" and (grade_symbol == "A" or grade_symbol == "AB" or grade_symbol == "B" or grade_symbol == "BC" or grade_symbol == "C" or grade_symbol == "D" or grade_symbol == "E")):
-                get_transkrip_nilai.earned_credits = earned_credits
-                get_transkrip_nilai.grade_symbol = grade_symbol
-                get_transkrip_nilai.save()
-
-            elif (get_transkrip_nilai.grade_symbol == "" and (grade_symbol == "A" or grade_symbol == "AB" or grade_symbol == "B" or grade_symbol == "BC" or grade_symbol == "C" or grade_symbol == "D" or grade_symbol == "E" or grade_symbol == "T")):
-                get_transkrip_nilai.earned_credits = earned_credits
-                get_transkrip_nilai.grade_symbol = grade_symbol
-                get_transkrip_nilai.save()
-
-            serializer = self.get_serializer(instance=get_transkrip_nilai)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-
-        except models.TranskripNilai.DoesNotExist:
-            transkrip_nilai, created = models.TranskripNilai.objects.get_or_create(
-                academic_year = academic_year,
-                academic_session = academic_session,
-                grade_symbol = grade_symbol,
-                mahasiswa = datamahasiswa,
-                mata_kuliah = matakuliah,
-                earned_credits = earned_credits
-            )
-
-        # serializer = self.get_serializer([nilai_uas_obj, nilai_uts_obj, nilai_ta_obj], many=True)
-        # headers = self.get_success_headers(serializer.data)
-        # return Response(serializer.data, status=status.HTTP_200_OK, headers=headers)
-
-        # Serializing combined data
-        nilai_mahasiswa_serializer = self.get_serializer([nilai_uas_obj, nilai_uts_obj, nilai_ta_obj], many=True)
-        monitoring_mahasiswa_serializer = serializers.MonitoringMahasiswaSerializers(monitoring_mahasiswa)
-        transkrip_nilai_serializer = serializers.TranskripNilaiSerializers(transkrip_nilai)
-
-        combined_data = {
-            "nilai_mahasiswa": nilai_mahasiswa_serializer.data,
-            "monitoring_mahasiswa": monitoring_mahasiswa_serializer.data,
-            "transkrip_nilai": transkrip_nilai_serializer.data,
-        }
-
-        return Response(combined_data, status=status.HTTP_200_OK)
+        serializer = self.get_serializer(instance=nilai_uas_obj)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
     def get_permissions(self):
         if self.action in ['list','retrieve']:

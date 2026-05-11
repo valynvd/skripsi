@@ -36,7 +36,6 @@ const importTemplateColumns = [
   'Kode MK',
   'Nama MK',
   'Tahun Akademik',
-  'Semester',
   'UTS',
   'UAS',
   'Teaching Ass',
@@ -69,12 +68,21 @@ const normalizeNilaiRow = (row) => {
   const namaMk = String(
     getFirstNonEmpty(row, ['Nama MK', 'Subject', 'MKNama'])
   ).trim();
-  const academicYear = String(
-    getFirstNonEmpty(row, ['Academic Year', 'Tahun Akademik'])
+  const tahunAkademikRaw = String(
+    getFirstNonEmpty(row, ['Tahun Akademik', 'Academic Year'])
   ).trim();
-  const academicSession = String(
+  const academicYearFromInput = String(
+    getFirstNonEmpty(row, ['Academic Year'])
+  ).trim();
+  const academicSessionFromInput = String(
     getFirstNonEmpty(row, ['Academic Session', 'Semester'])
   ).trim();
+  const academicYear =
+    academicYearFromInput ||
+    (tahunAkademikRaw.length >= 4 ? tahunAkademikRaw.slice(0, 4) : tahunAkademikRaw);
+  const academicSession =
+    academicSessionFromInput ||
+    (tahunAkademikRaw.length >= 6 ? tahunAkademikRaw.slice(-2) : '');
   const finalGrade = String(
     getFirstNonEmpty(row, ['Final Grade', 'Final Marks', 'GradeNIlai'])
   ).trim();
@@ -100,7 +108,7 @@ const normalizeNilaiRow = (row) => {
     Subject: namaMk,
     'Nama MK': namaMk,
     'Academic Year': academicYear,
-    'Tahun Akademik': academicYear,
+    'Tahun Akademik': tahunAkademikRaw || academicYear,
     'Academic Session': academicSession,
     Semester: academicSession,
     'Mid Sem.': getFirstNonEmpty(row, ['Mid Sem.', 'UTS']),
@@ -161,7 +169,7 @@ const NilaiMahasiswaImportExcel = () => {
     const workbook = xlsx.utils.book_new();
     const worksheetData = [
       importTemplateColumns,
-      ['', '', '', '', '', '', '', '', '', '', '', ''],
+      ['', '', '', '', '', '', '', '', '', '', ''],
     ];
     const worksheet = xlsx.utils.aoa_to_sheet(worksheetData);
 
