@@ -69,6 +69,8 @@ import SimulasiMatriks from './simulasi-matriks/SimulasiMatriks';
 import SimulasiMatriksForm from './simulasi-matriks/SimulasiMatriksForm';
 import ProgramStudi from './program-studi/ProgramStudi';
 import ProgramStudiForm from './program-studi/ProgramStudiForm';
+import Ruangan from './ruangan/Ruangan';
+import RuanganForm from './ruangan/RuanganForm';
 import MonitoringMahasiswa1 from './monitoring-mahasiswa/MonitoringMahasiswa1';
 import MonitoringMahasiswaByNIM from './monitoring-mahasiswa/MonitoringMahasiswaByNIM';
 import MonitoringMahasiswaByKodeMatkul from './monitoring-mahasiswa/MonitoringMahasiswaByKodeMatkul';
@@ -99,6 +101,11 @@ import SuratPenugasanSekre from './surat-penugasan-sekre/SuratPenugasanSekre';
 import SuratPenugasanSekreForm from './surat-penugasan-sekre/SuratPenugasanSekreForm';
 import ExportSuratPenugasanSekre from './surat-penugasan-sekre/ExportSuratPenugasanSekre';
 import SkpiRecap from './skpi-recap/SkpiRecap';
+import JadwalKuliah from './penjadwalan/JadwalKuliah';
+import VisualisasiJadwal from './penjadwalan/VisualisasiJadwal';
+import LmsDashboard from './lms/LmsDashboard';
+import LmsAttendance from './lms/LmsAttendance';
+import LmsMaterials from './lms/LmsMaterials';
 
 const Router = () => {
   return (
@@ -139,11 +146,37 @@ const Router = () => {
             <Route path=":id" element={<PenugasanPengabdianForm />} />
           </Route>
 
+          <Route path="lms" element={<Outlet />}>
+            <Route index element={<LmsDashboard />} />
+            <Route path="attendance">
+              <Route index element={<LmsAttendance />} />
+            </Route>
+            <Route path="materi">
+              <Route index element={<LmsMaterials />} />
+            </Route>
+          </Route>
+
           <Route
             element={
               <RequireAuthWithRoles allowedRoles={['Admin', 'Superadmin']} />
             }
           ></Route>
+          <Route path="penjadwalan" element={<Outlet />}>
+            <Route
+              element={
+                <RequireAuthWithRoles
+                  allowedRoles={['Admin', 'Superadmin', 'Faculty Member']}
+                />
+              }
+            >
+              <Route path="jadwal-kuliah">
+                <Route index element={<JadwalKuliah />} />
+              </Route>
+              <Route path="visualisasi-jadwal">
+                <Route index element={<VisualisasiJadwal />} />
+              </Route>
+            </Route>
+          </Route>
           <Route path="pelaksanaan-pendidikan" element={<Outlet />}>
             <Route
               element={
@@ -220,6 +253,17 @@ const Router = () => {
                 <Route index element={<ProgramStudi />} />
                 <Route path="form" element={<ProgramStudiForm />} />
                 <Route path=":id" element={<ProgramStudiForm />} />
+              </Route>
+              <Route
+                element={
+                  <RequireAuthWithRoles allowedRoles={['Admin', 'Superadmin']} />
+                }
+              >
+                <Route path="ruangan">
+                  <Route index element={<Ruangan />} />
+                  <Route path="form" element={<RuanganForm />} />
+                  <Route path=":id" element={<RuanganForm />} />
+                </Route>
               </Route>
               <Route path="settings-surat">
                 <Route index element={<SettingsSurat />} />

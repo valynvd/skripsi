@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.b310e343.css",
-    "main.js": "/static/js/main.645e9c0d.js",
+    "main.css": "/static/css/main.1daef1bc.css",
+    "main.js": "/static/js/main.886aa701.js",
     "static/js/498.8c7f5c60.chunk.js": "/static/js/498.8c7f5c60.chunk.js",
     "static/js/703.dd222d96.chunk.js": "/static/js/703.dd222d96.chunk.js",
     "static/js/513.d8b95af9.chunk.js": "/static/js/513.d8b95af9.chunk.js",
@@ -13,15 +13,15 @@
     "static/media/login-image.png": "/static/media/login-image.19ac1286e8b5afdfbdc5.png",
     "static/media/prasmul-logo-red.png": "/static/media/prasmul-logo-red.763bac7dd6fe6a877b6e.png",
     "index.html": "/index.html",
-    "main.b310e343.css.map": "/static/css/main.b310e343.css.map",
-    "main.645e9c0d.js.map": "/static/js/main.645e9c0d.js.map",
+    "main.1daef1bc.css.map": "/static/css/main.1daef1bc.css.map",
+    "main.886aa701.js.map": "/static/js/main.886aa701.js.map",
     "498.8c7f5c60.chunk.js.map": "/static/js/498.8c7f5c60.chunk.js.map",
     "703.dd222d96.chunk.js.map": "/static/js/703.dd222d96.chunk.js.map",
     "513.d8b95af9.chunk.js.map": "/static/js/513.d8b95af9.chunk.js.map",
     "787.cda612ba.chunk.js.map": "/static/js/787.cda612ba.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.b310e343.css",
-    "static/js/main.645e9c0d.js"
+    "static/css/main.1daef1bc.css",
+    "static/js/main.886aa701.js"
   ]
 }

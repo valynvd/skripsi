@@ -28,6 +28,104 @@ const prodiMapping = {
   60: { name: 'Product Design Engineering', kode: 'PDE' },
 };
 
+const importTemplateColumns = [
+  'NIM',
+  'Nama',
+  'Prodi',
+  'Angkatan',
+  'Kode MK',
+  'Nama MK',
+  'Tahun Akademik',
+  'Semester',
+  'UTS',
+  'UAS',
+  'Teaching Ass',
+  'Final Grade',
+];
+
+const getFirstNonEmpty = (row, keys) => {
+  for (const key of keys) {
+    const value = row?.[key];
+    if (value !== undefined && value !== null && String(value).trim() !== '') {
+      return value;
+    }
+  }
+  return '';
+};
+
+const normalizeNilaiRow = (row) => {
+  const nimValue = String(
+    getFirstNonEmpty(row, ['NIM', 'Student ID', 'MhswID'])
+  ).trim();
+  const prodiFromInput = String(
+    getFirstNonEmpty(row, ['Prodi', 'Program Studi', 'Jurusan'])
+  ).trim();
+  const angkatanFromInput = String(
+    getFirstNonEmpty(row, ['Angkatan', 'Tahun Angkatan'])
+  ).trim();
+  const kodeMk = String(
+    getFirstNonEmpty(row, ['Kode MK', 'Subject Short', 'MKKode'])
+  ).trim();
+  const namaMk = String(
+    getFirstNonEmpty(row, ['Nama MK', 'Subject', 'MKNama'])
+  ).trim();
+  const academicYear = String(
+    getFirstNonEmpty(row, ['Academic Year', 'Tahun Akademik'])
+  ).trim();
+  const academicSession = String(
+    getFirstNonEmpty(row, ['Academic Session', 'Semester'])
+  ).trim();
+  const finalGrade = String(
+    getFirstNonEmpty(row, ['Final Grade', 'Final Marks', 'GradeNIlai'])
+  ).trim();
+  const prodiCode = nimValue.length >= 4 ? nimValue.slice(2, 4) : '';
+  const angkatanPrefix = nimValue.length >= 6 ? nimValue.slice(4, 6) : '';
+  const prodiInfo = prodiMapping[prodiCode] || { name: prodiFromInput || 'Unknown' };
+  const angkatanValue =
+    angkatanFromInput || (angkatanPrefix ? `20${angkatanPrefix}` : '');
+  const namaMahasiswa = getFirstNonEmpty(row, ['Nama', 'Student Name']);
+
+  return {
+    ...row,
+    NIM: nimValue,
+    'Student ID': getFirstNonEmpty(row, ['Student ID', 'NIM', 'MhswID']) || nimValue,
+    'Student Name': namaMahasiswa,
+    Nama: namaMahasiswa,
+    prodi: prodiInfo.name,
+    Prodi: getFirstNonEmpty(row, ['Prodi', 'Program Studi', 'Jurusan']) || prodiInfo.name,
+    angkatan: angkatanValue,
+    Angkatan: angkatanValue,
+    'Subject Short': kodeMk,
+    'Kode MK': kodeMk,
+    Subject: namaMk,
+    'Nama MK': namaMk,
+    'Academic Year': academicYear,
+    'Tahun Akademik': academicYear,
+    'Academic Session': academicSession,
+    Semester: academicSession,
+    'Mid Sem.': getFirstNonEmpty(row, ['Mid Sem.', 'UTS']),
+    UTS: getFirstNonEmpty(row, ['UTS', 'Mid Sem.']),
+    'End Sem.': getFirstNonEmpty(row, ['End Sem.', 'UAS']),
+    UAS: getFirstNonEmpty(row, ['UAS', 'End Sem.']),
+    'Teaching Ass.': getFirstNonEmpty(row, ['Teaching Ass.', 'TeachingAss', 'Teaching Ass']),
+    'Graded Credits': getFirstNonEmpty(row, ['Graded Credits', 'SKS', 'Earned Credits']),
+    SKS: getFirstNonEmpty(row, ['SKS', 'Graded Credits', 'Earned Credits']),
+    'Final Marks': finalGrade,
+    'Final Grade': finalGrade,
+    name_prody: prodiInfo.name,
+    nama_mahasiswa: namaMahasiswa,
+    nim_mahasiswa: nimValue,
+    student_name: namaMahasiswa,
+    subject_short: kodeMk,
+    subject: namaMk,
+    graded_credits: getFirstNonEmpty(row, ['Graded Credits', 'SKS', 'Earned Credits']),
+    earned_credits: getFirstNonEmpty(row, ['Earned Credits', 'Graded Credits', 'SKS']),
+    academic_year: academicYear,
+    academic_session: academicSession,
+    grade_symbol: finalGrade || 'T',
+  };
+};
+
 const NilaiMahasiswaImportExcel = () => {
   const [errorMessage, setErrorMessage] = useState();
   const [open, setOpen] = useState(false);
@@ -59,6 +157,22 @@ const NilaiMahasiswaImportExcel = () => {
   const [isAllSelected, setIsAllSelected] = useState(false);
   const [hasSubmitError, setHasSubmitError] = useState(false);
 
+  const handleDownloadTemplate = () => {
+    const workbook = xlsx.utils.book_new();
+    const worksheetData = [
+      importTemplateColumns,
+      ['', '', '', '', '', '', '', '', '', '', '', ''],
+    ];
+    const worksheet = xlsx.utils.aoa_to_sheet(worksheetData);
+
+    worksheet['!cols'] = importTemplateColumns.map((column) => ({
+      wch: Math.max(column.length + 2, 14),
+    }));
+
+    xlsx.utils.book_append_sheet(workbook, worksheet, 'Template Nilai');
+    xlsx.writeFile(workbook, 'Template Import Nilai Mahasiswa.xlsx');
+  };
+
   const readExcel = async (e) => {
     try {
       // Reset state ke kondisi awal sebelum membaca file baru
@@ -87,70 +201,11 @@ const NilaiMahasiswaImportExcel = () => {
       const excelsheet = excelfile.Sheets[excelfile.SheetNames[0]];
       const exceljson = xlsx.utils.sheet_to_json(excelsheet, { defval: '' });
 
-      // const expectedColumns = [
-      //   'NIM',
-      //   'Student ID',
-      //   'Student Name',
-      //   'Subject Short',
-      //   'Subject',
-      //   'Academic Year',
-      //   'Academic Session',
-      //   'Mid Sem.',
-      //   'End Sem.',
-      //   'Scaled Marks',
-      //   'Teaching Ass.',
-      //   'Final Marks',
-      //   'Earned Credits',
-      //   'Graded Credits',
-      //   '(%) Teaching',
-      //   '(%) Mid Sem',
-      //   '(%) End Sem',
-      // ];
-
-      // // Ambil kolom dari file Excel
-      // const actualColumns = Object.keys(exceljson[0]);
-
-      // console.log('Actual Columns:', actualColumns);
-
-      // // Cek apakah semua expectedColumns ada di actualColumns
-      // const missingColumns = expectedColumns.filter(
-      //   (col) => !actualColumns.includes(col)
-      // );
-
-      // if (missingColumns.length > 0) {
-      //   throw new Error(
-      //     `Kolom-kolom berikut hilang di file Excel: ${missingColumns.join(
-      //       ', '
-      //     )}`
-      //   );
-      // }
-
-      const specificNIMs = [
-        '2310', // BM
-        '2320', // FBT
-        '2330', // REE
-        '2340', // CSE
-        '2350', // SE
-        '2360', // PDE
-      ];
-
-      const filterData = exceljson.filter((row) =>
-        specificNIMs.some((prefix) => row['NIM'].toString().startsWith(prefix))
-      );
-
-      const filteredExcelData = filterData.map((data) => {
-        const prodiCode = data['NIM'].toString().slice(2, 4);
-        const angkatanPrefix = data['NIM'].toString().slice(4, 6);
-        const prodiInfo = prodiMapping[prodiCode] || { name: 'Unknown' };
-        return {
-          ...data,
-          prodi: prodiInfo.name,
-          angkatan: `20${angkatanPrefix}`,
-        };
-      });
+      const filteredExcelData = exceljson.map((data) => normalizeNilaiRow(data));
 
       setExcelData(filteredExcelData);
       setOriginalExcelData(filteredExcelData);
+      setDataFilter(filteredExcelData);
       console.log('Filtered Data Nilai', filteredExcelData);
       setExcelRead(true);
       setLoading(false);
@@ -328,6 +383,19 @@ const NilaiMahasiswaImportExcel = () => {
         />
         Buat Import Excel
       </p>
+      <div className="mt-4 rounded-xl border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700">
+        <p className="font-semibold text-gray-900">Template Excel yang dipakai</p>
+        <p className="mt-1 text-gray-600">
+          Kolom yang perlu diisi: {importTemplateColumns.join(', ')}.
+        </p>
+        <PrimaryButton
+          type="button"
+          className="!mt-4"
+          onClick={handleDownloadTemplate}
+        >
+          Download Template Excel
+        </PrimaryButton>
+      </div>
       <div>
         <form className="flex gap-4 flex-wrap items-center mb-4 mt-4">
           <div>
@@ -499,16 +567,19 @@ const NilaiMahasiswaImportExcel = () => {
                 <p className="flex flex-row items-center">No</p>
               </th>
               <th className="px-4 py-3 font-semibold">
-                <p className="flex flex-row items-center">Nama Mahasiswa</p>
+                <p className="flex flex-row items-center">Nama</p>
               </th>
               <th className="px-4 py-3 font-semibold">
                 <p className="flex flex-row items-center">NIM</p>
               </th>
               <th className="px-4 py-3 font-semibold">
-                <p className="flex flex-row items-center">Jurusan</p>
+                <p className="flex flex-row items-center">Prodi</p>
               </th>
               <th className="px-4 py-3 font-semibold">
                 <p className="flex flex-row items-center">Angkatan</p>
+              </th>
+              <th className="px-4 py-3 font-semibold">
+                <p className="flex flex-row items-center">Kode MK</p>
               </th>
               <th className="px-4 py-3 font-semibold">
                 <p className="flex flex-row items-center">Mata Kuliah</p>
@@ -526,18 +597,6 @@ const NilaiMahasiswaImportExcel = () => {
                 <p className="flex flex-row items-center">TA</p>
               </th>
               <th className="px-4 py-3 font-semibold">
-                <p className="flex flex-row items-center">% UAS</p>
-              </th>
-              <th className="px-4 py-3 font-semibold">
-                <p className="flex flex-row items-center">% UTS</p>
-              </th>
-              <th className="px-4 py-3 font-semibold">
-                <p className="flex flex-row items-center">% TA</p>
-              </th>
-              {/* <th className="px-4 py-3 font-semibold">
-                <p className="flex flex-row items-center">Total Bobot</p>
-              </th> */}
-              <th className="px-4 py-3 font-semibold">
                 <p className="flex flex-row items-center">Final Grade</p>
               </th>
             </tr>
@@ -546,7 +605,7 @@ const NilaiMahasiswaImportExcel = () => {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan="15" className="text-center">
+                <td colSpan="13" className="text-center">
                   <ClipLoader color={'hsla(357, 85%, 52%, 1)'} size={50} />
                 </td>
               </tr>
@@ -594,14 +653,12 @@ const NilaiMahasiswaImportExcel = () => {
                     <td className="px-4 py-3">{data['NIM']}</td>
                     <td className="px-4 py-3">{data.prodi}</td>
                     <td className="px-4 py-3">{data.angkatan}</td>
+                    <td className="px-4 py-3">{data['Subject Short']}</td>
                     <td className="px-4 py-3">{data['Subject']}</td>
                     <td className="px-4 py-3">{data['Graded Credits']}</td>
                     <td className="px-4 py-3">{data['End Sem.'] || 0}</td>
                     <td className="px-4 py-3">{data['Mid Sem.'] || 0}</td>
                     <td className="px-4 py-3">{data['Teaching Ass.'] || 0}</td>
-                    <td className="px-4 py-3">{data['(%) End Sem'] || 0}</td>
-                    <td className="px-4 py-3">{data['(%) Mid Sem'] || 0}</td>
-                    <td className="px-4 py-3">{data['(%) Teaching'] || 0}</td>
                     <td className="px-4 py-3">{data['Final Marks'] || 'T'}</td>
                   </tr>
                 );

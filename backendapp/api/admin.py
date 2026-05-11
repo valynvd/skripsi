@@ -17,7 +17,7 @@ class PenugasanPengajaranAdmin(ImportExportModelAdmin, admin.ModelAdmin):
   pass
 
 class DosenAdmin(ImportExportModelAdmin, admin.ModelAdmin):
-  pass
+  search_fields = ('name', 'inisial', 'nidn')
 
 class KurikulumAdmin(ImportExportModelAdmin, admin.ModelAdmin):
   pass
@@ -32,7 +32,7 @@ class KurikulumAdmin(ImportExportModelAdmin, admin.ModelAdmin):
   pass
 
 class ProgramStudiAdmin(ImportExportModelAdmin, admin.ModelAdmin):
-  pass
+  search_fields = ('name', 'kode', 'kode_sap')
 
 class SuratPenugasanAdmin(ImportExportModelAdmin, admin.ModelAdmin):
   pass

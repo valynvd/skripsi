@@ -23,6 +23,8 @@ admin.site.site_header = 'SIMANTAB Prodi Software Engineering'
 urlpatterns = [
     #  # API
     path('api-stem/', include('api.urls')),
+    path('penjadwalan/', include('penjadwalan.urls')),
+    path('api-penjadwalan/', include('penjadwalan.urls')),
 
     # auth djoser
     # auth token

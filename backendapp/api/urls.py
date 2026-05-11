@@ -151,4 +151,8 @@ urlpatterns = [
 
   path('bahankajianbyprodi/<prodiId>/', views.BahanKajianByProdiViewSet.as_view()),
 
+  # LMS dashboard
+  path('lms/attendance/latest/', views.LmsAttendanceLatestView.as_view()),
+  path('lms/materials/latest/', views.LmsMaterialsLatestView.as_view()),
+
 ]

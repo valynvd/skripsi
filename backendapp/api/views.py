@@ -15,11 +15,108 @@ from django.template.loader import render_to_string
 from django.core.mail import send_mail
 from backendapp import settings
 import json
+from pathlib import Path
+from datetime import datetime
 from django.db.models import Q
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.decorators import action
 from django.db.models import Sum
-    
+
+LMS_OUTPUT_DIR = Path(settings.BASE_DIR).parent / 'lms' / 'output'
+
+
+def _normalize_program_label(value):
+    return ' '.join(str(value or '').strip().split())
+
+
+def _load_latest_lms_json(prefix, exclude_prefixes=None):
+    exclude_prefixes = exclude_prefixes or []
+
+    if not LMS_OUTPUT_DIR.exists():
+        return None, []
+
+    candidates = []
+    for file_path in LMS_OUTPUT_DIR.glob(f'{prefix}-*.json'):
+        if any(file_path.name.startswith(excluded) for excluded in exclude_prefixes):
+            continue
+        candidates.append(file_path)
+
+    if not candidates:
+        return None, []
+
+    latest_file = max(candidates, key=lambda path: path.stat().st_mtime)
+
+    try:
+        with latest_file.open('r', encoding='utf-8') as file:
+            data = json.load(file)
+    except (OSError, json.JSONDecodeError):
+        data = []
+
+    if not isinstance(data, list):
+        data = [data] if data else []
+
+    return latest_file, data
+
+
+def _build_lms_response(kind, latest_file, data):
+    programs = sorted(
+        {
+            item.get('program')
+            for item in data
+            if isinstance(item, dict) and item.get('program')
+        }
+    )
+
+    return Response(
+        {
+            'kind': kind,
+            'source_file': latest_file.name if latest_file else None,
+            'generated_at': datetime.fromtimestamp(latest_file.stat().st_mtime).isoformat()
+            if latest_file
+            else None,
+            'count': len(data),
+            'programs': programs,
+            'items': data,
+        }
+    )
+
+
+def _filter_lms_by_program(request, data):
+    program = _normalize_program_label(request.query_params.get('program'))
+    if not program or program.lower() == 'all':
+        return data
+
+    filtered = []
+    for item in data:
+        if not isinstance(item, dict):
+            continue
+
+        item_program = _normalize_program_label(item.get('program'))
+        if item_program == program:
+            filtered.append(item)
+
+    return filtered
+
+
+class LmsAttendanceLatestView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, *args, **kwargs):
+        latest_file, data = _load_latest_lms_json(
+            'attendance', exclude_prefixes=['attendance-discovery-']
+        )
+        data = _filter_lms_by_program(request, data)
+        return _build_lms_response('attendance', latest_file, data)
+
+
+class LmsMaterialsLatestView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, *args, **kwargs):
+        latest_file, data = _load_latest_lms_json('materials')
+        data = _filter_lms_by_program(request, data)
+        return _build_lms_response('materials', latest_file, data)
+
 
 class ProgramStudiViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.ProgramStudiSerializers
@@ -1352,6 +1449,13 @@ class NilaiMahasiswaViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.NilaiMahasiswaSerializers
     queryset = models.NilaiMahasiswa.objects.all()
 
+    def _first_value(self, data_dict, keys, default=''):
+        for key in keys:
+            value = data_dict.get(key)
+            if value not in (None, ''):
+                return value
+        return default
+
     def create(self, request, *args, **kwargs):
 
         def convert_to_float(value):
@@ -1378,17 +1482,39 @@ class NilaiMahasiswaViewSet(viewsets.ModelViewSet):
         }
 
         # mahasiswa
-        nama_mahasiswa = data_dict.get('Student Name')
-        nim_mahasiswa = data_dict.get('NIM')
-        angkatan_prefix = nim_mahasiswa[4:6]
-        angkatan = f"20{angkatan_prefix}"
-        id_mahasiswa = data_dict.get('Student ID')
+        nama_mahasiswa = self._first_value(data_dict, ['Student Name', 'Nama Mahasiswa', 'Nama'])
+        nim_mahasiswa = self._first_value(data_dict, ['NIM', 'Student ID'])
+        if not nim_mahasiswa:
+            return Response({"error": "NIM wajib diisi"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # prody
-        prodi_prefix = nim_mahasiswa[2:4]
-        prodi_info = prodi_mapping.get(prodi_prefix)
-        if not prodi_info:
-            return Response({"error": "Kode prodi tidak valid"}, status=status.HTTP_400_BAD_REQUEST)
+        angkatan_raw = self._first_value(data_dict, ['Angkatan', 'Angkatan Mahasiswa'])
+        if angkatan_raw:
+            angkatan = str(angkatan_raw).strip()
+        else:
+            angkatan_prefix = str(nim_mahasiswa)[4:6]
+            angkatan = f"20{angkatan_prefix}"
+
+        id_mahasiswa = self._first_value(data_dict, ['Student ID', 'NIM'])
+
+        # prodi
+        prodi_value = self._first_value(data_dict, ['Prodi', 'Program Studi', 'Jurusan'])
+        if prodi_value:
+            prodi_info = next(
+                (
+                    info
+                    for info in prodi_mapping.values()
+                    if info['name'].lower() == str(prodi_value).strip().lower()
+                    or info['kode'].lower() == str(prodi_value).strip().lower()
+                ),
+                None,
+            )
+            if not prodi_info:
+                return Response({"error": "Program studi tidak dikenali"}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            prodi_prefix = str(nim_mahasiswa)[2:4]
+            prodi_info = prodi_mapping.get(prodi_prefix)
+            if not prodi_info:
+                return Response({"error": "Kode prodi tidak valid"}, status=status.HTTP_400_BAD_REQUEST)
 
         program_study = prodi_info['kode_sap']
         name_prody = prodi_info['name']
@@ -1416,11 +1542,11 @@ class NilaiMahasiswaViewSet(viewsets.ModelViewSet):
                 mahasiswa_id=id_mahasiswa,
                 prodi=programstudi)
             
-        subject = data_dict.get('Subject')
-        subject_short = data_dict.get('Subject Short')
-        graded_credits = data_dict.get('Graded Credits')
-        academic_year = data_dict.get('Academic Year')
-        academic_session = data_dict.get('Academic Session')
+        subject = self._first_value(data_dict, ['Subject', 'Nama MK', 'Mata Kuliah'])
+        subject_short = self._first_value(data_dict, ['Subject Short', 'Kode MK'])
+        graded_credits = self._first_value(data_dict, ['Graded Credits', 'SKS'])
+        academic_year = self._first_value(data_dict, ['Academic Year', 'Tahun Akademik'])
+        academic_session = self._first_value(data_dict, ['Academic Session', 'Semester'])
         sm_objid = data_dict.get('SM Objid')
         st_object_type = data_dict.get('Object type')
         st_objid = data_dict.get('ST Objid')
@@ -1431,28 +1557,31 @@ class NilaiMahasiswaViewSet(viewsets.ModelViewSet):
         event_package_objid = data_dict.get('EP Objid')
         event_package_short = data_dict.get('EP ID')
         event_package_text = data_dict.get('Event Package')
-        earned_credits = data_dict.get('Earned Credits')
-        grade_symbol = data_dict.get('Final Marks')
+        earned_credits = self._first_value(data_dict, ['Earned Credits', 'Graded Credits', 'SKS'])
+        grade_symbol = self._first_value(data_dict, ['Final Marks', 'Final Grade', 'Grade', 'Nilai'])
         credit_type = data_dict.get('Credit Type')
         mentor = data_dict.get('Mentor')
 
-        if data_dict.get('Final Marks') == "" or data_dict.get('Final Marks') is None:
+        if grade_symbol == "" or grade_symbol is None:
             grade_symbol = "T"
         else:
-            grade_symbol = data_dict.get('Final Marks')
+            grade_symbol = grade_symbol
 
-        i_angkatan = int(angkatan)
-        i_academic_year = int(academic_year)
+        i_angkatan = int(str(angkatan).replace('SP', '')[:4])
+        i_academic_year = int(str(academic_year)[:4]) if academic_year else 0
         semester_count = (i_academic_year - i_angkatan) * 2
 
-        if academic_session == '10':
+        academic_session_raw = str(academic_session).strip()
+        if academic_session_raw in {'10', 'GANJIL', 'ODD'}:
             semester = f"{semester_count + 1}"
-        elif academic_session == '20':
+        elif academic_session_raw in {'20', 'SP1', 'SHORT1'}:
             semester = f"SP{semester_count + 1}"
-        elif academic_session == '30':
+        elif academic_session_raw in {'30', 'GENAP', 'EVEN'}:
             semester = f"{semester_count + 2}"
-        elif academic_session == '40':
+        elif academic_session_raw in {'40', 'SP2', 'SHORT2'}:
             semester = f"SP{semester_count + 2}"
+        else:
+            semester = str(academic_session_raw or '')
 
         # Create MataKuliah
         # matakuliah_list = models.MataKuliah.objects.filter(kode=subject_short)
@@ -1504,16 +1633,16 @@ class NilaiMahasiswaViewSet(viewsets.ModelViewSet):
             )
 
         # Penilaian
-        bobot_mid_sem = convert_to_float(data_dict.get('(%) Mid Sem', 0.0))
-        bobot_end_sem = convert_to_float(data_dict.get('(%) End Sem', 0.0))
-        bobot_teaching = convert_to_float(data_dict.get('(%) Teaching', 0.0))
+        bobot_mid_sem = convert_to_float(self._first_value(data_dict, ['(%) Mid Sem', '% UTS', 'Bobot UTS'], 0.0))
+        bobot_end_sem = convert_to_float(self._first_value(data_dict, ['(%) End Sem', '% UAS', 'Bobot UAS'], 0.0))
+        bobot_teaching = convert_to_float(self._first_value(data_dict, ['(%) Teaching', '% TA', 'Bobot TA'], 0.0))
         # bobot_project = convert_to_float(data_dict.get('(%) Project', 0.0))
         # bobot_quiz = convert_to_float(data_dict.get('(%) Quiz', 0.0))
 
         # Nilai Mahasiswa
-        nilai_uas = convert_to_float(data_dict.get('End Sem.', 0.0))
-        nilai_uts = convert_to_float(data_dict.get('Mid Sem.', 0.0))
-        nilai_ta = convert_to_float(data_dict.get('Teaching Ass.', 0.0))
+        nilai_uas = convert_to_float(self._first_value(data_dict, ['End Sem.', 'UAS', 'Nilai UAS'], 0.0))
+        nilai_uts = convert_to_float(self._first_value(data_dict, ['Mid Sem.', 'UTS', 'Nilai UTS'], 0.0))
+        nilai_ta = convert_to_float(self._first_value(data_dict, ['Teaching Ass.', 'TeachingAss', 'Nilai TA'], 0.0))
         # nilai_project = convert_to_float(data_dict.get('Project', 0.0))
         # nilai_quiz = convert_to_float(data_dict.get('Quiz', 0.0))
 
@@ -1535,7 +1664,7 @@ class NilaiMahasiswaViewSet(viewsets.ModelViewSet):
                 bobot_end_sem = 100 - bobot_mid_sem - bobot_teaching
 
 
-        final_grade = data_dict.get('Final Marks')
+        final_grade = self._first_value(data_dict, ['Final Marks', 'Final Grade', 'Grade', 'Nilai'])
         
 
         if nilai_uas == 0 and nilai_uts == 0 and nilai_ta == 0 and final_grade:

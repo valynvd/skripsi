@@ -1,0 +1,15 @@
+{
+  "name": "lms-scraper",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Playwright scraper untuk presensi dan materi LMS Moodle",
+  "scripts": {
+    "scrape:attendance": "node src/index.js attendance",
+    "scrape:materials": "node src/index.js materials",
+    "scrape:all": "node src/index.js all"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "playwright": "^1.52.0"
+  }
+}

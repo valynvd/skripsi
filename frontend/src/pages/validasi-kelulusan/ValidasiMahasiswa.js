@@ -112,6 +112,28 @@ const ValidasiMahasiswa = () => {
     }, 0);
   };
 
+  const getGradeSymbolByCourseName = (data, courseName) => {
+    const matchedCourse = data.find(
+      (item) => item.mata_kuliah_detail?.name === courseName
+    );
+    return matchedCourse?.grade_symbol || null;
+  };
+
+  const isGradeAtLeastB = (gradeSymbol) => {
+    const gradeRank = {
+      A: 4,
+      AB: 3,
+      B: 2,
+      BC: 1,
+      C: 0,
+      D: -1,
+      E: -2,
+      T: -3,
+    };
+
+    return (gradeRank[gradeSymbol] ?? -99) >= gradeRank.B;
+  };
+
   const onAudit = async () => {
     try {
       for (let index = 0; index < filterMahasiswa.length; index++) {
@@ -277,6 +299,14 @@ const ValidasiMahasiswa = () => {
           null
         );
 
+        const englishScientificCommunicationIIGrade =
+          getGradeSymbolByCourseName(
+            responseData.data,
+            'English Scientific Communication II'
+          );
+        const hasEnglishScientificCommunicationIIRule =
+          isGradeAtLeastB(englishScientificCommunicationIIGrade);
+
         let status = '';
 
         if (
@@ -285,6 +315,7 @@ const ValidasiMahasiswa = () => {
           totalSKSNilaiE == 0 &&
           totalEarnedCredits >= 144 &&
           !checkNilai &&
+          hasEnglishScientificCommunicationIIRule &&
           (checkNilaiTA == 'A' || checkNilaiTA == 'AB' || checkNilaiTA == 'B')
         ) {
           status = 'Cum Laude';
@@ -293,6 +324,7 @@ const ValidasiMahasiswa = () => {
           totalSKSNilaiD <= 7 &&
           totalSKSNilaiE == 0 &&
           totalEarnedCredits >= 144 &&
+          hasEnglishScientificCommunicationIIRule &&
           checkNilaiTA
         ) {
           status = 'Sangat Memuaskan';
@@ -301,6 +333,7 @@ const ValidasiMahasiswa = () => {
           totalSKSNilaiD <= 7 &&
           totalSKSNilaiE == 0 &&
           totalEarnedCredits >= 144 &&
+          hasEnglishScientificCommunicationIIRule &&
           checkNilaiTA
         ) {
           status = 'Memuaskan';
@@ -309,6 +342,7 @@ const ValidasiMahasiswa = () => {
           totalSKSNilaiD <= 7 &&
           totalSKSNilaiE == 0 &&
           totalEarnedCredits >= 144 &&
+          hasEnglishScientificCommunicationIIRule &&
           checkNilaiTA
         ) {
           status = 'Cukup';

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import NavigationLink from './NavigationLink';
-import { BiHome } from 'react-icons/bi';
+import { BiCalendar, BiHome } from 'react-icons/bi';
 import { AiOutlineBook } from 'react-icons/ai';
 import {
   MdChatBubble,
   MdCheckCircle,
   MdKeyboardArrowLeft,
+  MdSchool,
   MdWorkspacePremium,
   MdWorkspacesOutline,
 } from 'react-icons/md';
@@ -182,6 +183,11 @@ const Navbar = () => {
                     allowedRoles: userRole.admin,
                   },
                   {
+                    title: 'Ruangan',
+                    url: '/ruangan',
+                    allowedRoles: userRole.admin,
+                  },
+                  {
                     title: 'Poin Penilaian',
                     url: '/poin-penilaian',
                     allowedRoles: userRole.admin,
@@ -344,6 +350,48 @@ const Navbar = () => {
             ]}
             icon={<FaUniversity size={22} />}
           />
+          {(userRole.admin || userRole.facultyMember) && (
+            <NavigationDropdownLink
+              title="Penjadwalan"
+              url="/penjadwalan"
+              setDropdownActive={setDropdownActive}
+              dropdownActive={dropdownActive}
+              childrenUrl={[
+                {
+                  title: 'Jadwal Kuliah',
+                  url: '/jadwal-kuliah',
+                  allowedRoles: userRole.admin || userRole.facultyMember,
+                },
+                {
+                  title: 'Visualisasi Jadwal',
+                  url: '/visualisasi-jadwal',
+                  allowedRoles: userRole.admin || userRole.facultyMember,
+                },
+              ]}
+              icon={<BiCalendar size={22} />}
+            />
+          )}
+          {(userRole.admin || userRole.facultyMember) && (
+            <NavigationDropdownLink
+              title="LMS"
+              url="/lms"
+              setDropdownActive={setDropdownActive}
+              dropdownActive={dropdownActive}
+              childrenUrl={[
+                {
+                  title: 'Attendance',
+                  url: '/attendance',
+                  allowedRoles: true,
+                },
+                {
+                  title: 'Materi',
+                  url: '/materi',
+                  allowedRoles: true,
+                },
+              ]}
+              icon={<MdSchool size={22} />}
+            />
+          )}
         </div>
       </nav>
     </div>

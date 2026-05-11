@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     'api',
     'account',
     'akreditasi',
+    'penjadwalan',
 ]
 
 SITE_ID = 1
