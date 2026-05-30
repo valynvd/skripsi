@@ -1,7 +1,20 @@
 import { request } from '../utils/axios-utils';
-import { useQuery, useMutation } from 'react-query';
+import { useQuery, useMutation, useQueryClient } from 'react-query';
 
 const url = '/api-stem/nilaimahasiswa/';
+const DEGREE_AUDIT_REFRESH_KEY = 'simantap-degree-audit-refresh';
+
+const broadcastDegreeAuditRefresh = () => {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  try {
+    window.localStorage.setItem(DEGREE_AUDIT_REFRESH_KEY, Date.now().toString());
+  } catch (error) {
+    console.warn('Gagal broadcast refresh degree audit:', error);
+  }
+};
 
 const getNilaiMahasiswa = () => {
   return request({
@@ -33,12 +46,13 @@ const getNilaiMahasiswaByKodeMataKuliah = (kodematkul) => {
 //   });
 // };
 
-const postNilaiMahasiswa = (data) => {
+const postNilaiMahasiswa = ({ data, signal }) => {
   return request({
     url: url,
     method: 'post',
     data: data,
     headers: { 'Content-Type': 'multipart/form-data' },
+    signal,
   });
 };
 
@@ -115,13 +129,46 @@ export const useNilaiMahasiswaDataByNIM2 = () => {
 };
 
 export const usePostNilaiMahasiswa = () => {
-  return useMutation(postNilaiMahasiswa);
+  const queryClient = useQueryClient();
+
+  return useMutation(postNilaiMahasiswa, {
+    onSuccess: () => {
+      queryClient.invalidateQueries('data-master');
+      queryClient.invalidateQueries('nilai-mahasiswa');
+      queryClient.invalidateQueries('transkrip-nilai');
+      queryClient.invalidateQueries('monitoring-mahasiswa');
+      queryClient.invalidateQueries('validasi-mahasiswa');
+      broadcastDegreeAuditRefresh();
+    },
+  });
 };
 
 export const useDeleteNilaiMahasiswa = () => {
-  return useMutation(deleteNilaiMahasiswa);
+  const queryClient = useQueryClient();
+
+  return useMutation(deleteNilaiMahasiswa, {
+    onSuccess: () => {
+      queryClient.invalidateQueries('data-master');
+      queryClient.invalidateQueries('nilai-mahasiswa');
+      queryClient.invalidateQueries('transkrip-nilai');
+      queryClient.invalidateQueries('monitoring-mahasiswa');
+      queryClient.invalidateQueries('validasi-mahasiswa');
+      broadcastDegreeAuditRefresh();
+    },
+  });
 };
 
 export const usePatchNilaiMahasiswa = () => {
-  return useMutation(patchNilaiMahasiswa);
+  const queryClient = useQueryClient();
+
+  return useMutation(patchNilaiMahasiswa, {
+    onSuccess: () => {
+      queryClient.invalidateQueries('data-master');
+      queryClient.invalidateQueries('nilai-mahasiswa');
+      queryClient.invalidateQueries('transkrip-nilai');
+      queryClient.invalidateQueries('monitoring-mahasiswa');
+      queryClient.invalidateQueries('validasi-mahasiswa');
+      broadcastDegreeAuditRefresh();
+    },
+  });
 };

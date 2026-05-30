@@ -1,5 +1,6 @@
 import io
 import json
+from datetime import datetime
 
 import pandas as pd
 
@@ -33,7 +34,7 @@ def _serialize_ruangan_instance(ruang):
 
 
 def get_default_ruangan_payload():
-    rooms = list(Ruangan.objects.filter(aktif=True).order_by("tipe", "nama"))
+    rooms = list(Ruangan.objects.filter(aktif=True, tipe="KELAS").order_by("tipe", "nama"))
     return [_serialize_ruangan_instance(room) for room in rooms]
 
 
@@ -139,6 +140,95 @@ def build_scheduler_courses(df_input, gabungkan_kelas):
     return matakuliah
 
 
+def dataframe_to_preview(dataframe):
+    return json.loads(dataframe.fillna("").to_json(orient="records"))
+
+
+def split_lab_rows(dataframe):
+    if "LAB" not in dataframe.columns:
+        return dataframe.copy(), []
+
+    lab_mask = dataframe["LAB"].apply(normalize_lab_value) == 1
+    lab_rows = dataframe[lab_mask].copy()
+    schedule_rows = dataframe[~lab_mask].copy()
+    return schedule_rows, dataframe_to_preview(lab_rows)
+
+
+def parse_lab_excel_upload(file_bytes):
+    dataframe = pd.read_excel(io.BytesIO(file_bytes))
+    return build_manual_lab_schedule(dataframe)
+
+
+def _read_cell(row, columns, default=""):
+    for column in columns:
+        if column in row and pd.notna(row[column]):
+            value = str(row[column]).strip()
+            if value:
+                return value
+    return default
+
+
+def _parse_excel_time(value):
+    if pd.isna(value):
+        return None
+    if hasattr(value, "time"):
+        return value.time()
+    if isinstance(value, (int, float)):
+        total_minutes = round(float(value) * 24 * 60)
+        hour = total_minutes // 60
+        minute = total_minutes % 60
+        return datetime.strptime(f"{hour:02d}:{minute:02d}", "%H:%M").time()
+
+    text = str(value).strip()
+    for fmt in ("%H:%M", "%H.%M", "%H:%M:%S"):
+        try:
+            return datetime.strptime(text, fmt).time()
+        except ValueError:
+            continue
+    return None
+
+
+def build_manual_lab_schedule(dataframe):
+    lab_items = []
+    for index, row in dataframe.iterrows():
+        hari = _read_cell(row, ["Hari", "HARI", "DAY"]).upper()
+        jam_mulai = _parse_excel_time(
+            row.get("Jam Mulai", row.get("JAM MULAI", row.get("MULAI", row.get("START"))))
+        )
+        jam_selesai = _parse_excel_time(
+            row.get("Jam Selesai", row.get("JAM SELESAI", row.get("SELESAI", row.get("END"))))
+        )
+        ruang_kode = _read_cell(row, ["Ruang", "RUANG", "Kode Ruang", "KODE RUANG", "ROOM"])
+
+        if not hari or not jam_mulai or not jam_selesai or not ruang_kode:
+            continue
+
+        kode_matkul = _read_cell(row, ["MKKODE", "Kode MK", "KODE MK", "KODE"])
+        lab_items.append(
+            {
+                "source_index": index,
+                "matkul_id": kode_matkul,
+                "kode_matkul": kode_matkul,
+                "nama_matkul": _read_cell(row, ["NAMAMK", "Nama Mata Kuliah", "Mata Kuliah", "NAMA MK"]),
+                "dosen_id": _read_cell(row, ["Dosen", "DOSEN", "Dosen ID"]),
+                "dosen_nama": _read_cell(row, ["Dosen", "DOSEN", "Nama Dosen"]),
+                "kelas": _read_cell(row, ["KELAS", "Kelas"]),
+                "kelas_list": [_read_cell(row, ["KELAS", "Kelas"])],
+                "sks": _safe_int(row.get("SKS")),
+                "kapasitas": _safe_int(row.get("JMLMHSW")) if "JMLMHSW" in dataframe.columns else 0,
+                "tipe_ruang": "LAB",
+                "hari": hari,
+                "jam_mulai": jam_mulai.strftime("%H:%M"),
+                "jam_selesai": jam_selesai.strftime("%H:%M"),
+                "ruang_kode": ruang_kode,
+                "ruang_nama": _read_cell(row, ["Nama Ruang", "NAMA RUANG", "Ruang", "RUANG"], ruang_kode),
+                "catatan": "Manual LAB",
+            }
+        )
+
+    return lab_items
+
+
 def build_dosen_from_dataframe(df_input):
     dosen = []
     unique_dosen = df_input[["Dosen", "STATUS FM"]].drop_duplicates()
@@ -153,7 +243,7 @@ def build_dosen_from_dataframe(df_input):
     return dosen
 
 
-def parse_excel_upload(file_bytes, gabungkan_kelas=True, ruangan=None, waktu=None, kelas_khusus=None):
+def parse_excel_upload(file_bytes, gabungkan_kelas=True, ruangan=None, waktu=None, kelas_khusus=None, lab_manual=None):
     dataframe = pd.read_excel(io.BytesIO(file_bytes))
     missing_columns = [column for column in REQUIRED_COLUMNS if column not in dataframe.columns]
     if missing_columns:
@@ -164,13 +254,18 @@ def parse_excel_upload(file_bytes, gabungkan_kelas=True, ruangan=None, waktu=Non
     if "LAB" not in dataframe.columns:
         dataframe["LAB"] = ""
 
+    schedule_dataframe, lab_rows = split_lab_rows(dataframe)
+    lab_manual = lab_manual or []
+
     payload = {
-        "matakuliah": build_scheduler_courses(dataframe, gabungkan_kelas=gabungkan_kelas),
+        "matakuliah": build_scheduler_courses(schedule_dataframe, gabungkan_kelas=gabungkan_kelas),
         "ruangan": ruangan or get_default_ruangan_payload(),
         "dosen": build_dosen_from_dataframe(dataframe),
         "waktu": waktu or DEFAULT_WAKTU,
         "kelas_khusus": kelas_khusus or {},
+        "lab_manual": lab_manual,
+        "lab_excluded": lab_rows,
     }
 
-    preview = json.loads(dataframe.fillna("").to_json(orient="records"))
+    preview = dataframe_to_preview(dataframe)
     return payload, preview

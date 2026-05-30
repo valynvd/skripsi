@@ -351,6 +351,175 @@ class GrupMahasiswaSerializers(serializers.ModelSerializer):
 
 class DataMahasiswaSerializers(serializers.ModelSerializer):
   prodi_detail = ProgramStudiSerializers(source='prodi', read_only=True)
+  jumlah_sks = serializers.SerializerMethodField()
+  nilaid = serializers.SerializerMethodField()
+  nilaie = serializers.SerializerMethodField()
+  nilai_ipk = serializers.SerializerMethodField()
+  status_kelulusan = serializers.SerializerMethodField()
+  keterangan_lulus = serializers.SerializerMethodField()
+
+  def _get_credit_value(self, transkrip):
+    sks_total = getattr(getattr(transkrip, 'mata_kuliah', None), 'sks_total', None)
+    try:
+      sks_total = int(sks_total)
+    except (TypeError, ValueError):
+      sks_total = 0
+
+    if sks_total > 0:
+      return sks_total
+
+    try:
+      earned_credits = int(transkrip.earned_credits)
+    except (TypeError, ValueError):
+      earned_credits = 0
+
+    return earned_credits
+
+  def _get_grade_weight(self, grade_symbol):
+    grade_values = {
+      'A': 4.0,
+      'AB': 3.5,
+      'B': 3.0,
+      'BC': 2.5,
+      'C': 2.0,
+      'D': 1.0,
+      'E': 0.0,
+      'T': 0.0,
+    }
+    return grade_values.get(grade_symbol, 0.0)
+
+  def _is_grade_at_least_b(self, grade_symbol):
+    grade_rank = {
+      'A': 4,
+      'AB': 3,
+      'B': 2,
+      'BC': 1,
+      'C': 0,
+      'D': -1,
+      'E': -2,
+      'T': -3,
+    }
+    return (grade_rank.get(grade_symbol, -99)) >= grade_rank['B']
+
+  def _get_degree_audit_summary(self, obj):
+    cache = getattr(self, '_degree_audit_cache', {})
+    if obj.pk in cache:
+      return cache[obj.pk]
+
+    transkrip_qs = (
+      models.TranskripNilai.objects
+      .filter(mahasiswa=obj)
+      .select_related('mata_kuliah')
+      .order_by('academic_year', 'academic_session', 'id')
+    )
+    transkrip_data = list(transkrip_qs)
+
+    total_sks = 0
+    total_nilai_d = 0
+    total_nilai_e = 0
+    total_weighted_points = 0.0
+    seen_course_names = set()
+    repeated_course = False
+    english_sc_ii_grade = None
+    final_project_grade = None
+
+    for transkrip in transkrip_data:
+      grade_symbol = transkrip.grade_symbol or ''
+      credit_value = self._get_credit_value(transkrip)
+      course_name = getattr(getattr(transkrip, 'mata_kuliah', None), 'name', '')
+
+      if course_name in seen_course_names:
+        repeated_course = True
+      elif course_name:
+        seen_course_names.add(course_name)
+
+      if grade_symbol != 'T':
+        total_sks += credit_value
+        total_weighted_points += self._get_grade_weight(grade_symbol) * credit_value
+
+      if grade_symbol == 'D':
+        total_nilai_d += credit_value
+      if grade_symbol == 'E':
+        total_nilai_e += credit_value
+      if course_name == 'English Scientific Communication II':
+        english_sc_ii_grade = grade_symbol
+      if course_name in ['Final Project', 'Final Project II']:
+        final_project_grade = grade_symbol
+
+    nilai_ipk = round(total_weighted_points / total_sks, 2) if total_sks else 0.0
+    english_ok = self._is_grade_at_least_b(english_sc_ii_grade)
+
+    if (
+      nilai_ipk > 3.5
+      and total_nilai_d == 0
+      and total_nilai_e == 0
+      and total_sks >= 144
+      and not repeated_course
+      and english_ok
+      and final_project_grade in ['A', 'AB', 'B']
+    ):
+      status_kelulusan = 'Cum Laude'
+    elif (
+      nilai_ipk > 3.0
+      and total_nilai_d <= 7
+      and total_nilai_e == 0
+      and total_sks >= 144
+      and english_ok
+      and final_project_grade
+    ):
+      status_kelulusan = 'Sangat Memuaskan'
+    elif (
+      nilai_ipk > 2.75
+      and total_nilai_d <= 7
+      and total_nilai_e == 0
+      and total_sks >= 144
+      and english_ok
+      and final_project_grade
+    ):
+      status_kelulusan = 'Memuaskan'
+    elif (
+      nilai_ipk >= 2.0
+      and total_nilai_d <= 7
+      and total_nilai_e == 0
+      and total_sks >= 144
+      and english_ok
+      and final_project_grade
+    ):
+      status_kelulusan = 'Cukup'
+    else:
+      status_kelulusan = 'Tidak Lulus'
+
+    summary = {
+      'jumlah_sks': total_sks,
+      'nilaid': total_nilai_d,
+      'nilaie': total_nilai_e,
+      'nilai_ipk': f'{nilai_ipk:.2f}',
+      'status_kelulusan': status_kelulusan,
+      'keterangan_lulus': 'Pernah Mengulang' if repeated_course else 'Aman',
+    }
+
+    cache[obj.pk] = summary
+    self._degree_audit_cache = cache
+    return summary
+
+  def get_jumlah_sks(self, obj):
+    return self._get_degree_audit_summary(obj)['jumlah_sks']
+
+  def get_nilaid(self, obj):
+    return self._get_degree_audit_summary(obj)['nilaid']
+
+  def get_nilaie(self, obj):
+    return self._get_degree_audit_summary(obj)['nilaie']
+
+  def get_nilai_ipk(self, obj):
+    return self._get_degree_audit_summary(obj)['nilai_ipk']
+
+  def get_status_kelulusan(self, obj):
+    return self._get_degree_audit_summary(obj)['status_kelulusan']
+
+  def get_keterangan_lulus(self, obj):
+    return self._get_degree_audit_summary(obj)['keterangan_lulus']
+
   class Meta:
       model = models.DataMahasiswa
       fields = '__all__'

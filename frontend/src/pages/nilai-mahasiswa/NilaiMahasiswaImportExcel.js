@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React, { useState, Fragment, useEffect, useMemo } from 'react';
+import React, { useState, Fragment, useEffect, useMemo, useRef } from 'react';
 import BreadCrumbs from '../../components/BreadCrumbs';
 import { Dialog, Transition } from '@headlessui/react';
 import { PrimaryButton } from '../../components/PrimaryButton';
@@ -12,34 +12,80 @@ import { TooltipAccept2, TooltipError } from '../../components/Tooltip';
 
 import ClipLoader from 'react-spinners/ClipLoader';
 import { usePostNilaiMahasiswa } from '../../hooks/useNilaiMahasiswa';
+import { useMataKuliahData } from '../../hooks/useMataKuliah';
 
 const prodiMapping = {
-  10: { name: 'Mathematics', kode: 'BM' },
-  20: { name: 'Food Technology', kode: 'FBT' },
+  10: {
+    name: 'Mathematics',
+    kode: 'BM',
+    aliases: ['S1BM', 'MATHEMATICS', 'MATH'],
+  },
+  20: {
+    name: 'Food Technology',
+    kode: 'FBT',
+    aliases: ['S1FBT', 'FOOD TECHNOLOGY', 'FOODTECHNOLOGY'],
+  },
   30: {
     name: 'Renewable Energy Engineering',
     kode: 'REE',
+    aliases: [
+      'S1REE',
+      'RENEWABLE ENERGY ENGINEERING',
+      'RENEWABLEENERGYENGINEERING',
+    ],
   },
   40: {
     name: 'Computer Systems Engineering',
     kode: 'CSE',
+    aliases: [
+      'S1CSE',
+      'COMPUTER SYSTEMS ENGINEERING',
+      'COMPUTERSYSTEMSENGINEERING',
+    ],
   },
-  50: { name: 'Software Engineering', kode: 'SE' },
-  60: { name: 'Product Design Engineering', kode: 'PDE' },
+  50: {
+    name: 'Software Engineering',
+    kode: 'SE',
+    aliases: [
+      'S1SE',
+      'S1ESE',
+      'ESE',
+      'SOFTWARE ENGINEERING',
+      'SOFTWAREENGINEERING',
+    ],
+  },
+  60: {
+    name: 'Product Design Engineering',
+    kode: 'PDE',
+    aliases: [
+      'S1PDE',
+      'PRODUCT DESIGN ENGINEERING',
+      'PRODUCTDESIGNENGINEERING',
+    ],
+  },
 };
 
 const importTemplateColumns = [
   'NIM',
   'Nama',
   'Prodi',
-  'Angkatan',
   'Kode MK',
   'Nama MK',
   'Tahun Akademik',
   'UTS',
   'UAS',
-  'Teaching Ass',
-  'Final Grade',
+  'TA',
+  'Nilai Akhir',
+  'Grade Nilai',
+];
+
+const academicYearGuideRows = [
+  ['Keterangan', 'Contoh'],
+  ['Format Tahun Akademik', '202230'],
+  ['Arti 202230', 'Tahun 2022, semester genap'],
+  ['Format lain yang dipakai sistem', '202210 = 2022 ganjil, 202220 = 2022 ganjil pendek, 202240 = 2022 genap pendek'],
+  ['Acuan import', 'Grade Nilai menjadi sumber utama; baris dengan 0 atau - akan dilewati'],
+  ['SKS', 'Diambil dari master mata kuliah jika kolom Excel kosong'],
 ];
 
 const getFirstNonEmpty = (row, keys) => {
@@ -50,6 +96,38 @@ const getFirstNonEmpty = (row, keys) => {
     }
   }
   return '';
+};
+
+const normalizeHeaderText = (value) =>
+  String(value ?? '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, ' ');
+
+const getMissingColumns = (headers, requiredColumns) => {
+  const normalizedHeaders = headers.map(normalizeHeaderText);
+  return requiredColumns.filter(
+    (column) => !normalizedHeaders.includes(normalizeHeaderText(column))
+  );
+};
+
+const hasUsableGradeNilai = (value) => {
+  const text = String(value ?? '').trim();
+  if (!text) {
+    return false;
+  }
+
+  const upperText = text.toUpperCase();
+  if (['0', '0.0', 'T'].includes(upperText)) {
+    return false;
+  }
+
+  if (['A', 'AB', 'B', 'BC', 'C', 'D', 'E'].includes(upperText)) {
+    return true;
+  }
+
+  const numericValue = Number(text.replace(',', '.'));
+  return Number.isFinite(numericValue) && numericValue > 0;
 };
 
 const normalizeNilaiRow = (row) => {
@@ -83,12 +161,24 @@ const normalizeNilaiRow = (row) => {
   const academicSession =
     academicSessionFromInput ||
     (tahunAkademikRaw.length >= 6 ? tahunAkademikRaw.slice(-2) : '');
-  const finalGrade = String(
-    getFirstNonEmpty(row, ['Final Grade', 'Final Marks', 'GradeNIlai'])
+  const nilaiAkhir = String(
+    getFirstNonEmpty(row, ['Nilai Akhir', 'Final Marks', 'Final Grade', 'Nilai'])
+  ).trim();
+  const gradeNilai = String(
+    getFirstNonEmpty(row, ['Grade Nilai', 'GradeNIlai'])
   ).trim();
   const prodiCode = nimValue.length >= 4 ? nimValue.slice(2, 4) : '';
   const angkatanPrefix = nimValue.length >= 6 ? nimValue.slice(4, 6) : '';
-  const prodiInfo = prodiMapping[prodiCode] || { name: prodiFromInput || 'Unknown' };
+  const normalizedProdiFromInput = prodiFromInput.replace(/\s+/g, '').toUpperCase();
+  const prodiInfo =
+    prodiMapping[prodiCode] ||
+    Object.values(prodiMapping).find((entry) =>
+      [
+        entry.kode,
+        entry.name,
+        ...(entry.aliases || []),
+      ].some((alias) => String(alias).replace(/\s+/g, '').toUpperCase() === normalizedProdiFromInput)
+    ) || { name: prodiFromInput || 'Unknown', kode: prodiCode };
   const angkatanValue =
     angkatanFromInput || (angkatanPrefix ? `20${angkatanPrefix}` : '');
   const namaMahasiswa = getFirstNonEmpty(row, ['Nama', 'Student Name']);
@@ -100,6 +190,7 @@ const normalizeNilaiRow = (row) => {
     'Student Name': namaMahasiswa,
     Nama: namaMahasiswa,
     prodi: prodiInfo.name,
+    prodi_kode: prodiInfo.kode,
     Prodi: getFirstNonEmpty(row, ['Prodi', 'Program Studi', 'Jurusan']) || prodiInfo.name,
     angkatan: angkatanValue,
     Angkatan: angkatanValue,
@@ -115,11 +206,12 @@ const normalizeNilaiRow = (row) => {
     UTS: getFirstNonEmpty(row, ['UTS', 'Mid Sem.']),
     'End Sem.': getFirstNonEmpty(row, ['End Sem.', 'UAS']),
     UAS: getFirstNonEmpty(row, ['UAS', 'End Sem.']),
-    'Teaching Ass.': getFirstNonEmpty(row, ['Teaching Ass.', 'TeachingAss', 'Teaching Ass']),
+    TA: getFirstNonEmpty(row, ['TA', 'Teaching Ass.', 'TeachingAss', 'Teaching Ass']),
     'Graded Credits': getFirstNonEmpty(row, ['Graded Credits', 'SKS', 'Earned Credits']),
     SKS: getFirstNonEmpty(row, ['SKS', 'Graded Credits', 'Earned Credits']),
-    'Final Marks': finalGrade,
-    'Final Grade': finalGrade,
+    'Nilai Akhir': nilaiAkhir,
+    'Final Marks': nilaiAkhir,
+    'Grade Nilai': gradeNilai,
     name_prody: prodiInfo.name,
     nama_mahasiswa: namaMahasiswa,
     nim_mahasiswa: nimValue,
@@ -130,7 +222,7 @@ const normalizeNilaiRow = (row) => {
     earned_credits: getFirstNonEmpty(row, ['Earned Credits', 'Graded Credits', 'SKS']),
     academic_year: academicYear,
     academic_session: academicSession,
-    grade_symbol: finalGrade || 'T',
+    grade_symbol: gradeNilai || 'T',
   };
 };
 
@@ -160,10 +252,20 @@ const NilaiMahasiswaImportExcel = () => {
   const [rowStatus, setRowStatus] = useState([]);
   const [originalExcelData, setOriginalExcelData] = useState([]);
   const [importComplete, setImportComplete] = useState(false);
+  const [importSummary, setImportSummary] = useState(null);
+  const [processMessage, setProcessMessage] = useState('');
+  const [isImportRunning, setIsImportRunning] = useState(false);
+  const [validationIssues, setValidationIssues] = useState([]);
+  const uploadAbortRef = useRef(null);
+  const cancelRequestedRef = useRef(false);
 
   const [selectedRows, setSelectedRows] = useState([]);
   const [isAllSelected, setIsAllSelected] = useState(false);
   const [hasSubmitError, setHasSubmitError] = useState(false);
+
+  const { data: mataKuliahResponse } = useMataKuliahData({
+    select: (response) => response?.data || [],
+  });
 
   const handleDownloadTemplate = () => {
     const workbook = xlsx.utils.book_new();
@@ -178,6 +280,12 @@ const NilaiMahasiswaImportExcel = () => {
     }));
 
     xlsx.utils.book_append_sheet(workbook, worksheet, 'Template Nilai');
+    const guideWorksheet = xlsx.utils.aoa_to_sheet(academicYearGuideRows);
+    guideWorksheet['!cols'] = [
+      { wch: 28 },
+      { wch: 70 },
+    ];
+    xlsx.utils.book_append_sheet(workbook, guideWorksheet, 'Panduan');
     xlsx.writeFile(workbook, 'Template Import Nilai Mahasiswa.xlsx');
   };
 
@@ -185,6 +293,10 @@ const NilaiMahasiswaImportExcel = () => {
     try {
       // Reset state ke kondisi awal sebelum membaca file baru
       setLoading(true);
+      setProcessMessage('Sedang membaca file Excel...');
+      setIsImportRunning(false);
+      cancelRequestedRef.current = false;
+      uploadAbortRef.current = null;
       setExcelData([]);
       setOriginalExcelData([]);
       setErrorMessage(null);
@@ -193,6 +305,8 @@ const NilaiMahasiswaImportExcel = () => {
       setProgress(0);
       setImportComplete(false);
       setRowStatus([]);
+      setImportSummary(null);
+      setValidationIssues([]);
 
       // Reset checkbox states
       setSelectedRows([]);
@@ -209,6 +323,18 @@ const NilaiMahasiswaImportExcel = () => {
       const excelsheet = excelfile.Sheets[excelfile.SheetNames[0]];
       const exceljson = xlsx.utils.sheet_to_json(excelsheet, { defval: '' });
 
+      if (!exceljson || exceljson.length === 0) {
+        throw new Error('File Excel kosong atau tidak memiliki data.');
+      }
+
+      const firstRowHeaders = Object.keys(exceljson[0] || {});
+      const missingColumns = getMissingColumns(firstRowHeaders, importTemplateColumns);
+      if (missingColumns.length > 0) {
+        throw new Error(
+          `Template Excel tidak sesuai. Kolom yang kurang: ${missingColumns.join(', ')}`
+        );
+      }
+
       const filteredExcelData = exceljson.map((data) => normalizeNilaiRow(data));
 
       setExcelData(filteredExcelData);
@@ -216,16 +342,73 @@ const NilaiMahasiswaImportExcel = () => {
       setDataFilter(filteredExcelData);
       console.log('Filtered Data Nilai', filteredExcelData);
       setExcelRead(true);
+      setProcessMessage('File berhasil dibaca. Silakan cek data sebelum disimpan.');
       setLoading(false);
     } catch (error) {
       console.error('Error reading excel file:', error);
       setErrorMessage(
-        'Terjadi kesalahan saat membaca file. Pastikan file valid dan sesuai format.'
+        error.message ||
+          'Terjadi kesalahan saat membaca file. Pastikan file valid dan sesuai format.'
       );
+      setProcessMessage('');
       setLoading(false);
     }
   };
   const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  const normalizedMataKuliahList = useMemo(() => {
+    return (mataKuliahResponse || []).map((item) => ({
+      ...item,
+      kode_normalized: String(item?.kode || '').trim().toUpperCase(),
+      prodi_kode_normalized: String(
+        item?.prodi_detail?.kode || item?.prodi_detail?.name || ''
+      )
+        .trim()
+        .toUpperCase(),
+    }));
+  }, [mataKuliahResponse]);
+
+  useEffect(() => {
+    if (!excelData.length || !normalizedMataKuliahList.length) {
+      setValidationIssues([]);
+      return;
+    }
+
+    const missingMatkul = excelData
+      .map((row, index) => {
+        const kodeMk = String(row.subject_short || row['Kode MK'] || '').trim().toUpperCase();
+        const prodiKode = String(row.prodi_kode || '').trim().toUpperCase();
+        const matched = normalizedMataKuliahList.find(
+          (item) =>
+            item.kode_normalized === kodeMk &&
+            item.prodi_kode_normalized === prodiKode
+        );
+
+        if (!matched) {
+          return {
+            index,
+            nim: row.nim_mahasiswa || row.NIM || '',
+            kodeMk,
+            prodi: row.prodi || row.Prodi || '',
+            namaMk: row.subject || row.Subject || row['Nama MK'] || '',
+          };
+        }
+
+        return null;
+      })
+      .filter(Boolean);
+
+    setValidationIssues(missingMatkul);
+    if (missingMatkul.length > 0) {
+      const preview = missingMatkul
+        .slice(0, 5)
+        .map((item) => `${item.nim} / ${item.kodeMk}`)
+        .join(', ');
+      setErrorMessage(
+        `Ada ${missingMatkul.length} baris dengan Kode MK belum ada di master matkul. Contoh: ${preview}. Tambahkan master dulu sebelum upload.`
+      );
+    }
+  }, [excelData, normalizedMataKuliahList]);
 
   const {
     mutateAsync: postNilaiMahasiswa,
@@ -243,15 +426,57 @@ const NilaiMahasiswaImportExcel = () => {
       return;
     }
 
+    if (validationIssues.length > 0) {
+      setErrorMessage(
+        `Ada ${validationIssues.length} baris yang belum punya master matkul. Lengkapi master dulu sebelum upload.`
+      );
+      setHasSubmitError(true);
+      return;
+    }
+
     setHasSubmitError(false);
     setErrorMessage(null);
+    setIsImportRunning(true);
+    cancelRequestedRef.current = false;
+    const uploadController = new AbortController();
+    uploadAbortRef.current = uploadController;
+    setProcessMessage('Sedang mengunggah data ke database...');
+    setImportSummary(null);
 
     let getResponseData = [];
     let newRowStatus = [];
+    let successCount = 0;
+    let skippedCount = 0;
+    let errorCount = 0;
+    let cancelledDuringUpload = false;
 
     for (let index = 0; index < selectedRows.length; index++) {
+      if (cancelRequestedRef.current || uploadController.signal.aborted) {
+        cancelledDuringUpload = true;
+        break;
+      }
+
       const selectedIndex = selectedRows[index];
       const data = excelData[selectedIndex];
+      setProcessMessage(
+        `Sedang mengunggah data ke database... (${index + 1}/${selectedRows.length})`
+      );
+
+      if (!hasUsableGradeNilai(data['Grade Nilai'])) {
+        const skippedMessage = 'Grade Nilai kosong/0, baris dilewati.';
+        getResponseData.push({
+          ...data,
+          status: 'skipped',
+          errorMessage: skippedMessage,
+        });
+        newRowStatus[selectedIndex] = 'skipped';
+        skippedCount += 1;
+
+        const newProgress = ((index + 1) / selectedRows.length) * 100;
+        setProgress(newProgress.toFixed(2));
+        continue;
+      }
+
       const nilaiMahasiswaFormData = new FormData();
 
       for (const key in data) {
@@ -259,10 +484,24 @@ const NilaiMahasiswaImportExcel = () => {
       }
 
       try {
-        const response = await postNilaiMahasiswa(nilaiMahasiswaFormData);
+        const response = await postNilaiMahasiswa({
+          data: nilaiMahasiswaFormData,
+          signal: uploadController.signal,
+        });
         if (response && response.data) {
-          getResponseData.push({ ...response.data, status: 'success' });
-          newRowStatus[selectedIndex] = 'success';
+          if (response.data.status === 'skipped') {
+            getResponseData.push({
+              ...data,
+              status: 'skipped',
+              errorMessage: response.data.message || 'Grade Nilai kosong/0, baris dilewati.',
+            });
+            newRowStatus[selectedIndex] = 'skipped';
+            skippedCount += 1;
+          } else {
+            getResponseData.push({ ...response.data, status: 'success' });
+            newRowStatus[selectedIndex] = 'success';
+            successCount += 1;
+          }
         } else {
           getResponseData.push({
             ...data,
@@ -270,32 +509,81 @@ const NilaiMahasiswaImportExcel = () => {
             errorMessage: 'Tidak ada data respon',
           });
           newRowStatus[selectedIndex] = 'error';
+          errorCount += 1;
         }
       } catch (err) {
+        const isRequestCancelled =
+          err?.code === 'ERR_CANCELED' ||
+          err?.name === 'CanceledError' ||
+          err?.message === 'canceled';
+
+        if (isRequestCancelled || cancelRequestedRef.current || uploadController.signal.aborted) {
+          cancelledDuringUpload = true;
+          getResponseData.push({
+            ...data,
+            status: 'cancelled',
+            errorMessage: 'Import dibatalkan oleh pengguna.',
+          });
+          newRowStatus[selectedIndex] = 'cancelled';
+          break;
+        }
+
         getResponseData.push({
           ...data,
           status: 'error',
           errorMessage: err.response?.data || err.message,
         });
         newRowStatus[selectedIndex] = 'error';
+        errorCount += 1;
       }
 
       const newProgress = ((index + 1) / selectedRows.length) * 100;
-      if (newProgress === 100.0) {
-        setOpen(true);
-      }
       setProgress(newProgress.toFixed(2));
     }
+
+    const processedCount = successCount + skippedCount + errorCount;
+    const cancelledCount = cancelledDuringUpload
+      ? Math.max(selectedRows.length - processedCount, 0)
+      : 0;
 
     console.log('Get Respons Data', getResponseData);
     setResponseData(getResponseData);
     setRowStatus(newRowStatus);
     setImportComplete(true);
+    setImportSummary({
+      total: selectedRows.length,
+      successCount,
+      skippedCount,
+      errorCount,
+      cancelledCount,
+      cancelledDuringUpload,
+    });
+    setProcessMessage(
+      cancelledDuringUpload
+        ? `Import dibatalkan. Berhasil: ${successCount}, dilewati: ${skippedCount}, gagal: ${errorCount}, dibatalkan: ${cancelledCount}.`
+        : `Import selesai. Berhasil: ${successCount}, dilewati: ${skippedCount}, gagal: ${errorCount}.`
+    );
+    setIsImportRunning(false);
+    uploadAbortRef.current = null;
+    setOpen(true);
   };
 
   const handleToClose = () => {
     setOpen(false);
     setProgress('');
+  };
+
+  const handleCancelImport = () => {
+    if (!isImportRunning) {
+      return;
+    }
+
+    cancelRequestedRef.current = true;
+    setProcessMessage('Permintaan pembatalan sedang diproses...');
+
+    if (uploadAbortRef.current) {
+      uploadAbortRef.current.abort();
+    }
   };
 
   const filteredData = useMemo(() => {
@@ -362,10 +650,20 @@ const NilaiMahasiswaImportExcel = () => {
               <div className="flex min-h-full items-center justify-center p-4">
                 <Dialog.Panel className="bg-white p-5 rounded-xl shadow-lg flex flex-col items-center justify-center text-center">
                   <Dialog.Title className="text-xl font-bold text-black-800">
-                    Sukses
+                    {importSummary && importSummary.cancelledDuringUpload
+                      ? 'Import dibatalkan'
+                      : importSummary &&
+                        (importSummary.errorCount > 0 ||
+                          importSummary.skippedCount > 0)
+                      ? 'Import selesai dengan catatan'
+                      : 'Import berhasil'}
                   </Dialog.Title>
                   <p className="text-gray-600 mt-2 max-w-md">
-                    Unggah Akademik Mahasiswa Berhasil
+                    {importSummary
+                      ? importSummary.cancelledDuringUpload
+                        ? `Total ${importSummary.total} baris. Berhasil ${importSummary.successCount}, dilewati ${importSummary.skippedCount}, gagal ${importSummary.errorCount}, dibatalkan ${importSummary.cancelledCount}.`
+                        : `Total ${importSummary.total} baris. Berhasil ${importSummary.successCount}, dilewati ${importSummary.skippedCount}, gagal ${importSummary.errorCount}.`
+                      : 'Proses import selesai.'}
                   </p>
                   <PrimaryButton
                     className={`!mt-8 !mb-5`}
@@ -396,6 +694,12 @@ const NilaiMahasiswaImportExcel = () => {
         <p className="mt-1 text-gray-600">
           Kolom yang perlu diisi: {importTemplateColumns.join(', ')}.
         </p>
+        <p className="mt-2 text-gray-600">
+          Format <span className="font-medium">Tahun Akademik</span> mengikuti kode
+          seperti <span className="font-medium">202230</span> (tahun 2022, semester
+          genap). Contoh lain: <span className="font-medium">202210</span> untuk
+          semester ganjil.
+        </p>
         <PrimaryButton
           type="button"
           className="!mt-4"
@@ -404,6 +708,25 @@ const NilaiMahasiswaImportExcel = () => {
           Download Template Excel
         </PrimaryButton>
       </div>
+
+      {(loading || postNilaiMahasiswaLoading || processMessage) && (
+        <div className="mt-4 rounded-xl border border-gray-200 bg-white p-4 text-sm text-gray-700">
+          <p className="font-semibold text-gray-900">
+            {loading
+              ? 'Sedang membaca file...'
+              : postNilaiMahasiswaLoading
+              ? 'Sedang mengunggah data...'
+              : importComplete
+              ? 'Status import selesai'
+              : 'Status proses'}
+          </p>
+          <p className="mt-1 text-gray-600">
+            {processMessage || 'Menunggu proses dimulai.'}
+          </p>
+          {isImportRunning && <p className="mt-1 text-gray-500">&nbsp;</p>}
+        </div>
+      )}
+
       <div>
         <form className="flex gap-4 flex-wrap items-center mb-4 mt-4">
           <div>
@@ -425,6 +748,7 @@ const NilaiMahasiswaImportExcel = () => {
         <PrimaryButton
           className={`!mt-8 !mb-5 ${
             !excelRead ||
+            isImportRunning ||
             postNilaiMahasiswaLoading ||
             (hasSubmitError && selectedRows.length === 0)
               ? '!bg-gray-200 !border-gray-400 !text-gray-500 cursor-not-allowed'
@@ -433,12 +757,23 @@ const NilaiMahasiswaImportExcel = () => {
           onClick={onSubmit}
           disabled={
             !excelRead ||
+            isImportRunning ||
             postNilaiMahasiswaLoading ||
             (hasSubmitError && selectedRows.length === 0)
           }
         >
           Simpan ke Database
         </PrimaryButton>
+
+        {(isImportRunning || postNilaiMahasiswaLoading) && (
+          <PrimaryButton
+            type="button"
+            className="!mt-8 !mb-5 !ml-3 !bg-red-500 !border-red-500 hover:!bg-red-600 hover:!border-red-600"
+            onClick={handleCancelImport}
+          >
+            Cancel Upload
+          </PrimaryButton>
+        )}
 
         {progress ? <ProgressBar completed={progress} /> : null}
 
@@ -584,28 +919,28 @@ const NilaiMahasiswaImportExcel = () => {
                 <p className="flex flex-row items-center">Prodi</p>
               </th>
               <th className="px-4 py-3 font-semibold">
-                <p className="flex flex-row items-center">Angkatan</p>
-              </th>
-              <th className="px-4 py-3 font-semibold">
                 <p className="flex flex-row items-center">Kode MK</p>
               </th>
               <th className="px-4 py-3 font-semibold">
                 <p className="flex flex-row items-center">Mata Kuliah</p>
               </th>
               <th className="px-4 py-3 font-semibold">
-                <p className="flex flex-row items-center">SKS</p>
-              </th>
-              <th className="px-4 py-3 font-semibold">
-                <p className="flex flex-row items-center">UAS</p>
+                <p className="flex flex-row items-center">Tahun Akademik</p>
               </th>
               <th className="px-4 py-3 font-semibold">
                 <p className="flex flex-row items-center">UTS</p>
               </th>
               <th className="px-4 py-3 font-semibold">
+                <p className="flex flex-row items-center">UAS</p>
+              </th>
+              <th className="px-4 py-3 font-semibold">
                 <p className="flex flex-row items-center">TA</p>
               </th>
               <th className="px-4 py-3 font-semibold">
-                <p className="flex flex-row items-center">Final Grade</p>
+                <p className="flex flex-row items-center">Nilai Akhir</p>
+              </th>
+              <th className="px-4 py-3 font-semibold">
+                <p className="flex flex-row items-center">Grade Nilai</p>
               </th>
             </tr>
           </thead>
@@ -620,18 +955,11 @@ const NilaiMahasiswaImportExcel = () => {
             ) : (
               filteredData.map((data, index) => {
                 const status = rowStatus[index]; // Ambil status untuk baris ini
+                const isSelectedRow = selectedRows.includes(index);
                 return (
                   <tr
                     key={index}
-                    className={`border-b text-gray-600 ${
-                      importComplete
-                        ? status === 'success'
-                          ? 'bg-green-50'
-                          : status === 'error'
-                          ? 'bg-red-50'
-                          : 'bg-white'
-                        : 'bg-white'
-                    }`}
+                    className="border-b bg-white text-gray-600"
                   >
                     <td className="px-4 py-3">
                       <input
@@ -642,16 +970,24 @@ const NilaiMahasiswaImportExcel = () => {
                     </td>
                     {importComplete && (
                       <td className="px-4 py-3">
-                        {status === 'error' ? (
+                        {!isSelectedRow ? (
+                          <span className="text-gray-400">-</span>
+                        ) : status === 'error' ? (
                           <TooltipError>
                             {responseData &&
                               responseData[index] &&
                               responseData[index].errorMessage}
                           </TooltipError>
-                        ) : (
+                        ) : status === 'cancelled' ? (
+                          <span className="text-gray-500">Dibatalkan</span>
+                        ) : status === 'skipped' ? (
+                          <span className="text-gray-500">Dilewati</span>
+                        ) : status === 'success' ? (
                           <TooltipAccept2>
                             Data berhasil diunggah
                           </TooltipAccept2>
+                        ) : (
+                          <span className="text-gray-400">-</span>
                         )}
                       </td>
                     )}
@@ -660,14 +996,26 @@ const NilaiMahasiswaImportExcel = () => {
                     <td className="px-4 py-3">{data['Student Name']}</td>
                     <td className="px-4 py-3">{data['NIM']}</td>
                     <td className="px-4 py-3">{data.prodi}</td>
-                    <td className="px-4 py-3">{data.angkatan}</td>
                     <td className="px-4 py-3">{data['Subject Short']}</td>
                     <td className="px-4 py-3">{data['Subject']}</td>
-                    <td className="px-4 py-3">{data['Graded Credits']}</td>
-                    <td className="px-4 py-3">{data['End Sem.'] || 0}</td>
+                    <td className="px-4 py-3">{data['Tahun Akademik']}</td>
                     <td className="px-4 py-3">{data['Mid Sem.'] || 0}</td>
-                    <td className="px-4 py-3">{data['Teaching Ass.'] || 0}</td>
-                    <td className="px-4 py-3">{data['Final Marks'] || 'T'}</td>
+                    <td className="px-4 py-3">{data['End Sem.'] || 0}</td>
+                    <td className="px-4 py-3">{data.TA || 0}</td>
+                    <td className="px-4 py-3">
+                      {data['Nilai Akhir'] !== undefined &&
+                      data['Nilai Akhir'] !== null &&
+                      data['Nilai Akhir'] !== ''
+                        ? data['Nilai Akhir']
+                        : '-'}
+                    </td>
+                    <td className="px-4 py-3">
+                      {data['Grade Nilai'] !== undefined &&
+                      data['Grade Nilai'] !== null &&
+                      data['Grade Nilai'] !== ''
+                        ? data['Grade Nilai']
+                        : '-'}
+                    </td>
                   </tr>
                 );
               })

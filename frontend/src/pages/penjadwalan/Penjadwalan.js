@@ -124,6 +124,7 @@ const Penjadwalan = () => {
   const queryClient = useQueryClient();
   const [form, setForm] = useState(initialForm);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedLabFile, setSelectedLabFile] = useState(null);
   const [selectedBatchId, setSelectedBatchId] = useState(null);
   const [feedback, setFeedback] = useState(null);
 
@@ -195,6 +196,9 @@ const Penjadwalan = () => {
     }
 
     const payload = new FormData();
+    if (selectedLabFile) {
+      payload.append('lab_file', selectedLabFile);
+    }
     payload.append('file', selectedFile);
     payload.append('nama', form.nama);
     payload.append('tahun_akademik', form.tahun_akademik);
@@ -211,6 +215,7 @@ const Penjadwalan = () => {
       });
       setSelectedBatchId(batch.id);
       setSelectedFile(null);
+      setSelectedLabFile(null);
       queryClient.invalidateQueries('penjadwalan-batches');
       queryClient.invalidateQueries(['penjadwalan-batch-detail', batch.id]);
     } catch (error) {
@@ -340,7 +345,26 @@ const Penjadwalan = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                File Excel
+                File Excel LAB
+              </label>
+              <input
+                className="w-full rounded-xl border border-dashed border-gray-300 px-4 py-3 bg-gray-50"
+                type="file"
+                accept=".xlsx"
+                onChange={(event) =>
+                  setSelectedLabFile(event.target.files?.[0] || null)
+                }
+              />
+              {selectedLabFile && (
+                <p className="mt-2 text-sm text-gray-500">
+                  File LAB terpilih: {selectedLabFile.name}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                File Excel Penjadwalan
               </label>
               <input
                 className="w-full rounded-xl border border-dashed border-gray-300 px-4 py-3 bg-gray-50"

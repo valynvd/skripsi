@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-key */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ModalDelete from '../../components/ModalDelete';
 import { useCheckRole } from '../../hooks/useCheckRole';
 // import { PrimaryButton } from '../../components/PrimaryButton';
@@ -22,7 +22,9 @@ const DegreeAuditKelulusan = () => {
       enabled: !!userRole.admin,
     });
   
-  console.log("Response Data ===", responseData)
+  useEffect(() => {
+    validasiMahasiswaRefetch();
+  }, [validasiMahasiswaRefetch]);
   
   return (
     <section id="degreeaudit-kelulusan" className="section-container">

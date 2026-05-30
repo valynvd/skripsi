@@ -1,7 +1,23 @@
+import { useEffect } from 'react';
 import { request } from '../utils/axios-utils';
-import { useQuery, useMutation } from 'react-query';
+import { useQuery, useMutation, useQueryClient } from 'react-query';
 
 const url = '/api-stem/validasimahasiswa/';
+const DEGREE_AUDIT_REFRESH_KEY = 'simantap-degree-audit-refresh';
+const DEGREE_AUDIT_REFRESH_EVENT = 'simantap-degree-audit-refresh-event';
+
+const broadcastDegreeAuditRefresh = () => {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  try {
+    window.localStorage.setItem(DEGREE_AUDIT_REFRESH_KEY, Date.now().toString());
+    window.dispatchEvent(new Event(DEGREE_AUDIT_REFRESH_EVENT));
+  } catch (error) {
+    console.warn('Gagal broadcast refresh degree audit:', error);
+  }
+};
 
 // const getValidasiMahasiswa = () => {
 //     return request({
@@ -31,7 +47,7 @@ const getValidasiMahasiswaById = (id) => {
 
 const getValidasiMahasiswaByNIM = (nim) => {
     return request({
-      url: `/api-stem/monitoringmahasiswabynim/${nim}/`,
+      url: `/api-stem/validasimahasiswabynim/${nim}/`,
     });
   };
 
@@ -62,22 +78,54 @@ const patchValidasiMahasiswa = ({ data, id }) => {
 
 export const useValidasiMahasiswaData = (options) => {
     // return useQuery('data-master', getValidasiMahasiswa, {
-      return useQuery('validasi-mahasiswa', getValidasiMahasiswa, {
-      refetchOnWindowFocus: false,
+      const query = useQuery('validasi-mahasiswa', getValidasiMahasiswa, {
+      refetchOnWindowFocus: true,
+      refetchOnMount: 'always',
+      staleTime: 0,
       ...options,
     });
+
+    useEffect(() => {
+      if (typeof window === 'undefined') {
+        return undefined;
+      }
+
+      const handleRefresh = () => {
+        query.refetch();
+      };
+
+      const handleStorageRefresh = (event) => {
+        if (event.key === DEGREE_AUDIT_REFRESH_KEY) {
+          query.refetch();
+        }
+      };
+
+      window.addEventListener('storage', handleStorageRefresh);
+      window.addEventListener(DEGREE_AUDIT_REFRESH_EVENT, handleRefresh);
+
+      return () => {
+        window.removeEventListener('storage', handleStorageRefresh);
+        window.removeEventListener(DEGREE_AUDIT_REFRESH_EVENT, handleRefresh);
+      };
+    }, [query.refetch]);
+
+    return query;
 };
 
 export const useValidasiMahasiswaDataByNIM = (nim, options) => {
     return useQuery(['validasi-mahasiswa-by-nim', nim], () => getValidasiMahasiswaByNIM(nim), {
-      refetchOnWindowFocus: false,
+      refetchOnWindowFocus: true,
+      refetchOnMount: 'always',
+      staleTime: 0,
       ...options,
     });
   };
 
 export const useValidasiMahasiswaById = (id, options) => {
   return useQuery(['validasi-mahasiswa-by-id', id], () => getValidasiMahasiswaById(id), {
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: true,
+    refetchOnMount: 'always',
+    staleTime: 0,
     ...options,
   });
 };
@@ -92,13 +140,37 @@ export const useValidasiMahasiswaById = (id, options) => {
 // };
 
 export const usePostValidasiMahasiswa = () => {
-    return useMutation(postValidasiMahasiswa);
+    const queryClient = useQueryClient();
+
+    return useMutation(postValidasiMahasiswa, {
+      onSuccess: () => {
+        queryClient.invalidateQueries('data-master');
+        queryClient.invalidateQueries('validasi-mahasiswa');
+        broadcastDegreeAuditRefresh();
+      },
+    });
 };
 
 export const useDeleteValidasiMahasiswa = () => {
-    return useMutation(deleteValidasiMahasiswa);
+    const queryClient = useQueryClient();
+
+    return useMutation(deleteValidasiMahasiswa, {
+      onSuccess: () => {
+        queryClient.invalidateQueries('data-master');
+        queryClient.invalidateQueries('validasi-mahasiswa');
+        broadcastDegreeAuditRefresh();
+      },
+    });
 };
 
 export const usePatchValidasiMahasiswa = () => {
-    return useMutation(patchValidasiMahasiswa);
+    const queryClient = useQueryClient();
+
+    return useMutation(patchValidasiMahasiswa, {
+      onSuccess: () => {
+        queryClient.invalidateQueries('data-master');
+        queryClient.invalidateQueries('validasi-mahasiswa');
+        broadcastDegreeAuditRefresh();
+      },
+    });
 };

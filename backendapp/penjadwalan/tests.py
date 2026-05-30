@@ -8,7 +8,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 import pandas as pd
 
 from penjadwalan.models import BatchJadwal, JadwalGagal, JadwalKuliah, Ruangan
-from penjadwalan.importers import parse_excel_upload
+from penjadwalan.importers import parse_excel_upload, parse_lab_excel_upload
 from penjadwalan.services import generate_and_save_batch, generate_schedule, save_schedule_result
 
 
@@ -266,11 +266,11 @@ class GenerateScheduleTests(TestCase):
 
         payload, _ = parse_excel_upload(uploaded.read(), gabungkan_kelas=True)
 
-        self.assertEqual(len(payload["ruangan"]), 2)
-        self.assertEqual([room["id"] for room in payload["ruangan"]], ["R201", "LAB-SI"])
+        self.assertEqual(len(payload["ruangan"]), 1)
+        self.assertEqual([room["id"] for room in payload["ruangan"]], ["R201"])
         self.assertEqual(payload["matakuliah"][0]["prodi"], "Sistem Informasi")
 
-    def test_scheduler_lab_memilih_ruangan_dengan_prodi_yang_sama(self):
+    def test_scheduler_tidak_memakai_ruangan_lab_otomatis(self):
         ruangan = [
             {"id": "LAB-SI-1", "nama": "Lab SI 1", "capacity": 20, "tipe": "lab", "prodi": "Sistem Informasi"},
             {"id": "LAB-TI-1", "nama": "Lab TI 1", "capacity": 20, "tipe": "lab", "prodi": "Teknik Informatika"},
@@ -292,9 +292,34 @@ class GenerateScheduleTests(TestCase):
 
         hasil, gagal = generate_schedule(matakuliah, ruangan, self.dosen)
 
-        self.assertEqual(len(gagal), 0)
-        self.assertEqual(len(hasil), 1)
-        self.assertEqual(hasil[0]["ruang_kode"], "LAB-SI-1")
+        self.assertEqual(len(hasil), 0)
+        self.assertEqual(len(gagal), 1)
+        self.assertIn("Tidak ada ruang", gagal[0]["alasan"])
+
+    def test_parse_lab_excel_upload_menghasilkan_jadwal_manual_lab(self):
+        uploaded = self._build_excel_file(
+            [
+                {
+                    "MKKODE": "LAB101",
+                    "NAMAMK": "Praktikum Data",
+                    "KELAS": "DBT-22",
+                    "Dosen": "D1",
+                    "SKS": 1,
+                    "Hari": "SENIN",
+                    "Jam Mulai": "08:00",
+                    "Jam Selesai": "09:40",
+                    "Ruang": "LAB-SI-1",
+                },
+            ],
+            filename="lab.xlsx",
+        )
+
+        lab_items = parse_lab_excel_upload(uploaded.read())
+
+        self.assertEqual(len(lab_items), 1)
+        self.assertEqual(lab_items[0]["tipe_ruang"], "LAB")
+        self.assertEqual(lab_items[0]["ruang_kode"], "LAB-SI-1")
+        self.assertEqual(lab_items[0]["hari"], "SENIN")
 
     def test_ruangan_master_crud_endpoint(self):
         response = self.client.post(
@@ -358,3 +383,44 @@ class GenerateScheduleTests(TestCase):
         self.assertEqual(body["batch"]["nama"], "Batch Upload Excel")
         self.assertEqual(body["preview_count"], 2)
         self.assertEqual(BatchJadwal.objects.count(), 1)
+
+    def test_batch_upload_excel_endpoint_menyimpan_lab_manual(self):
+        uploaded = self._build_excel_file(
+            [
+                {"MKKODE": "MK1", "NAMAMK": "Mobile App", "KELAS": "DBT-22", "Dosen": "D1", "STATUS FM": "Tidak Tetap", "SKS": 3, "JMLMHSW": 20},
+            ]
+        )
+        lab_uploaded = self._build_excel_file(
+            [
+                {
+                    "MKKODE": "LAB101",
+                    "NAMAMK": "Praktikum Mobile",
+                    "KELAS": "DBT-22",
+                    "Dosen": "D1",
+                    "SKS": 1,
+                    "Hari": "SELASA",
+                    "Jam Mulai": "13:00",
+                    "Jam Selesai": "14:40",
+                    "Ruang": "LAB-A",
+                },
+            ],
+            filename="lab.xlsx",
+        )
+
+        response = self.client.post(
+            "/penjadwalan/batches/upload-excel/",
+            data={
+                "file": uploaded,
+                "lab_file": lab_uploaded,
+                "nama": "Batch Dengan LAB",
+                "tahun_akademik": "2025/2026",
+                "semester": "GENAP",
+                "versi": "2",
+                "gabungkan_kelas": "true",
+            },
+        )
+
+        self.assertEqual(response.status_code, 201)
+        body = response.json()
+        self.assertEqual(body["lab_manual_count"], 1)
+        self.assertEqual(JadwalKuliah.objects.filter(tipe_ruang="LAB").count(), 1)

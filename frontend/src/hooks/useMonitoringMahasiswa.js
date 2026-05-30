@@ -1,7 +1,22 @@
 import { request } from '../utils/axios-utils';
-import { useQuery, useMutation } from 'react-query';
+import { useQuery, useMutation, useQueryClient } from 'react-query';
 
 const url = '/api-stem/monitoringmahasiswa/';
+const DEGREE_AUDIT_REFRESH_KEY = 'simantap-degree-audit-refresh';
+const DEGREE_AUDIT_REFRESH_EVENT = 'simantap-degree-audit-refresh-event';
+
+const broadcastDegreeAuditRefresh = () => {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  try {
+    window.localStorage.setItem(DEGREE_AUDIT_REFRESH_KEY, Date.now().toString());
+    window.dispatchEvent(new Event(DEGREE_AUDIT_REFRESH_EVENT));
+  } catch (error) {
+    console.warn('Gagal broadcast refresh degree audit:', error);
+  }
+};
 
 const getMonitoringMahasiswa = () => {
     return request({
@@ -107,13 +122,43 @@ export const useMonitoringMahasiswaDataByNIM2 = () => {
 };
 
 export const usePostMonitoringMahasiswa = () => {
-    return useMutation(postMonitoringMahasiswa);
+    const queryClient = useQueryClient();
+
+    return useMutation(postMonitoringMahasiswa, {
+      onSuccess: () => {
+        queryClient.invalidateQueries('monitoring-mahasiswa');
+        queryClient.invalidateQueries('validasi-mahasiswa');
+        queryClient.invalidateQueries('transkrip-nilai');
+        queryClient.invalidateQueries('data-master');
+        broadcastDegreeAuditRefresh();
+      },
+    });
 };
 
 export const useDeleteMonitoringMahasiswa = () => {
-    return useMutation(deleteMonitoringMahasiswa);
+    const queryClient = useQueryClient();
+
+    return useMutation(deleteMonitoringMahasiswa, {
+      onSuccess: () => {
+        queryClient.invalidateQueries('monitoring-mahasiswa');
+        queryClient.invalidateQueries('validasi-mahasiswa');
+        queryClient.invalidateQueries('transkrip-nilai');
+        queryClient.invalidateQueries('data-master');
+        broadcastDegreeAuditRefresh();
+      },
+    });
 };
 
 export const usePatchMonitoringMahasiswa = () => {
-    return useMutation(patchMonitoringMahasiswa);
+    const queryClient = useQueryClient();
+
+    return useMutation(patchMonitoringMahasiswa, {
+      onSuccess: () => {
+        queryClient.invalidateQueries('monitoring-mahasiswa');
+        queryClient.invalidateQueries('validasi-mahasiswa');
+        queryClient.invalidateQueries('transkrip-nilai');
+        queryClient.invalidateQueries('data-master');
+        broadcastDegreeAuditRefresh();
+      },
+    });
 };

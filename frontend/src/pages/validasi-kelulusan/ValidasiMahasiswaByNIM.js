@@ -7,7 +7,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 import { useMonitoringMahasiswaDataByNIM } from '../../hooks/useMonitoringMahasiswa';
 import { useTranskripNilaiDataByNIM } from '../../hooks/useTranskripNilai';
-import { usePostValidasiMahasiswa } from '../../hooks/useValidasiMahasiswa';
+import {
+  usePostValidasiMahasiswa,
+  useValidasiMahasiswaDataByNIM,
+} from '../../hooks/useValidasiMahasiswa';
 import jsPDF from 'jspdf';
 import { RxTriangleUp, RxTriangleRight } from 'react-icons/rx';
 import autoTable from 'jspdf-autotable';
@@ -26,6 +29,8 @@ const ValidasiMahasiswaByNIM = () => {
     useMonitoringMahasiswaDataByNIM(nim);
   const { data: responseData, isLoading: isLoadingTranskrip } =
     useTranskripNilaiDataByNIM(nim);
+  const { data: responseValidasi, isLoading: isLoadingValidasi } =
+    useValidasiMahasiswaDataByNIM(nim);
   const [nilaiD, setNilaiD] = useState('');
   const [nilaiE, setNilaiE] = useState('');
   const [jumlahSks, setJumlahSks] = useState('');
@@ -51,6 +56,16 @@ const ValidasiMahasiswaByNIM = () => {
     isLoading: postValidasiMahasiswaLoading,
   } = usePostValidasiMahasiswa();
   const { mutate: createSuratKeterangan } = useCreateSuratKeterangan();
+
+  const getCreditValue = (data) => {
+    const masterCredits = parseInt(data?.mata_kuliah_detail?.sks_total, 10);
+    if (!Number.isNaN(masterCredits) && masterCredits > 0) {
+      return masterCredits;
+    }
+
+    const earnedCredits = parseInt(data?.earned_credits, 10);
+    return Number.isNaN(earnedCredits) ? 0 : earnedCredits;
+  };
 
   // useEffect(()=> {
   //   if(isLoadingResult == false) {
@@ -87,10 +102,24 @@ const ValidasiMahasiswaByNIM = () => {
   }, [isLoadingResult, isLoadingTranskrip, responseData, responseResult]);
 
   useEffect(() => {
+    const validasiMahasiswa = responseValidasi?.data?.[0];
+    if (!validasiMahasiswa) {
+      return;
+    }
+
+    setJumlahSks(validasiMahasiswa.jumlah_sks ?? '');
+    setNilaiD(validasiMahasiswa.nilaid ?? '');
+    setNilaiE(validasiMahasiswa.nilaie ?? '');
+    setNilaiIpk(validasiMahasiswa.nilai_ipk ?? '');
+    setStatusKelulusan(validasiMahasiswa.status_kelulusan ?? '');
+    setNgulangNilai(validasiMahasiswa.keterangan_lulus === 'Pernah Mengulang');
+  }, [responseValidasi]);
+
+  useEffect(() => {
     const calculateTotalCreditsD = (transkripData, gradeSymbol) => {
       return transkripData.reduce((totalCredits, getdata) => {
-        if (getdata.grade_symbol.includes(gradeSymbol)) {
-          return totalCredits + parseInt(getdata.earned_credits);
+        if ((getdata.grade_symbol || '').includes(gradeSymbol)) {
+          return totalCredits + getCreditValue(getdata);
         }
         return totalCredits;
       }, 0);
@@ -98,8 +127,8 @@ const ValidasiMahasiswaByNIM = () => {
 
     const calculateTotalCreditsE = (transkripData, gradeSymbol) => {
       return transkripData.reduce((totalCredits, getdata) => {
-        if (getdata.grade_symbol.includes(gradeSymbol)) {
-          return totalCredits + parseInt(getdata.mata_kuliah_detail.sks_total);
+        if ((getdata.grade_symbol || '').includes(gradeSymbol)) {
+          return totalCredits + getCreditValue(getdata);
         }
         return totalCredits;
       }, 0);
@@ -157,7 +186,7 @@ const ValidasiMahasiswaByNIM = () => {
     // const totalEarnedCredits = totalSKS.toString();
 
     const totalSKS = transkripData.reduce((totalCredits, getdata) => {
-      const currentCredits = parseInt(getdata.earned_credits);
+      const currentCredits = getCreditValue(getdata);
       const updatedTotal = totalCredits + currentCredits;
       // console.log('Matkul:', getdata.mata_kuliah_detail.name);
       // console.log('Current Total SKS:', updatedTotal); // Log the current totalSKS value
@@ -165,7 +194,7 @@ const ValidasiMahasiswaByNIM = () => {
     }, 0);
 
     const AkumulatifSKS = transkripData.reduce((totalCredits, getdata) => {
-      const currentCredits = parseInt(getdata.mata_kuliah_detail.sks_total);
+      const currentCredits = getCreditValue(getdata);
       const updatedTotal = totalCredits + currentCredits;
       // console.log('Matkul:', getdata.mata_kuliah_detail.name);
       // console.log('Current Total SKS:', updatedTotal); // Log the current totalSKS value
@@ -212,10 +241,9 @@ const ValidasiMahasiswaByNIM = () => {
             E: 0.0,
             T: 0.0,
           };
-          ips +=
-            gradeValues[transkripData.grade_symbol] *
-            parseInt(transkripData.earned_credits);
-          sks += parseInt(transkripData.mata_kuliah_detail.sks_total);
+          const currentCredits = getCreditValue(transkripData);
+          ips += gradeValues[transkripData.grade_symbol] * currentCredits;
+          sks += currentCredits;
         });
 
         ipsResults.push({
@@ -232,8 +260,12 @@ const ValidasiMahasiswaByNIM = () => {
     const ipsData = calculateIPS(transkripData);
     setIpsSemester(ipsData);
 
+    if (responseValidasi?.data?.length) {
+      return;
+    }
+
     // const calculateIPK = (ipsData) => {
-    //   const totalIPS = ipsData.reduce(
+      //   const totalIPS = ipsData.reduce(
     //     (sum, dataIPS) => sum + parseFloat(dataIPS.ips * dataIPS.sks),
     //     0
     //   );
@@ -362,6 +394,10 @@ const ValidasiMahasiswaByNIM = () => {
   }, [transkripData]);
 
   useEffect(() => {
+    if (isLoadingValidasi || responseValidasi?.data?.length) {
+      return;
+    }
+
     for (let index = 0; index < validasi.length; index++) {
       const data = validasi[index];
       const validasiFormData = new FormData();
@@ -380,7 +416,7 @@ const ValidasiMahasiswaByNIM = () => {
         console.error(error);
       }
     }
-  }, [validasi]);
+  }, [validasi, responseValidasi, isLoadingValidasi]);
 
   const handleExport = () => {
     const doc = new jsPDF();
@@ -445,8 +481,8 @@ const ValidasiMahasiswaByNIM = () => {
         Angkatan: data.mahasiswa_detail.angkatan,
         'Kode Mata Kuliah': data.mata_kuliah_detail.kode,
         'Mata Kuliah': data.mata_kuliah_detail.name,
-        'Earned Credits': data.earned_credits,
-        'Graded Credits': data.mata_kuliah_detail.sks_total,
+        'Earned Credits': getCreditValue(data),
+        'Graded Credits': getCreditValue(data),
         'Academic Year': data.academic_year,
         'Academic Session': data.academic_session,
         Nilai: data.grade_symbol,

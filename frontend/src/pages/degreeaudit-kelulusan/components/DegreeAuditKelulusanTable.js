@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-key */
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Pagination from '../../../components/Pagination';
 import { DeleteIcon, EditIcon } from '../../../components/IconButton';
 import {
@@ -29,6 +29,15 @@ const DegreeAuditKelulusanTable = ({
   console.log('Cek Load Data =====', data);
   const navigate = useNavigate();
   const [selectedAngkatan, setSelectedAngkatan] = useState('');
+  const PAGE_STORAGE_KEY = 'degreeaudit-kelulusan-page-index';
+  const [storedPageIndex, setStoredPageIndex] = useState(() => {
+    if (typeof window === 'undefined') {
+      return 0;
+    }
+
+    const savedPageIndex = Number(window.localStorage.getItem(PAGE_STORAGE_KEY));
+    return Number.isNaN(savedPageIndex) ? 0 : savedPageIndex;
+  });
   const columns = [
     {
       Header: 'Nama Mahasiswa',
@@ -170,14 +179,54 @@ const DegreeAuditKelulusanTable = ({
     state,
     rows,
   } = useTable(
-    { columns: memoColumns, data: memoData },
+    {
+      columns: memoColumns,
+      data: memoData,
+      initialState: {
+        pageIndex: storedPageIndex,
+      },
+      autoResetPage: false,
+      autoResetSortBy: false,
+      autoResetGlobalFilter: false,
+      autoResetExpanded: false,
+    },
     useGlobalFilter,
     useSortBy,
     usePagination
   );
   console.log('Rows', rows);
+  const { pageIndex, globalFilter } = state;
+
+  const exportData = useMemo(() => {
+    const normalizedQuery = String(globalFilter || '').trim().toLowerCase();
+
+    return memoData.filter((item) => {
+      if (!normalizedQuery) {
+        return true;
+      }
+
+      const searchText = [
+        item?.mahasiswa_detail?.nama,
+        item?.mahasiswa_detail?.nim,
+        item?.mahasiswa_detail?.prodi_detail?.name,
+        item?.mahasiswa_detail?.angkatan,
+        item?.jumlah_sks,
+        item?.nilaid,
+        item?.nilaie,
+        item?.nilai_ipk,
+        item?.status_kelulusan,
+        item?.keterangan_lulus,
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+
+      return searchText.includes(normalizedQuery);
+    });
+  }, [memoData, globalFilter]);
+
   const handleExport = () => {
-    const filterToExcel = rows.map(({ original }) => {
+    const filterToExcel = exportData.map((original) => {
       const filteredItem = {
         'Nama Mahasiswa': original.mahasiswa_detail.nama,
         'NIM Mahasiswa': original.mahasiswa_detail.nim,
@@ -210,6 +259,10 @@ const DegreeAuditKelulusanTable = ({
     });
     console.log('Filter Excel', filterToExcel);
 
+    if (filterToExcel.length === 0) {
+      return;
+    }
+
     const wb = utils.book_new();
     const ws = utils.json_to_sheet(filterToExcel);
 
@@ -218,7 +271,24 @@ const DegreeAuditKelulusanTable = ({
     writeFile(wb, `Degree Audit ${filterToExcel[0].Jurusan}.xlsx`);
   };
 
-  const { pageIndex, globalFilter } = state;
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    window.localStorage.setItem(PAGE_STORAGE_KEY, String(pageIndex ?? 0));
+    setStoredPageIndex(pageIndex ?? 0);
+  }, [pageIndex]);
+
+  useEffect(() => {
+    if (!pageOptions || pageOptions.length === 0) {
+      return;
+    }
+
+    if (pageIndex > pageOptions.length - 1) {
+      gotoPage(pageOptions.length - 1);
+    }
+  }, [pageIndex, pageOptions, gotoPage]);
 
   return (
     <>

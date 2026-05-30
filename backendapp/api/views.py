@@ -1450,6 +1450,133 @@ class NilaiMahasiswaViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.NilaiMahasiswaSerializers
     queryset = models.NilaiMahasiswa.objects.all()
 
+    def _rebuild_validasi_mahasiswa(self, mahasiswa):
+        transkrip_qs = (
+            models.TranskripNilai.objects
+            .filter(mahasiswa=mahasiswa)
+            .select_related('mata_kuliah')
+            .order_by('academic_year', 'academic_session', 'id')
+        )
+
+        grade_values = {
+            'A': 4.0,
+            'AB': 3.5,
+            'B': 3.0,
+            'BC': 2.5,
+            'C': 2.0,
+            'D': 1.0,
+            'E': 0.0,
+            'T': 0.0,
+        }
+        grade_rank = {
+            'A': 4,
+            'AB': 3,
+            'B': 2,
+            'BC': 1,
+            'C': 0,
+            'D': -1,
+            'E': -2,
+            'T': -3,
+        }
+
+        total_sks = 0
+        total_nilai_d = 0
+        total_nilai_e = 0
+        total_weighted_points = 0.0
+        seen_course_names = set()
+        repeated_course = False
+        english_sc_ii_grade = None
+        final_project_grade = None
+
+        for transkrip in transkrip_qs:
+            grade_symbol = transkrip.grade_symbol or ''
+            sks_total = getattr(getattr(transkrip, 'mata_kuliah', None), 'sks_total', None)
+            try:
+                sks_total = int(sks_total)
+            except (TypeError, ValueError):
+                sks_total = 0
+
+            if sks_total <= 0:
+                try:
+                    sks_total = int(transkrip.earned_credits)
+                except (TypeError, ValueError):
+                    sks_total = 0
+
+            course_name = getattr(getattr(transkrip, 'mata_kuliah', None), 'name', '')
+
+            if course_name in seen_course_names:
+                repeated_course = True
+            elif course_name:
+                seen_course_names.add(course_name)
+
+            if grade_symbol != 'T':
+                total_sks += sks_total
+                total_weighted_points += grade_values.get(grade_symbol, 0.0) * sks_total
+
+            if grade_symbol == 'D':
+                total_nilai_d += sks_total
+            if grade_symbol == 'E':
+                total_nilai_e += sks_total
+            if course_name == 'English Scientific Communication II':
+                english_sc_ii_grade = grade_symbol
+            if course_name in ['Final Project', 'Final Project II']:
+                final_project_grade = grade_symbol
+
+        nilai_ipk = round(total_weighted_points / total_sks, 2) if total_sks else 0.0
+        english_ok = (grade_rank.get(english_sc_ii_grade, -99)) >= grade_rank['B']
+
+        if (
+            nilai_ipk > 3.5
+            and total_nilai_d == 0
+            and total_nilai_e == 0
+            and total_sks >= 144
+            and not repeated_course
+            and english_ok
+            and final_project_grade in ['A', 'AB', 'B']
+        ):
+            status_kelulusan = 'Cum Laude'
+        elif (
+            nilai_ipk > 3.0
+            and total_nilai_d <= 7
+            and total_nilai_e == 0
+            and total_sks >= 144
+            and english_ok
+            and final_project_grade
+        ):
+            status_kelulusan = 'Sangat Memuaskan'
+        elif (
+            nilai_ipk > 2.75
+            and total_nilai_d <= 7
+            and total_nilai_e == 0
+            and total_sks >= 144
+            and english_ok
+            and final_project_grade
+        ):
+            status_kelulusan = 'Memuaskan'
+        elif (
+            nilai_ipk >= 2.0
+            and total_nilai_d <= 7
+            and total_nilai_e == 0
+            and total_sks >= 144
+            and english_ok
+            and final_project_grade
+        ):
+            status_kelulusan = 'Cukup'
+        else:
+            status_kelulusan = 'Tidak Lulus'
+
+        models.ValidasiMahasiswa.objects.update_or_create(
+            mahasiswa=mahasiswa,
+            defaults={
+                'jumlah_sks': total_sks,
+                'nilaid': total_nilai_d,
+                'nilaie': total_nilai_e,
+                'nilai_ipk': f'{nilai_ipk:.2f}',
+                'status_kelulusan': status_kelulusan,
+                'keterangan_lulus': 'Pernah Mengulang' if repeated_course else 'Aman',
+            },
+        )
+
     def _first_value(self, data_dict, keys, default=''):
         for key in keys:
             value = data_dict.get(key)
@@ -1462,6 +1589,21 @@ class NilaiMahasiswaViewSet(viewsets.ModelViewSet):
         if not normalized:
             return None
 
+        alias_map = {
+            'BM': {'s1bm', 'mathematics', 'math'},
+            'FBT': {'s1fbt', 'foodtechnology', 'food tech'},
+            'REE': {'s1ree', 'renewableenergyengineering', 'renewable energy engineering'},
+            'CSE': {'s1cse', 'computersystemsengineering', 'computer systems engineering'},
+            'SE': {
+                's1se',
+                's1ese',
+                'ese',
+                'softwareengineering',
+                'software engineering',
+            },
+            'PDE': {'s1pde', 'productdesignengineering', 'product design engineering'},
+        }
+
         for info in prodi_mapping.values():
             kode = str(info['kode']).strip().lower().replace(' ', '')
             name = str(info['name']).strip().lower().replace(' ', '')
@@ -1473,6 +1615,7 @@ class NilaiMahasiswaViewSet(viewsets.ModelViewSet):
                 f"s1{kode}",
                 f"s1{name}",
             }
+            aliases.update(alias_map.get(info['kode'], set()))
             if normalized in aliases:
                 return info
 
@@ -1485,7 +1628,49 @@ class NilaiMahasiswaViewSet(viewsets.ModelViewSet):
             return match.group(0)
         return str(fallback or '').strip()
 
+    def _normalize_final_grade_symbol(self, value):
+        text = str(value or '').strip()
+        if not text:
+            return None
+
+        upper_text = text.upper()
+        if upper_text in {'0', '0.0', 'T'}:
+            return None
+
+        if upper_text in {'A', 'AB', 'B', 'BC', 'C', 'D', 'E'}:
+            return upper_text
+
+        try:
+            score = float(text.replace(',', '.'))
+        except ValueError:
+            return None
+
+        if score <= 0:
+            return None
+        if score >= 80:
+            return 'A'
+        if score >= 75:
+            return 'AB'
+        if score >= 70:
+            return 'B'
+        if score >= 65:
+            return 'BC'
+        if score >= 60:
+            return 'C'
+        if score >= 50:
+            return 'D'
+        return 'E'
+
     def create(self, request, *args, **kwargs):
+        def resolve_credits(new_value, existing_value=None, default_value=None):
+            if new_value not in (None, '', 0, 0.0, '0', '0.0'):
+                return new_value
+            if default_value not in (None, '', 0, 0.0, '0', '0.0'):
+                return default_value
+            if existing_value not in (None, '', 0, 0.0, '0', '0.0'):
+                return existing_value
+            return new_value
+
         def replace_nilai_mahasiswa(mahasiswa, mata_kuliah, penilaian, academic_year, academic_session, earned_credits, nilai_penilaian, bobot):
             existing_qs = models.NilaiMahasiswa.objects.filter(
                 mahasiswa=mahasiswa,
@@ -1497,7 +1682,11 @@ class NilaiMahasiswaViewSet(viewsets.ModelViewSet):
                 primary = existing_qs.first()
                 if existing_qs.count() > 1:
                     existing_qs.exclude(id=primary.id).delete()
-                primary.earned_credits = earned_credits
+                primary.earned_credits = resolve_credits(
+                    earned_credits,
+                    primary.earned_credits,
+                    getattr(mata_kuliah, 'sks_total', None),
+                )
                 primary.academic_year = academic_year
                 primary.academic_session = academic_session
                 primary.nilai_penilaian = nilai_penilaian
@@ -1509,7 +1698,11 @@ class NilaiMahasiswaViewSet(viewsets.ModelViewSet):
                 mahasiswa=mahasiswa,
                 mata_kuliah=mata_kuliah,
                 penilaian=penilaian,
-                earned_credits=earned_credits,
+                earned_credits=resolve_credits(
+                    earned_credits,
+                    getattr(mata_kuliah, 'sks_total', None),
+                    getattr(mata_kuliah, 'sks_total', None),
+                ),
                 academic_year=academic_year,
                 academic_session=academic_session,
                 nilai_penilaian=nilai_penilaian,
@@ -1529,10 +1722,22 @@ class NilaiMahasiswaViewSet(viewsets.ModelViewSet):
                 if existing_qs.count() > 1:
                     existing_qs.exclude(id=primary.id).delete()
                 for field, value in payload.items():
+                    if field == "earned_credits":
+                        value = resolve_credits(
+                            value,
+                            primary.earned_credits,
+                            getattr(primary.mata_kuliah, 'sks_total', None),
+                        )
                     setattr(primary, field, value)
                 primary.save()
                 return primary
 
+            payload = payload.copy()
+            payload["earned_credits"] = resolve_credits(
+                payload.get("earned_credits"),
+                getattr(payload.get("mata_kuliah"), 'sks_total', None),
+                getattr(payload.get("mata_kuliah"), 'sks_total', None),
+            )
             return models.MonitoringMahasiswa.objects.create(**payload)
 
         def replace_transkrip_nilai(mahasiswa, mata_kuliah, academic_year, academic_session, earned_credits, grade_symbol):
@@ -1547,7 +1752,11 @@ class NilaiMahasiswaViewSet(viewsets.ModelViewSet):
                 primary = existing_qs.first()
                 if existing_qs.count() > 1:
                     existing_qs.exclude(id=primary.id).delete()
-                primary.earned_credits = earned_credits
+                primary.earned_credits = resolve_credits(
+                    earned_credits,
+                    primary.earned_credits,
+                    getattr(mata_kuliah, 'sks_total', None),
+                )
                 primary.grade_symbol = grade_symbol
                 primary.save()
                 return primary
@@ -1557,7 +1766,11 @@ class NilaiMahasiswaViewSet(viewsets.ModelViewSet):
                 mata_kuliah=mata_kuliah,
                 academic_year=academic_year,
                 academic_session=academic_session,
-                earned_credits=earned_credits,
+                earned_credits=resolve_credits(
+                    earned_credits,
+                    getattr(mata_kuliah, 'sks_total', None),
+                    getattr(mata_kuliah, 'sks_total', None),
+                ),
                 grade_symbol=grade_symbol,
             )
 
@@ -1589,6 +1802,23 @@ class NilaiMahasiswaViewSet(viewsets.ModelViewSet):
         nim_mahasiswa = self._first_value(data_dict, ['NIM', 'Student ID'])
         if not nim_mahasiswa:
             return Response({"error": "NIM wajib diisi"}, status=status.HTTP_400_BAD_REQUEST)
+
+        subject = self._first_value(data_dict, ['Subject', 'Nama MK', 'Mata Kuliah'])
+        subject_short = self._first_value(data_dict, ['Subject Short', 'Kode MK'])
+        academic_year = self._first_value(data_dict, ['Academic Year', 'Tahun Akademik'])
+        academic_session = self._first_value(data_dict, ['Academic Session', 'Semester'])
+
+        grade_nilai_raw = self._first_value(data_dict, ['Grade Nilai', 'GradeNIlai'])
+        grade_symbol = self._normalize_final_grade_symbol(grade_nilai_raw)
+        if grade_symbol is None:
+            message = "Grade Nilai kosong/0, data dilewati"
+            return Response(
+                {
+                    "status": "skipped",
+                    "message": message,
+                },
+                status=status.HTTP_200_OK,
+            )
 
         angkatan_raw = self._first_value(data_dict, ['Angkatan', 'Angkatan Mahasiswa'])
         if angkatan_raw:
@@ -1637,14 +1867,10 @@ class NilaiMahasiswaViewSet(viewsets.ModelViewSet):
                 mahasiswa_id=id_mahasiswa,
                 prodi=programstudi)
             
-        subject = self._first_value(data_dict, ['Subject', 'Nama MK', 'Mata Kuliah'])
-        subject_short = self._first_value(data_dict, ['Subject Short', 'Kode MK'])
         graded_credits_raw = self._first_value(data_dict, ['Graded Credits', 'SKS'])
         graded_credits = convert_to_float(graded_credits_raw) if graded_credits_raw != '' else 0.0
         if graded_credits.is_integer():
             graded_credits = int(graded_credits)
-        academic_year = self._first_value(data_dict, ['Academic Year', 'Tahun Akademik'])
-        academic_session = self._first_value(data_dict, ['Academic Session', 'Semester'])
         sm_objid = data_dict.get('SM Objid')
         st_object_type = data_dict.get('Object type')
         st_objid = data_dict.get('ST Objid')
@@ -1659,14 +1885,8 @@ class NilaiMahasiswaViewSet(viewsets.ModelViewSet):
         earned_credits = convert_to_float(earned_credits_raw) if earned_credits_raw != '' else 0.0
         if earned_credits.is_integer():
             earned_credits = int(earned_credits)
-        grade_symbol = self._first_value(data_dict, ['Final Marks', 'Final Grade', 'Grade', 'Nilai'])
         credit_type = data_dict.get('Credit Type')
         mentor = data_dict.get('Mentor')
-
-        if grade_symbol == "" or grade_symbol is None:
-            grade_symbol = "T"
-        else:
-            grade_symbol = grade_symbol
 
         angkatan_year = self._extract_year_value(angkatan, fallback=str(nim_mahasiswa)[4:8])
         if not angkatan_year:
@@ -1709,33 +1929,35 @@ class NilaiMahasiswaViewSet(viewsets.ModelViewSet):
             prodi=programstudi
         )
 
-        # 2. Pengecekan apakah mahasiswa sudah pernah mengambil mata kuliah terkait.
-        matakuliah=None
+        # 2. Cari mata kuliah yang sudah ada, prioritaskan yang sudah punya SKS master.
+        matakuliah = None
         for mk in matakuliah_list:
             monitoring_exists = models.MonitoringMahasiswa.objects.filter(
                 mahasiswa=datamahasiswa,
                 mata_kuliah=mk
             ).exists()
-        
-            if monitoring_exists:
-                matakuliah=mk
-                
-                # Cek apakah sks_total sebelumnya 0, jika iya, update dengan graded_credits
-                if matakuliah.sks_total == 0:
-                    matakuliah.sks_total = graded_credits
-                    matakuliah.save()
+
+            if monitoring_exists or mk.sks_total not in (None, '', 0, 0.0, '0', '0.0'):
+                matakuliah = mk
                 break
-        
-        # 3. jika tidak ada yang cocok, maka buat data mata kuliah baru
+
+        if not matakuliah and matakuliah_list.exists():
+            matakuliah = matakuliah_list.first()
+
+        # 3. jika belum ada mata kuliah yang cocok, tolak import supaya master tetap jadi sumber utama.
         if not matakuliah:
-            matakuliah, created = models.MataKuliah.objects.get_or_create(
-                name=subject,
-                kode=subject_short,
-                sks_total=graded_credits,
-                sm_objid=sm_objid,
-                prodi=programstudi,
-                semester=semester
+            return Response(
+                {
+                    "error": (
+                        f"Mata kuliah {subject_short} untuk prodi {programstudi.name} belum ada di master. "
+                        "Tambahkan ke data master mata kuliah dulu sebelum import nilai."
+                    )
+                },
+                status=status.HTTP_400_BAD_REQUEST,
             )
+        elif matakuliah.sks_total in (None, '', 0, 0.0, '0', '0.0') and graded_credits not in (None, '', 0, 0.0, '0', '0.0'):
+            matakuliah.sks_total = graded_credits
+            matakuliah.save()
 
         # Penilaian
         bobot_mid_sem = convert_to_float(self._first_value(data_dict, ['(%) Mid Sem', '% UTS', 'Bobot UTS'], 0.0))
@@ -1767,24 +1989,6 @@ class NilaiMahasiswaViewSet(viewsets.ModelViewSet):
                 bobot_mid_sem = 100 - bobot_end_sem - bobot_teaching
             elif bobot_end_sem == 0:
                 bobot_end_sem = 100 - bobot_mid_sem - bobot_teaching
-
-
-        final_grade = self._first_value(data_dict, ['Final Marks', 'Final Grade', 'Grade', 'Nilai'])
-        
-
-        if nilai_uas == 0 and nilai_uts == 0 and nilai_ta == 0 and final_grade:
-            grade_mapping = {
-                'A': 80,
-                'AB': 75,
-                'B': 70,
-                'BC': 65,
-                'C': 60,
-                'D': 50,
-                'E': 0
-            }
-            nilai_uas = grade_mapping.get(final_grade, 0)
-            nilai_uts = nilai_uas
-            nilai_ta = nilai_uas
 
 
         # Penilaian UTS
@@ -1902,6 +2106,8 @@ class NilaiMahasiswaViewSet(viewsets.ModelViewSet):
             earned_credits=earned_credits,
             grade_symbol=grade_symbol,
         )
+
+        self._rebuild_validasi_mahasiswa(datamahasiswa)
 
         serializer = self.get_serializer(instance=nilai_uas_obj)
         return Response(serializer.data, status=status.HTTP_200_OK)

@@ -89,11 +89,9 @@ def _required_slots(sks):
 
 
 def _candidate_rooms(ruangan, matkul):
-    tipe_target = "lab" if str(matkul.get("tipe_ruang", "")).upper() == "LAB" or matkul.get("butuh_lab", 0) == 1 else "kelas"
+    tipe_target = "kelas"
     kapasitas = matkul.get("kapasitas", 0)
     board_target = str(matkul.get("board_type") or "").strip().lower()
-    prodi_target = str(matkul.get("prodi") or matkul.get("prodi_lab") or "").strip().lower()
-    is_lab = tipe_target == "lab"
     return [
         ruang for ruang in ruangan
         if str(ruang.get("tipe", "kelas")).strip().lower() == tipe_target
@@ -102,12 +100,6 @@ def _candidate_rooms(ruangan, matkul):
             not board_target
             or not str(ruang.get("board_type") or "").strip()
             or str(ruang.get("board_type") or "").strip().lower() == board_target
-        )
-        and (
-            not is_lab
-            or not prodi_target
-            or not str(ruang.get("prodi") or "").strip()
-            or str(ruang.get("prodi") or "").strip().lower() == prodi_target
         )
     ]
 
@@ -299,7 +291,7 @@ def generate_schedule(matakuliah, ruangan, dosen, waktu=None, kelas_khusus=None)
                                 "kelas_ke": kelas_ke,
                                 "sks": sks,
                                 "kapasitas": item.get("kapasitas", 0),
-                                "tipe_ruang": "LAB" if item.get("butuh_lab", 0) == 1 else "KELAS",
+                                "tipe_ruang": "KELAS",
                                 "hari": hari,
                                 "jam_mulai": start_time,
                                 "jam_selesai": end_time,
@@ -369,6 +361,7 @@ def save_schedule_result(batch, jadwal, gagal, snapshot=None):
             jam_selesai=item.get("jam_selesai"),
             ruang_kode=item.get("ruang_kode") or "",
             ruang_nama=item.get("ruang_nama"),
+            catatan=item.get("catatan"),
         )
         for item in jadwal
     ]
@@ -417,6 +410,7 @@ def generate_and_save_batch(batch, snapshot=None):
         waktu=snapshot.get("waktu"),
         kelas_khusus=snapshot.get("kelas_khusus"),
     )
+    jadwal = list(jadwal) + list(snapshot.get("lab_manual", []))
     save_schedule_result(batch, jadwal, gagal, snapshot=snapshot)
     return jadwal, gagal
 

@@ -1,7 +1,22 @@
 import { request } from '../utils/axios-utils';
-import { useQuery, useMutation } from 'react-query';
+import { useQuery, useMutation, useQueryClient } from 'react-query';
 
 const url = '/api-stem/transkripnilai/';
+const DEGREE_AUDIT_REFRESH_KEY = 'simantap-degree-audit-refresh';
+const DEGREE_AUDIT_REFRESH_EVENT = 'simantap-degree-audit-refresh-event';
+
+const broadcastDegreeAuditRefresh = () => {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  try {
+    window.localStorage.setItem(DEGREE_AUDIT_REFRESH_KEY, Date.now().toString());
+    window.dispatchEvent(new Event(DEGREE_AUDIT_REFRESH_EVENT));
+  } catch (error) {
+    console.warn('Gagal broadcast refresh degree audit:', error);
+  }
+};
 
 const getTranskripNilai = () => {
   return request({
@@ -48,8 +63,10 @@ const patchTranskripNilai = ({ data, id }) => {
 
 export const useTranskripNilaiData = (options) => {
   return useQuery('transkrip-nilai', getTranskripNilai, {
-  // return useQuery('data-master', getTranskripNilai, {
-    refetchOnWindowFocus: false,
+    // return useQuery('data-master', getTranskripNilai, {
+    refetchOnWindowFocus: true,
+    refetchOnMount: 'always',
+    staleTime: 0,
     ...options,
   });
 };
@@ -59,7 +76,9 @@ export const useTranskripNilaiDataByNIM = (nim, options) => {
     ['transkrip-nilai-by-nim', nim],
     () => getTranskripNilaiByNIM(nim),
     {
-      refetchOnWindowFocus: false,
+      refetchOnWindowFocus: true,
+      refetchOnMount: 'always',
+      staleTime: 0,
       ...options,
     }
   );
@@ -70,7 +89,9 @@ export const useMonitoringMahasiswaDataByNIM = (nim, options) => {
     ['monitoring-mahasiswa-by-nim', nim],
     () => getMonitoringMahasiswaByNIM(nim),
     {
-      refetchOnWindowFocus: false,
+      refetchOnWindowFocus: true,
+      refetchOnMount: 'always',
+      staleTime: 0,
       ...options,
     }
   );
@@ -90,13 +111,43 @@ export const useTranskripNilaiDataByNIM2 = () => {
 };
 
 export const usePostTranskripNilai = () => {
-  return useMutation(postTranskripNilai);
+  const queryClient = useQueryClient();
+
+  return useMutation(postTranskripNilai, {
+    onSuccess: () => {
+      queryClient.invalidateQueries('transkrip-nilai');
+      queryClient.invalidateQueries('validasi-mahasiswa');
+      queryClient.invalidateQueries('monitoring-mahasiswa');
+      queryClient.invalidateQueries('data-master');
+      broadcastDegreeAuditRefresh();
+    },
+  });
 };
 
 export const useDeleteTranskripNilai = () => {
-  return useMutation(deleteTranskripNilai);
+  const queryClient = useQueryClient();
+
+  return useMutation(deleteTranskripNilai, {
+    onSuccess: () => {
+      queryClient.invalidateQueries('transkrip-nilai');
+      queryClient.invalidateQueries('validasi-mahasiswa');
+      queryClient.invalidateQueries('monitoring-mahasiswa');
+      queryClient.invalidateQueries('data-master');
+      broadcastDegreeAuditRefresh();
+    },
+  });
 };
 
 export const usePatchTranskripNilai = () => {
-  return useMutation(patchTranskripNilai);
+  const queryClient = useQueryClient();
+
+  return useMutation(patchTranskripNilai, {
+    onSuccess: () => {
+      queryClient.invalidateQueries('transkrip-nilai');
+      queryClient.invalidateQueries('validasi-mahasiswa');
+      queryClient.invalidateQueries('monitoring-mahasiswa');
+      queryClient.invalidateQueries('data-master');
+      broadcastDegreeAuditRefresh();
+    },
+  });
 };

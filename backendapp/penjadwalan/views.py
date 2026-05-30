@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_http_methods
 
 from .exporters import export_batch_to_xls
-from .importers import get_default_ruangan_payload, parse_excel_upload
+from .importers import get_default_ruangan_payload, parse_excel_upload, parse_lab_excel_upload
 from .models import (
     BatchJadwal,
     END_MAKAN,
@@ -112,6 +112,14 @@ def _validate_excel_file(uploaded_file):
         return "File Excel wajib diunggah."
     if not uploaded_file.name.lower().endswith(".xlsx"):
         return "File yang didukung saat ini hanya .xlsx."
+    return None
+
+
+def _validate_optional_excel_file(uploaded_file, field_label):
+    if not uploaded_file:
+        return None
+    if not uploaded_file.name.lower().endswith(".xlsx"):
+        return f"{field_label} harus berformat .xlsx."
     return None
 
 
@@ -373,10 +381,13 @@ def upload_form(request):
     <body>
         <div class="card">
             <h1>Upload Excel Penjadwalan</h1>
-            <p>Format file: <code>.xlsx</code> dengan kolom wajib MKKODE, NAMAMK, KELAS, Dosen, STATUS FM, SKS.</p>
+            <p>Format file penjadwalan: <code>.xlsx</code> dengan kolom wajib MKKODE, NAMAMK, KELAS, Dosen, STATUS FM, SKS.</p>
             <form action="/penjadwalan/batches/upload-excel/" method="post" enctype="multipart/form-data">
                 <input name="redirect_after_upload" type="hidden" value="true" />
-                <label for="file">File Excel</label>
+                <label for="lab_file">File Excel LAB</label>
+                <input id="lab_file" name="lab_file" type="file" accept=".xlsx" />
+
+                <label for="file">File Excel Penjadwalan</label>
                 <input id="file" name="file" type="file" accept=".xlsx" required />
 
                 <label for="nama">Nama Batch</label>
@@ -455,6 +466,11 @@ def batch_upload_excel(request):
     if file_error:
         return _bad_request(file_error)
 
+    lab_file = request.FILES.get("lab_file")
+    lab_file_error = _validate_optional_excel_file(lab_file, "File Excel LAB")
+    if lab_file_error:
+        return _bad_request(lab_file_error)
+
     try:
         ruangan = _parse_optional_json(request.POST.get("ruangan"), None)
         waktu = _parse_optional_json(request.POST.get("waktu"), None)
@@ -465,6 +481,14 @@ def batch_upload_excel(request):
 
     file_bytes = uploaded_file.read()
     uploaded_file.seek(0)
+    lab_manual = []
+
+    if lab_file:
+        try:
+            lab_manual = parse_lab_excel_upload(lab_file.read())
+            lab_file.seek(0)
+        except Exception:
+            return _bad_request("File Excel LAB tidak dapat diproses.")
 
     try:
         payload, preview = parse_excel_upload(
@@ -473,6 +497,7 @@ def batch_upload_excel(request):
             ruangan=ruangan,
             waktu=waktu,
             kelas_khusus=kelas_khusus,
+            lab_manual=lab_manual,
         )
     except ValueError as exc:
         return _bad_request(str(exc))
@@ -498,6 +523,8 @@ def batch_upload_excel(request):
             "batch": _serialize_batch(batch),
             "jadwal_count": len(jadwal),
             "gagal_count": len(gagal),
+            "lab_manual_count": len(payload.get("lab_manual", [])),
+            "lab_excluded_count": len(payload.get("lab_excluded", [])),
             "preview_count": len(preview),
             "preview_columns": list(preview[0].keys()) if preview else [],
         },

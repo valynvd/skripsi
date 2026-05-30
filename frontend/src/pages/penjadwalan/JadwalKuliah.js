@@ -293,6 +293,7 @@ const JadwalKuliah = () => {
   const editFormRef = useRef(null);
   const [form, setForm] = useState(initialForm);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedLabFile, setSelectedLabFile] = useState(null);
   const [selectedScheduleId, setSelectedScheduleId] = useState(() => {
     const saved = window.localStorage.getItem(selectedScheduleStorageKey);
     return saved ? Number(saved) : null;
@@ -461,6 +462,9 @@ const JadwalKuliah = () => {
     }
 
     const payload = new FormData();
+    if (selectedLabFile) {
+      payload.append('lab_file', selectedLabFile);
+    }
     payload.append('file', selectedFile);
     payload.append('nama', form.nama);
     payload.append('tahun_akademik', form.tahun_akademik);
@@ -477,6 +481,7 @@ const JadwalKuliah = () => {
       });
       setSelectedScheduleId(schedule.id);
       setSelectedFile(null);
+      setSelectedLabFile(null);
       queryClient.invalidateQueries('penjadwalan-batches');
       queryClient.invalidateQueries(['penjadwalan-batch-detail', schedule.id]);
     } catch (error) {
@@ -675,7 +680,26 @@ const JadwalKuliah = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                File Excel
+                File LAB
+              </label>
+              <input
+                className="w-full rounded-xl border border-dashed border-gray-300 px-4 py-3 bg-gray-50"
+                type="file"
+                accept=".xlsx"
+                onChange={(event) =>
+                  setSelectedLabFile(event.target.files?.[0] || null)
+                }
+              />
+              {selectedLabFile && (
+                <p className="mt-2 text-sm text-gray-500">
+                  File LAB terpilih: {selectedLabFile.name}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                File Penjadwalan
               </label>
               <input
                 className="w-full rounded-xl border border-dashed border-gray-300 px-4 py-3 bg-gray-50"

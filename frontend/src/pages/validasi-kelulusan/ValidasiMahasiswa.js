@@ -10,8 +10,10 @@ import FilterInput from '../../components/FitlerInput';
 import ProgressBar from '@ramonak/react-progress-bar';
 import { Dialog, Transition } from '@headlessui/react';
 import { useForm } from 'react-hook-form';
-import { useDataMahasiswaData } from '../../hooks/useDataMahasiswa';
-import { usePostValidasiMahasiswa } from '../../hooks/useValidasiMahasiswa';
+import {
+  usePostValidasiMahasiswa,
+  useValidasiMahasiswaData,
+} from '../../hooks/useValidasiMahasiswa';
 import { useMonitoringMahasiswaDataByNIM2 } from '../../hooks/useMonitoringMahasiswa';
 
 const ValidasiMahasiswa = () => {
@@ -31,11 +33,14 @@ const ValidasiMahasiswa = () => {
   const { control, watch, setValue } = useForm({
     defaultValues: {},
   });
-  const { data: responseData, isLoading: isLoadingMahasiswa } =
-    useDataMahasiswaData();
+  const {
+    data: responseData,
+    isLoading: isLoadingMahasiswa,
+    refetch: refetchDataMahasiswa,
+  } = useValidasiMahasiswaData();
 
   const {
-    mutate: postValidasiMahasiswa,
+    mutateAsync: postValidasiMahasiswaAsync,
     isLoading: postValidasiMahasiswaLoading,
   } = usePostValidasiMahasiswa();
 
@@ -44,9 +49,18 @@ const ValidasiMahasiswa = () => {
   console.log('Response Data ===', responseData);
 
   useEffect(() => {
-    if (isLoadingMahasiswa === false) {
-      setDataMahasiswa(responseData.data);
-      setFilterMahasiswa(responseData.data); // Initialize with all students
+    if (isLoadingMahasiswa === false && responseData) {
+      const normalizedMahasiswa = (responseData.data || []).map((item) => ({
+        ...item,
+        nama: item.mahasiswa_detail?.nama || '',
+        nim: item.mahasiswa_detail?.nim || '',
+        prodi: item.mahasiswa_detail?.prodi || '',
+        prodi_detail: item.mahasiswa_detail?.prodi_detail || {},
+        angkatan: item.mahasiswa_detail?.angkatan || '',
+      }));
+
+      setDataMahasiswa(normalizedMahasiswa);
+      setFilterMahasiswa(normalizedMahasiswa);
     }
   }, [isLoadingMahasiswa, responseData]);
 
@@ -94,10 +108,20 @@ const ValidasiMahasiswa = () => {
   const { mutateAsync: getMonitoringMahasiswaDataByNIMAsync } =
     useMonitoringMahasiswaDataByNIM2();
 
+  const getCreditValue = (data) => {
+    const masterCredits = parseInt(data?.mata_kuliah_detail?.sks_total, 10);
+    if (!Number.isNaN(masterCredits) && masterCredits > 0) {
+      return masterCredits;
+    }
+
+    const earnedCredits = parseInt(data?.earned_credits, 10);
+    return Number.isNaN(earnedCredits) ? 0 : earnedCredits;
+  };
+
   const calculateTotalCreditsD = (responseData, gradeSymbol) => {
     return responseData.reduce((totalCredits, data) => {
-      if (data.grade_symbol.includes(gradeSymbol)) {
-        return totalCredits + parseInt(data.earned_credits);
+      if ((data.grade_symbol || '').includes(gradeSymbol)) {
+        return totalCredits + getCreditValue(data);
       }
       return totalCredits;
     }, 0);
@@ -105,8 +129,8 @@ const ValidasiMahasiswa = () => {
 
   const calculateTotalCreditsE = (transkripData, gradeSymbol) => {
     return transkripData.reduce((totalCredits, getdata) => {
-      if (getdata.grade_symbol.includes(gradeSymbol)) {
-        return totalCredits + parseInt(getdata.mata_kuliah_detail.sks_total);
+      if ((getdata.grade_symbol || '').includes(gradeSymbol)) {
+        return totalCredits + getCreditValue(getdata);
       }
       return totalCredits;
     }, 0);
@@ -172,7 +196,7 @@ const ValidasiMahasiswa = () => {
           // const currentCredits = parseInt(getdata.earned_credits);
           // const updatedTotal = totalCredits + currentCredits;
           if (getdata.grade_symbol !== 'T') {
-            const currentCredits = parseInt(getdata.earned_credits);
+            const currentCredits = getCreditValue(getdata);
             return totalCredits + currentCredits;
           }
           return totalCredits;
@@ -187,9 +211,7 @@ const ValidasiMahasiswa = () => {
             // const updatedTotal = totalCredits + currentCredits;
             // return updatedTotal;
             if (getdata.grade_symbol !== 'T') {
-              const currentCredits = parseInt(
-                getdata.mata_kuliah_detail.sks_total
-              );
+              const currentCredits = getCreditValue(getdata);
               return totalCredits + currentCredits;
             }
             return totalCredits;
@@ -242,10 +264,9 @@ const ValidasiMahasiswa = () => {
                 D: 1.0,
                 E: 0.0,
               };
-              ips +=
-                gradeValues[transkripData.grade_symbol] *
-                parseInt(transkripData.earned_credits);
-              sks += parseInt(transkripData.earned_credits);
+              const currentCredits = getCreditValue(transkripData);
+              ips += gradeValues[transkripData.grade_symbol] * currentCredits;
+              sks += currentCredits;
             });
 
             if (sks > 0) {
@@ -358,7 +379,7 @@ const ValidasiMahasiswa = () => {
           keterangan_lulus = 'Pernah Mengulang';
         }
 
-        filterMahasiswa[index] = {
+        const updatedMahasiswa = {
           ...filterMahasiswa[index],
           nim_mahasiswa: filterMahasiswa[index].nim,
           jumlah_sks: totalEarnedCredits,
@@ -369,25 +390,33 @@ const ValidasiMahasiswa = () => {
           keterangan_lulus: keterangan_lulus,
         };
 
-        const data = filterMahasiswa[index];
+        setFilterMahasiswa((prev) =>
+          prev.map((mahasiswa, currentIndex) =>
+            currentIndex === index ? updatedMahasiswa : mahasiswa
+          )
+        );
+        setDataMahasiswa((prev) =>
+          prev.map((mahasiswa) =>
+            mahasiswa.nim === updatedMahasiswa.nim
+              ? { ...mahasiswa, ...updatedMahasiswa }
+              : mahasiswa
+          )
+        );
+
+        const data = updatedMahasiswa;
         const validasiFormData = new FormData();
 
         for (const key in data) {
           validasiFormData.append(key, data[key]);
         }
         try {
-          postValidasiMahasiswa(validasiFormData, {
-            onSuccess: () => {
-              const newProgress = ((index + 1) / filterMahasiswa.length) * 100;
-              if (newProgress == 100.0) {
-                setOpen(true);
-              }
-              setProgress(newProgress.toFixed(2));
-            },
-            onError: (error) => {
-              console.error(error);
-            },
-          });
+          await postValidasiMahasiswaAsync(validasiFormData);
+          await refetchDataMahasiswa();
+          const newProgress = ((index + 1) / filterMahasiswa.length) * 100;
+          if (newProgress == 100.0) {
+            setOpen(true);
+          }
+          setProgress(newProgress.toFixed(2));
         } catch (error) {
           console.error(error);
         }
