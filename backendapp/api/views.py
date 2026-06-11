@@ -1221,12 +1221,15 @@ class ValidasiMahasiswaViewSet(viewsets.ModelViewSet):
         nim_mahasiswa = data_dict.get('nim_mahasiswa')
         mahasiswa = models.DataMahasiswa.objects.get(nim=nim_mahasiswa)
 
-        jumlah_sks = data_dict.get('jumlah_sks')
-        nilaiE = data_dict.get('nilaie')
-        nilaiD = data_dict.get('nilaid')
-        status_kelulusan = data_dict.get('status_kelulusan')
-        nilaiIPK = data_dict.get('nilai_ipk')
-        keterangan_lulus = data_dict.get('keterangan_lulus')
+        summary_serializer = serializers.DataMahasiswaSerializers(context=self.get_serializer_context())
+        summary = summary_serializer._get_degree_audit_summary(mahasiswa)
+
+        jumlah_sks = summary['jumlah_sks']
+        nilaiE = summary['nilaie']
+        nilaiD = summary['nilaid']
+        status_kelulusan = summary['status_kelulusan']
+        nilaiIPK = summary['nilai_ipk']
+        keterangan_lulus = summary['keterangan_lulus']
 
         if (status_kelulusan == "") :
             None
@@ -1485,27 +1488,20 @@ class NilaiMahasiswaViewSet(viewsets.ModelViewSet):
         return grade_rank.get(str(grade_symbol or '').strip().upper(), -1)
 
     def _deduplicate_transkrip_data(self, transkrip_data):
-        transkrip_by_course_semester = {}
+        transkrip_by_course = {}
 
         for transkrip in transkrip_data:
-            key = (
-                self._normalize_academic_year(transkrip.academic_year),
-                self._normalize_academic_session(
-                    transkrip.academic_year,
-                    transkrip.academic_session,
-                ),
-                self._get_course_key(transkrip),
-            )
-            existing = transkrip_by_course_semester.get(key)
+            key = self._get_course_key(transkrip)
+            existing = transkrip_by_course.get(key)
 
             if (
                 existing is None
                 or self._get_grade_rank(transkrip.grade_symbol)
                 > self._get_grade_rank(existing.grade_symbol)
             ):
-                transkrip_by_course_semester[key] = transkrip
+                transkrip_by_course[key] = transkrip
 
-        return list(transkrip_by_course_semester.values())
+        return list(transkrip_by_course.values())
 
     def _normalize_academic_period(self, academic_year, academic_session):
         year = str(academic_year or '').strip()

@@ -436,27 +436,20 @@ class DataMahasiswaSerializers(serializers.ModelSerializer):
     return grade_rank.get(str(grade_symbol or '').strip().upper(), -1)
 
   def _deduplicate_transkrip_data(self, transkrip_data):
-    transkrip_by_course_semester = {}
+    transkrip_by_course = {}
 
     for transkrip in transkrip_data:
-      key = (
-        self._normalize_academic_year(transkrip.academic_year),
-        self._normalize_academic_session(
-          transkrip.academic_year,
-          transkrip.academic_session,
-        ),
-        self._get_course_key(transkrip),
-      )
-      existing = transkrip_by_course_semester.get(key)
+      key = self._get_course_key(transkrip)
+      existing = transkrip_by_course.get(key)
 
       if (
         existing is None
         or self._get_grade_rank(transkrip.grade_symbol)
         > self._get_grade_rank(existing.grade_symbol)
       ):
-        transkrip_by_course_semester[key] = transkrip
+        transkrip_by_course[key] = transkrip
 
-    return list(transkrip_by_course_semester.values())
+    return list(transkrip_by_course.values())
 
   def _get_degree_audit_summary(self, obj):
     cache = getattr(self, '_degree_audit_cache', {})

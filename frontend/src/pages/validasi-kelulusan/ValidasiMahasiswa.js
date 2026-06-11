@@ -48,6 +48,69 @@ const ValidasiMahasiswa = () => {
 
   console.log('Response Data ===', responseData);
 
+  const normalizeAcademicYear = (academicYear) => {
+    const value = String(academicYear ?? '').trim();
+    return value.length >= 6 && /^\d+$/.test(value) ? value.slice(0, 4) : value;
+  };
+
+  const normalizeAcademicSession = (academicYear, academicSession) => {
+    const session = String(academicSession ?? '').trim();
+    if (session) {
+      return session;
+    }
+
+    const year = String(academicYear ?? '').trim();
+    return year.length >= 6 && /^\d+$/.test(year) ? year.slice(-2) : session;
+  };
+
+  const normalizeAcademicFields = (data) => ({
+    ...data,
+    academic_year: normalizeAcademicYear(data.academic_year),
+    academic_session: normalizeAcademicSession(
+      data.academic_year,
+      data.academic_session
+    ),
+  });
+
+  const getGradeRank = (gradeSymbol) => {
+    const gradeRank = {
+      A: 7,
+      AB: 6,
+      B: 5,
+      BC: 4,
+      C: 3,
+      D: 2,
+      E: 1,
+      T: 0,
+    };
+
+    return gradeRank[String(gradeSymbol || '').trim().toUpperCase()] ?? -1;
+  };
+
+  const deduplicateBestCourses = (items) => {
+    const itemsByCourse = new Map();
+
+    items.forEach((item) => {
+      const normalizedItem = normalizeAcademicFields(item);
+      const courseKey =
+        normalizedItem.mata_kuliah_detail?.kode ||
+        normalizedItem.mata_kuliah ||
+        normalizedItem.mata_kuliah_detail?.name ||
+        normalizedItem.id;
+      const existing = itemsByCourse.get(courseKey);
+
+      if (
+        !existing ||
+        getGradeRank(normalizedItem.grade_symbol) >
+          getGradeRank(existing.grade_symbol)
+      ) {
+        itemsByCourse.set(courseKey, normalizedItem);
+      }
+    });
+
+    return Array.from(itemsByCourse.values());
+  };
+
   useEffect(() => {
     if (isLoadingMahasiswa === false && responseData) {
       const normalizedMahasiswa = (responseData.data || []).map((item) => ({
@@ -166,14 +229,17 @@ const ValidasiMahasiswa = () => {
           nimMahasiswa
         );
         const result = await getMonitoringMahasiswaDataByNIMAsync(nimMahasiswa);
+        const auditTranskripData = deduplicateBestCourses(
+          responseData.data || []
+        );
 
         // Check nilai D dan E
         const totalSKSNilaiD = calculateTotalCreditsD(
-          responseData.data,
+          auditTranskripData,
           'D'
         ).toString();
         const totalSKSNilaiE = calculateTotalCreditsE(
-          responseData.data,
+          auditTranskripData,
           'E'
         ).toString();
         const checkNilai = result.data.reduce((fixResult, resultData) => {
@@ -192,7 +258,7 @@ const ValidasiMahasiswa = () => {
         // }, 0);
         // const totalEarnedCredits = totalSKS.toString();
 
-        const totalSKS = responseData.data.reduce((totalCredits, getdata) => {
+        const totalSKS = auditTranskripData.reduce((totalCredits, getdata) => {
           // const currentCredits = parseInt(getdata.earned_credits);
           // const updatedTotal = totalCredits + currentCredits;
           if (getdata.grade_symbol !== 'T') {
@@ -203,7 +269,7 @@ const ValidasiMahasiswa = () => {
         }, 0);
         const totalEarnedCredits = totalSKS.toString();
 
-        const AkumulatifSKS = responseData.data.reduce(
+        const AkumulatifSKS = auditTranskripData.reduce(
           (totalCredits, getdata) => {
             // const currentCredits = parseInt(
             //   getdata.mata_kuliah_detail.sks_total
@@ -230,7 +296,7 @@ const ValidasiMahasiswa = () => {
         // Pisah tiap tahun untuk hitung IPS
         const uniqueTahunAkademik = Array.from(
           new Set(
-            responseData.data.map((getdata) =>
+            auditTranskripData.map((getdata) =>
               JSON.stringify({
                 academicYear: getdata.academic_year,
                 academicSession: getdata.academic_session,
@@ -290,7 +356,7 @@ const ValidasiMahasiswa = () => {
           return ipsResults;
         };
 
-        const ipsData = calculateIPS(responseData.data);
+        const ipsData = calculateIPS(auditTranskripData);
         console.log(ipsData);
 
         // Hitung IPK
@@ -307,7 +373,7 @@ const ValidasiMahasiswa = () => {
         const ipkData = calculateIPK(ipsData);
 
         // Check Nilai TA
-        const checkNilaiTA = responseData.data.reduce(
+        const checkNilaiTA = auditTranskripData.reduce(
           (gradeSymbol, transkripData) => {
             if (
               transkripData.mata_kuliah_detail.name == 'Final Project' ||
@@ -322,7 +388,7 @@ const ValidasiMahasiswa = () => {
 
         const englishScientificCommunicationIIGrade =
           getGradeSymbolByCourseName(
-            responseData.data,
+            auditTranskripData,
             'English Scientific Communication II'
           );
         const hasEnglishScientificCommunicationIIRule =

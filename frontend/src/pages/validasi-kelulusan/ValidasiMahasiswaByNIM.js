@@ -48,6 +48,21 @@ const isUsableGrade = (gradeSymbol) =>
     String(gradeSymbol || '').trim().toUpperCase()
   );
 
+const getGradeRank = (gradeSymbol) => {
+  const gradeRank = {
+    A: 7,
+    AB: 6,
+    B: 5,
+    BC: 4,
+    C: 3,
+    D: 2,
+    E: 1,
+    T: 0,
+  };
+
+  return gradeRank[String(gradeSymbol || '').trim().toUpperCase()] ?? -1;
+};
+
 const deduplicateSameSemesterCourses = (items) => {
   const itemsByCourseSemester = new Map();
 
@@ -79,6 +94,30 @@ const deduplicateSameSemesterCourses = (items) => {
   });
 
   return Array.from(itemsByCourseSemester.values());
+};
+
+const deduplicateBestCourses = (items) => {
+  const itemsByCourse = new Map();
+
+  items.forEach((item) => {
+    const normalizedItem = normalizeAcademicFields(item);
+    const courseKey =
+      normalizedItem.mata_kuliah_detail?.kode ||
+      normalizedItem.mata_kuliah ||
+      normalizedItem.mata_kuliah_detail?.name ||
+      normalizedItem.id;
+    const existing = itemsByCourse.get(courseKey);
+
+    if (
+      !existing ||
+      getGradeRank(normalizedItem.grade_symbol) >
+        getGradeRank(existing.grade_symbol)
+    ) {
+      itemsByCourse.set(courseKey, normalizedItem);
+    }
+  });
+
+  return Array.from(itemsByCourse.values());
 };
 
 const ValidasiMahasiswaByNIM = () => {
@@ -181,6 +220,8 @@ const ValidasiMahasiswaByNIM = () => {
   }, [responseValidasi, transkripData.length]);
 
   useEffect(() => {
+    const auditTranskripData = deduplicateBestCourses(transkripData);
+
     const calculateTotalCreditsD = (transkripData, gradeSymbol) => {
       return transkripData.reduce((totalCredits, getdata) => {
         if ((getdata.grade_symbol || '').includes(gradeSymbol)) {
@@ -222,13 +263,13 @@ const ValidasiMahasiswaByNIM = () => {
     };
 
     const totalSKSNilaiD = calculateTotalCreditsD(
-      transkripData,
+      auditTranskripData,
       'D'
     ).toString();
     setNilaiD(totalSKSNilaiD);
 
     const totalSKSNilaiE = calculateTotalCreditsE(
-      transkripData,
+      auditTranskripData,
       'E'
     ).toString();
     setNilaiE(totalSKSNilaiE);
@@ -250,7 +291,7 @@ const ValidasiMahasiswaByNIM = () => {
     // console.log('Total SKS:', totalSKS);
     // const totalEarnedCredits = totalSKS.toString();
 
-    const totalSKS = transkripData.reduce((totalCredits, getdata) => {
+    const totalSKS = auditTranskripData.reduce((totalCredits, getdata) => {
       const currentCredits = getCreditValue(getdata);
       const updatedTotal = totalCredits + currentCredits;
       // console.log('Matkul:', getdata.mata_kuliah_detail.name);
@@ -258,7 +299,7 @@ const ValidasiMahasiswaByNIM = () => {
       return updatedTotal;
     }, 0);
 
-    const AkumulatifSKS = transkripData.reduce((totalCredits, getdata) => {
+    const AkumulatifSKS = auditTranskripData.reduce((totalCredits, getdata) => {
       const currentCredits = getCreditValue(getdata);
       const updatedTotal = totalCredits + currentCredits;
       // console.log('Matkul:', getdata.mata_kuliah_detail.name);
@@ -272,7 +313,7 @@ const ValidasiMahasiswaByNIM = () => {
 
     const uniqueTahunAkademik = Array.from(
       new Set(
-        transkripData.map((getdata) =>
+        auditTranskripData.map((getdata) =>
           JSON.stringify({
             academicYear: getdata.academic_year,
             academicSession: getdata.academic_session,
@@ -322,7 +363,7 @@ const ValidasiMahasiswaByNIM = () => {
       return ipsResults;
     };
 
-    const ipsData = calculateIPS(transkripData);
+    const ipsData = calculateIPS(auditTranskripData);
     setIpsSemester(ipsData);
 
     if (responseValidasi?.data?.length) {
@@ -366,7 +407,7 @@ const ValidasiMahasiswaByNIM = () => {
     const ipkData = calculateIPK(ipsData);
     setNilaiIpk(ipkData);
 
-    const checkNilaiTA = transkripData.reduce((gradeSymbol, transkripData) => {
+    const checkNilaiTA = auditTranskripData.reduce((gradeSymbol, transkripData) => {
       if (
         transkripData.mata_kuliah_detail.name == 'Final Project' ||
         transkripData.mata_kuliah_detail.name == 'Final Project II'
@@ -379,7 +420,7 @@ const ValidasiMahasiswaByNIM = () => {
     setNilaiTA(checkNilaiTA);
 
     const englishScientificCommunicationIIGrade = getGradeSymbolByCourseName(
-      transkripData,
+      auditTranskripData,
       'English Scientific Communication II'
     );
     const hasEnglishScientificCommunicationIIRule =
