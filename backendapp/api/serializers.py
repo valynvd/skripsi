@@ -401,6 +401,63 @@ class DataMahasiswaSerializers(serializers.ModelSerializer):
     }
     return (grade_rank.get(grade_symbol, -99)) >= grade_rank['B']
 
+  def _normalize_academic_year(self, academic_year):
+    value = str(academic_year or '').strip()
+    return value[:4] if value.isdigit() and len(value) >= 6 else value
+
+  def _normalize_academic_session(self, academic_year, academic_session):
+    session = str(academic_session or '').strip()
+    if session:
+      return session
+
+    year = str(academic_year or '').strip()
+    return year[-2:] if year.isdigit() and len(year) >= 6 else session
+
+  def _get_course_key(self, transkrip):
+    mata_kuliah = getattr(transkrip, 'mata_kuliah', None)
+    return (
+      getattr(mata_kuliah, 'kode', None)
+      or getattr(mata_kuliah, 'name', None)
+      or getattr(transkrip, 'mata_kuliah_id', None)
+      or transkrip.id
+    )
+
+  def _get_grade_rank(self, grade_symbol):
+    grade_rank = {
+      'A': 7,
+      'AB': 6,
+      'B': 5,
+      'BC': 4,
+      'C': 3,
+      'D': 2,
+      'E': 1,
+      'T': 0,
+    }
+    return grade_rank.get(str(grade_symbol or '').strip().upper(), -1)
+
+  def _deduplicate_transkrip_data(self, transkrip_data):
+    transkrip_by_course_semester = {}
+
+    for transkrip in transkrip_data:
+      key = (
+        self._normalize_academic_year(transkrip.academic_year),
+        self._normalize_academic_session(
+          transkrip.academic_year,
+          transkrip.academic_session,
+        ),
+        self._get_course_key(transkrip),
+      )
+      existing = transkrip_by_course_semester.get(key)
+
+      if (
+        existing is None
+        or self._get_grade_rank(transkrip.grade_symbol)
+        > self._get_grade_rank(existing.grade_symbol)
+      ):
+        transkrip_by_course_semester[key] = transkrip
+
+    return list(transkrip_by_course_semester.values())
+
   def _get_degree_audit_summary(self, obj):
     cache = getattr(self, '_degree_audit_cache', {})
     if obj.pk in cache:
@@ -412,7 +469,7 @@ class DataMahasiswaSerializers(serializers.ModelSerializer):
       .select_related('mata_kuliah')
       .order_by('academic_year', 'academic_session', 'id')
     )
-    transkrip_data = list(transkrip_qs)
+    transkrip_data = self._deduplicate_transkrip_data(list(transkrip_qs))
 
     total_sks = 0
     total_nilai_d = 0
@@ -553,6 +610,34 @@ class MonitoringMahasiswaSerializers(serializers.ModelSerializer):
 
 class ValidasiMahasiswaSerializers(serializers.ModelSerializer):
   mahasiswa_detail = DataMahasiswaSerializers(source='mahasiswa', read_only=True)
+  jumlah_sks = serializers.SerializerMethodField()
+  nilaid = serializers.SerializerMethodField()
+  nilaie = serializers.SerializerMethodField()
+  nilai_ipk = serializers.SerializerMethodField()
+  status_kelulusan = serializers.SerializerMethodField()
+  keterangan_lulus = serializers.SerializerMethodField()
+
+  def _get_summary(self, obj):
+    serializer = DataMahasiswaSerializers(context=self.context)
+    return serializer._get_degree_audit_summary(obj.mahasiswa)
+
+  def get_jumlah_sks(self, obj):
+    return self._get_summary(obj)['jumlah_sks']
+
+  def get_nilaid(self, obj):
+    return self._get_summary(obj)['nilaid']
+
+  def get_nilaie(self, obj):
+    return self._get_summary(obj)['nilaie']
+
+  def get_nilai_ipk(self, obj):
+    return self._get_summary(obj)['nilai_ipk']
+
+  def get_status_kelulusan(self, obj):
+    return self._get_summary(obj)['status_kelulusan']
+
+  def get_keterangan_lulus(self, obj):
+    return self._get_summary(obj)['keterangan_lulus']
   
   class Meta:
       model = models.ValidasiMahasiswa

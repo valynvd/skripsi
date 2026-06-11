@@ -1450,6 +1450,77 @@ class NilaiMahasiswaViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.NilaiMahasiswaSerializers
     queryset = models.NilaiMahasiswa.objects.all()
 
+    def _normalize_academic_year(self, academic_year):
+        value = str(academic_year or '').strip()
+        return value[:4] if value.isdigit() and len(value) >= 6 else value
+
+    def _normalize_academic_session(self, academic_year, academic_session):
+        session = str(academic_session or '').strip()
+        if session:
+            return session
+
+        year = str(academic_year or '').strip()
+        return year[-2:] if year.isdigit() and len(year) >= 6 else session
+
+    def _get_course_key(self, transkrip):
+        mata_kuliah = getattr(transkrip, 'mata_kuliah', None)
+        return (
+            getattr(mata_kuliah, 'kode', None)
+            or getattr(mata_kuliah, 'name', None)
+            or getattr(transkrip, 'mata_kuliah_id', None)
+            or transkrip.id
+        )
+
+    def _get_grade_rank(self, grade_symbol):
+        grade_rank = {
+            'A': 7,
+            'AB': 6,
+            'B': 5,
+            'BC': 4,
+            'C': 3,
+            'D': 2,
+            'E': 1,
+            'T': 0,
+        }
+        return grade_rank.get(str(grade_symbol or '').strip().upper(), -1)
+
+    def _deduplicate_transkrip_data(self, transkrip_data):
+        transkrip_by_course_semester = {}
+
+        for transkrip in transkrip_data:
+            key = (
+                self._normalize_academic_year(transkrip.academic_year),
+                self._normalize_academic_session(
+                    transkrip.academic_year,
+                    transkrip.academic_session,
+                ),
+                self._get_course_key(transkrip),
+            )
+            existing = transkrip_by_course_semester.get(key)
+
+            if (
+                existing is None
+                or self._get_grade_rank(transkrip.grade_symbol)
+                > self._get_grade_rank(existing.grade_symbol)
+            ):
+                transkrip_by_course_semester[key] = transkrip
+
+        return list(transkrip_by_course_semester.values())
+
+    def _normalize_academic_period(self, academic_year, academic_session):
+        year = str(academic_year or '').strip()
+        session = str(academic_session or '').strip()
+
+        if year.isdigit() and len(year) >= 6:
+            return year[:4], session or year[-2:]
+
+        return year, session
+
+    def _legacy_academic_year(self, academic_year, academic_session):
+        year = str(academic_year or '').strip()
+        session = str(academic_session or '').strip()
+        return f"{year}{session}" if year and session else None
+
     def _rebuild_validasi_mahasiswa(self, mahasiswa):
         transkrip_qs = (
             models.TranskripNilai.objects
@@ -1457,6 +1528,7 @@ class NilaiMahasiswaViewSet(viewsets.ModelViewSet):
             .select_related('mata_kuliah')
             .order_by('academic_year', 'academic_session', 'id')
         )
+        transkrip_data = self._deduplicate_transkrip_data(list(transkrip_qs))
 
         grade_values = {
             'A': 4.0,
@@ -1488,7 +1560,7 @@ class NilaiMahasiswaViewSet(viewsets.ModelViewSet):
         english_sc_ii_grade = None
         final_project_grade = None
 
-        for transkrip in transkrip_qs:
+        for transkrip in transkrip_data:
             grade_symbol = transkrip.grade_symbol or ''
             sks_total = getattr(getattr(transkrip, 'mata_kuliah', None), 'sks_total', None)
             try:
@@ -1710,17 +1782,21 @@ class NilaiMahasiswaViewSet(viewsets.ModelViewSet):
             )
 
         def replace_monitoring_mahasiswa(payload):
-            existing_qs = models.MonitoringMahasiswa.objects.filter(
+            legacy_academic_year = self._legacy_academic_year(
+                payload["academic_year"],
+                payload["academic_session"],
+            )
+            base_qs = models.MonitoringMahasiswa.objects.filter(
                 mahasiswa=payload["mahasiswa"],
                 mata_kuliah=payload["mata_kuliah"],
                 academic_session=payload["academic_session"],
-                academic_year=payload["academic_year"],
             ).order_by("-id")
+            existing_qs = base_qs.filter(academic_year=payload["academic_year"])
+            if not existing_qs.exists() and legacy_academic_year:
+                existing_qs = base_qs.filter(academic_year=legacy_academic_year)
 
             if existing_qs.exists():
                 primary = existing_qs.first()
-                if existing_qs.count() > 1:
-                    existing_qs.exclude(id=primary.id).delete()
                 for field, value in payload.items():
                     if field == "earned_credits":
                         value = resolve_credits(
@@ -1741,22 +1817,28 @@ class NilaiMahasiswaViewSet(viewsets.ModelViewSet):
             return models.MonitoringMahasiswa.objects.create(**payload)
 
         def replace_transkrip_nilai(mahasiswa, mata_kuliah, academic_year, academic_session, earned_credits, grade_symbol):
-            existing_qs = models.TranskripNilai.objects.filter(
+            legacy_academic_year = self._legacy_academic_year(
+                academic_year,
+                academic_session,
+            )
+            base_qs = models.TranskripNilai.objects.filter(
                 mahasiswa=mahasiswa,
                 mata_kuliah=mata_kuliah,
-                academic_year=academic_year,
                 academic_session=academic_session,
             ).order_by("-id")
+            existing_qs = base_qs.filter(academic_year=academic_year)
+            if not existing_qs.exists() and legacy_academic_year:
+                existing_qs = base_qs.filter(academic_year=legacy_academic_year)
 
             if existing_qs.exists():
                 primary = existing_qs.first()
-                if existing_qs.count() > 1:
-                    existing_qs.exclude(id=primary.id).delete()
                 primary.earned_credits = resolve_credits(
                     earned_credits,
                     primary.earned_credits,
                     getattr(mata_kuliah, 'sks_total', None),
                 )
+                primary.academic_year = academic_year
+                primary.academic_session = academic_session
                 primary.grade_symbol = grade_symbol
                 primary.save()
                 return primary
@@ -1807,6 +1889,10 @@ class NilaiMahasiswaViewSet(viewsets.ModelViewSet):
         subject_short = self._first_value(data_dict, ['Subject Short', 'Kode MK'])
         academic_year = self._first_value(data_dict, ['Academic Year', 'Tahun Akademik'])
         academic_session = self._first_value(data_dict, ['Academic Session', 'Semester'])
+        academic_year, academic_session = self._normalize_academic_period(
+            academic_year,
+            academic_session,
+        )
 
         grade_nilai_raw = self._first_value(data_dict, ['Grade Nilai', 'GradeNIlai'])
         grade_symbol = self._normalize_final_grade_symbol(grade_nilai_raw)

@@ -168,7 +168,7 @@ const ValidasiMahasiswaByNIM = () => {
 
   useEffect(() => {
     const validasiMahasiswa = responseValidasi?.data?.[0];
-    if (!validasiMahasiswa) {
+    if (!validasiMahasiswa || transkripData.length > 0) {
       return;
     }
 
@@ -178,7 +178,7 @@ const ValidasiMahasiswaByNIM = () => {
     setNilaiIpk(validasiMahasiswa.nilai_ipk ?? '');
     setStatusKelulusan(validasiMahasiswa.status_kelulusan ?? '');
     setNgulangNilai(validasiMahasiswa.keterangan_lulus === 'Pernah Mengulang');
-  }, [responseValidasi]);
+  }, [responseValidasi, transkripData.length]);
 
   useEffect(() => {
     const calculateTotalCreditsD = (transkripData, gradeSymbol) => {
