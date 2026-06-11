@@ -69,6 +69,7 @@ const importTemplateColumns = [
   'NIM',
   'Nama',
   'Prodi',
+  'Angkatan',
   'Kode MK',
   'Nama MK',
   'Tahun Akademik',
@@ -79,11 +80,29 @@ const importTemplateColumns = [
   'Grade Nilai',
 ];
 
+const requiredImportColumns = importTemplateColumns.filter(
+  (column) => column !== 'Angkatan'
+);
+
+const importColumnAliases = {
+  NIM: ['Student ID', 'MhswID'],
+  Nama: ['Student Name', 'Nama Mahasiswa'],
+  Prodi: ['Program Studi', 'Jurusan', 'ProdiID'],
+  Angkatan: ['Tahun Angkatan'],
+  'Kode MK': ['Subject Short', 'MKKode'],
+  'Nama MK': ['Subject', 'Mata Kuliah', 'MKNama'],
+  'Tahun Akademik': ['Academic Year', 'TahunID'],
+  TA: ['Teaching Ass.', 'TeachingAss', 'Teaching Ass'],
+  'Nilai Akhir': ['Final Marks', 'Final Grade', 'Nilai', 'NilaiAkhir'],
+  'Grade Nilai': ['GradeNIlai', 'Grade'],
+};
+
 const academicYearGuideRows = [
   ['Keterangan', 'Contoh'],
   ['Format Tahun Akademik', '202230'],
   ['Arti 202230', 'Tahun 2022, semester genap'],
   ['Format lain yang dipakai sistem', '202210 = 2022 ganjil, 202220 = 2022 ganjil pendek, 202240 = 2022 genap pendek'],
+  ['Angkatan', 'Opsional. Jika kosong/tidak ada, sistem mengambil angkatan dari NIM'],
   ['Acuan import', 'Grade Nilai menjadi sumber utama; baris dengan 0 atau - akan dilewati'],
   ['SKS', 'Diambil dari master mata kuliah jika kolom Excel kosong'],
 ];
@@ -106,9 +125,19 @@ const normalizeHeaderText = (value) =>
 
 const getMissingColumns = (headers, requiredColumns) => {
   const normalizedHeaders = headers.map(normalizeHeaderText);
-  return requiredColumns.filter(
-    (column) => !normalizedHeaders.includes(normalizeHeaderText(column))
-  );
+  return requiredColumns.filter((column) => {
+    const acceptedHeaders = [column, ...(importColumnAliases[column] || [])].map(
+      normalizeHeaderText
+    );
+
+    return !acceptedHeaders.some((header) => normalizedHeaders.includes(header));
+  });
+};
+
+const normalizeAngkatanValue = (value) => {
+  const text = String(value ?? '').trim();
+  const yearMatch = text.match(/\d{4}/);
+  return yearMatch ? yearMatch[0] : text;
 };
 
 const hasUsableGradeNilai = (value) => {
@@ -135,11 +164,11 @@ const normalizeNilaiRow = (row) => {
     getFirstNonEmpty(row, ['NIM', 'Student ID', 'MhswID'])
   ).trim();
   const prodiFromInput = String(
-    getFirstNonEmpty(row, ['Prodi', 'Program Studi', 'Jurusan'])
+    getFirstNonEmpty(row, ['Prodi', 'Program Studi', 'Jurusan', 'ProdiID'])
   ).trim();
-  const angkatanFromInput = String(
+  const angkatanFromInput = normalizeAngkatanValue(
     getFirstNonEmpty(row, ['Angkatan', 'Tahun Angkatan'])
-  ).trim();
+  );
   const kodeMk = String(
     getFirstNonEmpty(row, ['Kode MK', 'Subject Short', 'MKKode'])
   ).trim();
@@ -147,7 +176,7 @@ const normalizeNilaiRow = (row) => {
     getFirstNonEmpty(row, ['Nama MK', 'Subject', 'MKNama'])
   ).trim();
   const tahunAkademikRaw = String(
-    getFirstNonEmpty(row, ['Tahun Akademik', 'Academic Year'])
+    getFirstNonEmpty(row, ['Tahun Akademik', 'Academic Year', 'TahunID'])
   ).trim();
   const academicYearFromInput = String(
     getFirstNonEmpty(row, ['Academic Year'])
@@ -162,7 +191,7 @@ const normalizeNilaiRow = (row) => {
     academicSessionFromInput ||
     (tahunAkademikRaw.length >= 6 ? tahunAkademikRaw.slice(-2) : '');
   const nilaiAkhir = String(
-    getFirstNonEmpty(row, ['Nilai Akhir', 'Final Marks', 'Final Grade', 'Nilai'])
+    getFirstNonEmpty(row, ['Nilai Akhir', 'Final Marks', 'Final Grade', 'Nilai', 'NilaiAkhir'])
   ).trim();
   const gradeNilai = String(
     getFirstNonEmpty(row, ['Grade Nilai', 'GradeNIlai'])
@@ -191,7 +220,7 @@ const normalizeNilaiRow = (row) => {
     Nama: namaMahasiswa,
     prodi: prodiInfo.name,
     prodi_kode: prodiInfo.kode,
-    Prodi: getFirstNonEmpty(row, ['Prodi', 'Program Studi', 'Jurusan']) || prodiInfo.name,
+    Prodi: getFirstNonEmpty(row, ['Prodi', 'Program Studi', 'Jurusan', 'ProdiID']) || prodiInfo.name,
     angkatan: angkatanValue,
     Angkatan: angkatanValue,
     'Subject Short': kodeMk,
@@ -232,6 +261,7 @@ const NilaiMahasiswaImportExcel = () => {
   const [namamahasiswa, setNamaMahasiswa] = useState('');
   const [nim, setNim] = useState('');
   const [prodi, setProdi] = useState('');
+  const [angkatan, setAngkatan] = useState('');
 
   const [nilaiD, setNilaiD] = useState('');
   const [nilaiE, setNilaiE] = useState('');
@@ -271,7 +301,7 @@ const NilaiMahasiswaImportExcel = () => {
     const workbook = xlsx.utils.book_new();
     const worksheetData = [
       importTemplateColumns,
-      ['', '', '', '', '', '', '', '', '', '', ''],
+      importTemplateColumns.map(() => ''),
     ];
     const worksheet = xlsx.utils.aoa_to_sheet(worksheetData);
 
@@ -328,7 +358,7 @@ const NilaiMahasiswaImportExcel = () => {
       }
 
       const firstRowHeaders = Object.keys(exceljson[0] || {});
-      const missingColumns = getMissingColumns(firstRowHeaders, importTemplateColumns);
+      const missingColumns = getMissingColumns(firstRowHeaders, requiredImportColumns);
       if (missingColumns.length > 0) {
         throw new Error(
           `Template Excel tidak sesuai. Kolom yang kurang: ${missingColumns.join(', ')}`
@@ -405,7 +435,7 @@ const NilaiMahasiswaImportExcel = () => {
         .map((item) => `${item.nim} / ${item.kodeMk}`)
         .join(', ');
       setErrorMessage(
-        `Ada ${missingMatkul.length} baris dengan Kode MK belum ada di master matkul. Contoh: ${preview}. Tambahkan master dulu sebelum upload.`
+        `Ada ${missingMatkul.length} baris dengan Kode MK belum ada di master matkul. Contoh: ${preview}. Baris tersebut akan dilewati saat upload.`
       );
     }
   }, [excelData, normalizedMataKuliahList]);
@@ -426,14 +456,6 @@ const NilaiMahasiswaImportExcel = () => {
       return;
     }
 
-    if (validationIssues.length > 0) {
-      setErrorMessage(
-        `Ada ${validationIssues.length} baris yang belum punya master matkul. Lengkapi master dulu sebelum upload.`
-      );
-      setHasSubmitError(true);
-      return;
-    }
-
     setHasSubmitError(false);
     setErrorMessage(null);
     setIsImportRunning(true);
@@ -449,6 +471,9 @@ const NilaiMahasiswaImportExcel = () => {
     let skippedCount = 0;
     let errorCount = 0;
     let cancelledDuringUpload = false;
+    const missingMasterByIndex = new Map(
+      validationIssues.map((issue) => [issue.index, issue])
+    );
 
     for (let index = 0; index < selectedRows.length; index++) {
       if (cancelRequestedRef.current || uploadController.signal.aborted) {
@@ -462,13 +487,30 @@ const NilaiMahasiswaImportExcel = () => {
         `Sedang mengunggah data ke database... (${index + 1}/${selectedRows.length})`
       );
 
-      if (!hasUsableGradeNilai(data['Grade Nilai'])) {
-        const skippedMessage = 'Grade Nilai kosong/0, baris dilewati.';
-        getResponseData.push({
+      const missingMasterIssue = missingMasterByIndex.get(selectedIndex);
+      if (missingMasterIssue) {
+        const skippedMessage =
+          `Kode MK ${missingMasterIssue.kodeMk || '-'} belum ada di master matkul untuk prodi ${missingMasterIssue.prodi || '-'}.`;
+        getResponseData[selectedIndex] = {
           ...data,
           status: 'skipped',
           errorMessage: skippedMessage,
-        });
+        };
+        newRowStatus[selectedIndex] = 'skipped';
+        skippedCount += 1;
+
+        const newProgress = ((index + 1) / selectedRows.length) * 100;
+        setProgress(newProgress.toFixed(2));
+        continue;
+      }
+
+      if (!hasUsableGradeNilai(data['Grade Nilai'])) {
+        const skippedMessage = 'Grade Nilai kosong/0, baris dilewati.';
+        getResponseData[selectedIndex] = {
+          ...data,
+          status: 'skipped',
+          errorMessage: skippedMessage,
+        };
         newRowStatus[selectedIndex] = 'skipped';
         skippedCount += 1;
 
@@ -490,24 +532,24 @@ const NilaiMahasiswaImportExcel = () => {
         });
         if (response && response.data) {
           if (response.data.status === 'skipped') {
-            getResponseData.push({
+            getResponseData[selectedIndex] = {
               ...data,
               status: 'skipped',
               errorMessage: response.data.message || 'Grade Nilai kosong/0, baris dilewati.',
-            });
+            };
             newRowStatus[selectedIndex] = 'skipped';
             skippedCount += 1;
           } else {
-            getResponseData.push({ ...response.data, status: 'success' });
+            getResponseData[selectedIndex] = { ...response.data, status: 'success' };
             newRowStatus[selectedIndex] = 'success';
             successCount += 1;
           }
         } else {
-          getResponseData.push({
+          getResponseData[selectedIndex] = {
             ...data,
             status: 'error',
             errorMessage: 'Tidak ada data respon',
-          });
+          };
           newRowStatus[selectedIndex] = 'error';
           errorCount += 1;
         }
@@ -519,20 +561,20 @@ const NilaiMahasiswaImportExcel = () => {
 
         if (isRequestCancelled || cancelRequestedRef.current || uploadController.signal.aborted) {
           cancelledDuringUpload = true;
-          getResponseData.push({
+          getResponseData[selectedIndex] = {
             ...data,
             status: 'cancelled',
             errorMessage: 'Import dibatalkan oleh pengguna.',
-          });
+          };
           newRowStatus[selectedIndex] = 'cancelled';
           break;
         }
 
-        getResponseData.push({
+        getResponseData[selectedIndex] = {
           ...data,
           status: 'error',
           errorMessage: err.response?.data || err.message,
-        });
+        };
         newRowStatus[selectedIndex] = 'error';
         errorCount += 1;
       }
@@ -587,18 +629,22 @@ const NilaiMahasiswaImportExcel = () => {
   };
 
   const filteredData = useMemo(() => {
-    return excelData.filter((getdata) => {
-      return (
-        (namamahasiswa === '' ||
-          getdata['Student Name']
-            .toLowerCase()
-            .includes(namamahasiswa.toLowerCase())) &&
-        (nim === '' || getdata['NIM'].toString().includes(nim)) &&
-        (prodi === '' ||
-          getdata.prodi.toLowerCase().includes(prodi.toLowerCase()))
-      );
-    });
-  }, [excelData, namamahasiswa, nim, prodi]);
+    return excelData
+      .map((getdata, originalIndex) => ({ ...getdata, originalIndex }))
+      .filter((getdata) => {
+        return (
+          (namamahasiswa === '' ||
+            getdata['Student Name']
+              .toLowerCase()
+              .includes(namamahasiswa.toLowerCase())) &&
+          (nim === '' || getdata['NIM'].toString().includes(nim)) &&
+          (prodi === '' ||
+            getdata.prodi.toLowerCase().includes(prodi.toLowerCase())) &&
+          (angkatan === '' ||
+            String(getdata.angkatan || '').includes(angkatan))
+        );
+      });
+  }, [excelData, namamahasiswa, nim, prodi, angkatan]);
 
   const handleCheckboxChange = (index) => {
     if (selectedRows.includes(index)) {
@@ -617,7 +663,7 @@ const NilaiMahasiswaImportExcel = () => {
     if (isAllSelected) {
       setSelectedRows([]);
     } else {
-      setSelectedRows(filteredData.map((_, index) => index));
+      setSelectedRows(filteredData.map((data) => data.originalIndex));
     }
     setIsAllSelected(!isAllSelected);
   };
@@ -692,7 +738,11 @@ const NilaiMahasiswaImportExcel = () => {
       <div className="mt-4 rounded-xl border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700">
         <p className="font-semibold text-gray-900">Template Excel yang dipakai</p>
         <p className="mt-1 text-gray-600">
-          Kolom yang perlu diisi: {importTemplateColumns.join(', ')}.
+          Kolom yang didukung: {importTemplateColumns.join(', ')}.
+        </p>
+        <p className="mt-2 text-gray-600">
+          Kolom <span className="font-medium">Angkatan</span> opsional. Jika kosong
+          atau tidak ada, sistem mengambil angkatan dari NIM.
         </p>
         <p className="mt-2 text-gray-600">
           Format <span className="font-medium">Tahun Akademik</span> mengikuti kode
@@ -816,6 +866,19 @@ const NilaiMahasiswaImportExcel = () => {
               onChange={(e) => setProdi(e.target.value)}
             />
           </div>
+          <p>Atau</p>
+          <div className="relative w-[]20rem">
+            <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+              <AiOutlineSearch size={20} color="gray" />
+            </div>
+            <input
+              type="text"
+              id="simple-search"
+              className="border border-gray-300 focus:border-primary-400 text-gray-900 text-sm rounded-lg focus:ring-turquoise-normal focus:border-turquoise-normal focus-visible:outline-none block w-full pl-10 p-2.5"
+              placeholder="Angkatan"
+              onChange={(e) => setAngkatan(e.target.value)}
+            />
+          </div>
         </form>
       </div>
 
@@ -919,6 +982,9 @@ const NilaiMahasiswaImportExcel = () => {
                 <p className="flex flex-row items-center">Prodi</p>
               </th>
               <th className="px-4 py-3 font-semibold">
+                <p className="flex flex-row items-center">Angkatan</p>
+              </th>
+              <th className="px-4 py-3 font-semibold">
                 <p className="flex flex-row items-center">Kode MK</p>
               </th>
               <th className="px-4 py-3 font-semibold">
@@ -948,14 +1014,14 @@ const NilaiMahasiswaImportExcel = () => {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan="13" className="text-center">
+                <td colSpan={importComplete ? 15 : 14} className="text-center">
                   <ClipLoader color={'hsla(357, 85%, 52%, 1)'} size={50} />
                 </td>
               </tr>
             ) : (
               filteredData.map((data, index) => {
-                const status = rowStatus[index]; // Ambil status untuk baris ini
-                const isSelectedRow = selectedRows.includes(index);
+                const status = rowStatus[data.originalIndex]; // Ambil status untuk baris ini
+                const isSelectedRow = selectedRows.includes(data.originalIndex);
                 return (
                   <tr
                     key={index}
@@ -964,8 +1030,8 @@ const NilaiMahasiswaImportExcel = () => {
                     <td className="px-4 py-3">
                       <input
                         type="checkbox"
-                        checked={selectedRows.includes(index)}
-                        onChange={() => handleCheckboxChange(index)}
+                        checked={selectedRows.includes(data.originalIndex)}
+                        onChange={() => handleCheckboxChange(data.originalIndex)}
                       />
                     </td>
                     {importComplete && (
@@ -975,8 +1041,8 @@ const NilaiMahasiswaImportExcel = () => {
                         ) : status === 'error' ? (
                           <TooltipError>
                             {responseData &&
-                              responseData[index] &&
-                              responseData[index].errorMessage}
+                              responseData[data.originalIndex] &&
+                              responseData[data.originalIndex].errorMessage}
                           </TooltipError>
                         ) : status === 'cancelled' ? (
                           <span className="text-gray-500">Dibatalkan</span>
@@ -996,6 +1062,7 @@ const NilaiMahasiswaImportExcel = () => {
                     <td className="px-4 py-3">{data['Student Name']}</td>
                     <td className="px-4 py-3">{data['NIM']}</td>
                     <td className="px-4 py-3">{data.prodi}</td>
+                    <td className="px-4 py-3">{data.angkatan || '-'}</td>
                     <td className="px-4 py-3">{data['Subject Short']}</td>
                     <td className="px-4 py-3">{data['Subject']}</td>
                     <td className="px-4 py-3">{data['Tahun Akademik']}</td>

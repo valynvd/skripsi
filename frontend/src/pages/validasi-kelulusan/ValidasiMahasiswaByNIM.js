@@ -19,6 +19,68 @@ import { utils, writeFile } from 'xlsx';
 import { useCreateSuratKeterangan } from '../../hooks/useSuratSKPI';
 import { ClipLoader } from 'react-spinners';
 
+const normalizeAcademicYear = (academicYear) => {
+  const value = String(academicYear ?? '').trim();
+  return value.length >= 6 && /^\d+$/.test(value) ? value.slice(0, 4) : value;
+};
+
+const normalizeAcademicSession = (academicYear, academicSession) => {
+  const session = String(academicSession ?? '').trim();
+  if (session) {
+    return session;
+  }
+
+  const year = String(academicYear ?? '').trim();
+  return year.length >= 6 && /^\d+$/.test(year) ? year.slice(-2) : session;
+};
+
+const normalizeAcademicFields = (data) => ({
+  ...data,
+  academic_year: normalizeAcademicYear(data.academic_year),
+  academic_session: normalizeAcademicSession(
+    data.academic_year,
+    data.academic_session
+  ),
+});
+
+const isUsableGrade = (gradeSymbol) =>
+  ['A', 'AB', 'B', 'BC', 'C', 'D', 'E'].includes(
+    String(gradeSymbol || '').trim().toUpperCase()
+  );
+
+const deduplicateSameSemesterCourses = (items) => {
+  const itemsByCourseSemester = new Map();
+
+  items.forEach((item) => {
+    const normalizedItem = normalizeAcademicFields(item);
+    const courseKey =
+      normalizedItem.mata_kuliah_detail?.kode ||
+      normalizedItem.mata_kuliah ||
+      normalizedItem.mata_kuliah_detail?.name ||
+      normalizedItem.id;
+    const key = [
+      normalizedItem.academic_year,
+      normalizedItem.academic_session,
+      courseKey,
+    ].join('|');
+    const existing = itemsByCourseSemester.get(key);
+
+    if (!existing) {
+      itemsByCourseSemester.set(key, normalizedItem);
+      return;
+    }
+
+    if (
+      !isUsableGrade(existing.grade_symbol) &&
+      isUsableGrade(normalizedItem.grade_symbol)
+    ) {
+      itemsByCourseSemester.set(key, normalizedItem);
+    }
+  });
+
+  return Array.from(itemsByCourseSemester.values());
+};
+
 const ValidasiMahasiswaByNIM = () => {
   const userRole = useCheckRole();
   const { nim } = useParams();
@@ -85,8 +147,11 @@ const ValidasiMahasiswaByNIM = () => {
 
   useEffect(() => {
     if (!isLoadingResult && responseData) {
+      const normalizedTranskripData = deduplicateSameSemesterCourses(
+        responseData.data || []
+      );
       // Sort data by Academic Year and Academic Session
-      const sortedTranskripData = responseData.data.sort((a, b) => {
+      const sortedTranskripData = normalizedTranskripData.sort((a, b) => {
         // First sort by academic year (ascending)
         if (a.academic_year !== b.academic_year) {
           return a.academic_year - b.academic_year;
